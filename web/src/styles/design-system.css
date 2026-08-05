@@ -17,6 +17,8 @@
   --success: #22c55e;
   --warning: #f59e0b;
   --warning-weak: rgba(245, 158, 11, 0.16);
+  --danger: #ef4444;
+  --danger-weak: rgba(239, 68, 68, 0.16);
   --border: #2a2f3a;
 
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -59,6 +61,8 @@
   --success: #16a34a;
   --warning: #d97706;
   --warning-weak: #fff7ed;
+  --danger: #dc2626;
+  --danger-weak: #fef2f2;
   --border: #e5e7eb;
 
   --shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
@@ -78,6 +82,8 @@
     --success: #16a34a;
     --warning: #d97706;
     --warning-weak: #fff7ed;
+    --danger: #dc2626;
+    --danger-weak: #fef2f2;
     --border: #e5e7eb;
     --shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
     --shadow-hover: 0 8px 24px rgba(15, 23, 42, 0.1);
@@ -341,7 +347,7 @@ input, select, textarea { caret-color: var(--accent); }
 }
 .card-head-right { display: inline-flex; align-items: center; gap: var(--space-2); }
 
-/* Dynamic status chip (今日發文 / 停更 N 天) — grid + list 共用 */
+/* Dynamic status chip (今日發文 / 昨日發文 / 停更中 / 長時間停更) — grid + list 共用 */
 .status-chip {
   font-family: var(--font-sans);
   font-size: var(--text-2xs);
@@ -352,8 +358,12 @@ input, select, textarea { caret-color: var(--accent); }
   border-radius: var(--radius-pill);
   white-space: nowrap;
   flex-shrink: 0;
+  min-width: 72px;
+  text-align: center;
 }
 .status-chip--stale { color: var(--warning); background: var(--warning-weak); }
+.status-chip--long { color: var(--danger); background: var(--danger-weak); }
+.status-chip--yesterday { color: var(--muted); background: var(--surface-muted); }
 .card-stat {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
@@ -484,13 +494,14 @@ input, select, textarea { caret-color: var(--accent); }
 /* ---------- List row ---------- */
 .series-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  grid-template-columns: auto minmax(0, 1fr) 84px auto;
   align-items: center;
   gap: var(--space-3);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--space-2) var(--space-3);
+  min-height: 56px;
   transition: border-color 0.12s ease, background 0.12s ease;
 }
 .series-row + .series-row { border-top: 0; border-radius: 0; }
@@ -510,20 +521,18 @@ input, select, textarea { caret-color: var(--accent); }
 }
 .row-title:hover { color: var(--accent); text-decoration: none; }
 .row-meta { font-family: var(--font-sans); font-size: var(--text-2xs); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.row-progress { display: flex; align-items: center; gap: var(--space-2); }
-.row-views { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-sans); font-size: var(--text-xs); color: var(--muted); }
-.row-actions { display: inline-flex; align-items: center; gap: var(--space-1); }
+.row-views { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; min-width: 84px; font-family: var(--font-sans); font-size: var(--text-xs); color: var(--muted); justify-self: end; }
+.row-actions { display: inline-flex; align-items: center; gap: var(--space-1); justify-self: end; }
 @media (max-width: 639px) {
   .series-row {
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas:
       "badge main actions"
-      "badge prog views";
+      "badge views views";
     row-gap: var(--space-2);
   }
   .series-row .row-left { grid-area: badge; align-self: start; }
   .series-row .row-main { grid-area: main; }
-  .series-row .row-progress { grid-area: prog; }
   .series-row .row-views { grid-area: views; justify-self: end; }
   .series-row .row-actions { grid-area: actions; }
 }
