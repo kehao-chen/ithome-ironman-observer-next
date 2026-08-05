@@ -60,6 +60,27 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 4. Preserve the core observer experience (grasp daily activity, browse by group) while modernizing the surface.
 5. Non-goals stay out of v1: no search, no multi-year, no accounts.
 
+## Roadmap
+
+功能想法整理自 `docs/PROJECT-INTRODUCTION.md`（該檔待刪除，想法先保留下來）＋既有 non-goals。尚未排程，依價值/成本取捨後再決定。
+
+### 短期可做（低成本、與現架構相容）
+
+1. **多年度支援**：`data/2026.json` 已按年度命名，`config/series-manifest.json` 是年度清單（單一來源）。把 UI 加上年度切換即可服務往後屆次（原文件暗示此架構，PROJECT-INTRODUCTION 五節）。
+2. **排序改進**：以「當日新增文章數」重新定義「最新發布」排序（現為該系列最後一篇文章時間，定義含糊；與 DEPLOYMENT-HANDOFF 已知問題 #6 相同）。
+3. **scrapeLog 錯誤可見化**：單一系列失敗已寫入 `data/2026.json` 的 `scrapeLog`，但前端不顯示——可在頁面角落顯示「本次更新 N 系列失敗」與錯誤清單（PROJECT-INTRODUCTION 七節）。
+
+### 中期候選（來自 v1 non-goals，做之前需重新評估價值）
+
+- **搜尋**：依標題/作者/組別全文搜尋系列。
+- **完賽 / 活躍 badge 強化**：目前只有 DAY 0 / 進行中 / 完賽三態，可加「今天有發文」「連續 N 天未更新」等動態狀態。
+- **收藏 / 追蹤特定系列**：localStorage 收藏，首頁置頂或獨立分頁（無後端，零成本相容）。
+- **即時更新**：目前為週期批次（每小時）+ client 60s refresh；真要接近即時需外部觸發（如 Cloudflare Worker cron）——成本與排程可靠性取捨。
+
+### 已涵蓋、不需再做
+
+- **報名期間系列數持續增加**：scraper 每次全量抓取，自動涵蓋（PROJECT-INTRODUCTION 三節）。
+
 ## Accessibility & Inclusion
 
 - Must support light + dark themes (user-confirmed): auto via `prefers-color-scheme` + manual toggle persisted (recommended pattern).
