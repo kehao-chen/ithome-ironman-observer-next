@@ -1,10 +1,16 @@
 # 鐵人觀察家 Next
 
-2026 iThome 鐵人賽的每日觀察儀表板。靜態站 + GitHub Actions 每小時自動更新 + Cloudflare Pages 免費託管。
+2026 iThome 鐵人賽的每日觀察儀表板。靜態站 + GitHub Actions 定時自動更新 + Cloudflare Pages 免費託管。
+
+🔗 線上站：https://ithome-ironman-observer.happyhacking.ninja/
 
 ## 架構
 
 ithelp 鐵人賽 → GH Actions (cron) → data/2026.json commit → Astro build → Cloudflare Pages
+
+- **Scraper**（`scripts/`，Bun + TypeScript）：抓 signup 列表全部分頁 → 每系列 RSS + series 頁 → 合併為 `data/2026.json`（瀏覽/Like/留言/訂閱數、`lastUpdated`、文章清單）。容錯：單系列失敗不中斷、指數退避重試、空結果保留舊資料。
+- **儀表板**（`web/`，Astro）：SSG 預渲染 + client 端 60 秒刷新，組別篩選 + 進度/最多觀看/最新發布排序。
+- **排程**（`.github/workflows/update.yml`）：臺北時間 07:00–01:00 每小時；資料有變才 commit + deploy（無變更跳過）。
 
 ## 本地開發
 
@@ -14,15 +20,15 @@ bun run scripts/scrape.ts     # 抓取最新資料到 data/2026.json
 cd web && bun install && bun run dev
 ```
 
-## 部署
-
-1. 建 Cloudflare Pages 專案（名稱 `ironman-observer-next`）
-2. 加 domain 到 `wrangler.toml` 的 routes
-3. 設 `CLOUDFLARE_API_TOKEN` secret（Pages Edit 權限）
-4. 推上 GitHub，workflow 每小時自動跑
-
 ## 測試
 
 ```bash
 bun test
 ```
+
+## 部署（已上線，僅供參考）
+
+1. Cloudflare Pages 專案 `ironman-observer-next`（workflow 會自動建立）
+2. GitHub repo secrets：`CLOUDFLARE_API_TOKEN`（Pages Edit 權限）、`CLOUDFLARE_ACCOUNT_ID`
+3. 自有網域在 Cloudflare dashboard → Pages 專案 → Custom domains 設定
+4. workflow 定時自動跑；也可 `gh workflow run hourly-update` 手動觸發
