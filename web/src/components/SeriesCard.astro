@@ -1,6 +1,7 @@
 ---
 // web/src/components/SeriesCard.astro
 import type { Series } from "../../../scripts/types";
+import { statusChip, statusChipText, taipeiToday } from "../lib/daily-status";
 interface Props { series: Series }
 const { series: s } = Astro.props;
 const latest = s.articles[s.articles.length - 1];
@@ -17,11 +18,17 @@ const profileUrl = `https://ithelp.ithome.com.tw/users/${s.user.id}`;
 const rssUrl = `https://ithelp.ithome.com.tw/rss/series/${s.id}`;
 // Clean absolute fallback (source tz, no-JS); JS swaps to browser-local + relative.
 const tsFallback = latest && latest.publishedAt ? latest.publishedAt.replace("T", " ").slice(0, 16) : "";
+// 動態狀態 chip（SSR build 時點的臺北日；client 首次 render 會用最新覆蓋）。
+const chip = statusChip(latest?.publishedAt, s.dayCount, taipeiToday());
+const chipText = statusChipText(chip);
 ---
 
 <article class="series-card">
   <header class="card-head">
-    <span class={badgeClass}>{badgeText}</span>
+    <span class="card-head-left">
+      <span class={badgeClass}>{badgeText}</span>
+      {chip ? <span class={`status-chip ${chip.kind === "stale" ? "status-chip--stale" : ""}`}>{chipText}</span> : null}
+    </span>
     <div class="card-head-right">
       <span class="card-stat tabular-nums">{totalViews.toLocaleString()} 瀏覽</span>
       <button class="card-action" type="button" data-rss={rssUrl} data-title={s.title} aria-label="RSS 訂閱" title="RSS 訂閱">

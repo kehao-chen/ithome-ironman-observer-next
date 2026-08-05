@@ -49,7 +49,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       <select id="sort" class="sort-select" aria-label="排序方式">
         <option value="dayCount">進度</option>
         <option value="views">最多觀看</option>
-        <option value="latest">最新發布</option>
+        <option value="latest">今日發文</option>
       </select>
       <svg class="sort-caret" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
     </div>
@@ -92,6 +92,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   window.IRONMAN_DATA = initialData;
 </script>
 <script>
+  import { statusChip, statusChipText, taipeiDay, taipeiToday } from "../lib/daily-status";
   const list = document.getElementById("series-list")!;
   const updatedAt = document.getElementById("updated-at")!;
   const seriesCount = document.getElementById("series-count")!;
@@ -99,6 +100,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   const totalCount = document.getElementById("total-count")!;
   let current: any = null;
   let viewMode: "grid" | "list" = "grid";
+  let today = taipeiToday(); // 跨日由 humanizeAll 週期校正
 
   /* ---------- Time humanization (browser timezone) ---------- */
   function tzTime(iso: string) {
@@ -127,9 +129,18 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   /* ---------- Card helpers ---------- */
   function totalViews(s: any) { return s.articles.reduce((n: number, a: any) => n + a.views, 0); }
   function latestPub(s: any) { return s.articles.length ? new Date(s.articles[s.articles.length - 1].publishedAt).getTime() : 0; }
+  function lastPubIso(s: any): string | null { return s.articles.length ? s.articles[s.articles.length - 1].publishedAt : null; }
   function seriesUrl(s: any) { return `https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`; }
   function profileUrl(s: any) { return `https://ithelp.ithome.com.tw/users/${s.user.id}`; }
   function rssUrl(s: any) { return `https://ithelp.ithome.com.tw/rss/series/${s.id}`; }
+  function chip(s: any): HTMLElement | null {
+    const c = statusChip(lastPubIso(s), s.dayCount, today);
+    if (!c) return null;
+    const el = document.createElement("span");
+    el.className = c.kind === "stale" ? "status-chip status-chip--stale" : "status-chip";
+    el.textContent = statusChipText(c);
+    return el;
+  }
   function badgeClass(s: any) {
     if (s.dayCount >= 30) return "day-badge day-badge--done";
     if (s.dayCount === 0) return "day-badge day-badge--pending";
@@ -160,7 +171,15 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     if (group !== "全部") series = series.filter((s: any) => s.group === group);
     series = [...series].sort((a: any, b: any) => {
       if (sort === "views") return totalViews(b) - totalViews(a);
-      if (sort === "latest") return latestPub(b) - latestPub(a);
+      if (sort === "latest") {
+        const da = taipeiDay(lastPubIso(a)), db = taipeiDay(lastPubIso(b));
+        if (!da && !db) return b.dayCount - a.dayCount; // 兩者皆無文章 → 進度
+        if (!da) return 1;   // a 無文章 → 沉底
+        if (!db) return -1;  // b 無文章 → 沉底
+        const byDay = db.localeCompare(da); // 臺北日 desc
+        if (byDay !== 0) return byDay;
+        return latestPub(b) - latestPub(a); // 同日內按發文秒 desc
+      }
       return b.dayCount - a.dayCount;
     });
     list.innerHTML = "";
@@ -180,6 +199,11 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     head.className = "card-head";
     const day = document.createElement("span");
     day.className = badgeClass(s); day.textContent = badgeText(s);
+    const chipEl = chip(s);
+    const headLeft = document.createElement("span");
+    headLeft.className = "card-head-left";
+    headLeft.append(day);
+    if (chipEl) headLeft.append(chipEl);
     const right = document.createElement("div");
     right.className = "card-head-right";
     const stat = document.createElement("span");
@@ -190,7 +214,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     rss.dataset.rss = rssUrl(s); rss.dataset.title = s.title;
     rss.setAttribute("aria-label", "RSS 訂閱"); rss.title = "RSS 訂閱";
     rss.innerHTML = RSS_SVG;
-    right.append(stat, rss); head.append(day, right);
+    right.append(stat, rss); head.append(headLeft, right);
 
     const prog = document.createElement("div"); prog.className = "progress";
     const track = document.createElement("div"); track.className = "progress-track";
@@ -236,6 +260,10 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     const isDone = s.dayCount >= 30, isPending = s.dayCount === 0;
     const row = document.createElement("article"); row.className = "series-row";
     const day = document.createElement("span"); day.className = badgeClass(s); day.textContent = badgeText(s);
+    const chipEl = chip(s);
+    const left = document.createElement("div"); left.className = "row-left";
+    left.append(day);
+    if (chipEl) left.append(chipEl);
 
     const main = document.createElement("div"); main.className = "row-main";
     const t = document.createElement("a"); t.className = "row-title"; t.href = seriesUrl(s); t.target = "_blank"; t.rel = "noopener"; t.textContent = s.title;
@@ -264,7 +292,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     open.setAttribute("aria-label", "開啟系列"); open.title = "開啟系列"; open.innerHTML = OPEN_SVG;
     actions.append(rss, open);
 
-    row.append(day, main, prog, views, actions);
+    row.append(left, main, prog, views, actions);
     return row;
   }
 
@@ -336,6 +364,6 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 
   window.addEventListener("ironman-data", ((e: CustomEvent) => render(e.detail)) as EventListener);
   render((window as any).__SSR_DATA__ ?? (window as any).IRONMAN_DATA);
-  // Re-humanize periodically so relative times stay fresh.
-  setInterval(humanizeAll, 60000);
+  // Re-humanize periodically so relative times stay fresh (also re-anchors 臺北 today).
+  setInterval(() => { today = taipeiToday(); humanizeAll(); }, 60000);
 </script>
