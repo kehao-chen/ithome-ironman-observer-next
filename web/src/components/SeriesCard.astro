@@ -16,7 +16,7 @@ const seriesUrl = `https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.i
 const profileUrl = `https://ithelp.ithome.com.tw/users/${s.user.id}`;
 const rssUrl = `https://ithelp.ithome.com.tw/rss/series/${s.id}`;
 // Clean absolute fallback (source tz, no-JS); JS swaps to browser-local + relative.
-const tsFallback = s.lastUpdated ? s.lastUpdated.replace("T", " ").slice(0, 16) : "";
+const tsFallback = latest && latest.publishedAt ? latest.publishedAt.replace("T", " ").slice(0, 16) : "";
 ---
 
 <article class="series-card">
@@ -49,7 +49,7 @@ const tsFallback = s.lastUpdated ? s.lastUpdated.replace("T", " ").slice(0, 16) 
       </span>
     </div>
   ) : <p class="latest"><span class="latest-link muted">尚未開賽</span></p>}
-  {s.lastUpdated ? (
-    <p class="updated">更新 <time datetime={s.lastUpdated} data-ts={s.lastUpdated}>{tsFallback}</time></p>
+  {latest && latest.publishedAt ? (
+    <p class="updated">上次發布 <time datetime={latest.publishedAt} data-ts={latest.publishedAt}>{tsFallback}</time></p>
   ) : null}
 </article>

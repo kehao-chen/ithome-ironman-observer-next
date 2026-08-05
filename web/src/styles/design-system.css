@@ -159,10 +159,32 @@ input, select, textarea { caret-color: var(--accent); }
 }
 .brand-title .brand-mark {
   display: inline-block;
-  width: 8px; height: 8px;
+  width: 9px; height: 9px;
   border-radius: 999px;
   background: var(--success);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 25%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 28%, transparent);
+  animation: brand-pulse 2.6s ease-in-out infinite;
+}
+.brand-title .brand-year {
+  background: linear-gradient(120deg, var(--accent) 10%, #10b981 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes brand-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 30%, transparent);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 7px 1px color-mix(in srgb, var(--success) 60%, transparent),
+                0 0 0 5px color-mix(in srgb, var(--success) 10%, transparent);
+    transform: scale(1.14);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-title .brand-mark { animation: none; }
 }
 .brand-sub {
   font-family: var(--font-sans);
@@ -174,7 +196,7 @@ input, select, textarea { caret-color: var(--accent); }
 /* ---------- Toolbar (filters + sort) ---------- */
 .toolbar {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--space-3);
   flex-wrap: wrap;
 }
@@ -232,6 +254,17 @@ input, select, textarea { caret-color: var(--accent); }
 .sort-select { padding-right: var(--space-5); flex-shrink: 0; }
 .sort-select:hover, .icon-btn:hover { border-color: var(--accent); }
 .sort-select:focus-visible, .icon-btn:focus-visible { outline-offset: 1px; }
+.sort-wrap { position: relative; flex-shrink: 0; }
+.sort-caret {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px; height: 14px;
+  pointer-events: none;
+  color: var(--muted);
+}
+.sort-select option { color: var(--text); background: var(--surface); }
 .icon-btn {
   display: inline-flex;
   align-items: center;

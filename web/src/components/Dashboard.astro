@@ -13,7 +13,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 <header class="site-header container">
   <div class="header-row">
     <div class="brand">
-      <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 2026</h1>
+      <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-year">2026</span></h1>
       <p class="brand-sub">
         最後更新 <time id="updated-at" datetime={data.updatedAt} data-ts={data.updatedAt}>{updatedAtFallback}</time>
         · <span id="series-count" class="tabular-nums">{data.series.length}</span> 支系列
@@ -45,11 +45,14 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
         </button>
       ))}
     </div>
-    <select id="sort" class="sort-select" aria-label="排序方式">
-      <option value="dayCount">進度</option>
-      <option value="views">最多觀看</option>
-      <option value="latest">最新發布</option>
-    </select>
+    <div class="sort-wrap">
+      <select id="sort" class="sort-select" aria-label="排序方式">
+        <option value="dayCount">進度</option>
+        <option value="views">最多觀看</option>
+        <option value="latest">最新發布</option>
+      </select>
+      <svg class="sort-caret" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
   </div>
 </header>
 
@@ -219,10 +222,10 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     } else { lat.innerHTML = '<span class="latest-link muted">尚未開賽</span>'; }
 
     art.append(head, prog, h, meta, lat);
-    if (s.lastUpdated) {
-      const upd = document.createElement("p"); upd.className = "updated"; upd.textContent = "更新 ";
-      const tm = document.createElement("time"); tm.dateTime = s.lastUpdated; tm.dataset.ts = s.lastUpdated;
-      tm.textContent = s.lastUpdated.replace("T", " ").slice(0, 16);
+    if (latest && latest.publishedAt) {
+      const upd = document.createElement("p"); upd.className = "updated"; upd.textContent = "上次發布 ";
+      const tm = document.createElement("time"); tm.dateTime = latest.publishedAt; tm.dataset.ts = latest.publishedAt;
+      tm.textContent = latest.publishedAt.replace("T", " ").slice(0, 16);
       upd.appendChild(tm); art.appendChild(upd);
     }
     return art;
