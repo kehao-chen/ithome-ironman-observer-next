@@ -333,7 +333,27 @@ input, select, textarea { caret-color: var(--accent); }
   justify-content: space-between;
   gap: var(--space-2);
 }
+.card-head-left {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
 .card-head-right { display: inline-flex; align-items: center; gap: var(--space-2); }
+
+/* Dynamic status chip (今日發文 / 停更 N 天) — grid + list 共用 */
+.status-chip {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  line-height: 1.4;
+  color: var(--accent);
+  background: var(--accent-weak);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.status-chip--stale { color: var(--warning); background: var(--warning-weak); }
 .card-stat {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
@@ -478,6 +498,7 @@ input, select, textarea { caret-color: var(--accent); }
 .series-row:last-child { border-radius: 0 0 var(--radius) var(--radius); }
 .series-row:only-child { border-radius: var(--radius); }
 .series-row:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 4%, var(--surface)); }
+.row-left { display: inline-flex; align-items: center; gap: var(--space-2); white-space: nowrap; }
 .row-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .row-title {
   font-size: var(--text-sm);
@@ -500,7 +521,7 @@ input, select, textarea { caret-color: var(--accent); }
       "badge prog views";
     row-gap: var(--space-2);
   }
-  .series-row .day-badge { grid-area: badge; align-self: start; }
+  .series-row .row-left { grid-area: badge; align-self: start; }
   .series-row .row-main { grid-area: main; }
   .series-row .row-progress { grid-area: prog; }
   .series-row .row-views { grid-area: views; justify-self: end; }
