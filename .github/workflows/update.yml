@@ -36,14 +36,6 @@ jobs:
       - name: Build site
         run: cd web && bun install && bun run build
 
-      - name: Ensure Pages project exists
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          npx wrangler pages project create ironman-observer-next --production-branch=main \
-            || echo "project already exists (or create failed — deploy will confirm)"
-
       - name: Deploy to Cloudflare Pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
