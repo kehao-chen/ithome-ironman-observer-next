@@ -12,25 +12,44 @@ const badgeText = isPending ? "尚未開賽" : isDone ? "完賽" : `DAY ${s.dayC
 const fillClass = isDone ? "progress-fill progress-fill--done" : isPending ? "progress-fill progress-fill--pending" : "progress-fill";
 const pct = Math.min((s.dayCount / 30) * 100, 100);
 const label = `${Math.min(s.dayCount, 30)}/30`;
+const seriesUrl = `https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`;
+const profileUrl = `https://ithelp.ithome.com.tw/users/${s.user.id}`;
+const rssUrl = `https://ithelp.ithome.com.tw/rss/series/${s.id}`;
+// Clean absolute fallback (source tz, no-JS); JS swaps to browser-local + relative.
+const tsFallback = s.lastUpdated ? s.lastUpdated.replace("T", " ").slice(0, 16) : "";
 ---
 
 <article class="series-card">
   <header class="card-head">
     <span class={badgeClass}>{badgeText}</span>
-    <span class="card-stat tabular-nums">{totalViews} 瀏覽</span>
+    <div class="card-head-right">
+      <span class="card-stat tabular-nums">{totalViews.toLocaleString()} 瀏覽</span>
+      <button class="card-action" type="button" data-rss={rssUrl} data-title={s.title} aria-label="RSS 訂閱" title="RSS 訂閱">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>
+      </button>
+    </div>
   </header>
   <div class="progress">
     <div class="progress-track"><div class={fillClass} style={`width:${pct}%`}></div></div>
     <span class="progress-label tabular-nums">{label}</span>
   </div>
-  <h3 class="card-title"><a href={`https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`} target="_blank" rel="noopener">{s.title}</a></h3>
-  <p class="meta">{s.user.name} · {s.group}{s.team ? ` · 團隊 ${s.team}` : ""}</p>
-  <p class="info">
-    {latest
-      ? <>最新 <a href={latest.url} target="_blank" rel="noopener">{latest.title}</a> · <span class="tabular-nums">{latest.views}</span> 當篇</>
-      : <>尚未開賽</>}
+  <h3 class="card-title"><a href={seriesUrl} target="_blank" rel="noopener">{s.title}</a></h3>
+  <p class="meta">
+    <a class="meta-author" href={profileUrl} target="_blank" rel="noopener">{s.user.name}</a>
+    <span class="meta-sep">·</span>{s.group}{s.team ? <><span class="meta-sep">·</span>團隊 {s.team}</> : null}
   </p>
-  {s.lastUpdated && (
-    <p class="updated">更新 <time datetime={s.lastUpdated}>{s.lastUpdated}</time></p>
-  )}
+  {latest ? (
+    <div class="latest">
+      <a class="latest-link" href={latest.url} target="_blank" rel="noopener">
+        <span class="latest-tag">最新</span>{latest.title}
+      </a>
+      <span class="latest-views tabular-nums">
+        <svg class="ico-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>
+        {latest.views.toLocaleString()} 當篇觀看
+      </span>
+    </div>
+  ) : <p class="latest"><span class="latest-link muted">尚未開賽</span></p>}
+  {s.lastUpdated ? (
+    <p class="updated">更新 <time datetime={s.lastUpdated} data-ts={s.lastUpdated}>{tsFallback}</time></p>
+  ) : null}
 </article>
