@@ -1,6 +1,6 @@
 // scripts/scrape.test.ts
 import { describe, expect, test } from "bun:test";
-import { mergeCardsAndStats } from "./scrape";
+import { mergeCardsAndStats, taipeiTimestamp } from "./scrape";
 import { parseSignupList } from "./parse-signup";
 import { parseSeriesPage } from "./parse-series";
 import { parseRss } from "./parse-rss";
@@ -36,5 +36,15 @@ describe("mergeCardsAndStats", () => {
     expect(series.length).toBe(1);
     expect(series[0].articles).toEqual([]);
     expect(series[0].articleCount).toBe(0);
+  });
+
+  test("taipeiTimestamp renders the real Taipei wall clock with +08:00", () => {
+    // value test: the +08:00 suffix must label a wall clock that IS the Taipei
+    // time, not UTC digits relabeled (regression for the toISOString mislabel).
+    const now = new Date();
+    const expected = new Date(now.getTime() + 8 * 60 * 60 * 1000)
+      .toISOString().slice(0, 19).replace("T", " ");
+    const got = taipeiTimestamp(now);
+    expect(got).toBe(expected + "+08:00");
   });
 });
