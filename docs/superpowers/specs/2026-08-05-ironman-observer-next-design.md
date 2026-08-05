@@ -56,7 +56,8 @@ Cloudflare Pages（自有網域，全球 CDN 免費方案）
 - 流程：
   1. 拉 `signup/list` 全部分頁 → 系列基本資料
   2. 對每個系列：拉 RSS → 文章清單；拉 series 頁 → 瀏覽數/Like/留言/訂閱數
-  3. 合併為 `data/{year}.json`
+  3. 合併為 `data/{year}.json` + 更新 `data/meta.json`（`updatedAt`＝本次抓取時間、`seriesCount`）
+- 「更新時間」卡片欄位＝series 最後更新（RSS `lastBuildDate`）
 - 輸出格式（與舊觀察家 ui-data.json 相容的演進）：
 ```json
 {
@@ -129,7 +130,7 @@ Cloudflare Pages（自有網域，全球 CDN 免費方案）
 
 ## 里程碑
 
-1. M1：scraper 跑通，產出 `data/2026.json`（127 系列全量抓取成功）
+1. M1：scraper 跑通，產出 `data/2026.json`（125 系列全量抓取成功）
 2. M2：Astro 站顯示資料、篩選/排序可用
 3. M3：GH Actions cron + Cloudflare Pages 部署上線
 4. M4：驗證週期更新（隔小時資料有變 → 新 commit → 新部署）
