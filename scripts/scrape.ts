@@ -34,6 +34,13 @@ export function mergeCardsAndStats(
   return series;
 }
 
+// Emit the real Taipei wall clock (UTC+8, no DST) as ISO +08:00.
+// Naive `new Date().toISOString().replace("Z","+08:00")` relabels UTC digits
+// as +08:00 without shifting — 8h stale. Shift first, then stamp.
+export function taipeiTimestamp(d: Date): string {
+  return new Date(d.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ") + "+08:00";
+}
+
 export async function runScrape(manifest: Manifest): Promise<YearData> {
   // 1. fetch all pages of signup list
   const cards: SignupCard[] = [];
@@ -71,7 +78,7 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
   const groups = [...new Set(series.map((s) => s.group))].sort();
   return {
     year: manifest.year,
-    updatedAt: new Date().toISOString().replace("Z", "+08:00"),
+    updatedAt: taipeiTimestamp(new Date()),
     groups,
     series,
     scrapeLog: errors,
