@@ -6,6 +6,7 @@ import type { YearData } from "../../../scripts/types";
 interface Props { data: YearData }
 const { data } = Astro.props;
 const groups = ["全部", ...data.groups];
+const countFor = (g: string) => g === "全部" ? data.series.length : data.series.filter((s) => s.group === g).length;
 ---
 
 <header class="site-header container">
@@ -19,7 +20,10 @@ const groups = ["全部", ...data.groups];
   <div class="controls">
     <div class="filter-group" id="group-filters" role="group" aria-label="依組別篩選">
       {groups.map((g) => (
-        <button data-group={g} class="filter-btn" data-active={g === "全部" ? "true" : "false"}>{g}</button>
+        <button data-group={g} class="filter-btn" data-active={g === "全部" ? "true" : "false"}>
+          <span class="filter-label">{g}</span>
+          <span class="filter-count tabular-nums">{countFor(g)}</span>
+        </button>
       ))}
     </div>
     <select id="sort" class="sort-select" aria-label="排序方式">
@@ -98,10 +102,31 @@ const groups = ["全部", ...data.groups];
   function renderCard(s: any) {
     const art = document.createElement("article");
     art.className = "series-card";
+    const head = document.createElement("header");
+    head.className = "card-head";
     const day = document.createElement("span");
     day.className = badgeClass(s);
     day.textContent = badgeText(s);
+    const stat = document.createElement("span");
+    stat.className = "card-stat tabular-nums";
+    stat.textContent = `${totalViews(s)} 瀏覽`;
+    head.append(day, stat);
+    const prog = document.createElement("div");
+    prog.className = "progress";
+    const track = document.createElement("div");
+    track.className = "progress-track";
+    const fill = document.createElement("div");
+    const isDone = s.dayCount >= 30;
+    const isPending = s.dayCount === 0;
+    fill.className = isDone ? "progress-fill progress-fill--done" : isPending ? "progress-fill progress-fill--pending" : "progress-fill";
+    fill.style.width = `${Math.min((s.dayCount / 30) * 100, 100)}%`;
+    track.appendChild(fill);
+    const plabel = document.createElement("span");
+    plabel.className = "progress-label tabular-nums";
+    plabel.textContent = `${Math.min(s.dayCount, 30)}/30`;
+    prog.append(track, plabel);
     const h = document.createElement("h3");
+    h.className = "card-title";
     const a = document.createElement("a");
     a.href = `https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`;
     a.target = "_blank"; a.rel = "noopener";
@@ -117,33 +142,15 @@ const groups = ["全部", ...data.groups];
       const la = document.createElement("a");
       la.href = latest.url; la.target = "_blank"; la.rel = "noopener";
       la.textContent = latest.title;
-      info.append("最新 ", la, ` · ${totalViews(s)} 瀏覽 · ${latest.views} 當篇`);
+      info.append("最新 ", la, ` · ${latest.views} 當篇`);
     } else {
       info.textContent = "尚未開賽";
     }
-    art.append(day, h, meta, info);
-    // Progress trace (mini sparkline of views per article)
-    const trace = document.createElement("span");
-    trace.className = "progress-trace";
-    trace.setAttribute("aria-hidden", "true");
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 100 18");
-    svg.setAttribute("preserveAspectRatio", "none");
-    const poly = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-    const pts = s.articles.length
-      ? s.articles.map((a: any, i: number, arr: any[]) => `${(i / Math.max(arr.length - 1, 1)) * 100},${16 - Math.min((a.views / Math.max(...arr.map((x: any) => x.views), 1)) * 12, 12)}`).join(" ")
-      : "0,15 100,15";
-    poly.setAttribute("points", pts);
-    poly.setAttribute("fill", "none");
-    poly.setAttribute("stroke", "var(--accent)");
-    poly.setAttribute("stroke-width", "1.5");
-    svg.appendChild(poly);
-    trace.appendChild(svg);
-    art.appendChild(trace);
+    art.append(head, prog, h, meta, info);
     if (s.lastUpdated) {
       const upd = document.createElement("p");
       upd.className = "updated";
-      upd.textContent = `更新時間 ${s.lastUpdated}`;
+      upd.textContent = `更新 ${s.lastUpdated}`;
       art.appendChild(upd);
     }
     return art;

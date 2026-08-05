@@ -9,28 +9,28 @@ const isPending = s.dayCount === 0;
 const isDone = s.dayCount >= 30;
 const badgeClass = isDone ? "day-badge day-badge--done" : isPending ? "day-badge day-badge--pending" : "day-badge";
 const badgeText = isPending ? "尚未開賽" : isDone ? "完賽" : `DAY ${s.dayCount}`;
+const fillClass = isDone ? "progress-fill progress-fill--done" : isPending ? "progress-fill progress-fill--pending" : "progress-fill";
+const pct = Math.min((s.dayCount / 30) * 100, 100);
+const label = `${Math.min(s.dayCount, 30)}/30`;
 ---
 
 <article class="series-card">
-  <span class={badgeClass}>{badgeText}</span>
-  <h3><a href={`https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`} target="_blank" rel="noopener">{s.title}</a></h3>
+  <header class="card-head">
+    <span class={badgeClass}>{badgeText}</span>
+    <span class="card-stat tabular-nums">{totalViews} 瀏覽</span>
+  </header>
+  <div class="progress">
+    <div class="progress-track"><div class={fillClass} style={`width:${pct}%`}></div></div>
+    <span class="progress-label tabular-nums">{label}</span>
+  </div>
+  <h3 class="card-title"><a href={`https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`} target="_blank" rel="noopener">{s.title}</a></h3>
   <p class="meta">{s.user.name} · {s.group}{s.team ? ` · 團隊 ${s.team}` : ""}</p>
   <p class="info">
-    {s.articles.length > 0
-      ? <>最新 <a href={latest.url} target="_blank" rel="noopener">{latest.title}</a> · <span class="tabular-nums">{totalViews}</span> 瀏覽 · <span class="tabular-nums">{latest.views}</span> 當篇</>
+    {latest
+      ? <>最新 <a href={latest.url} target="_blank" rel="noopener">{latest.title}</a> · <span class="tabular-nums">{latest.views}</span> 當篇</>
       : <>尚未開賽</>}
   </p>
-  <span class="progress-trace" aria-hidden="true">
-    <svg viewBox="0 0 100 18" preserveAspectRatio="none">
-      <polyline
-        points="0,15 20,13 40,10 60,8 80,4 100,2"
-        fill="none"
-        stroke="var(--accent)"
-        stroke-width="1.5"
-      />
-    </svg>
-  </span>
   {s.lastUpdated && (
-    <p class="updated">更新時間 <time datetime={s.lastUpdated}>{s.lastUpdated}</time></p>
+    <p class="updated">更新 <time datetime={s.lastUpdated}>{s.lastUpdated}</time></p>
   )}
 </article>
