@@ -1,5 +1,5 @@
 import { defineConfig } from "astro/config";
 export default defineConfig({
-  site: "https://ironman.example.com", // TODO: replace with real domain in deploy task
+  site: "https://ithome-ironman-observer.happyhacking.ninja",
   output: "static",
 });
