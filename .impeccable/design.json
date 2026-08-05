@@ -4,10 +4,11 @@
   "title": "Design System: 鐵人觀察家 2026",
   "extensions": {
     "colorMeta": {
-      "accent": { "role": "primary", "displayName": "Phosphor Green", "canonical": "#33ff66", "tonalRamp": ["#0f2a1a", "#33ff66", "#66ff99"] },
-      "warning": { "role": "semantic", "displayName": "Amber", "canonical": "#ffb84d", "tonalRamp": ["#33230d", "#ffb84d"] },
-      "bg": { "role": "neutral", "displayName": "Glass", "canonical": "#07090d", "tonalRamp": ["#07090d", "#0b0e13", "#0d1117"] },
-      "text": { "role": "neutral", "displayName": "Text", "canonical": "#d7e3d9", "tonalRamp": ["#d7e3d9", "#9fb3a8", "#5d6b62"] }
+      "accent": { "role": "primary", "displayName": "Blue", "canonical": "#3b82f6", "tonalRamp": ["#1e3a8a", "#2563eb", "#3b82f6"] },
+      "success": { "role": "semantic", "displayName": "Green", "canonical": "#22c55e", "tonalRamp": ["#14532d", "#16a34a", "#22c55e"] },
+      "warning": { "role": "semantic", "displayName": "Amber", "canonical": "#f59e0b", "tonalRamp": ["#78350f", "#d97706", "#f59e0b"] },
+      "bg": { "role": "neutral", "displayName": "Ink", "canonical": "#0f1115", "tonalRamp": ["#0f1115", "#181b22", "#1f232c"] },
+      "text": { "role": "neutral", "displayName": "Text", "canonical": "#e5e7eb", "tonalRamp": ["#e5e7eb", "#9ca3af", "#6b7280"] }
     },
     "typographyMeta": {
       "display": { "displayName": "Display", "purpose": "Page title (header brand)." },
@@ -66,8 +67,8 @@
     }
   ],
   "narrative": {
-    "northStar": "示波器訊號台 (The Oscilloscope Signal Bench)",
-    "overview": "一台監看 2026 iThome 鐵人賽訊號的示波器。每個參賽系列是一條 phosphor trace，在蝕刻 graticule（十格 = 30 天賽程）上上升；組別是通道群組；瀏覽數/Like/留言是 readout。使用者是技術讀者，來這裡接上探棒看訊號：哪條 trace 在動、哪條停了、哪條最強。這不是被裝飾的儀表板，而是一台量測儀器。Operate mode，掃讀效率與資料密度是最高指導。系統建立在 impeccable craft-floor 之上：phosphor green on near-black（dark 預設）、graticule 蝕刻網格、condensed mono instrument caps 與 seven-segment readout 語彙、detented knob 觸覺對應。Light theme 是日光下的儀器玻璃。Restrained 色彩：phosphor green 單一 accent，amber 只給 armed/warning。",
+    "northStar": "賽事觀察台 (Competition Board)",
+    "overview": "Supersedes the oscilloscope signal-bench direction (rolled back post-deploy: metaphor too abstract). The dashboard is now a scoreboard for a 30-day writing marathon. Each series is a race entry: a real DAY n/30 progress bar is the score, total views are points, the latest article is today's filing. Every element must read at a glance — this is a scanning tool for technical readers, not a decorated instrument. Calm blue single accent (progress/active/links), green = 完賽, amber = 尚未開賽. Cards stack vertically (badge+views → progress bar → title → meta → latest → updated). Filter chips have borders + fills + per-group counts. Authoritative source: docs/superpowers/specs/2026-08-05-ironman-observer-competition-board-design.md.",
     "keyCharacteristics": [
       "Dark 預設（phosphor glass），light 為日光下的玻璃；auto + manual toggle",
       "Phosphor green 單一 accent，amber 只給 armed/warning",
