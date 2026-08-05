@@ -32,6 +32,9 @@ const groups = ["全部", ...data.groups];
   {data.series.map((s) => <SeriesCard series={s} />)}
 </main>
 
+<script is:inline define:vars={{ initialData: data }}>
+  window.IRONMAN_DATA = initialData;
+</script>
 <script>
   const list = document.getElementById("series-list")!;
   const updatedAt = document.getElementById("updated-at")!;
@@ -114,5 +117,5 @@ const groups = ["全部", ...data.groups];
     if (current) applyFilter(current, (document.querySelector(".filter[data-active='true']")?.getAttribute("data-group")) ?? "全部",
       (document.getElementById("sort") as HTMLSelectElement).value);
   });
-  render((window as any).__SSR_DATA__);
+  render((window as any).__SSR_DATA__ ?? (window as any).IRONMAN_DATA);
 </script>
