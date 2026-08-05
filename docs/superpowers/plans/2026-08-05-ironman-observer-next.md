@@ -74,7 +74,8 @@ type Article = {
 type Series = {
   id: number; user: { id: number; name: string; profileUrl: string };
   group: string; title: string; description: string; team: string | null;
-  signupDate: string; dayCount: number; articleCount: number; subscriptions: number;
+  signupDate: string; lastUpdated: string | null; // RSS lastBuildDate (spec: 更新時間 card field)
+  dayCount: number; articleCount: number; subscriptions: number;
   articles: Article[];
 }
 type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[] }
@@ -612,7 +613,8 @@ export type SeriesStats = {
 export type Series = {
   id: number; user: { id: number; name: string; profileUrl: string };
   group: string; title: string; description: string; team: string | null;
-  signupDate: string; dayCount: number; articleCount: number; subscriptions: number;
+  signupDate: string; lastUpdated: string | null; // RSS lastBuildDate (spec: 更新時間 card field)
+  dayCount: number; articleCount: number; subscriptions: number;
   articles: Article[];
 };
 export type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[] };
@@ -642,12 +644,12 @@ git commit -m "feat: shared types module"
 
 **Interfaces:**
 - Consumes: `fetchHtml`, `parseSignupList`, `parseRss`, `parseSeriesPage`, all types.
-- Produces: `runScrape(manifest: Manifest): Promise<YearData>`; `mergeCardsAndStats(cards, statsBySeries): Series[]` (pure, exported for test); writes `data/2026.json` + `data/meta.json`.
+- Produces: `runScrape(manifest: Manifest): Promise<YearData>`; `mergeCardsAndStats(cards, statsBySeries, rssBySeries): Series[]` (pure, exported for test); writes `data/2026.json` + `data/meta.json`.
 
 Merge rules:
 - Series title/description/group/user/team/signupDate from SignupCard.
 - dayCount/articleCount/subscriptions/articles from SeriesStats (series page).
-- lastBuildDate from RSS → not stored (dashboard uses article publishedAt for recency).
+- lastUpdated from RSS lastBuildDate (spec: 更新時間 card field); null when RSS missing.
 - articles sorted by day ascending. Series sorted by `dayCount` desc then `signupDate` asc.
 - `groups`: unique group names sorted.
 
@@ -677,7 +679,7 @@ describe("mergeCardsAndStats", () => {
     // stats fixture is series 9066 (Kehao); find matching card
     const card = cards.find((c) => c.seriesId === 9066);
     expect(card).toBeDefined();
-    const series = mergeCardsAndStats([card!], new Map([[9066, stats]]));
+    const series = mergeCardsAndStats([card!], new Map([[9066, stats]]), new Map());
     expect(series.length).toBe(1);
     const s = series[0];
     expect(s.title).toBe(card!.title);
@@ -690,7 +692,7 @@ describe("mergeCardsAndStats", () => {
 
   test("series with no stats still produced (stats optional)", () => {
     const cards = parseSignupList(readFixture("signup-page.html"));
-    const series = mergeCardsAndStats([cards[0]], new Map());
+    const series = mergeCardsAndStats([cards[0]], new Map(), new Map());
     expect(series.length).toBe(1);
     expect(series[0].articles).toEqual([]);
     expect(series[0].articleCount).toBe(0);
@@ -713,14 +715,16 @@ import { fetchHtml } from "./fetch-html";
 import { parseSignupList, signupListUrl } from "./parse-signup";
 import { parseRss, rssUrl } from "./parse-rss";
 import { parseSeriesPage, seriesUrl } from "./parse-series";
-import type { Manifest, Series, SignupCard, YearData, SeriesStats } from "./types";
+import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel } from "./types";
 
 export function mergeCardsAndStats(
   cards: SignupCard[],
   statsBySeries: Map<number, SeriesStats>,
+  rssBySeries: Map<number, RssChannel>,
 ): Series[] {
   const series: Series[] = cards.map((c) => {
     const st = statsBySeries.get(c.seriesId);
+    const rss = rssBySeries.get(c.seriesId);
     return {
       id: c.seriesId,
       user: { id: c.userId, name: c.name, profileUrl: `https://ithelp.ithome.com.tw/users/${c.userId}/profile` },
@@ -729,6 +733,7 @@ export function mergeCardsAndStats(
       description: c.description,
       team: c.team,
       signupDate: c.signupDate.replace(" ", "T") + "+08:00",
+      lastUpdated: rss?.lastBuildDate ?? null, // spec: 更新時間 card field
       dayCount: st?.dayCount ?? 0,
       articleCount: st?.articleCount ?? 0,
       subscriptions: st?.subscriptions ?? 0,
@@ -756,6 +761,7 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
 
   // 2. per series: RSS + series page (2 requests each)
   const statsBySeries = new Map<number, SeriesStats>();
+  const rssBySeries = new Map<number, RssChannel>();
   const errors: string[] = [];
   for (const card of cards) {
     try {
@@ -763,7 +769,7 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
         fetchHtml(rssUrl(card.seriesId)),
         fetchHtml(seriesUrl(card.userId, card.seriesId)),
       ]);
-      parseRss(rssXml); // validate RSS parses; content not stored
+      rssBySeries.set(card.seriesId, parseRss(rssXml));
       statsBySeries.set(card.seriesId, parseSeriesPage(pageHtml));
     } catch (e) {
       errors.push(`${card.seriesId}: ${e instanceof Error ? e.message : String(e)}`);
@@ -771,7 +777,7 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
     await new Promise((r) => setTimeout(r, 150)); // be gentle to ithelp
   }
 
-  const series = mergeCardsAndStats(cards, statsBySeries);
+  const series = mergeCardsAndStats(cards, statsBySeries, rssBySeries);
   const groups = [...new Set(series.map((s) => s.group))].sort();
   return {
     year: manifest.year,
@@ -1037,6 +1043,9 @@ const totalViews = s.articles.reduce((n, a) => n + a.views, 0);
       ? <>最新 <a href={latest.url} target="_blank" rel="noopener">{latest.title}</a> · {totalViews} 瀏覽 · {latest.views} 當篇</>
       : <>尚未開賽</>}
   </p>
+  {s.lastUpdated && (
+    <p style="margin:.1rem 0 0;color:var(--muted);font-size:.75rem;">更新時間 <time datetime={s.lastUpdated}>{s.lastUpdated}</time></p>
+  )}
 </article>
 ```
 
@@ -1129,6 +1138,12 @@ function renderCard(s) {
     info.textContent = "尚未開賽";
   }
   art.append(day, h, meta, info);
+  if (s.lastUpdated) {
+    const upd = document.createElement("p");
+    upd.style.cssText = "margin:.1rem 0 0;color:var(--muted);font-size:.75rem;";
+    upd.textContent = `更新時間 ${s.lastUpdated}`;
+    art.append(upd);
+  }
   return art;
 }
 ```
