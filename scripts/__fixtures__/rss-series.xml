@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/">
+    <channel>
+        <title>Backend 工程師的 Azure GenAI 實戰 :: 2026 iThome 鐵人賽</title>
+        <link>https://ithelp.ithome.com.tw/users/20168288/ironman</link>
+        <description><![CDATA[本系列以 Backend 工程師視角，使用 Python、FastAPI 與 Azure AI 生態，實作一個 production-minded GenAI backend。內容從 Azure OpenAI 整合、RAG 到 Agent...]]></description>
+        <atom:link href="https://ithelp.ithome.com.tw/users/20168288/ironman" rel="self"></atom:link>
+                    <image>
+                <url>https://ithelp.ithome.com.tw/images/ironman/18th/fb.jpg</url>
+                <title>Backend 工程師的 Azure GenAI 實戰 :: 2026 iThome 鐵人賽</title>
+                <link>https://ithelp.ithome.com.tw/users/20168288/ironman</link>
+            </image>
+                <language>zh-TW</language>
+        <lastBuildDate>Wed, 05 Aug 2026 09:37:43 +0800</lastBuildDate>
+                    <item>
+                <title>Day 5：第一個 Chat API不是把 SDK 包起來，是決定上游到你為止</title>
+                <link>https://ithelp.ithome.com.tw/articles/10401594?sc=rss.iron</link>
+                <guid isPermaLink="true">https://ithelp.ithome.com.tw/articles/10401594?sc=rss.iron</guid>
+                <description><![CDATA[<p>把 Day 4 的 wrapper 接上 <code>POST /chat</code>，五分鐘就能寫完：handler 收 message丟給 SDK把回傳塞進 JSON所以今天的問題不是怎麼...]]></description>
+                                    <content:encoded><![CDATA[<p>把 Day 4 的 wrapper 接上 <code>POST /chat</code>，五分鐘就能寫完：handler 收 message丟給 SDK把回傳塞進 JSON所以今天的問題不是怎麼接，而是接完之後你欠了什麼從 client 拿到第一個 200 開始，回應裡的每個欄位每種錯誤行為，都是你從此要維護的合約</p>
+<p>這篇要把 chat endpoint 從 Day 3 的 501 佔位變成真正的合約：自己的 schema上游錯誤的映射表顯式的 timeoutDay 4 留下的選型也要在這裡定案：本系列用 Responses API，還是 chat completions？</p>
+<h2>先斷案：Responses API，但 store=false</h2>
+<p>官方的立場很明確：<strong>Azure OpenAI 模型建議用 Responses API</strong>（查核 2026-07，<a href="https://learn.microsoft.com/azure/foundry/openai/api-version-lifecycle">v1 API 文件</a>）GAjapaneastgpt-5-mini 都在支援範圍（查核 2026-07，<a href="https://learn.microsoft.com/azure/foundry/openai/how-to/responses">Responses API 文件</a>）</p>
+<p>表面上它只是把 <code>messages=[...]</code> 換成 <code>input=...</code>，但 backend 在意的差異在三個合約層面：</p>
+<p><strong>第一，狀態主權</strong> Responses API 預設是有狀態的：每次回應存在伺服器端 30 天，下一輪用 <code>previous_response_id</code> 就能接續，不用自己帶歷史很方便，但這代表對話狀態的主權跑到了 Azure 的資料層：資料保留政策使用者要求刪除時的義務哪些內容存在哪個 geography，全部變成你要回答的問題</p>
+<p>本系列 Day 7 會自己設計 conversation state，所以這裡設 <strong><code>store=False</code></strong>，把 Responses API 當無狀態 API 用注意這不是效能選項，是資料治理決策：預設值站在存那一邊，不做決定就等於決定了</p>
+<blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260805/20168288Mzgh0iCvca.png" alt="https://ithelp.ithome.com.tw/upload/images/20260805/20168288Mzgh0iCvca.png" /><br><strong>忍喵</strong>：預設值幫你做了資料治理決策，還沒通知你上線前 grep 一次 <code>store</code> 有沒有設，比事後跟法務解釋便宜太多</p>
+</blockquote>
+<p><strong>第二，streaming 的詞彙</strong> chat completions 的串流是一串裸的 delta chunk，事件語意要自己拼；Responses API 的串流是型別化的語意事件（<code>response.output_text.delta</code> 這類）Day 6 要設計我們自己的 SSE 事件詞彙表，上游先有語意，下游的合約才好對映</p>
+<p><strong>第三，演進方向</strong> remote MCP tools背景任務與 encrypted reasoning items 等新能力目前集中在 Responses APIChat completions 還是持續支援的，但本系列後續功能不會蓋在它上面Day 1618 如果 Agent Framework spike 不順退回原生 SDK tool calling，這個選擇會直接受益</p>
+<p>那 chat completions 什麼時候仍是對的？兩個正當場景：v1 API 下呼叫 DeepSeekGrok 這類他牌模型，走的是 chat completions 語法；或者你有一大坨既有 chat completions 程式碼，遷移成本吃掉所有好處本系列是全新專案只打 Azure OpenAI 模型，兩個條件都不成立</p>
+<p>斷案之後，改動小得不成比例，adapter 換一個 method：</p>
+<pre><code class="language-python">class AzureOpenAIChatService:
+    async def complete(self, message: str) -&gt; ChatResult:
+        try:
+            response = await self._client.responses.create(
+                model=self._deployment_name,  # still the deployment name
+                input=message,
+                store=False,  # state ownership stays with us (Day 7)
+            )
+        except openai.OpenAIError as exc:
+            raise _translate_upstream_error(exc) from exc
+        return ChatResult(message=response.output_text, model=response.model)
+</code></pre>
+<p>API 合約handler測試一行都不用動這就是 Day 4 把 fake/real 藏在 <code>ChatService</code> Protocol 後面的回報：換 API 風格是 adapter 內部的事（那個 <code>_translate_upstream_error</code> 是什麼，錯誤邊界那節馬上講）</p>
+<h2>合約是你的 schema，不是上游的</h2>
+<p>最省事的寫法是把 SDK 的 response 物件直接 <code>return</code>，FastAPI 會忠實地序列化給 client，然後你的 API 合約就變成了 SDK 回應格式的原樣複製</p>
+<p>官方文件自己就警告：新的 response 欄位隨時可能加進 API 回應，建議只解析你需要的欄位（查核 2026-07，<a href="https://learn.microsoft.com/azure/foundry/openai/api-version-lifecycle">v1 API 文件</a>）上游把隨時加欄位當成演進方式，你把它原樣轉手，等於替上游對你的 client 承諾了穩定性</p>
+<p>所以 request 與 response 都是自己的 Pydantic model，跟 Day 3 定下的樣子一致：</p>
+<pre><code class="language-python">class ChatRequest(BaseModel):
+    message: str = Field(min_length=1)
+    conversation_id: str | None = Field(
+        default=None,
+        description=&quot;Reserved for conversation state (Day 7); accepted but ignored today.&quot;,
+    )
+
+class ChatResponse(BaseModel):
+    message: str
+    correlation_id: str
+</code></pre>
+<p>兩個設計註記其一，<code>ChatResponse</code> 只承諾兩個欄位：client 需要更多（用了哪個模型花了多少 token）時再加，加欄位向後相容，拿掉欄位才是破壞性變更，所以起手式越小越好其二，<code>conversation_id</code> 是 Day 3 就放進骨架的保留欄位，今天收下但不賦予語意保留欄位比日後新增容易，但要在 OpenAPI description 註明 reserved，別讓 client 以為 API 已經有記憶</p>
+<p>合約的穩定性不是靠自律，是靠 CI：Day 3 起每次 push 都會重新匯出 OpenAPI spec 並比對 drift，schema 改了而 spec 沒更新，CI 直接紅燈合約變更從不小心發生變成必須明示發生</p>
+<h2>錯誤邊界：先分誰的錯，再給狀態碼</h2>
+<p>上游會用各種方式失敗，而 SDK 把它們變成一組例外邊界設計的第一步不是寫 <code>try/except</code>，是回答一個問題：<strong>這個錯，對 client 而言是誰的錯？</strong> 分完類，狀態碼自然就出來了（SDK 例外對照查核 2026-07，<a href="https://github.com/openai/openai-python">openai-python</a>）：</p>
+<table>
+<thead>
+<tr>
+<th>上游狀況</th>
+<th>SDK 例外</th>
+<th>回給 client</th>
+<th>為什麼</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API key 錯權限不足（401/403）</td>
+<td><code>AuthenticationError</code> / <code>PermissionDeniedError</code></td>
+<td><strong>500</strong> <code>configuration_error</code></td>
+<td>client 什麼都沒做錯，是我們的部署壞了；透傳 401 會誤導 client 去檢查自己的憑證</td>
+</tr>
+<tr>
+<td>deployment 名稱錯（404）</td>
+<td><code>NotFoundError</code></td>
+<td><strong>500</strong> <code>configuration_error</code></td>
+<td><code>DeploymentNotFound</code> 是我們的 config 問題，不是 client 打錯路徑</td>
+</tr>
+<tr>
+<td>prompt 被 content filter 擋（400 <code>content_filter</code>）</td>
+<td><code>BadRequestError</code></td>
+<td><strong>400</strong> <code>content_filtered</code></td>
+<td>client 輸入觸發過濾，是 client 端能處理的錯（查核 2026-07，<a href="https://learn.microsoft.com/azure/foundry/openai/how-to/responses">Responses API 文件</a>）</td>
+</tr>
+<tr>
+<td>輸入超過 context window（400 <code>context_length_exceeded</code>）</td>
+<td><code>BadRequestError</code></td>
+<td><strong>400</strong> <code>invalid_input</code></td>
+<td>也是 client 輸入的問題；Day 9 的 token 防線做好之前，至少分類要正確</td>
+</tr>
+<tr>
+<td>上游額度滿（429）</td>
+<td><code>RateLimitError</code></td>
+<td><strong>503</strong> <code>upstream_throttled</code></td>
+<td>見下面的取捨</td>
+</tr>
+<tr>
+<td>上游逾時</td>
+<td><code>APITimeoutError</code></td>
+<td><strong>504</strong> <code>upstream_timeout</code></td>
+<td>語意就是 gateway timeout</td>
+</tr>
+<tr>
+<td>上游 5xx／連線失敗</td>
+<td><code>InternalServerError</code> / <code>APIConnectionError</code></td>
+<td><strong>502</strong> <code>upstream_error</code></td>
+<td>上游壞了，不代表我們壞了</td>
+</tr>
+</tbody>
+</table>
+<p>429 那格值得多說兩句，因為常見做法是原樣透傳我不透傳429 對 client 的語意是你打太快，慢點再來，但上游 TPM 額度用完是我們與 Azure 之間的容量問題，client 就算只發一個 request 也可能撞上回 503（可帶 <code>Retry-After</code>）語意才對429 這個狀態碼留給 Day 9：等我們有了自己的 token 預算政策，才有資格對 client 說你超速了</p>
+<p>那認不出來的 400 呢？不硬猜對 client 謊稱你的輸入有問題或服務組態壞了，都比一個誠實的 502 更糟映射成 <code>upstream_error</code>，原文進 log，人再來判斷是不是該加新分類</p>
+<p>實作上，SDK 例外在 adapter 邊界就翻譯成領域例外，<code>api/</code> 層完全不 import openai：</p>
+<pre><code class="language-python"># services/azure_openai.py  SDK 例外到此為止
+def _translate_upstream_error(exc: openai.OpenAIError) -&gt; UpstreamError:
+    if isinstance(exc, openai.APITimeoutError):
+        return UpstreamTimeoutError(str(exc))
+    if isinstance(exc, openai.RateLimitError):
+        return UpstreamThrottledError(str(exc))
+    # ...其餘依上表翻譯
+</code></pre>
+<p>API 層用一個 exception handler 把領域例外接上 Day 3 的 error envelope（<code>{&quot;error&quot;: {&quot;code&quot;, &quot;message&quot;}, &quot;correlation_id&quot;}</code>）好處在換供應商的那天才看得到：錯誤合約一個字都不用動另一條紅線：上游的錯誤訊息<strong>原文不進 response</strong>那裡面可能有 deployment 名稱endpoint 這類不該給 client 的細節；原文進 log，client 拿到的是我們自己的 code 與一句通用訊息</p>
+<p>Envelope 還順手多吃下一種錯：FastAPI 對驗證失敗（422）預設回自家的 <code>{&quot;detail&quot;: [...]}</code> 形狀，跟我們的 envelope 完全是兩回事這是 Day 3 骨架留下的洞，今天一併補上：422 也回 envelope，code 是 <code>validation_error</code>client 從此只需要認得一種錯誤形狀，不管錯在輸入我們的組態，還是上游</p>
+<p>這張映射表也不是只活在文章裡：每個承諾的 status code 都寫進 route 的 OpenAPI <code>responses</code>（共用 <code>ErrorEnvelope</code> schema，<code>correlation_id</code> 是必填欄位不是 nullable），CI 的 drift check 一併看守錯誤合約跟成功路徑一樣，是 spec 的一部分</p>
+<p>還有一種不是錯誤的錯誤：輸出側被 content filter 攔截時，HTTP 是 200，但內容不完整Responses API 會在回應頂層的 <code>content_filters</code> 陣列帶過濾結果（查核 2026-07，<a href="https://learn.microsoft.com/azure/foundry/openai/how-to/responses">Responses API 文件</a>）</p>
+<p>200 不等於拿到完整輸出這屬於 semantic contract 的範疇，本篇先把 transport 與 error 立好，語意層的驗收留給後面的 evaluation 篇</p>
+<h2>Timeout 與 retry：SDK 預設值是給 script 用的</h2>
+<p>openai SDK 的預設 timeout 是 <strong>10 分鐘</strong>，預設對連線錯誤408409429 與 5xx 自動重試 <strong>2 次</strong>（查核 2026-07，<a href="https://github.com/openai/openai-python">openai-python</a>）10 分鐘對互動式 API 是災難：client 端早就放棄了，你的 worker 還吊在那裡等上游跑批次腳本可以慢慢等，API 不行，所以 timeout 必須顯式設定，而且進 config：</p>
+<pre><code class="language-python">client = AsyncOpenAI(
+    api_key=settings.azure_openai_api_key.get_secret_value(),
+    base_url=settings.azure_openai_endpoint.rstrip(&quot;/&quot;) + &quot;/openai/v1/&quot;,
+    timeout=settings.llm_timeout_seconds,  # per attempt (default 30s), not end-to-end
+    max_retries=settings.llm_max_retries,  # explicit policy; the SDK default is 2
+)
+</code></pre>
+<blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260805/201682884EWH4nr2hS.png" alt="https://ithelp.ithome.com.tw/upload/images/20260805/201682884EWH4nr2hS.png" /><br><strong>忍喵</strong>：600 秒是給批次腳本等的你的 client 四十秒就關頁面了，worker 還在痴痴等上游沒寫進 config 的 timeout 都不算數</p>
+</blockquote>
+<p>30 秒的理由：gpt-5-mini 是 reasoning model，非串流回應本來就以秒計，太緊會誤殺正常請求；再長 client 體感就是掛了這個數字沒有唯一正解，有正解的是它必須是你選的，而且寫在 config 裡真正的解法其實是 Day 6 的 streaming：首 token 延遲取代總時長成為體感指標之後，timeout 的算法整個會變</p>
+<p>Retry 保留 2 次，但跟 timeout 一樣寫進 config，讓整組政策都是顯式決策這條路徑沒有 application write，重試不會重複寫入業務資料；但 retry 不是零副作用，每次 attempt 都可能重新推論重新計費，Day 9 算成本時這個乘數要放進去</p>
+<p>另一個容易誤會的點：<code>timeout=30</code> 是<strong>每次 attempt</strong> 的上限，不是整個 endpoint 的 deadline最壞情況（兩次重試都吃滿 timeout，加上 backoff）client 會等超過 90 秒設 SLO 或 client 端 timeout 時，要用這個最壞值，不是 30</p>
+<h2>correlation id：把 client 手上的錯誤對回 log</h2>
+<p>Day 3 的 middleware 已經做了大半：每個 request 帶 <code>X-Correlation-Id</code>（沒有就生成）寫回 response headererror envelope 也帶今天補上最後一段：領域例外把上游錯誤原文帶在身上，exception handler 寫 log 時把它跟 correlation id 記在同一行原文進 log，不進 response</p>
+<p>於是 client 回報502，correlation_id 是 abc123時，你 grep 一下就知道上游那一筆到底發生什麼事這條線 Day 27 接上 Application Insights 後會變成分散式追蹤，但骨架今天就要立好</p>
+<h2>驗證：fake 一條路，真的一條路</h2>
+<p>環境前提：Day 4 的 resource 與 deployment（或者不用，fake 路徑不碰 Azure）<code>day-05</code> tag 的程式碼Python 3.13 + uv（macOS，2026-07 實測）預設 <code>USE_FAKE_LLM=true</code>，起服務直接打：</p>
+<pre><code class="language-bash">curl -s localhost:8000/api/v1/chat -X POST \
+  -H 'content-type: application/json' -d '{&quot;message&quot;: &quot;ping&quot;}'
+</code></pre>
+<p>預期輸出（fake adapter 是決定性的）：</p>
+<pre><code class="language-json">{&quot;message&quot;: &quot;[fake-llm] ping&quot;, &quot;correlation_id&quot;: &quot;&quot;}
+</code></pre>
+<p>切真的：<code>.env</code> 設 <code>USE_FAKE_LLM=false</code> 加上 Day 4 的三個值（endpointkeydeployment name），同一條 curl 會回 gpt-5-mini 的真實回應</p>
+<p>BDD 這邊，<code>chat_api_contract.feature</code> 從骨架的應回 501情境改成三條合約情境：200（驗 schema 欄位與 correlation id）422 與上游拒收輸入的 400（都驗 envelope）測試一律強制 fake adapter：不管本機 <code>.env</code> 怎麼設，CI 與測試永遠不碰 Azure完整程式碼與測試在 <a href="https://github.com/kehao-playground/azure-genai-backend-lab/tree/day-05"><code>day-05</code> tag</a></p>
+<p>開發時最常見的三個錯：</p>
+<ol>
+<li>
+<strong><code>USE_FAKE_LLM=false</code> 但環境變數沒設全</strong>  服務啟動即拋 <code>ValueError</code>這是故意的 fail fast：組態錯誤在啟動時爆，比第一個真實 request 才爆好查十倍</li>
+<li>
+<strong>server log 出現 404 <code>DeploymentNotFound</code></strong>  <code>model</code> 參數放了模型名而不是 deployment name（Day 4 那面牆）client 只會看到 500 <code>configuration_error</code>，真相在 log 裡</li>
+<li>
+<strong>忘了設 <code>store=False</code></strong>  功能一切正常，但每筆對話默默存在 Azure 30 天一般的功能測試抓不到這種不會壞的錯：fake 不會知道你少傳了參數要靠 adapter 的 interaction test 把 <code>store=False</code> 釘住（repo 裡的 <code>test_real_service_never_stores_responses_upstream</code> 就是幹這件事的），code review 再確認沒有其他呼叫路徑繞過</li>
+</ol>
+<h2>小結</h2>
+<p>到這裡，client 只看得到我們定義的 request/response schema錯誤碼與 correlation id；Azure SDK 的形狀停在 adapterAPI 基礎也定案了：Responses API<code>store=False</code>採用官方建議的新介面，但把狀態主權留在自己手上</p>
+<p>目前仍有三個限制：回應一次成形，等待體驗差；API 沒有記憶，<code>conversation_id</code> 只是保留欄位；輸入側也還沒有 token 防線超過 context window 的 message 會被擋成 400，但很長卻合法的 message 仍會直接吃掉額度前兩個分別是 Day 6 與 Day 7 的主題，最後一個 Day 9 處理</p>
+<p>明天（Day 6）做 streamingSSE 事件詞彙表要自己設計，而今天選的 Responses API 會讓那個設計順很多，因為它的串流本來就是語意事件比較麻煩的是錯誤處理：HTTP 200 已經送出去之後上游才失敗，error envelope 根本來不及登場，這才是 streaming 真正改變的事</p>
+<p>（本篇無新增雲端資源沿用 Day 4 建立的 resource 與 deployment，純 token 計費）</p>
+<table>
+<thead>
+<tr>
+<th>工程需求</th>
+<th>Azure / Microsoft 對應服務</th>
+<th>本篇怎麼用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM 推論 API</td>
+<td>Azure OpenAI in Microsoft Foundry Models</td>
+<td>沿用 Day 4 的 <code>chat-mini</code> deployment，改以 v1 Responses API（<code>store=False</code>）接進 <code>/api/v1/chat</code> 合約</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>本文由作者規劃與撰寫，AI（Claude）協助草稿整理與程式碼驗證；技術內容與觀點由作者確認並負責</em></p>
+]]></content:encoded>
+                                <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kehao</dc:creator>
+                <pubDate>2026-08-05 08:57:56</pubDate>
+                                                                                                                                            </item>
+                    <item>
+                <title>Day 4：Azure OpenAI 的 resourcedeploymentmodel搞懂哪些名字會進你的 config</title>
+                <link>https://ithelp.ithome.com.tw/articles/10401409?sc=rss.iron</link>
+                <guid isPermaLink="true">https://ithelp.ithome.com.tw/articles/10401409?sc=rss.iron</guid>
+                <description><![CDATA[<p>現在隨手一搜，還是很容易搜到教你寫 <code>AzureOpenAI(api_version=&quot;2024-xx-xx&quot;, ...)</code> 的舊文章但 2026 年開...]]></description>
+                                    <content:encoded><![CDATA[<p>現在隨手一搜，還是很容易搜到教你寫 <code>AzureOpenAI(api_version=&quot;2024-xx-xx&quot;, ...)</code> 的舊文章但 2026 年開新專案，這已經不是首選寫法今天要把 Day 3 骨架的第一個真實下游依賴接上 Azure OpenAI；在寫 code 之前，先回答 backend 工程師接任何下游服務都會問的問題：<strong>連線設定長什麼樣哪些名字會進 config哪些名字改了會弄壞系統？</strong></p>
+<p>讀完這篇，你能畫出 Azure OpenAI 的三層結構分清楚哪些設定屬於 runtime哪些屬於 provisioning說出 quota 的完整 scope，並用現行的 v1 API 把設定接進骨架</p>
+<h2>三層結構：resourcedeploymentmodel</h2>
+<p>接一般的下游服務，你的 config 通常是一組 <code>(endpoint, credential)</code>Azure OpenAI 多一層：</p>
+<pre><code class="language-text">Subscription
+ Resource（例：aoai-&lt;project&gt;，kind=OpenAI）
+     endpoint：https://&lt;name&gt;.openai.azure.com/
+     region：japaneast（建立時決定，不可改）
+     Deployment（例：chat-mini） 名字由你取
+         Model（例：gpt-5-mini, version 2025-08-07）
+            ＋ deployment type（GlobalStandard）＋ 分配的 capacity（50K TPM）
+</code></pre>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260804/20168288NCwpS2Ld6H.png" alt="Azure OpenAI 三層結構：config 裡的名字對應到哪裡" /></p>
+<ul>
+<li>
+<strong>Resource</strong> 是計費與存取控制的單位：endpointkeyregion 都掛在這裡</li>
+<li>
+<strong>Deployment</strong> 是你把某個模型部署到 resource 上的實例，<strong>名字由你自己取</strong>API 呼叫時 <code>model</code> 參數填的是 deployment name，不是模型名這是新手最常撞的一面牆</li>
+<li>
+<strong>Model</strong> 是 Microsoft 託管的模型本體，帶明確版本號</li>
+</ul>
+<p>用 backend 的語言說：deployment name 是一個 <strong>CNAME</strong>你的 code 指向 <code>chat-mini</code>，<code>chat-mini</code> 指向 <code>gpt-5-mini 2025-08-07</code>；哪天要換模型，建新 deployment 後改一行環境變數切換（比原地更新模型版本更安全的做法），application code 一行不動</p>
+<p>Azure 上你命名的東西很多（resourceresource group 也都是你取的名），但 deployment name 特別的地方在於：它是 <strong>application runtime 與模型版本之間</strong>唯一由你控制的間接層名字應描述用途而非綁死型號，例如 <code>chat-mini</code>，而不是 <code>gpt-5-mini-deploy</code></p>
+<p>但類比有失真的地方：換 CNAME 指向，下游行為不變；換 deployment 指向的模型，<strong>回應行為一定會變</strong>間接層保護的是 Day 3 說的 transport contract（你的 code 不用改），不保護 semantic contract（答案的風格與品質）換模型仍然是一次要驗證的變更，不是一次改 DNS</p>
+<h2>Regiondeployment type 與 quota：resource 建在哪，不等於模型在哪裡算</h2>
+<p>Quota 的完整 scope 是 <strong>subscription × region × model × deployment type</strong>：每個訂閱在每個 region，針對特定模型與部署類型，各有一個可分配的 TPM（tokens per minute）總額度（查核 2026-07，<a href="https://learn.microsoft.com/azure/foundry/openai/how-to/quota">quota 文件</a>）</p>
+<p>而且它的運作方式是<strong>建立時分配，不是執行時分食</strong>：建 deployment 時你從這個 pool 劃出一份 capacity，成為該 deployment 自己的 TPM/RPM rate limit；所有 deployment 分配到的 TPM 總和不能超過額度</p>
+<p>所以選 region 不只是選 latency：<strong>是在選你拿得到多少額度以及那個 region 能建哪些模型與部署類型</strong>（<a href="https://learn.microsoft.com/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure">模型與 region 對照</a>）</p>
+<p>本系列的 resource 建在 <strong>japaneast</strong>這個訂閱在該 region 能建 gpt-5-mini 的 GlobalStandard deployment，額度也夠；本次從可用 quota 中分配 50K TPM 給 <code>chat-mini</code>，單人開發綽綽有餘Region 在 resource 建立時就固定，之後要換等於重建，這是少數第一天就要想清楚的決定</p>
+<p>一個容易誤會的點：deployment type 是 <code>GlobalStandard</code> 時，<strong>推論會由 Azure 全球基礎設施動態路由，prompt 可能在任何 region 的機房處理</strong>（查核 2026-07，<a href="https://learn.microsoft.com/azure/foundry/foundry-models/concepts/deployment-types">deployment types 文件</a>）</p>
+<blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260804/201682881pvihpLhSl.png" alt="https://ithelp.ithome.com.tw/upload/images/20260804/201682881pvihpLhSl.png" /><br><strong>忍喵</strong>：resource 在日本，推論不一定在日本這句值得回頭再讀一次，尤其你家法務坐你隔壁的話</p>
+</blockquote>
+<p>那 japaneast 到底保證了什麼？data at rest 留在該 geographycontrol plane 的位置，以及前面說的 quota 與模型可用性不是推論就在日本算，也不能直接推論低 latency</p>
+<p>如果有單一 region 的資料處理要求，要用 <code>Standard</code>；要限制在 APAC 資料區域，看 <code>DataZoneStandard</code>Regiondeployment type資料處理邊界是三件不同的事</p>
+<p>建立資源用的是 repo 裡的 script（Azure CLI 兩條指令的封裝，含防呆；macOS + Azure CLI，2026-07 對 japaneast 實際執行過）：</p>
+<pre><code class="language-bash">AZ_SUBSCRIPTION_ID=&lt;your-sub&gt; AZ_RESOURCE_GROUP=rg-&lt;yours&gt; \
+AZ_LOCATION=japaneast AZ_OPENAI_NAME=aoai-&lt;yours&gt; \
+./infra/scripts/create-openai.sh
+</code></pre>
+<p>兩件事值得說其一，script 強制指定 subscription ID，不吃 <code>az</code> 的預設 context，多訂閱環境下這救過我一次其二，每個 create script 都有配對的 <code>delete-openai.sh</code>，這是本系列的成本紀律（Day 1 說過的 ephemeral-by-default）</p>
+<p>不過 Standard / GlobalStandard 部署<strong>純 token 計費沒有閒置成本</strong>（查核 2026-07，<a href="https://azure.microsoft.com/pricing/details/cognitive-services/openai-service/">定價頁</a>），所以這顆資源可以常駐：不呼叫就不花錢建立前先設好 budget alert，我的順序是：預算警報  第一顆計費資源，永遠不要反過來</p>
+<h2>命名排雷：你查到的文件可能在講同一個東西</h2>
+<p>寫這篇時最花時間的不是技術，是名詞這個平台兩年內改了兩次名：Azure AI Studio  Azure AI Foundry（2024-12） <strong>Microsoft Foundry</strong>（2026-01 生效，<a href="https://learn.microsoft.com/azure/foundry/what-is-foundry">官方文件</a>）現在的對照表（查核 2026-07）：</p>
+<table>
+<thead>
+<tr>
+<th>你查到的舊名</th>
+<th>現在的名字</th>
+<th>對你的意義</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Azure OpenAI Service</td>
+<td>Azure OpenAI in <strong>Microsoft Foundry Models</strong></td>
+<td>服務本體沒變，standalone resource 照樣能開</td>
+</tr>
+<tr>
+<td>Azure AI Studio / AI Foundry portal</td>
+<td>Microsoft Foundry portal（ai.azure.com）</td>
+<td>部署模型看 quota 都在這裡</td>
+</tr>
+<tr>
+<td>Azure OpenAI Studio（oai.azure.com）</td>
+<td>導向 Foundry portal</td>
+<td>舊書籤會自動轉</td>
+</tr>
+</tbody>
+</table>
+<p>實務建議：搜尋資料時把Azure OpenAI當關鍵字仍然有效（API 與 CLI 層面這個名字都還在，<code>--kind OpenAI</code>），但看到 portal 截圖跟你的畫面對不上時，先確認文章日期，再確認它講的是不是改名前的介面</p>
+<blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260804/20168288BupDl7W9Zl.png" alt="https://ithelp.ithome.com.tw/upload/images/20260804/20168288BupDl7W9Zl.png" /><br><strong>忍喵</strong>：兩年改兩次名，查資料像在考古關鍵字照用 Azure OpenAI，畫面對不上先看發文日期</p>
+</blockquote>
+<h2>v1 API：不用再每月追 api-version 了</h2>
+<p>過去接 Azure OpenAI 有兩個著名的摩擦點：要用 Azure 專屬的 <code>AzureOpenAI</code> client，以及每月更新的 <code>api-version</code> 字串（功能一更新就得追版號）2025-08 起的 <strong>v1 API</strong> 讓兩者對新專案都不再必要（GA，查核 2026-07，<a href="https://learn.microsoft.com/azure/foundry/openai/api-version-lifecycle">官方遷移文件</a>）；舊寫法仍受支援，但沒有理由讓新 code 揹著它</p>
+<p>先用同步版 <code>OpenAI</code> client 看最小呼叫（本系列的 FastAPI adapter 用的是同介面的 <code>AsyncOpenAI</code>，避免在 async handler 裡阻塞 event loop）：</p>
+<pre><code class="language-python">import os
+from openai import OpenAI  # 不是 AzureOpenAI
+
+client = OpenAI(
+    api_key=os.environ[&quot;AZURE_OPENAI_API_KEY&quot;],
+    base_url=&quot;https://&lt;your-resource&gt;.openai.azure.com/openai/v1/&quot;,
+)
+
+response = client.chat.completions.create(
+    model=&quot;chat-mini&quot;,  # deployment name，不是模型名
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;ping&quot;}],
+)
+</code></pre>
+<p>三個表面差異：標準 <code>OpenAI</code> client 直接用endpoint 後面接 <code>/openai/v1/</code><strong>不再需要 api-version</strong>SDK client 與主要呼叫形狀更接近 public OpenAI API，但 Azure 特有的 deployment name認證quotaregion／model 可用性deployment type 與服務行為仍然存在，還是得靠 adapter 隔離少掉 api-version，則確實讓 config 少一個會過期的欄位</p>
+<p>這也直接改了我們的骨架Day 3 的 <code>config.py</code> 裡有一行 <code>azure_openai_api_version: str = &quot;2025-01-01-preview&quot;</code>，寫 skeleton 時照舊慣例放的，今天的 milestone 把它拿掉：</p>
+<pre><code class="language-python">class Settings(BaseSettings):
+    # ...
+    # v1 GA API (2025-08): plain OpenAI client against &lt;endpoint&gt;/openai/v1/, no api-version
+    azure_openai_endpoint: str | None = None
+    azure_openai_api_key: SecretStr | None = None
+    azure_openai_deployment_name: str | None = None
+
+    use_fake_llm: bool = Field(default=True)
+</code></pre>
+<p>新增的 key 欄位用 Pydantic 的 <code>SecretStr</code>：它的 <code>repr</code> 印出來是 <code>**********</code>，log 或錯誤訊息不小心把 settings 倒出來時，key 不會跟著出去</p>
+<p>adapter 端則是把 Day 3 的 fake 佔位換成真假雙軌：<code>use_fake_llm=true</code>（預設）走 fake；提供 endpointAPI keydeployment name，並關掉 flag，才建立真的 client選擇發生在 composition point，handler 裡沒有任何 <code>if use_fake</code></p>
+<p>完整 wrapper 雛形見 <a href="https://github.com/kehao-playground/azure-genai-backend-lab/tree/day-04"><code>day-04</code> tag</a>；真正的 chat API 合約是 Day 5 的事</p>
+<p>順帶一提：官方現在推薦 Azure OpenAI 模型優先用 <strong>Responses API</strong>（<code>client.responses.create</code>），chat completions 仍完整支援要選哪個當本系列的 API 基礎，牽涉到 streaming 與工具呼叫的合約設計，留到 Day 5 一起決定</p>
+<h2>常見誤解快查</h2>
+<ol>
+<li>
+<strong><code>model</code> 參數填模型名</strong>：填的是 deployment name錯了會拿到 404 <code>DeploymentNotFound</code>，而不是一個好懂的錯誤訊息</li>
+<li>
+<strong>quota 是訂閱層級的一個全域數字</strong>：不是Quota 依 subscriptionregionmodel 與 deployment type 區分，同一 scope 下的 deployments 從同一個額度 pool <strong>分配</strong> capacity（建立時劃走，不是執行時分食）japaneast 用完，不代表 eastus 的額度也用完；<code>GlobalStandard</code> 與 <code>Standard</code> 也不是同一份 quota</li>
+<li>
+<strong>要用 <code>AzureOpenAI</code> client + api-version</strong>：v1 GA 之後標準 <code>OpenAI</code> client 即可看到教學在傳 <code>api_version</code> 參數，先看發文日期</li>
+<li>
+<strong>resource 建在哪，模型就在哪算</strong>：<code>GlobalStandard</code> 的推論可能在任何 Azure region 處理；region 保證的是 data at rest 與 control plane有資料處理位置的要求，要選對 deployment type，不是只選對 region</li>
+<li>
+<strong>開著資源就在燒錢</strong>：Standard/GlobalStandard 純 token 計費，閒置為零；會產生閒置成本的是之後的 AI Search 與 PTU 這類預留容量，不是這裡</li>
+</ol>
+<h2>小結</h2>
+<p>今天把 runtime 與 provisioning 的設定邊界弄清楚了：application runtime 需要的是 <strong>endpointcredentialdeployment name</strong> 三個值；regionmodel versiondeployment type 與 capacity 屬於建立資源時的 control-plane 設定，不進 application code</p>
+<p>deployment name 是 runtime 與模型版本之間由你控制的間接層；quota 的 scope 是 subscription × region × model × deployment type；v1 API 讓 api-version 從 config 消失</p>
+<p>骨架的 <code>config.py</code> 與 <code>.env.example</code> 已更新成 v1 風格，wrapper 雛形就位，完整程式碼在 <a href="https://github.com/kehao-playground/azure-genai-backend-lab/tree/day-04"><code>day-04</code> tag</a>，該 tag 上 CI 是綠的</p>
+<p>明天（Day 5）開始設計第一個 chat API不是把 SDK 包一層轉手就好：request/response schematimeoutretryerror boundary，Day 3 鎖下的 error envelope 終於要接到真的錯誤上了</p>
+<p>（本篇新增雲端資源：Azure OpenAI resource + gpt-5-mini deployment，GlobalStandard 純 token 計費無閒置成本；建立前已設 US$20 budget alert）</p>
+<table>
+<thead>
+<tr>
+<th>工程需求</th>
+<th>Azure / Microsoft 對應服務</th>
+<th>本篇怎麼用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM 推論的資源與額度管理</td>
+<td>Azure OpenAI in Microsoft Foundry Models</td>
+<td>建立 resource（japaneast）與 deployment（gpt-5-mini, GlobalStandard，分配 50K TPM），以 v1 API 接進 FastAPI 骨架的 config</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>本文由作者規劃與撰寫，AI（Claude）協助草稿整理與程式碼驗證；技術內容與觀點由作者確認並負責</em></p>
+]]></content:encoded>
+                                <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kehao</dc:creator>
+                <pubDate>2026-08-04 08:30:24</pubDate>
+                                                                                                                                            </item>
+                    <item>
+                <title>Day 3：FastAPI + uv 專案骨架第一個 commit 就把合約與成本鎖住</title>
+                <link>https://ithelp.ithome.com.tw/articles/10401158?sc=rss.iron</link>
+                <guid isPermaLink="true">https://ithelp.ithome.com.tw/articles/10401158?sc=rss.iron</guid>
+                <description><![CDATA[<p>新專案的第一個 commit 通常是一個 <code>main.py</code> 加一句 hello world，反正架構之後再說但 Day 2 的三個問題（不確定性隔離在哪什麼能進 prom...]]></description>
+                                    <content:encoded><![CDATA[<p>新專案的第一個 commit 通常是一個 <code>main.py</code> 加一句 hello world，反正架構之後再說但 Day 2 的三個問題（不確定性隔離在哪什麼能進 prompt什麼必須被觀測）有一個共同點：<strong>它們都只能在結構上回答，而結構是第一個 commit 定下來的</strong>今天把 Day 2 那張圖變成能跑的專案骨架跑完這篇，你會有一個測試全綠基礎 API 慣例（版本路徑錯誤格式correlation ID）已定而且開發起來一毛錢都不用花的起點</p>
+<h2>環境前提</h2>
+<p>以下指令在 macOSPython 3.13uv 0.11 驗證過（2026-07）；Linux 相同，Windows 建議 WSL只需要先裝 <a href="https://docs.astral.sh/uv/">uv</a>：Python 本身不用預先裝，uv 找不到符合 <code>pyproject.toml</code> 裡 <code>requires-python = &quot;&gt;=3.13&quot;</code> 的 Python 時會自動下載（預設行為；離線或停用 managed Python download 的環境，就先自備 Python 3.13）</p>
+<pre><code class="language-bash">git clone --branch day-03 https://github.com/kehao-playground/azure-genai-backend-lab.git
+cd azure-genai-backend-lab
+uv sync --locked
+</code></pre>
+<p><code>--locked</code> 是重點：所有環境都使用 repo 裡同一份 locked resolution，uv 不會自行重算或改寫 lock；實際安裝時仍會依 OSCPU 與 Python marker 選擇目前平台適用的套件CI 跑的也是這份 lock，照著做能重現依賴決策靠的是這個，不是運氣</p>
+<h2>先跑綠，再看結構</h2>
+<pre><code class="language-bash">uv run pytest
+uv run behave
+</code></pre>
+<p>預期輸出（節錄）：</p>
+<pre><code class="language-text">4 passed, 1 xfailed, 1 warning in 0.10s
+
+5 features passed, 0 failed, 0 skipped
+5 scenarios passed, 0 failed, 0 skipped
+</code></pre>
+<p>然後把服務跑起來，開另一個終端機戳兩個 endpoint：</p>
+<pre><code class="language-bash">uv run uvicorn azgenai_lab.main:app --port 8000
+</code></pre>
+<pre><code class="language-bash">curl localhost:8000/health
+# {&quot;status&quot;:&quot;ok&quot;,&quot;service&quot;:&quot;azure-genai-backend-lab&quot;}
+
+curl -X POST localhost:8000/api/v1/chat -H 'content-type: application/json' -d '{&quot;message&quot;:&quot;hello&quot;}'
+# {&quot;error&quot;:{&quot;code&quot;:&quot;not_implemented&quot;,&quot;message&quot;:&quot;Chat API will be implemented in Day 5.&quot;},
+#  &quot;correlation_id&quot;:&quot;fbce30e6-...&quot;}
+</code></pre>
+<p>注意第二個回應Chat 還沒實作，但它已經用<strong>正式的錯誤信封</strong>回你了：<code>{&quot;error&quot;: {&quot;code&quot;, &quot;message&quot;}, &quot;correlation_id&quot;}</code>這是刻意的：骨架階段先鎖住跨 endpoint 共用的慣例（錯誤信封correlation ID<code>/api/v1/</code> 版本路徑）之後 27 天會新增成功回應的 schema 與 streaming 的事件格式，但不會再推翻這些基礎</p>
+<p>每個回應都帶 <code>X-Correlation-Id</code> header，錯誤信封還把它放進 body，client 回報問題時可以直接引用Day 2 說的觀測面那條虛線，從第一個 commit 就存在</p>
+<h2>目錄結構：對應 Day 2 的責任邊界</h2>
+<pre><code class="language-text">src/azgenai_lab/
+ api/          # API 層：routersHTTP schemas（healthchatstreamingrag）
+ core/         # 跨層地基：configloggingcorrelation錯誤信封
+ services/     # Adapter 層：LLM 與檢索的 adapter（現在是 fake 佔位）
+ models/       # 跨層共用的 DTO
+ prompts/      # Prompt 資產（Day 8 才會認真用）
+tests/
+ unit/         # 單元測試
+ bdd/          # behave features：API 行為用自然語言釘住
+</code></pre>
+<p>兩個對照說明<code>api/</code> 只放 HTTP 形狀與路由，<code>services/</code> 只放外部互動Day 2 的不確定性的籠子就是這個目錄<code>core/</code> 目前裝的是設定與跨層基礎設施（correlation錯誤處理），是編排層的地基；真正的對話編排邏輯會在 Day 57 隨功能長出來，<strong>先不要在這裡預蓋空抽屜</strong></p>
+<h2>一個值得停下來看的檔案：<code>core/config.py</code></h2>
+<pre><code class="language-python">class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=&quot;.env&quot;, env_file_encoding=&quot;utf-8&quot;, extra=&quot;ignore&quot;)
+
+    # ...（app_name 等欄位略，完整版見 tag）
+
+    azure_openai_endpoint: str | None = None
+    azure_openai_deployment_name: str | None = None
+
+    use_fake_llm: bool = Field(default=True)
+    use_fake_search: bool = Field(default=True)
+</code></pre>
+<p><code>use_fake_llm</code> 預設 <code>True</code>這是整個骨架最重要的一個決策，而且它不是測試技巧，是成本與速度的架構決策Day 3 尚未接上真模型；這個預設先把後續的 composition policy 定下來，clone 後不需要 Azure 資源或 API key 就能開發與測試Day 4 加入 real adapter 後，只有明確關閉 fake 並提供完整 Azure 設定時才會呼叫模型開始產生 token 費用</p>
+<blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260803/20168288RZ5wSGe26x.png" alt="https://ithelp.ithome.com.tw/upload/images/20260803/20168288RZ5wSGe26x.png" /><br><strong>忍喵</strong>：預設不花錢是設計出來的，不是省出來的這個 <code>default=True</code> 是開發環境的成本護欄，不是所有環境都該照抄</p>
+</blockquote>
+<p>注意 Azure 相關欄位全部是 <code>None</code> 預設從 <code>.env</code> 讀repo 只提供 <code>.env.example</code>，<code>.env</code> 不進版本控制，把真的 key 被 commit 的風險壓到最低</p>
+<h2>為什麼是 uv為什麼是 FastAPI（各一段就好）</h2>
+<p>uv：因為 lockfile 是可重現的基礎建設，而 uv 把裝 Python建 venv鎖依賴跑指令收斂成一個工具，<code>uv sync --locked</code> 一條指令等於過去 pyenv + venv + pip-tools 三件事</p>
+<p>FastAPI：因為它的 request/response model 就是 Pydantic，OpenAPI 規格是從程式碼長出來的（這個 repo 的 CI 會檢查 export 出的 OpenAPI 有沒有跟程式碼漂移），而之後 Day 6 要做的 streaming 它原生支援這兩個選擇都有替代品（PoetryLitestarDjango Ninja），我不主張它們是唯一解，但整個系列會證明這組工具鏈撐得起 30 天的演進</p>
+<h2>常見錯誤</h2>
+<ol>
+<li>
+<strong><code>pytest</code> 直接跑，出現 <code>ModuleNotFoundError: azgenai_lab</code></strong>：要用 <code>uv run pytest</code>（或先 <code>source .venv/bin/activate</code>），套件裝在專案的 venv 裡，不在系統 Python</li>
+<li>
+<strong><code>uv run behave</code> 找不到 feature</strong>：確認在 repo 根目錄執行Behave 的路徑設定在根目錄的 <code>behave.ini</code>（<code>paths = tests/bdd/features</code>），從子目錄跑會找不到</li>
+<li>
+<strong><code>uv sync</code> 抱怨 Python 版本</strong>：別自己降版本需求，跑 <code>uv python install 3.13</code> 讓 uv 抓正確版本；系列全程 pin 3.13</li>
+</ol>
+<h2>小結</h2>
+<p>今天的成果：一個測試全綠的骨架，基礎 API 合約（版本路徑error envelopecorrelation ID）與成本預設（<code>USE_FAKE_LLM=true</code>）在還沒有任何真功能之前就鎖住了完整程式碼在 <a href="https://github.com/kehao-playground/azure-genai-backend-lab/tree/day-03"><code>day-03</code> tag</a>，該 tag 上 CI 是綠的</p>
+<p>明天（Day 4）開始碰 Azure：Azure OpenAI 的 resourcedeploymentmodel 之間是什麼關係quota 怎麼看，以及把第一個真的 endpoint 設定接進這個骨架錢包從那天開始才有感覺</p>
+<p>（本篇無新增雲端資源）</p>
+<hr />
+<p><em>本文由作者規劃與撰寫，AI（Claude）協助草稿整理與程式碼驗證；技術內容與觀點由作者確認並負責</em></p>
+]]></content:encoded>
+                                <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kehao</dc:creator>
+                <pubDate>2026-08-03 09:23:51</pubDate>
+                                                                                                                                            </item>
+                    <item>
+                <title>Day 2：GenAI Backend 參考架構把不確定性關進最小的籠子</title>
+                <link>https://ithelp.ithome.com.tw/articles/10400972?sc=rss.iron</link>
+                <guid isPermaLink="true">https://ithelp.ithome.com.tw/articles/10400972?sc=rss.iron</guid>
+                <description><![CDATA[<p>想像你是團隊裡第一個要畫AI 功能架構圖的人最容易畫出來的版本長這樣：前端  你的 API  OpenAI，三個框兩支箭頭，會議上大家點頭通過三個月後這張圖的代價陸續到期：想寫測試，發現業務邏輯...]]></description>
+                                    <content:encoded><![CDATA[<p>想像你是團隊裡第一個要畫AI 功能架構圖的人最容易畫出來的版本長這樣：前端  你的 API  OpenAI，三個框兩支箭頭，會議上大家點頭通過三個月後這張圖的代價陸續到期：想寫測試，發現業務邏輯跟 SDK 呼叫纏在一起；想換模型或加 RAG，發現 prompt 散在十個 handler 裡；資安問了一句哪些客戶資料進過 prompt？，沒有人答得出來今天這篇要給你一張經得起這三個問題的參考架構圖，以及每一層存在的理由</p>
+<h2>先想清楚三個問題，再畫圖</h2>
+<p>昨天（Day 1）的結論是：LLM 是一個把不確定性帶進回傳值的下游依賴順著這個結論，GenAI backend 的架構其實由三個問題決定，用了哪些服務只是回答完之後的產物：</p>
+<ol>
+<li>
+<strong>不確定性被隔離在哪一層？</strong> 隔離範圍越小，可測試的範圍就越大</li>
+<li>
+<strong>哪些資料被允許進 prompt？</strong> 進了 prompt 的資料，就進入了模型服務的資料處理路徑；它是否跨出組織的信任邊界，取決於部署形態網路隔離與合約條款但無論答案是什麼，這都是治理決策，不是實作細節</li>
+<li>
+<strong>哪些行為必須被觀測？</strong> token 用量延遲誰問了什麼出事之後才想收集就來不及了</li>
+</ol>
+<p>只包一層 SDK的做法之所以撐不久，就是因為它對這三個問題的答案都是沒有答案</p>
+<h2>參考架構：四層加一個貫穿面</h2>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260802/20168288ngjTHBxBcS.png" alt="GenAI Backend 參考架構：API 層編排層adapter 層外部依賴，與貫穿的觀測面" /></p>
+<p>從請求進來到回應出去，一層一層看它在防什麼</p>
+<h3>API 層：合約與邊界</h3>
+<p>認證輸入驗證rate limitcorrelation ID 都發生在這裡它存在的理由只有一個：<strong>對外的 API 合約必須比模型穩定</strong>模型會換prompt 會改RAG 會加，但 client 看到的 request/response schema 與錯誤格式不該跟著抖動這層也是成本的第一道閘門：輸入長度上限設在這裡，Day 1 說的空白支票問題在資料進系統的第一步就擋掉</p>
+<h3>編排層：所有你的邏輯住的地方</h3>
+<p>對話狀態管理prompt 組裝要不要先做檢索（RAG）允許模型使用哪些工具（Agent）這些政策全部集中在這層關鍵特徵：<strong>這一層是確定性的函式</strong>給它相同的輸入與狀態（包括模型上一步回了什麼），它就組出相同的 prompt做出相同的路由決策模型的選擇會影響流程走向，但那個選擇是從 adapter 介面進來的資料，不是藏在這層裡的隨機性也因此這層的政策與控制流程可以用一般的單元測試覆蓋，不需要碰任何真模型</p>
+<p>第二個問題（什麼資料能進 prompt）的答案也鎖在這裡：prompt 組裝集中在一個地方，你才有辦法回答哪些資料被送往哪個模型 deployment有沒有先遮罩適用哪一套保留政策，也才有位置實施過濾prompt 散在十個 handler 裡的系統，這個問題在結構上就是無法回答的</p>
+<h3>Adapter 層：不確定性的籠子</h3>
+<p>LLM 呼叫向量檢索這些會慢會錯會不確定的外部互動，各自包在一個薄的 adapter 後面，介面由你定義，不照抄 SDK這帶來三件事：模型可以換（Azure OpenAI 換版本換供應商，SDK 與 transport 的改動集中在一個檔案；prompt 表現與能力差異當然還是要重新驗證，但那是評估工作，不是重寫工作）；測試可以假（fake adapter 回固定答案，整條業務邏輯鏈在毫秒內測完）；行為可以量（timeout重試熔斷都實作在這一層，而不是散落各處）</p>
+<p>這就是把不確定性關進最小的籠子的具體意思：模型與檢索供應商帶來的不確定性，都必須經過這幾個可識別的介面進入系統資料庫競態時間與其他外部依賴當然仍存在；這個邊界保證的是，核心政策可以在 fake adapter 下用確定性的單元測試驗證</p>
+<h3>外部依賴與狀態</h3>
+<p>模型（Azure OpenAI）檢索（Azure AI Search）對話狀態儲存都在系統邊界外側供應商可以代管對話狀態，但本系列會在 Day 5 選擇 <code>store=False</code>，因此跨 request 的記憶由 backend 組裝狀態放哪裡留多久誰能讀，會成為 Day 7 的治理與架構題</p>
+<h3>觀測面：貫穿四層的那條虛線</h3>
+<p>correlation ID 從 API 層進來，跟著請求穿過每一層，最後跟 token 用量延遲模型版本一起落到遙測（Application Insights）這是第三個問題的答案：<strong>成本異常品質退化安全事件，全部要靠這條線事後重建現場</strong>它畫成虛線，但它是這張圖上最不能省的部分</p>
+<blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260802/20168288pM3v1SE4DM.png" alt="https://ithelp.ithome.com.tw/upload/images/20260802/20168288pM3v1SE4DM.png" /><br><strong>忍喵</strong>：虛線最容易被砍，因為 demo 沒有它也會動等你需要它的那天，資料已經沒在收了</p>
+</blockquote>
+<h2>被否決的兩個替代方案</h2>
+<p><strong>直接在 handler 呼叫 SDK</strong>：最快看到 demo 的路，也是三個月後重寫的路否決它的跟優不優雅無關，是那三個問題：不確定性無處不在（測不了）prompt 無處可管（答不了資安）觀測事後才補（查不了帳單）</p>
+<p><strong>一開始就上編排框架全家桶</strong>：LangChain 這類框架解決的是真問題，但對一個剛起步的系統，你等於把邊界畫在哪這個最重要的決策外包給框架的抽象我的選擇是先用 Protocol + adapter 自己畫邊界（總共幾十行程式碼），等痛點真的出現再評估框架，那時你至少知道自己在買什麼</p>
+<blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260802/20168288QkY6uXFusP.png" alt="https://ithelp.ithome.com.tw/upload/images/20260802/20168288QkY6uXFusP.png" /><br><strong>忍喵</strong>：幾十行 adapter 換一個看得見的邊界，很划算框架不是不能買，是別在不知道自己要買什麼的時候刷卡</p>
+</blockquote>
+<h2>這張圖的適用範圍（誠實版）</h2>
+<p>適用：單一團隊單一 deployable功能會從 Chat 長到 RAG 與 Agent 的系統（也就是本系列要蓋的東西）<br>不適用：已經有平台團隊提供 LLM gateway 的大組織（你的 adapter 層會往外移）或者確定只做一次性 demo 的專案（三個框兩支箭頭真的就夠，別過度設計）</p>
+<p>維運成本也講清楚：這個架構本身不增加雲端費用（分層是程式碼結構，不是部署拓撲），但觀測面有實際成本遙測 ingestion 是要錢的，Day 27 會談怎麼在免費額度內活著</p>
+<h2>對應到 Azure 與程式碼</h2>
+<p>這張圖落到本系列的 repo，就是這個套件結構：<code>api/</code>（API 層）<code>core/</code>（編排與設定）<code>services/</code>（adapter 層）<code>models/</code>（跨層的 DTO）<code>prompts/</code>（prompt 資產）</p>
+<p>Day 3 會把這個骨架實際建起來，你會看到目錄結構直接對應這張圖的責任邊界這是概念上的對應，不是一層永遠等於一個目錄；編排邏輯長大後，可能再從 <code>core/</code> 拆出專門的模組本篇的完整英文版架構文件與 Mermaid 原始圖在 repo 的 <a href="https://github.com/kehao-playground/azure-genai-backend-lab/blob/day-02/docs/architecture.md"><code>day-02</code> tag</a></p>
+<table>
+<thead>
+<tr>
+<th>工程需求</th>
+<th>Azure / Microsoft 對應服務</th>
+<th>在這張圖的位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>模型推論</td>
+<td>Azure OpenAI Service</td>
+<td>adapter 層後方的外部依賴（Day 4 接入）</td>
+</tr>
+<tr>
+<td>向量檢索</td>
+<td>Azure AI Search</td>
+<td>adapter 層後方的外部依賴（Day 1115）</td>
+</tr>
+<tr>
+<td>遙測與追蹤</td>
+<td>Application Insights</td>
+<td>貫穿四層的觀測面（Day 27）</td>
+</tr>
+</tbody>
+</table>
+<h2>小結</h2>
+<p>GenAI backend 的參考架構不是服務清單，是三個問題的答案：外部與模型驅動的不確定性經由明確的 adapter 介面進入系統，prompt 資料邊界鎖在編排層的單一組裝點，觀測面從第一天就貫穿全部這張圖現在還是紙上談兵明天（Day 3）就把它變成能跑的專案骨架：uvFastAPI測試CI，一次到位</p>
+<p>（本篇無新增雲端資源；服務對照表列的是各服務在架構中的位置，實際接入從 Day 4 開始）</p>
+<hr />
+<p><em>本文由作者規劃與撰寫，AI（Claude）協助草稿整理與程式碼驗證；技術內容與觀點由作者確認並負責</em></p>
+]]></content:encoded>
+                                <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kehao</dc:creator>
+                <pubDate>2026-08-02 00:54:26</pubDate>
+                                                                                                                                            </item>
+                    <item>
+                <title>Day 1：LLM 是你接過最不守規矩的下游依賴Backend 工程師為什麼需要懂 GenAI</title>
+                <link>https://ithelp.ithome.com.tw/articles/10400849?sc=rss.iron</link>
+                <guid isPermaLink="true">https://ithelp.ithome.com.tw/articles/10400849?sc=rss.iron</guid>
+                <description><![CDATA[<p>你大概遇過這個場景：產品會議上有人說我們加個 AI 功能吧，然後任務落到你頭上你打開文件一看，不就是呼叫一個 HTTP API 嗎？拿 API key發 POST解析 JSON，一個下午就能接完...]]></description>
+                                    <content:encoded><![CDATA[<p>你大概遇過這個場景：產品會議上有人說我們加個 AI 功能吧，然後任務落到你頭上你打開文件一看，不就是呼叫一個 HTTP API 嗎？拿 API key發 POST解析 JSON，一個下午就能接完真正的問題在兩週後上線才浮現：使用者抱怨回應要等八秒QA 說同一個測試案例每次跑結果都不一樣月底帳單比預估高了一個數量級</p>
+<blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260801/201682886V0Ra7SD9s.png" alt="https://ithelp.ithome.com.tw/upload/images/20260801/201682886V0Ra7SD9s.png" /><br><strong>忍喵</strong>：八秒每次不一樣帳單爆掉三個一起來，才叫正式接上 LLM</p>
+</blockquote>
+<p>這個系列要處理的就是這件事：把 LLM 從能動的 demo帶到能上線的後端系統，中間缺的那段工程</p>
+<h2>一個熟悉的類比：LLM 是一個下游服務</h2>
+<p>Backend 工程師理解新事物最快的方式是套用已知的心智模型這裡有一個好用的起點：<strong>把 LLM 當成一個你無法控制的下游服務</strong>，像你接過的金流簡訊地圖 API 一樣它會慢會掛會限流，所以你本來就知道要包 timeout要處理錯誤要監控延遲這個類比讓你不會犯最天真的錯誤（把 LLM 呼叫直接寫在 handler 裡不設 timeout不記 log）</p>
+<p>但這個類比會在四個地方失真，而失真的地方正是 GenAI backend 工程的核心</p>
+<h3>失真一：相同輸入，不同輸出</h3>
+<p>在相同狀態與相同參數下，金流 API 通常會回到可預期的結果；LLM API 則通常不承諾逐字相同的輸出取樣設定模型與服務端實作都可能影響結果，所以測試不能把 <code>assert response == expected</code> 當成真模型的合約業務邏輯改用假的 LLM adapter 測（確定性免費毫秒級），真模型的行為另外驗證這也是為什麼這個系列從第一天就把 fake 與 real adapter 藏在同一個介面後面，而不是等到要寫測試才補</p>
+<h3>失真二：延遲常以秒計，輸出越長通常等越久</h3>
+<p>生成式回應的等待時間常比一般 API 長得多，而且輸出 token 越多，完成時間通常越長；但總延遲還會受到首 token模型推理排隊與服務負載影響，不是單純的正比關係這改變的是整個互動模型：等到完整回應才一次送出，使用者容易以為服務壞了，所以常見做法是 streamingStreaming 一進來，錯誤處理也跟著改變：HTTP 200 送出後模型才出錯，要怎麼告訴 client？重試又該重試什麼？Day 6 會專門處理這條邊界</p>
+<h3>失真三：按 token 計費，成本跟著使用者輸入走</h3>
+<p>一般 API 按呼叫次數計費，貴也貴得可預測LLM 按輸入加輸出的 token 計費：<strong>使用者貼多長的文字模型回多長的答案，直接決定你這筆請求的成本</strong>使用者是會貼整份 PDF 進來的沒有輸入長度上限沒有輸出 token 上限沒有用量監控的 GenAI 功能，等於把一張空白支票交給流量這個系列自己就是示範：我把實驗預算硬壓在每月 20 美元（US$20）以內（這是我設的自我約束，不是 Azure 的建議），每一筆實際花費都會記下來，在 Day 9 攤開給你看控管成本的具體做法</p>
+<blockquote>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260801/20168288s9AU73p3Ps.png" alt="https://ithelp.ithome.com.tw/upload/images/20260801/20168288s9AU73p3Ps.png" /><br><strong>忍喵</strong>：圈這句：成本會跟輸入輸出 token 一起變估價若只算每次呼叫多少錢，至少先把長度上限和用量分布補進去</p>
+</blockquote>
+<h3>失真四：輸出本身就是攻擊面</h3>
+<p>傳統下游服務的回應你本來就會驗證格式與範圍，但至少它的 schema 相對穩定，驗過大致就能用；LLM 的輸出你必須當<strong>不可信的使用者輸入</strong>處理：就算通過 schema 驗證，內容在語意上仍可能出錯，還可能重現攻擊者藏在輸入裡的指令（prompt injection），因為模型可能把資料裡的自然語言誤判成該遵循的命令，而你無法只靠 prompt 保證這條界線每次都劃對</p>
+<p>偏偏它的輸出會被你的系統拿去渲染查資料庫，甚至呼叫工具，所以不能因為是模型產生的就自動取得這些權限GenAI 多出來的風險是：自然語言可能同時是資料，也可能被模型誤判成指令；模型輸出因此不能直接繼承資料庫或工具權限Day 1922 會用四篇處理身分驗證secret 管理prompt injection 與 audit log</p>
+<h2>那 Backend 工程師的角色是什麼？</h2>
+<p>看完四個失真點，角色就清楚了：模型能力是 AI 團隊或雲端供應商的事，但<strong>把不可靠的模型包進可靠的系統，是後端工程</strong>你本來就熟悉下面這些工作，只是工程條件變了：</p>
+<ul>
+<li>API 設計與版本策略：streaming 讓 HTTP 200 之後的錯誤也成為合約的一部分</li>
+<li>可靠性工程：timeout重試與降級要面對秒級可能重複計費的推論</li>
+<li>測試策略：核心邏輯與真模型行為必須拆開驗證</li>
+<li>成本與監控：請求內容與輸出長度會直接影響 token 花費</li>
+<li>安全：自然語言資料可能影響模型決策與後續工具呼叫</li>
+</ul>
+<p>三個常見的誤解順便在這裡拆掉<strong>GenAI 開發就是 prompt engineering</strong>？prompt 只是其中一個輸入參數，決定系統能不能上線的是上面那五件事<strong>等模型更強這些問題就消失了</strong>？就算下一代模型更快更便宜，token 計費秒級延遲與非確定性仍然會以某種形式留在系統設計裡<strong>這是 ML 工程師的事</strong>？用 API 接模型的專案裡通常根本沒有 ML 工程師，模型訓練確實不關你的事，但模型以外的一切都是</p>
+<h2>這個系列的範圍與路線</h2>
+<p>接下來 30 天，用 Python 3.13 + FastAPI 在 Azure 上把一個 GenAI backend 從零帶到可部署可監控可控成本整個系列圍繞同一個系統長出來，全景如下：</p>
+<p><img src="https://ithelp.ithome.com.tw/upload/images/20260801/20168288141mKtY5Nm.png" alt="系列總覽：FastAPI backend 與各 Azure 服務的關係，標注各 Part 的 Day 範圍" /></p>
+<p>七個 Part 的路線：</p>
+<ol>
+<li>
+<strong>Part 1（Day 15）</strong>：心智模型與地基參考架構可測試的專案骨架Azure OpenAI第一個 Chat API</li>
+<li>
+<strong>Part 2（Day 610）</strong>：API 設計進階streamingconversation stateprompt 版本管理成本控管API gateway</li>
+<li>
+<strong>Part 3（Day 1115）</strong>：RAG用 Azure AI Search 讓模型回答你自己的資料，含多租戶權限</li>
+<li>
+<strong>Part 4（Day 1618）</strong>：Agent什麼時候需要什麼時候 Chat API 就夠了</li>
+<li>
+<strong>Part 5（Day 1922）</strong>：安全認證secret 管理prompt injectionaudit log</li>
+<li>
+<strong>Part 6（Day 2326）</strong>：部署DockerContainer AppsCI/CDinfra 演進</li>
+<li>
+<strong>Part 7（Day 2730）</strong>：營運監控evaluation上線檢查表</li>
+</ol>
+<p>所有程式碼都在公開的 GitHub repo：<a href="https://github.com/kehao-playground/azure-genai-backend-lab">azure-genai-backend-lab</a>有對應程式碼的文章會綁定一個不可變的 git tag（<code>day-NN</code>），tag 上的 CI 是綠的，照著做能重現這句話有 CI 背書文章裡只貼關鍵片段，完整程式碼一律看 tag</p>
+<p>明確不做的事：不教 prompt 技巧（這個領域變動太快，而且不是後端工程）不做模型評比不當 Azure 產品目錄（每篇只談當天真正用到的一到三個服務）</p>
+<h2>小結</h2>
+<p>今天只做一件事：換掉心智模型LLM 不是又一個要接的 API不確定性你以前就處理過（搜尋排序推薦系統eventual consistency），但它們各自待在系統的角落；LLM 把這些不確定性集中進同一條 request path，一次打破確定性輸出毫秒級延遲按次計費輸出可信四個你賴以工作的假設這個系列就是把這四個洞一個一個補回來的過程</p>
+<p>明天（Day 2）從全景開始，看一個 GenAI backend 的參考架構：從使用者請求進來，到模型回應出去，中間到底該有哪些層每一層在防什麼先看懂地圖，Day 3 再動手把專案骨架建起來</p>
+<p>（本篇為系列總覽，無新增雲端資源；服務對照表從實作篇開始附上）</p>
+<hr />
+<p><em>本文由作者規劃與撰寫，AI（Claude）協助草稿整理與程式碼驗證；技術內容與觀點由作者確認並負責</em></p>
+]]></content:encoded>
+                                <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kehao</dc:creator>
+                <pubDate>2026-08-01 18:39:04</pubDate>
+                                                                                                                                            </item>
+            </channel>
+</rss>
