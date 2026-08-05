@@ -12,15 +12,37 @@ const data: YearData = await import("../../../data/2026.json").then((m) => m.def
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>鐵人觀察家 2026</title>
   <meta name="description" content="2026 iThome 鐵人賽每日觀察：追蹤每支參賽系列的進度與人氣" />
-  <style>
-    :root { --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e6e9ef; --muted:#9aa3b2; --accent:#4da3ff; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: system-ui,-apple-system,"Noto Sans TC",sans-serif; background:var(--bg); color:var(--text); }
-    a { color:var(--accent); text-decoration:none; }
-    a:hover { text-decoration:underline; }
+  <style is:global>
+    @import "../styles/design-system.css";
   </style>
+  <script is:inline>
+    // Theme: auto (prefers-color-scheme) + manual toggle, persisted in localStorage.
+    (function () {
+      var stored = null;
+      try { stored = localStorage.getItem("theme"); } catch (e) {}
+      var root = document.documentElement;
+      if (stored === "light" || stored === "dark") {
+        root.setAttribute("data-theme", stored);
+      } else {
+        root.removeAttribute("data-theme"); // let prefers-color-scheme decide
+      }
+    })();
+  </script>
 </head>
 <body>
+  <!--
+    鐵人觀察家 2026 — Direction Contract (impeccable roll C4)
+    THESIS: 每支參賽系列是一條 phosphor trace，在蝕刻 graticule（十格=30 天賽程）上上升；
+      組別是通道群組；瀏覽數/Like/留言是 readout。這是一台量測儀器，不是被裝飾的儀表板。
+      拒絕 category default（sidebar + stat cards + 表格）。
+    OWN-WORLD: phosphor green (#33ff66) 單一 accent on near-black glass (dark 預設)；
+      graticule 灰蝕刻網格；condensed mono instrument caps（filter/badge/meta/readout）；
+      flat panels（1px hairline + tonal layering），hover 浮起 + accent 描邊；
+      每系列一條 progress trace（DAY 進度迷你 sparkline）。
+    MODE: Operate — 掃讀效率與資料密度最高指導，brand 活在精準細節。
+    THEME: dark 預設（phosphor glass）+ light（日光下玻璃）；prefers-color-scheme 自動 + manual toggle 持久化。
+    CONTRACT: 保留此 comment 於 build 後 markup（禁 innerHTML 放使用者資料；textContent only）。
+  -->
   <Dashboard data={data} />
   <script>
     // Refresh client-side: re-fetch JSON to pick up the latest hourly commit without full reload

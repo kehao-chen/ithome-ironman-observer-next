@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-05T00:00:00+08:00",
+  "title": "Design System: 鐵人觀察家 2026",
+  "extensions": {
+    "colorMeta": {
+      "accent": { "role": "primary", "displayName": "Phosphor Green", "canonical": "#33ff66", "tonalRamp": ["#0f2a1a", "#33ff66", "#66ff99"] },
+      "warning": { "role": "semantic", "displayName": "Amber", "canonical": "#ffb84d", "tonalRamp": ["#33230d", "#ffb84d"] },
+      "bg": { "role": "neutral", "displayName": "Glass", "canonical": "#07090d", "tonalRamp": ["#07090d", "#0b0e13", "#0d1117"] },
+      "text": { "role": "neutral", "displayName": "Text", "canonical": "#d7e3d9", "tonalRamp": ["#d7e3d9", "#9fb3a8", "#5d6b62"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page title (header brand)." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles." },
+      "title": { "displayName": "Title", "purpose": "Card titles (series title)." },
+      "body": { "displayName": "Body", "purpose": "Card meta, body copy. 65-75ch max." },
+      "label": { "displayName": "Label", "purpose": "Filter chips, selects, timestamps." },
+      "instrument": { "displayName": "Instrument", "purpose": "Mono instrument caps: DAY badge, filter, meta, readout." }
+    },
+    "shadows": [
+      { "name": "hover", "value": "0 4px 20px rgba(0,0,0,0.6), 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent)", "purpose": "Card hover lift + accent channel glow." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default easing." },
+      { "name": "dur-fast", "value": "120ms", "purpose": "Fast transitions." },
+      { "name": "dur-base", "value": "200ms", "purpose": "Default transition duration." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "filter-chip",
+      "description": "Group filter pill; active state = channel lit.",
+      "html": "<button class=\"filter-btn\" data-active=\"true\">AI Engineering</button>",
+      "css": ".filter-btn { border:1px solid transparent; background:transparent; color:var(--text-secondary); font-family:var(--font-sans); font-size:var(--text-sm); padding:4px 12px; border-radius:999px; cursor:pointer; transition:background 120ms, color 120ms; } .filter-btn:hover { background:var(--surface-muted); color:var(--text); } .filter-btn[data-active='true'] { background:var(--accent-weak); color:var(--accent); border-color:color-mix(in srgb, var(--accent) 35%, transparent); font-weight:600; }"
+    },
+    {
+      "name": "Series Card",
+      "kind": "card",
+      "refersTo": "series-card",
+      "description": "Data-dense panel: DAY badge + title + meta + latest + progress trace + updated.",
+      "html": "<article class=\"series-card\"><span class=\"day-badge\">DAY 5</span><h3><a href=\"#\">Backend 工程師的 Azure GenAI 實戰</a></h3><p class=\"meta\">Kehao · AI Engineering</p><p class=\"info\">最新 <a href=\"#\">Day 5：第一個 Chat API…</a> · 42 瀏覽</p><span class=\"progress-trace\"><svg viewBox=\"0 0 100 18\" preserveAspectRatio=\"none\"><polyline points=\"0,15 20,13 40,10 60,8 80,4 100,2\" fill=\"none\" stroke=\"var(--accent)\" stroke-width=\"1.5\"/></svg></span><p class=\"updated\">更新時間 2026-08-05 08:57:56+08:00</p></article>",
+      "css": ".series-card { display:grid; grid-template-columns:auto 1fr; gap:4px 12px; align-items:start; padding:16px; background:var(--surface); border:1px solid var(--line); border-radius:8px; transition:border-color 200ms, box-shadow 200ms, transform 200ms; } .series-card:hover { border-color:var(--accent); box-shadow:0 4px 20px rgba(0,0,0,0.6), 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent); transform:translateY(-1px); } .series-card h3 { font-size:var(--text-base); font-weight:600; line-height:1.4; letter-spacing:-0.02em; margin:0; } .series-card h3 a { color:var(--text); } .series-card .meta, .series-card .info { font-family:var(--font-sans); font-size:var(--text-sm); color:var(--muted); line-height:1.4; } .day-badge { grid-row:span 3; justify-self:start; margin-top:2px; font-family:var(--font-sans); font-size:var(--text-xs); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--accent); background:var(--accent-weak); border-radius:999px; padding:4px 8px; white-space:nowrap; font-variant-numeric:tabular-nums; box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent); } .progress-trace { display:block; width:100%; height:18px; grid-column:1 / -1; margin-top:4px; } .progress-trace svg { display:block; width:100%; height:100%; }"
+    },
+    {
+      "name": "Day Badge",
+      "kind": "chip",
+      "refersTo": "day-badge",
+      "description": "DAY progress readout; pending = 尚未開賽 (amber), done = completed (success).",
+      "html": "<span class=\"day-badge\">DAY 5</span>",
+      "css": ".day-badge { font-family:var(--font-sans); font-size:var(--text-xs); font-weight:700; letter-spacing:0.04em; line-height:1; color:var(--accent); background:var(--accent-weak); border-radius:999px; padding:4px 8px; white-space:nowrap; font-variant-numeric:tabular-nums; box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent); } .day-badge--pending { color:var(--warning); background:var(--warning-weak); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--warning) 25%, transparent); } .day-badge--done { color:var(--success); background:var(--accent-weak); box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--success) 25%, transparent); }"
+    },
+    {
+      "name": "Status Bar",
+      "kind": "custom",
+      "refersTo": "status-bar",
+      "description": "Updated time + series count + phosphor live dot.",
+      "html": "<div class=\"status-bar\"><span><span class=\"dot\"></span>更新時間 <strong>2026-08-05 08:57:56+08:00</strong></span><span><strong>127</strong> 支系列</span></div>",
+      "css": ".status-bar { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 16px; padding-block:12px 0; font-family:var(--font-sans); font-size:var(--text-sm); color:var(--muted); } .status-bar strong { color:var(--text-secondary); font-weight:600; font-variant-numeric:tabular-nums; } .status-bar .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 6px var(--accent); margin-right:4px; vertical-align:1px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "示波器訊號台 (The Oscilloscope Signal Bench)",
+    "overview": "一台監看 2026 iThome 鐵人賽訊號的示波器。每個參賽系列是一條 phosphor trace，在蝕刻 graticule（十格 = 30 天賽程）上上升；組別是通道群組；瀏覽數/Like/留言是 readout。使用者是技術讀者，來這裡接上探棒看訊號：哪條 trace 在動、哪條停了、哪條最強。這不是被裝飾的儀表板，而是一台量測儀器。Operate mode，掃讀效率與資料密度是最高指導。系統建立在 impeccable craft-floor 之上：phosphor green on near-black（dark 預設）、graticule 蝕刻網格、condensed mono instrument caps 與 seven-segment readout 語彙、detented knob 觸覺對應。Light theme 是日光下的儀器玻璃。Restrained 色彩：phosphor green 單一 accent，amber 只給 armed/warning。",
+    "keyCharacteristics": [
+      "Dark 預設（phosphor glass），light 為日光下的玻璃；auto + manual toggle",
+      "Phosphor green 單一 accent，amber 只給 armed/warning",
+      "Graticule 網格、condensed mono instrument caps、tabular-nums",
+      "Flat panels（1px hairline + tonal layering），hover 才浮起 + accent 描邊",
+      "每系列一條 progress trace（DAY 進度迷你 sparkline）",
+      "Mobile-first，grid over flex-math，min-h-[100dvh]"
+    ],
+    "rules": [
+      { "name": "The Rarity Rule", "body": "Accent 用在 ≤10% 版面，稀有是重點。", "section": "colors" },
+      { "name": "The Amber Discipline", "body": "amber 只給 armed/warning（尚未開賽、警示），不當第二 accent。", "section": "colors" },
+      { "name": "The Tabular Numerals Rule", "body": "所有資料數字一律 font-variant-numeric: tabular-nums，讓 readout 對齊。", "section": "typography" },
+      { "name": "The Instrument Mono Rule", "body": "mono 只給儀器標籤（資料/測量），不用於長文或標題。", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "卡片 flat at rest，shadow 只在狀態回應（hover/focus）出現。", "section": "elevation" }
+    ],
+    "dos": [
+      "用 phosphor green 單一 accent，≤10% 版面",
+      "用 system-ui + Noto Sans TC（標題/內文）+ mono（儀器標籤）",
+      "資料數字用 tabular-nums",
+      "卡片 flat at rest，hover 才浮起 + accent 描邊",
+      "面板 radius 8px、小控制 pill",
+      "dark 預設 + light（日光玻璃），prefers-color-scheme + manual toggle 持久化",
+      "原生瀏覽器表面（scrollbar/selection/caret/focus/tabular numerals）從 palette theme",
+      "每系列配 progress trace（DAY 進度迷你 sparkline）"
+    ],
+    "donts": [
+      "用 Inter 或其他 display face（中文用 Noto Sans TC；儀器用 mono）",
+      "用 emoji 當 icon（換成簡約 SVG，統一 stroke）",
+      "用 gradient text、glass/blur 當裝飾、colored border-left >1px",
+      "用 hard offset shadow 或 ghost card（border + shadow 並存）",
+      "用 monospace 當裝飾（只用於儀器標籤/資料/數字）",
+      "用 innerHTML 放使用者資料（一律 textContent，XSS 約束）",
+      "用 h-screen（用 min-h-[100dvh]）",
+      "用超過 3 個 accent 色或暖冷灰混用；amber 只給 armed/warning"
+    ]
+  }
+}
