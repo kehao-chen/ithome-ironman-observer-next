@@ -1,7 +1,8 @@
 name: hourly-update
 on:
   schedule:
-    - cron: "0 * * * *"     # every hour at :00
+    # 臺北 07:00 → 隔天 01:00 (UTC 23:00 → 17:00), 每小時一次
+    - cron: "0 23-23,0-17 * * *"
   workflow_dispatch: {}
 
 permissions:
