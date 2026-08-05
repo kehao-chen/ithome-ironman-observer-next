@@ -139,6 +139,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     const el = document.createElement("span");
     el.className = c.kind === "today" ? "status-chip"
       : c.kind === "yesterday" ? "status-chip status-chip--yesterday"
+      : c.kind === "done" ? "status-chip status-chip--done"
       : c.kind === "long-stale" ? "status-chip status-chip--long" : "status-chip status-chip--stale";
     el.textContent = statusChipText(c);
     const t = statusChipTitle(c);

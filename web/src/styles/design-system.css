@@ -364,6 +364,19 @@ input, select, textarea { caret-color: var(--accent); }
 .status-chip--stale { color: var(--warning); background: var(--warning-weak); }
 .status-chip--long { color: var(--danger); background: var(--danger-weak); }
 .status-chip--yesterday { color: var(--muted); background: var(--surface-muted); }
+/* 鐵人煉成：完賽榮譽 chip — 綠 + 呼吸發光 */
+.status-chip--done {
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 16%, transparent);
+  animation: chip-done-breathe 2.8s ease-in-out infinite;
+}
+@keyframes chip-done-breathe {
+  0%, 100% { box-shadow: 0 0 4px 1px color-mix(in srgb, var(--success) 35%, transparent); }
+  50% { box-shadow: 0 0 12px 3px color-mix(in srgb, var(--success) 60%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .status-chip--done { animation: none; box-shadow: 0 0 4px 1px color-mix(in srgb, var(--success) 35%, transparent); }
+}
 .card-stat {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
@@ -478,6 +491,8 @@ input, select, textarea { caret-color: var(--accent); }
 .day-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 66px;
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: 600;

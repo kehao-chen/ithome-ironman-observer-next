@@ -24,6 +24,7 @@ const chipText = statusChipText(chip);
 const chipTitle = statusChipTitle(chip);
 const chipClass = !chip ? "" : chip.kind === "today" ? "status-chip"
   : chip.kind === "yesterday" ? "status-chip status-chip--yesterday"
+  : chip.kind === "done" ? "status-chip status-chip--done"
   : chip.kind === "long-stale" ? "status-chip status-chip--long" : "status-chip status-chip--stale";
 ---
 

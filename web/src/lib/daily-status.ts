@@ -30,14 +30,15 @@ export type StatusChip =
   | { kind: "yesterday" }
   | { kind: "stale"; days: number }
   | { kind: "long-stale"; days: number }
+  | { kind: "done" }
   | null;
 
 export function statusChip(iso: string | null | undefined, dayCount: number, today: string): StatusChip {
+  // 完賽系列：優先顯示「鐵人煉成」，不受發文狀態影響。
+  if (dayCount >= 30) return { kind: "done" };
   const days = stalenessDays(iso, today);
   if (days === null) return null; // 無文章或缺陷資料
   if (days === 0) return { kind: "today" };
-  // 完賽系列：已完成，狀態無意義 → 不顯示。
-  if (dayCount >= 30) return null;
   if (days === 1) return { kind: "yesterday" };
   if (days >= 10) return { kind: "long-stale", days };
   return { kind: "stale", days };
@@ -51,6 +52,7 @@ export function statusChipText(chip: StatusChip): string {
     case "yesterday": return "昨日發文";
     case "stale": return "停更中";
     case "long-stale": return "長時間停更";
+    case "done": return "鐵人煉成";
   }
 }
 
