@@ -63,10 +63,11 @@ describe("statusChip", () => {
   test("無文章 → 不顯示", () => {
     expect(statusChip(null, 0, today)).toBeNull();
   });
-  test("完賽 → 停更不顯示，但今日發文仍顯示", () => {
-    expect(statusChip("2026-08-04T07:14:15+08:00", 30, today)).toBeNull(); // 完賽 + 昨日發文
-    expect(statusChip("2026-08-05T07:14:15+08:00", 30, today)).toEqual({ kind: "today" }); // 完賽 + 今日發文
-    expect(statusChip("2026-07-01T07:14:15+08:00", 30, today)).toBeNull(); // 完賽 + 久未發文
+  test("完賽（dayCount≥30）→ done（優先於發文狀態）", () => {
+    expect(statusChip("2026-08-04T07:14:15+08:00", 30, today)).toEqual({ kind: "done" }); // 昨日發文
+    expect(statusChip("2026-08-05T07:14:15+08:00", 30, today)).toEqual({ kind: "done" }); // 今日發文
+    expect(statusChip("2026-07-01T07:14:15+08:00", 30, today)).toEqual({ kind: "done" }); // 久未發文
+    expect(statusChip(null, 32, today)).toEqual({ kind: "done" }); // 無文章但已完賽
   });
   test("malformed 日期 → 不顯示", () => {
     expect(statusChip("garbage", 7, today)).toBeNull();
@@ -79,6 +80,7 @@ describe("statusChipText", () => {
     expect(statusChipText({ kind: "yesterday" })).toBe("昨日發文");
     expect(statusChipText({ kind: "stale", days: 3 })).toBe("停更中");
     expect(statusChipText({ kind: "long-stale", days: 12 })).toBe("長時間停更");
+    expect(statusChipText({ kind: "done" })).toBe("鐵人煉成");
     expect(statusChipText(null)).toBe("");
   });
 });
@@ -88,9 +90,10 @@ describe("statusChipTitle", () => {
     expect(statusChipTitle({ kind: "stale", days: 3 })).toBe("停更 3 天");
     expect(statusChipTitle({ kind: "long-stale", days: 12 })).toBe("停更 12 天");
   });
-  test("today / yesterday / null 無 tooltip", () => {
+  test("today / yesterday / done / null 無 tooltip", () => {
     expect(statusChipTitle({ kind: "today" })).toBeNull();
     expect(statusChipTitle({ kind: "yesterday" })).toBeNull();
+    expect(statusChipTitle({ kind: "done" })).toBeNull();
     expect(statusChipTitle(null)).toBeNull();
   });
 });
