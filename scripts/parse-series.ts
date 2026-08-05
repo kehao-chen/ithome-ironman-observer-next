@@ -1,5 +1,6 @@
 // scripts/parse-series.ts
 import type { SeriesStats } from "./types";
+import { decodeHtmlEntities } from "./html-entities";
 
 export function seriesUrl(userId: number, seriesId: number): string {
   return `https://ithelp.ithome.com.tw/users/${userId}/ironman/${seriesId}`;
@@ -15,8 +16,10 @@ export function parseSeriesPage(html: string): SeriesStats {
   for (const b of blocks) {
     const id = Number(b.match(/articles\/(\d+)/)?.[1] ?? 0);
     if (!id) continue;
-    const title = b.match(/qa-list__title-link[^>]*>\s*([\s\S]*?)\s*<\/a>/)?.[1]
-      ?.replace(/<[^>]+>/g, "").trim() ?? "";
+    const title = decodeHtmlEntities(
+      b.match(/qa-list__title-link[^>]*>\s*([\s\S]*?)\s*<\/a>/)?.[1]
+        ?.replace(/<[^>]+>/g, "").trim() ?? "",
+    );
     const publishedAt = b.match(/title="(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"/)?.[1] ?? "";
     const stats = [...b.matchAll(/qa-condition__count">(\d+)<\/span>\s*<span class="qa-condition__text">(Like|留言|瀏覽)/g)];
     const views = Number(stats.find((x) => x[2] === "瀏覽")?.[1] ?? 0);
