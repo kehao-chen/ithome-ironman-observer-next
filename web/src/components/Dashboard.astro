@@ -21,6 +21,11 @@ const groups = ["全部", ...data.groups];
       <button data-group={g} class="filter" data-active={g === "全部" ? "true" : "false"} style="...">{g}</button>
     ))}
   </div>
+  <select id="sort" style="background:#232a36;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:.4rem .6rem;">
+    <option value="dayCount">進度</option>
+    <option value="views">最多觀看</option>
+    <option value="latest">最新發布</option>
+  </select>
 </header>
 
 <main style="padding:1.5rem 2rem;display:flex;flex-direction:column;gap:1rem;" id="series-list">
@@ -59,7 +64,42 @@ const groups = ["全部", ...data.groups];
 
   function totalViews(s: any) { return s.articles.reduce((n: number, a: any) => n + a.views, 0); }
   function latestPub(s: any) { return s.articles.length ? new Date(s.articles[s.articles.length - 1].publishedAt).getTime() : 0; }
-  function renderCard(s: any) { /* build card DOM — see Task 8 */ }
+  function renderCard(s: any) {
+    const art = document.createElement("article");
+    art.style.cssText = "background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.25rem;display:grid;gap:.35rem;grid-template-columns:auto 1fr;align-items:start;";
+    const day = document.createElement("span");
+    day.textContent = s.dayCount > 0 ? `DAY ${s.dayCount}` : "尚未開賽";
+    day.style.cssText = "grid-row:span 3;font-size:.8rem;background:#232a36;color:var(--accent);border-radius:999px;padding:.2rem .7rem;margin-top:.2rem;justify-self:start;";
+    const h = document.createElement("h3");
+    h.style.cssText = "margin:0;font-size:1rem;line-height:1.4;";
+    const a = document.createElement("a");
+    a.href = `https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`;
+    a.target = "_blank"; a.rel = "noopener";
+    a.textContent = s.title;
+    h.appendChild(a);
+    const meta = document.createElement("p");
+    meta.style.cssText = "margin:.1rem 0 0;color:var(--muted);font-size:.8rem;";
+    meta.textContent = `${s.user.name} · ${s.group}${s.team ? ` · 團隊 ${s.team}` : ""}`;
+    const info = document.createElement("p");
+    info.style.cssText = "margin:.1rem 0 0;color:var(--muted);font-size:.8rem;";
+    const latest = s.articles[s.articles.length - 1];
+    if (latest) {
+      const la = document.createElement("a");
+      la.href = latest.url; la.target = "_blank"; la.rel = "noopener";
+      la.textContent = latest.title;
+      info.append("最新 ", la, ` · ${totalViews(s)} 瀏覽 · ${latest.views} 當篇`);
+    } else {
+      info.textContent = "尚未開賽";
+    }
+    art.append(day, h, meta, info);
+    if (s.lastUpdated) {
+      const upd = document.createElement("p");
+      upd.style.cssText = "margin:.1rem 0 0;color:var(--muted);font-size:.75rem;";
+      upd.textContent = `更新時間 ${s.lastUpdated}`;
+      art.append(upd);
+    }
+    return art;
+  }
 
   document.querySelectorAll(".filter").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -70,5 +110,9 @@ const groups = ["全部", ...data.groups];
   });
 
   window.addEventListener("ironman-data", ((e: CustomEvent) => render(e.detail)) as EventListener);
+  document.getElementById("sort")?.addEventListener("change", () => {
+    if (current) applyFilter(current, (document.querySelector(".filter[data-active='true']")?.getAttribute("data-group")) ?? "全部",
+      (document.getElementById("sort") as HTMLSelectElement).value);
+  });
   render((window as any).__SSR_DATA__);
 </script>
