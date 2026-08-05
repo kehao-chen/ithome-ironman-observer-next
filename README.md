@@ -4,6 +4,30 @@
 
 🔗 線上站：https://ithome-ironman-observer.happyhacking.ninja/
 
+## 專案起源
+
+本專案源自 [qrtt1/ithome-ironman](https://github.com/qrtt1/ithome-ironman) 的 ITHome 鐵人觀察家（觀戰區），
+因原專案已停止維護，故另開新專案接手這個概念，以現代工具鏈（Bun + Astro + GH Actions + Cloudflare Pages）重寫。
+
+## 這個專案的挑戰
+
+這是一個實驗：以 **Command Code 的 $1/月 訂閱**，搭配 **DeepSeek v4 Flash**，
+能否真的做出一個有趣、可用的東西？
+
+整個專案（scraper、儀表板、CI/CD、部署、測試）皆由這個組合完成。
+
+### 費用紀錄
+
+第一個核心功能版本的費用：
+
+| 項目 | 數值 |
+|---|---|
+| Total Tokens | 57.5M |
+| 費用 | **$0.42** |
+| Runs | 839 |
+
+![Command Code usage](docs/command-code-usage.png)
+
 ## 架構
 
 ithelp 鐵人賽 → GH Actions (cron) → data/2026.json commit → Astro build → Cloudflare Pages
