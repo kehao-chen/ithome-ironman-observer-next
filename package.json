@@ -1,0 +1,13 @@
+{
+  "name": "ironman-observer-next",
+  "private": true,
+  "scripts": {
+    "scrape": "bun run scripts/scrape.ts",
+    "test": "bun test",
+    "build": "cd web && bun install && bun run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/bun": "latest"
+  }
+}
