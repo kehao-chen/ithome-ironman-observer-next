@@ -62,24 +62,24 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 
 ## Roadmap
 
-功能想法整理自 `docs/PROJECT-INTRODUCTION.md`（該檔待刪除，想法先保留下來）＋既有 non-goals。尚未排程，依價值/成本取捨後再決定。
+Feature ideas carried over from the removed `docs/PROJECT-INTRODUCTION.md`, plus v1 non-goals. Not scheduled; prioritize by value/cost before building.
 
-### 短期可做（低成本、與現架構相容）
+### Near-term (low cost, fits current architecture)
 
-1. **多年度支援**：`data/2026.json` 已按年度命名，`config/series-manifest.json` 是年度清單（單一來源）。把 UI 加上年度切換即可服務往後屆次（原文件暗示此架構，PROJECT-INTRODUCTION 五節）。
-2. **排序改進**：以「當日新增文章數」重新定義「最新發布」排序（現為該系列最後一篇文章時間，定義含糊；與 DEPLOYMENT-HANDOFF 已知問題 #6 相同）。
-3. **scrapeLog 錯誤可見化**：單一系列失敗已寫入 `data/2026.json` 的 `scrapeLog`，但前端不顯示——可在頁面角落顯示「本次更新 N 系列失敗」與錯誤清單（PROJECT-INTRODUCTION 七節）。
+1. **Multi-year support**: `data/2026.json` is already year-named, and `config/series-manifest.json` is the per-year single source. A year switcher in the UI would serve future editions.
+2. **Sort refinement**: redefine "latest" sort as "articles published today" (currently the last article's timestamp; definition is vague — same as DEPLOYMENT-HANDOFF known issue #6).
+3. **Surface scrapeLog errors**: per-series failures are already written to `data/2026.json`'s `scrapeLog` but never shown in the UI — a corner notice like "N series failed this update" plus the error list would surface them.
 
-### 中期候選（來自 v1 non-goals，做之前需重新評估價值）
+### Mid-term candidates (from v1 non-goals; re-evaluate value before building)
 
-- **搜尋**：依標題/作者/組別全文搜尋系列。
-- **完賽 / 活躍 badge 強化**：目前只有 DAY 0 / 進行中 / 完賽三態，可加「今天有發文」「連續 N 天未更新」等動態狀態。
-- **收藏 / 追蹤特定系列**：localStorage 收藏，首頁置頂或獨立分頁（無後端，零成本相容）。
-- **即時更新**：目前為週期批次（每小時）+ client 60s refresh；真要接近即時需外部觸發（如 Cloudflare Worker cron）——成本與排程可靠性取捨。
+- **Search**: full-text search of series by title/author/group.
+- **Completion / activity badge enhancements**: currently only DAY 0 / in-progress / completed states; could add dynamic states like "posted today" or "no update for N days".
+- **Favorites / tracking specific series**: localStorage bookmarks, pinned to top or a separate tab (no backend, zero-cost compatible).
+- **Real-time updates**: currently periodic batch (hourly) + 60s client refresh; true near-real-time needs an external trigger (e.g., Cloudflare Worker cron) — a cost vs schedule-reliability tradeoff.
 
-### 已涵蓋、不需再做
+### Already covered, no action needed
 
-- **報名期間系列數持續增加**：scraper 每次全量抓取，自動涵蓋（PROJECT-INTRODUCTION 三節）。
+- **Series count keeps growing during signup period**: the scraper does a full sweep each run, so this is automatic.
 
 ## Accessibility & Inclusion
 
