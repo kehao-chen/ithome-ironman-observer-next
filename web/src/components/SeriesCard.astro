@@ -1,0 +1,24 @@
+---
+// web/src/components/SeriesCard.astro
+import type { Series } from "../../../scripts/types";
+interface Props { series: Series }
+const { series: s } = Astro.props;
+const latest = s.articles[s.articles.length - 1];
+const totalViews = s.articles.reduce((n, a) => n + a.views, 0);
+---
+
+<article style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.25rem;display:grid;gap:.35rem;grid-template-columns:auto 1fr;align-items:start;">
+  <span style="grid-row:span 3;font-size:.8rem;background:#232a36;color:var(--accent);border-radius:999px;padding:.2rem .7rem;margin-top:.2rem;">DAY {s.dayCount || "?"}</span>
+  <h3 style="margin:0;font-size:1rem;line-height:1.4;"><a href={`https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`} target="_blank" rel="noopener">{s.title}</a></h3>
+  <p style="margin:.1rem 0 0;color:var(--muted);font-size:.8rem;">
+    {s.user.name} · {s.group}{s.team ? ` · 團隊 ${s.team}` : ""}
+  </p>
+  <p style="margin:.1rem 0 0;color:var(--muted);font-size:.8rem;">
+    {s.articles.length > 0
+      ? <>最新 <a href={latest.url} target="_blank" rel="noopener">{latest.title}</a> · {totalViews} 瀏覽 · {latest.views} 當篇</>
+      : <>尚未開賽</>}
+  </p>
+  {s.lastUpdated && (
+    <p style="margin:.1rem 0 0;color:var(--muted);font-size:.75rem;">更新時間 <time datetime={s.lastUpdated}>{s.lastUpdated}</time></p>
+  )}
+</article>

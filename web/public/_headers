@@ -1,0 +1,7 @@
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+/data/*
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
+/*
+  Cache-Control: public, max-age=3600

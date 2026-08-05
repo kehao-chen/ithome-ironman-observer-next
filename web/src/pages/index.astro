@@ -1,0 +1,39 @@
+---
+// web/src/pages/index.astro
+import Dashboard from "../components/Dashboard.astro";
+import type { YearData } from "../../../scripts/types";
+
+const data: YearData = await import("../../../data/2026.json").then((m) => m.default);
+---
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>鐵人觀察家 2026</title>
+  <meta name="description" content="2026 iThome 鐵人賽每日觀察：追蹤每支參賽系列的進度與人氣" />
+  <style>
+    :root { --bg:#0f1115; --card:#171a21; --line:#262b36; --text:#e6e9ef; --muted:#9aa3b2; --accent:#4da3ff; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui,-apple-system,"Noto Sans TC",sans-serif; background:var(--bg); color:var(--text); }
+    a { color:var(--accent); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <Dashboard data={data} />
+  <script>
+    // Refresh client-side: re-fetch JSON to pick up the latest hourly commit without full reload
+    async function refresh() {
+      try {
+        const res = await fetch(`/data/2026.json?t=${Date.now()}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const fresh = await res.json();
+        // Re-render via a custom event the Dashboard listens to
+        window.dispatchEvent(new CustomEvent("ironman-data", { detail: fresh }));
+      } catch { /* keep current render */ }
+    }
+    setInterval(refresh, 60_000); // every minute
+  </script>
+</body>
+</html>
