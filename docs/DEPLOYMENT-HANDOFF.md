@@ -10,7 +10,7 @@
 | 後備網址 | https://ironman-observer-next.pages.dev/ |
 | GitHub | https://github.com/kehao-chen/ithome-ironman-observer-next |
 | 資料 | 127 支系列 / 17 組別（2026-08-05，報名持續增加中） |
-| 排程 | 臺北時間 07:00–01:00 每小時（18 次/天；GH Actions public repo 2000 min/月，目前用 ~45 min/月） |
+| 排程 | 臺北時間 07:00–01:00 每小時（18 次/天 ≈ 547 runs/月；public repo 的 GitHub-hosted runner 免費且不計分鐘） |
 | 部署鏈 | 全自動，最後一次手動驗證 run 30978443677 全綠 |
 
 ## 架構（已上線，勿破壞契約）
@@ -23,7 +23,6 @@ GH Actions cron (.github/workflows/update.yml)
    ├─ bun run scripts/scrape.ts      → data/2026.json + data/meta.json
    ├─ 資料有變才 commit + push       → 無變更 exit 0 跳過
    ├─ cd web && bun install && build → dist/
-   ├─ Ensure Pages project exists    → 冪等 create (|| true)
    └─ npx wrangler pages deploy      → Cloudflare Pages
 ```
 
@@ -81,8 +80,20 @@ gh secret list --repo kehao-chen/ithome-ironman-observer-next
 # 自有網域在 Cloudflare dashboard 設（wrangler.toml 的 routes 對 Pages 無效，已移除）
 ```
 
-## 排程成本決策紀錄
+## 排程與成本決策紀錄（2026-08-05 更新）
 
-- 原為每小時全時（720 runs/mo ≈ 1800 min，逼近 2000 上限）。
-- 改為臺北 07:00–01:00（18 runs/day ≈ 45 min/mo）——**這是使用者明確認可的取捨**：鐵人賽文章是日更等級變化，2 小時級延遲無感。
-- cron 是 UTC：`0 23-23,0-17 * * *`。
+### cron 演進（踩過的坑）
+
+- 原本：每小時全時 `0 * * * *`（720 runs/mo）。
+- 13:43 `2a1c0e5`：改成 `0 23-23,0-17 * * *`，意圖是「臺北 07:00–01:00 每小時」。
+- **坑**：該寫法等效 `0 23,0-17 * * *`，語意正確，但 GH Actions 排程器對變更後的 cron 幾乎沒重新觸發——從 13:43 到當天 20:48 只自動跑了 1 次（16:28，還遲到 28 分鐘），其餘全靠手動 `workflow_dispatch` 撐。
+- 修正 `6b699e6`：改寫成 `0 0-17,23 * * *`（等效、更明確），推送後下一個整點（20:48 臺北）排程恢復自動觸發。
+- **教訓**：`schedule` 觸發由 GitHub 排程器負責，**與 runner 無關**；低頻 repo 可能被排程服務節流、整點高峰可能延遲甚至跳過。改 cron 後若沒觸發，先在 Actions 看 run 是否存在，再考慮外部觸發保險。
+
+### 決策：維持 GitHub 免費資源，暫不引進 self-hosted runner / Cloudflare Worker
+
+- **現在**：public repo 的 GitHub-hosted runner **免費且不計分鐘**。目前用量 ≈ 547 runs/月 × 2.5 min ≈ **22 小時/月**，遠低於任何額度上限。**$0 成本，無需任何變動。**
+- **不要**為了解決排程漏觸發去裝 VPS self-hosted runner——排程在 GitHub 端，runner 換到哪都一樣；且 public repo 用 self-hosted runner 有 GitHub 官方安全警告（任何人開 PR 即可在 VPS 執行任意程式碼）。
+- **觸發條件（使用者明確認可）**：
+  1. GitHub-hosted 免費額度開始不夠用（public repo 幾乎不可能）→ 上 self-hosted runner，且只讓 `schedule`/`workflow_dispatch` 用它，PR 相關 job 一律 GitHub-hosted。
+  2. 若排程又開始漏觸發（「每小時」是硬需求時）→ 兩個免費保險擇一：VPS cron 每小時打 `workflow_dispatch` API，或 Cloudflare Free Worker Cron Trigger（$0，CPU <10ms 只做 dispatch 觸發）。
