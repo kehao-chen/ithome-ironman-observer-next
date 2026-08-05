@@ -1,0 +1,74 @@
+---
+// web/src/components/Dashboard.astro
+import SeriesCard from "./SeriesCard.astro";
+import type { YearData } from "../../../scripts/types";
+
+interface Props { data: YearData }
+const { data } = Astro.props;
+const groups = ["全部", ...data.groups];
+---
+
+<header style="padding:1.5rem 2rem;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+  <div>
+    <h1 style="margin:0;font-size:1.4rem;">🏆 鐵人觀察家 2026</h1>
+    <p style="margin:.25rem 0 0;color:var(--muted);font-size:.85rem;">
+      <span id="updated-at"><time datetime={data.updatedAt}>{data.updatedAt}</time></span>
+      · <span id="series-count">{data.series.length}</span> 支系列
+    </p>
+  </div>
+  <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;" id="group-filters">
+    {groups.map((g) => (
+      <button data-group={g} class="filter" data-active={g === "全部" ? "true" : "false"} style="...">{g}</button>
+    ))}
+  </div>
+</header>
+
+<main style="padding:1.5rem 2rem;display:flex;flex-direction:column;gap:1rem;" id="series-list">
+  {data.series.map((s) => <SeriesCard series={s} />)}
+</main>
+
+<script>
+  const list = document.getElementById("series-list")!;
+  const updatedAt = document.getElementById("updated-at")!;
+  const seriesCount = document.getElementById("series-count")!;
+  let current: any = null;
+
+  function render(data: any) {
+    if (!data) { current = null; return; } // no SSR data on first load — page is pre-rendered
+    current = data;
+    updatedAt.textContent = data.updatedAt;
+    updatedAt.setAttribute("datetime", data.updatedAt);
+    seriesCount.textContent = String(data.series.length);
+    // client-side filter + sort (SSG already sorted by dayCount desc)
+    const group = document.querySelector(".filter[data-active='true']")?.getAttribute("data-group") ?? "全部";
+    const sort = (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount";
+    applyFilter(data, group, sort);
+  }
+
+  function applyFilter(data: any, group: string, sort: string) {
+    let series = data.series;
+    if (group !== "全部") series = series.filter((s: any) => s.group === group);
+    series = [...series].sort((a: any, b: any) => {
+      if (sort === "views") return totalViews(b) - totalViews(a);
+      if (sort === "latest") return latestPub(b) - latestPub(a);
+      return b.dayCount - a.dayCount;
+    });
+    list.innerHTML = "";
+    for (const s of series) list.appendChild(renderCard(s));
+  }
+
+  function totalViews(s: any) { return s.articles.reduce((n: number, a: any) => n + a.views, 0); }
+  function latestPub(s: any) { return s.articles.length ? new Date(s.articles[s.articles.length - 1].publishedAt).getTime() : 0; }
+  function renderCard(s: any) { /* build card DOM — see Task 8 */ }
+
+  document.querySelectorAll(".filter").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter").forEach((b) => b.setAttribute("data-active", "false"));
+      btn.setAttribute("data-active", "true");
+      if (current) applyFilter(current, btn.getAttribute("data-group")!, (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
+    });
+  });
+
+  window.addEventListener("ironman-data", ((e: CustomEvent) => render(e.detail)) as EventListener);
+  render((window as any).__SSR_DATA__);
+</script>
