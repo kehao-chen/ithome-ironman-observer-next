@@ -22,7 +22,8 @@ export type SeriesStats = {
 export type Series = {
   id: number; user: { id: number; name: string; profileUrl: string };
   group: string; title: string; description: string; team: string | null;
-  signupDate: string; dayCount: number; articleCount: number; subscriptions: number;
+  signupDate: string; lastUpdated: string | null; // RSS lastBuildDate (spec: 更新時間 card field)
+  dayCount: number; articleCount: number; subscriptions: number;
   articles: Article[];
 };
 export type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[]; scrapeLog: string[] };
