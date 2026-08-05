@@ -74,7 +74,6 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
     updatedAt: new Date().toISOString().replace("Z", "+08:00"),
     groups,
     series,
-    // @ts-expect-error scrapeLog is runtime-only diagnostics
     scrapeLog: errors,
   };
 }

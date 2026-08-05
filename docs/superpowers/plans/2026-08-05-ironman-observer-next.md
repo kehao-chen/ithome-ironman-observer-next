@@ -617,7 +617,7 @@ export type Series = {
   dayCount: number; articleCount: number; subscriptions: number;
   articles: Article[];
 };
-export type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[] };
+export type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[]; scrapeLog: string[] };
 export type Manifest = { year: number; signupListUrl: string };
 ```
 
@@ -784,7 +784,6 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
     updatedAt: new Date().toISOString().replace("Z", "+08:00"),
     groups,
     series,
-    // @ts-expect-error scrapeLog is runtime-only diagnostics
     scrapeLog: errors,
   };
 }

@@ -25,5 +25,5 @@ export type Series = {
   signupDate: string; dayCount: number; articleCount: number; subscriptions: number;
   articles: Article[];
 };
-export type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[] };
+export type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[]; scrapeLog: string[] };
 export type Manifest = { year: number; signupListUrl: string };
