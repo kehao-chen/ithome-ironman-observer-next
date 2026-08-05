@@ -26,4 +26,15 @@ describe("parseSignupList", () => {
     // page 1 of live list contains at least one not-started card (verified)
     expect(notStarted).toBeDefined();
   });
+
+  test("HTML entities decoded (no &amp; in output)", () => {
+    const html = readFixture("signup-page.html");
+    const cards = parseSignupList(html);
+    for (const c of cards) {
+      expect(c.group).not.toContain("&amp;");
+      expect(c.title).not.toContain("&amp;");
+      expect(c.name).not.toContain("&amp;");
+    }
+    expect(cards.some((c) => c.group === "ChatGPT & Codex")).toBe(true);
+  });
 });
