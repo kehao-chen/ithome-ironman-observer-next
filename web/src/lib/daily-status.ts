@@ -23,21 +23,40 @@ export function stalenessDays(iso: string | null | undefined, today: string): nu
   return Number.isFinite(diff) && diff >= 0 ? Math.floor(diff) : null;
 }
 
-// 動態狀態 chip：null = 不顯示；"today" = 今日發文；"stale" = 停更。
-export type StatusChip = { kind: "today" } | { kind: "stale"; days: number } | null;
+// 動態狀態 chip：null = 不顯示。
+// 文字一律固定長度（寬度穩定）；天數細節放 title tooltip。
+export type StatusChip =
+  | { kind: "today" }
+  | { kind: "yesterday" }
+  | { kind: "stale"; days: number }
+  | { kind: "long-stale"; days: number }
+  | null;
 
 export function statusChip(iso: string | null | undefined, dayCount: number, today: string): StatusChip {
   const days = stalenessDays(iso, today);
   if (days === null) return null; // 無文章或缺陷資料
   if (days === 0) return { kind: "today" };
-  // 完賽系列：已完成，停更不是異常 → 不顯示停更 chip。
+  // 完賽系列：已完成，狀態無意義 → 不顯示。
   if (dayCount >= 30) return null;
-  // 昨天發文（N=1）是正常節奏 → 不顯示。
-  if (days < 2) return null;
+  if (days === 1) return { kind: "yesterday" };
+  if (days >= 10) return { kind: "long-stale", days };
   return { kind: "stale", days };
 }
 
+// 固定詞（寬度一致）；`long-stale` 帶 tooltip 天數。
 export function statusChipText(chip: StatusChip): string {
   if (!chip) return "";
-  return chip.kind === "today" ? "今日發文" : `停更 ${chip.days} 天`;
+  switch (chip.kind) {
+    case "today": return "今日發文";
+    case "yesterday": return "昨日發文";
+    case "stale": return "停更中";
+    case "long-stale": return "長時間停更";
+  }
+}
+
+// title tooltip：有天數的狀態顯示「停更 N 天」。
+export function statusChipTitle(chip: StatusChip): string | null {
+  if (!chip) return null;
+  if (chip.kind === "stale" || chip.kind === "long-stale") return `停更 ${chip.days} 天`;
+  return null;
 }

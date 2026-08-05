@@ -92,7 +92,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   window.IRONMAN_DATA = initialData;
 </script>
 <script>
-  import { statusChip, statusChipText, taipeiDay, taipeiToday } from "../lib/daily-status";
+  import { statusChip, statusChipText, statusChipTitle, taipeiDay, taipeiToday } from "../lib/daily-status";
   const list = document.getElementById("series-list")!;
   const updatedAt = document.getElementById("updated-at")!;
   const seriesCount = document.getElementById("series-count")!;
@@ -137,8 +137,12 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     const c = statusChip(lastPubIso(s), s.dayCount, today);
     if (!c) return null;
     const el = document.createElement("span");
-    el.className = c.kind === "stale" ? "status-chip status-chip--stale" : "status-chip";
+    el.className = c.kind === "today" ? "status-chip"
+      : c.kind === "yesterday" ? "status-chip status-chip--yesterday"
+      : c.kind === "long-stale" ? "status-chip status-chip--long" : "status-chip status-chip--stale";
     el.textContent = statusChipText(c);
+    const t = statusChipTitle(c);
+    if (t) el.title = t;
     return el;
   }
   function badgeClass(s: any) {
@@ -257,7 +261,6 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 
   /* ---------- List row (compact) ---------- */
   function renderRow(s: any) {
-    const isDone = s.dayCount >= 30, isPending = s.dayCount === 0;
     const row = document.createElement("article"); row.className = "series-row";
     const day = document.createElement("span"); day.className = badgeClass(s); day.textContent = badgeText(s);
     const chipEl = chip(s);
@@ -272,15 +275,6 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     m.append(au, " · ", s.group, s.team ? ` · 團隊 ${s.team}` : "");
     main.append(t, m);
 
-    const prog = document.createElement("div"); prog.className = "row-progress";
-    const track = document.createElement("div"); track.className = "progress-track sm";
-    const fill = document.createElement("div");
-    fill.className = isDone ? "progress-fill progress-fill--done" : isPending ? "progress-fill progress-fill--pending" : "progress-fill";
-    fill.style.width = `${Math.min((s.dayCount / 30) * 100, 100)}%`;
-    track.appendChild(fill);
-    const pl = document.createElement("span"); pl.className = "progress-label tabular-nums"; pl.textContent = `${Math.min(s.dayCount, 30)}/30`;
-    prog.append(track, pl);
-
     const views = document.createElement("span"); views.className = "row-views tabular-nums";
     views.innerHTML = `${EYE_SVG}${totalViews(s).toLocaleString()}`;
 
@@ -292,7 +286,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     open.setAttribute("aria-label", "開啟系列"); open.title = "開啟系列"; open.innerHTML = OPEN_SVG;
     actions.append(rss, open);
 
-    row.append(left, main, prog, views, actions);
+    row.append(left, main, views, actions);
     return row;
   }
 
