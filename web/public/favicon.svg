@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="鐵人觀察家">
+  <style>
+    .sweep {
+      transform-box: view-box;
+      transform-origin: 32px 32px;
+      animation: radar-sweep 3s linear infinite;
+    }
+    @keyframes radar-sweep {
+      to { transform: rotate(360deg); }
+    }
+    .blip {
+      animation: radar-blip 2.4s ease-in-out infinite;
+    }
+    @keyframes radar-blip {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sweep, .blip { animation: none; }
+    }
+  </style>
+
+  <!-- 掃描盤：暗玻璃圓 + hairline 外框 -->
+  <circle cx="32" cy="32" r="30" fill="#0f1115" stroke="#2a2f3a" stroke-width="2"/>
+  <!-- 蝕刻 graticule：同心圓 + 十字 -->
+  <circle cx="32" cy="32" r="20" fill="none" stroke="#1f232c" stroke-width="1"/>
+  <line x1="32" y1="6" x2="32" y2="58" stroke="#1f232c" stroke-width="1"/>
+  <line x1="6" y1="32" x2="58" y2="32" stroke="#1f232c" stroke-width="1"/>
+
+  <!-- 掃掠群組：尾跡楔形（漸淡）+ 主楔形 + 前緣亮線，整組旋轉 -->
+  <g class="sweep">
+    <path d="M32 32 L25.71 6.77 A26 26 0 0 1 32 6 Z" fill="#22c55e" fill-opacity="0.06" transform="rotate(-60 32 32)"/>
+    <path d="M32 32 L25.71 6.77 A26 26 0 0 1 32 6 Z" fill="#22c55e" fill-opacity="0.10" transform="rotate(-40 32 32)"/>
+    <path d="M32 32 L25.71 6.77 A26 26 0 0 1 32 6 Z" fill="#22c55e" fill-opacity="0.16" transform="rotate(-20 32 32)"/>
+    <path d="M32 32 L25.71 6.77 A26 26 0 0 1 32 6 Z" fill="#22c55e" fill-opacity="0.28"/>
+    <line x1="32" y1="32" x2="32" y2="6" stroke="#22c55e" stroke-width="3" stroke-linecap="round" transform="rotate(4 32 32)"/>
+  </g>
+
+  <!-- blips：accent 藍，錯開相位呼吸 -->
+  <circle class="blip" cx="44" cy="22" r="3" fill="#3b82f6" style="animation-delay:-0.8s"/>
+  <circle class="blip" cx="24" cy="41" r="2.5" fill="#3b82f6" style="animation-delay:-1.6s"/>
+  <circle class="blip" cx="46" cy="38" r="2" fill="#3b82f6" style="animation-delay:-0.3s"/>
+</svg>
