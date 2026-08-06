@@ -17,3 +17,22 @@
 .insight-line { font-size: var(--text-sm); color: var(--text); margin-block: var(--space-2); }
 .insight-charts { display: flex; flex-wrap: wrap; gap: var(--space-5); }
 .insight-chart { flex: 1 1 320px; min-width: 0; }
+
+/* 年切換失敗提示（review：fetch failure feedback） */
+.insight-toast {
+  position: fixed;
+  inset-inline-start: 50%;
+  bottom: var(--space-5);
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--surface);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 100;
+}
+.insight-toast.show { opacity: 1; }

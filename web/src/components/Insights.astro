@@ -56,7 +56,9 @@ const distLine = pageEmpty
   ? "尚無資料"
   : articleCount === 0
     ? "尚無觀看資料"
-    : `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`;
+    : !dist.hasViews
+      ? "尚無可計算的觀看資料"
+      : `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`;
 const distSVG = pageEmpty || articleCount === 0 ? "" : distributionBarSVG(dist.buckets);
 const subsSVG =
   pageEmpty || articleCount === 0
@@ -79,7 +81,7 @@ const scatterSVGStr =
           x: g.articleCount,
           y: g.avgViews,
           label: g.group,
-          tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均 ${g.avgViews} 觀看`,
+          tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均每篇 ${g.avgViews} 觀看`,
         })),
       );
 
@@ -93,7 +95,7 @@ const kwLine = pageEmpty
     : kws.length === 0
       ? "尚無標題關鍵字"
       : `${topKw.count} 個系列標題包含「${topKw.keyword}」`;
-const kwSVG = pageEmpty || !hasSeries ? "" : barChartSVG(kws.map((k) => ({ label: k.keyword, value: k.count })));
+const kwSVG = pageEmpty || !hasSeries ? "" : kws.length === 0 ? "" : barChartSVG(kws.map((k) => ({ label: k.keyword, value: k.count })));
 const lenSVG =
   pageEmpty || !hasSeries
     ? ""

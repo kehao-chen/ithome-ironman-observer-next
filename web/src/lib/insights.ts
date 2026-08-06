@@ -35,10 +35,11 @@ export function publishWeekdayHistogram(articles: Article[]): { weekday: string;
 
 export type ViewsDistribution = {
   total: number; max: number; p50: number; p90: number; p99: number;
-  top10PctShare: number; buckets: { label: string; count: number }[];
+  top10PctShare: number; hasViews: boolean; buckets: { label: string; count: number }[];
 };
 
 const BUCKETS: { label: string; test: (v: number) => boolean }[] = [
+  { label: "0", test: (v) => v === 0 },
   { label: "1–9", test: (v) => v >= 1 && v <= 9 },
   { label: "10–99", test: (v) => v >= 10 && v <= 99 },
   { label: "100–999", test: (v) => v >= 100 && v <= 999 },
@@ -50,6 +51,7 @@ export function viewsDistribution(articles: Article[]): ViewsDistribution {
   const views = articles.map((a) => a.views);
   const n = views.length;
   const total = views.reduce((s, v) => s + v, 0);
+  const hasViews = total > 0;
   const sorted = [...views].sort((a, b) => a - b);
   const pct = (idx: number) => (n === 0 ? 0 : sorted[Math.min(Math.floor(idx * n), n - 1)]);
   const topN = Math.ceil(n * 0.1);
@@ -61,6 +63,7 @@ export function viewsDistribution(articles: Article[]): ViewsDistribution {
     p90: pct(0.9),
     p99: pct(0.99),
     top10PctShare: total === 0 ? 0 : topViews / total,
+    hasViews,
     buckets: BUCKETS.map((b) => ({ label: b.label, count: views.filter(b.test).length })),
   };
 }
