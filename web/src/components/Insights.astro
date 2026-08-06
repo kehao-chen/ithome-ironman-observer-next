@@ -19,17 +19,18 @@ interface Props {
   data: YearData;
   years: number[];
   latestYear: number; // 0 = 無可用年度（review #4b）
-  hasData: boolean;   // = data.series.length > 0（review #4）
 }
-const { data, years, latestYear, hasData } = Astro.props;
+const { data, years, latestYear } = Astro.props;
 
 const articles = data.series.flatMap((s) => s.articles);
 const articleCount = articles.length;
 const hasSeries = data.series.length > 0;
 
-// 整頁空狀態（review #4）：無可用年度（year === 0）或無任何系列（hasData === false）
-// → 四個面板「尚無資料」、年切換器不列出年度。
-const pageEmpty = data.year === 0 || !hasData;
+// 整頁空狀態（review #4）：僅「無可用年度」（data.year === 0，emptyData fallback）時
+// 四個面板「尚無資料」、年切換器不列出年度。
+// 年度檔存在但 series 為空 → 面板級空狀態（發文/人氣 articleCount===0、組別/文字 series===0），
+// 該年度仍保留在年切換器（review #3 補強 2）。
+const pageEmpty = data.year === 0;
 
 // 1. 發文行為（面板級空狀態：articleCount === 0，review #3 補強 2）
 const hour = publishHourHistogram(articles);
@@ -107,7 +108,7 @@ const lenSVG =
     </div>
     <div class="header-actions">
       <select id="insight-year-select" class="sort-select" aria-label="切換年度">
-        {!pageEmpty && years.map((y) => <option value={y} selected={y === data.year}>{y} 年</option>)}
+        {years.length > 0 && years.map((y) => <option value={y} selected={y === data.year}>{y} 年</option>)}
       </select>
       <button id="theme-toggle" class="icon-btn" type="button" aria-label="切換明暗主題" title="切換明暗主題（自動 / 明 / 暗）">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
