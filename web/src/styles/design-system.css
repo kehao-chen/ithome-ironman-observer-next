@@ -314,7 +314,9 @@ input, select, textarea { caret-color: var(--accent); }
 }
 /* List view overrides */
 .series-grid.view-list { display: block; }
-.series-grid.view-list .series-row + .series-row { margin-top: 0; }
+/* 相鄰列邊框重疊 1px（取代舊的 border-top: 0）：每列保留四面完整邊框，
+   hover / focus-within 時強調色才畫得出頂邊，否則非首列會缺上邊條紋。 */
+.series-grid.view-list .series-row + .series-row { margin-top: -1px; }
 
 /* ---------- Series card (grid) ---------- */
 .series-card {
@@ -530,22 +532,22 @@ input, select, textarea { caret-color: var(--accent); }
 
 /* ---------- List row ---------- */
 .series-row {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) 84px auto;
   align-items: center;
   gap: var(--space-3);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 0;
   padding: var(--space-2) var(--space-3);
   min-height: 56px;
   transition: border-color 0.12s ease, background 0.12s ease;
 }
-.series-row + .series-row { border-top: 0; border-radius: 0; }
 .series-row:first-child { border-radius: var(--radius) var(--radius) 0 0; }
 .series-row:last-child { border-radius: 0 0 var(--radius) var(--radius); }
 .series-row:only-child { border-radius: var(--radius); }
-.series-row:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 4%, var(--surface)); }
+.series-row:hover, .series-row:focus-within { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 4%, var(--surface)); z-index: 1; }
 .row-left { display: inline-flex; align-items: center; gap: var(--space-2); white-space: nowrap; }
 .row-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .row-title {
