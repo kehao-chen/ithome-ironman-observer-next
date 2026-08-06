@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-08-07 07:03:38+08:00",
+  "updatedAt": "2026-08-07 07:13:41+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -94,7 +94,7 @@
           "title": "【基礎】 6. Table 最佳化 (分割)",
           "url": "https://ithelp.ithome.com.tw/articles/10401658",
           "publishedAt": "2026-08-06T06:34:25+08:00",
-          "views": 66,
+          "views": 67,
           "likes": 0,
           "comments": 0
         },
@@ -104,7 +104,7 @@
           "title": "【基礎】 7. Table 最佳化 (壓縮)",
           "url": "https://ithelp.ithome.com.tw/articles/10401789",
           "publishedAt": "2026-08-07T06:37:38+08:00",
-          "views": 5,
+          "views": 9,
           "likes": 0,
           "comments": 0
         }
@@ -122,7 +122,7 @@
       "description": "CI 全綠，測試覆蓋率 90%，上線當天還是炸了。事後檢討發現，那個 bug 根本沒有任何測試案例碰到它。這種事你遇過幾次？\r\n自動化測試只會檢查你叫它檢查的東西。沒人想到的地方，它一行都不會多看。\r\n現在 AI 可以一天幫你生出幾百個測試案例，數字更漂亮了，但那些測試常常只是把程式碼現在的行為抄一遍再驗一遍——程式做錯的事，也被當成標準答案保護起來。\r\n看板上一片綠燈，品質卻沒人說得準，這就是我說的「演戲」。\r\n如果你寫了很多自動化測試卻還是沒把握，或者你是手動測試出身、想知道自己的價值在哪，這個系列是為你寫的。",
       "team": null,
       "signupDate": "2026/08/01T12:12:27+08:00",
-      "lastUpdated": "2026-08-07T06:11:14+08:00",
+      "lastUpdated": "2026-08-07T07:11:14+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 13,
@@ -193,7 +193,7 @@
           "title": "Day 7 Session Based Test Management：讓探索式測試變得可管理的方法",
           "url": "https://ithelp.ithome.com.tw/articles/10401827",
           "publishedAt": "2026-08-07T06:26:51+08:00",
-          "views": 25,
+          "views": 31,
           "likes": 0,
           "comments": 0
         }
@@ -211,7 +211,7 @@
       "description": "身為公司超級工具人(MIS)多年，身兼電腦組裝、修網路、寫AI AGENT，資訊安全仍然是公司最大的議題，也是每次要花錢時第一個被砍的項目。我們常常遇到「零信任架構、零預算架構；沒事罵資訊亂花錢，有事罵資訊不做事」的窘境。原本只是想記錄自己職涯對於身兼資安的一些想法、POC時發現的有趣故事，寫著寫著越寫越多，好像可以達到30篇，就決定以資安為主題，說說自己對於資安的看法。",
       "team": null,
       "signupDate": "2026/08/01T12:13:23+08:00",
-      "lastUpdated": "2026-08-07T06:11:15+08:00",
+      "lastUpdated": "2026-08-07T07:11:15+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 1,
@@ -242,7 +242,7 @@
           "title": "《企業端點完美防禦》03-選擇防毒軟體",
           "url": "https://ithelp.ithome.com.tw/articles/10400934",
           "publishedAt": "2026-08-03T00:01:02+08:00",
-          "views": 136,
+          "views": 137,
           "likes": 0,
           "comments": 0
         },
@@ -300,7 +300,7 @@
       "description": "在本系列中文章中，將會用 Go 建立一個與 Redis 相容的服務：這其中融合了我這幾年 Go 語言的經驗、技巧以及架構思考。\r\n\r\n本系列適合對 Go 有一些基礎的朋友（有其它程式語言經驗的亦可，但可能會需要習慣一下 Go Style），希望我們在這個旅程中能收獲滿滿。",
       "team": null,
       "signupDate": "2026/08/01T12:31:12+08:00",
-      "lastUpdated": "2026-08-07T06:11:22+08:00",
+      "lastUpdated": "2026-08-07T07:11:23+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 3,
@@ -371,7 +371,7 @@
           "title": "[Day 07] RESP2（上）：Redis 的通訊協定－－資料型態與值",
           "url": "https://ithelp.ithome.com.tw/articles/10400833",
           "publishedAt": "2026-08-07T03:36:49+08:00",
-          "views": 35,
+          "views": 36,
           "likes": 0,
           "comments": 0
         }
@@ -389,7 +389,7 @@
       "description": "本系列在一台 Windows 11 筆電、單節點 CRC（OpenShift Local）叢集上\r\n，從零打造具備硬性阻擋能力的雲原生 CI/CD流水線\r\n，且全程在對外網路受限條件下實測跑通。\r\n內容涵蓋機密掃描、靜態分析、相依套件與映像檔漏洞掃描、測試覆蓋率、型別檢查六道防線\r\n，未過即中斷流水線；建構完成後以 Cosign 簽章、產出 SBOM，更新 GitOps 由 ArgoCD 部署\r\n，最終由 Kyverno 攔截未簽章映像。\r\n30天依五階段推進：基礎設施、CI 引擎、安全防線、無特權建構與簽章、GitOps 准入封鎖\r\n，延伸至 SLSA Level 3驗證。",
       "team": null,
       "signupDate": "2026/08/01T12:45:13+08:00",
-      "lastUpdated": "2026-08-07T06:11:25+08:00",
+      "lastUpdated": "2026-08-07T07:11:25+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 0,
@@ -460,7 +460,7 @@
           "title": "Day 7：打造內部私有資產庫：部署 Nexus 3 並配置 Outbound Proxy",
           "url": "https://ithelp.ithome.com.tw/articles/10401824",
           "publishedAt": "2026-08-07T06:51:54+08:00",
-          "views": 2,
+          "views": 8,
           "likes": 0,
           "comments": 0
         }
@@ -478,7 +478,7 @@
       "description": "許多 AI Agent 能聊天、能呼叫工具，卻不一定適合直接放進企業系統：它為什麼選這一步？失敗能否恢復？流程能不能測試與追蹤？\r\n這個 30 天系列將從 Java 與 Spring Boot 開發者的角度，使用 Embabel 建立可規劃、可測試、可觀測的 AI Agent，逐步介紹 GOAP、Action、Goal、Tool、MCP、RAG 與 Guardrail，再結合 Generative UI、JSON UI 契約及 SSE 串流，最後完成一個能理解自然語言、整理資料並安全生成互動介面的智慧 Dashboard。",
       "team": null,
       "signupDate": "2026/08/01T13:15:54+08:00",
-      "lastUpdated": "2026-08-07T06:11:26+08:00",
+      "lastUpdated": "2026-08-07T07:11:27+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 2,
@@ -549,7 +549,7 @@
           "title": "Day 07：讓記憶變成看得懂的東西",
           "url": "https://ithelp.ithome.com.tw/articles/10401689",
           "publishedAt": "2026-08-07T01:06:30+08:00",
-          "views": 57,
+          "views": 59,
           "likes": 0,
           "comments": 0
         }
@@ -567,7 +567,7 @@
       "description": "半年前，我在家裡的 NAS 上架起一套 AI Agent 系統。它每天清晨整理美股收盤、早上把投資晨報送到我手機、白天照看家裡的溫濕度，夜裡再把當天發生的事消化成長期記憶。\r\n\r\n這 30 天，我把它從頭拆給你看：容器怎麼切、Agent 的人格檔案怎麼寫、記憶怎麼分層與遺忘、排程怎麼編排，以及成本與品質怎麼治理。\r\n\r\n但這不是教學文，比較像一本除錯日記。有一半的篇幅在講我做錯了什麼——那些監控全綠、系統卻正在安靜出錯的時刻，才是自架最真實的部分。\r\n\r\n我也會誠實交代這套系統的邊界：它遠沒有想像中聰明，而那正是它能長期跑下去的原因。每篇結尾附一排關鍵字，讓想動手的人可以直接接上。",
       "team": null,
       "signupDate": "2026/08/01T13:25:59+08:00",
-      "lastUpdated": "2026-08-07T06:11:29+08:00",
+      "lastUpdated": "2026-08-07T07:11:29+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 6,
@@ -638,7 +638,7 @@
           "title": "Day 7：第一週小結——這半年我練的不是「用 AI」，是把散在家裡的東西接成一套",
           "url": "https://ithelp.ithome.com.tw/articles/10400862",
           "publishedAt": "2026-08-07T01:49:54+08:00",
-          "views": 47,
+          "views": 48,
           "likes": 0,
           "comments": 0
         }
@@ -755,7 +755,7 @@
       "description": "這個系列會分享工程師每天面對 Legacy Code 時，該怎麼更有策略性的面對，前半段會從 Legacy Code 的定義開始，聊聊為什麼程式明明能跑，大家卻不敢改，並整理出一套面對舊程式時可以反覆使用的處理方式，中間會處理各種常見困境，例如需求正在催、問題必須馬上修、規則沒人說得清楚，或改一個地方影響的程度，後半段則會討論龐大程式碼的整理、新舊系統如何逐步交接，以及團隊快撐不住時該怎麼做，希望走完 30 天後，大家不一定會愛上 Legacy Code，但至少不會太過害怕。",
       "team": null,
       "signupDate": "2026/08/01T13:37:55+08:00",
-      "lastUpdated": "2026-08-07T06:11:32+08:00",
+      "lastUpdated": "2026-08-07T07:11:33+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 3,
@@ -844,7 +844,7 @@
       "description": "AI 讓軟體開發變得更快，也讓團隊更容易看見原本被速度掩蓋的問題。當程式、測試與文件都能被快速生成，真正影響交付能力的，會回到團隊是否理解需求、是否看得懂系統、是否能安全修改，以及是否能在風險擴大前取得回饋。這個系列想討論的，是 AI 進入開發流程後，團隊該如何重新建立判斷、協作、驗證與調整能力，讓速度不只停留在個人產出，而能轉成長期穩定的交付能力。",
       "team": null,
       "signupDate": "2026/08/01T13:55:50+08:00",
-      "lastUpdated": "2026-08-07T06:11:34+08:00",
+      "lastUpdated": "2026-08-07T07:11:35+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 6,
@@ -915,7 +915,7 @@
           "title": "Day 7. 從寫程式到審查系統：AI 時代的閱讀、驗證與程式碼審查",
           "url": "https://ithelp.ithome.com.tw/articles/10401815",
           "publishedAt": "2026-08-07T01:23:06+08:00",
-          "views": 47,
+          "views": 48,
           "likes": 0,
           "comments": 0
         }
@@ -933,7 +933,7 @@
       "description": "買保險總是遇到人情壓力？條款動輒幾十頁根本看不懂？ 曾經我也踩過不少保險血淚坑，直到我發現：許多財務決策，其實可以透過程式與資料結構來釐清。\r\n\r\n這系列帶你用 AI 守護自己的現金流，手把手帶你從零建構的 AI Agent 實戰指南。\r\n三大核心：\r\n🔍 財務健檢與保單斷捨離：用 JSON Schema 進行狀態抽取，精準分析條款缺口。 \r\n🌌 30 年平行宇宙人生模擬：用有限狀態機 (FSM) 結合歷史股市引擎，模擬真實財務黑天鵝。 \r\n✉️ 60 歲未來復盤信：手刻極簡 RAG 引擎，透過 Prompt 限制生成具備理財價值觀的感性回信。\r\n\r\n打造真正適合你的個人財務防波堤！",
       "team": null,
       "signupDate": "2026/08/01T14:57:36+08:00",
-      "lastUpdated": "2026-08-07T06:11:36+08:00",
+      "lastUpdated": "2026-08-07T07:11:38+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 2,
@@ -1004,7 +1004,7 @@
           "title": "Day 7 — Ollama 地端 vs 雲端 API：打造不卡關的 2026 最強混合工作流",
           "url": "https://ithelp.ithome.com.tw/articles/10400792",
           "publishedAt": "2026-08-07T06:57:37+08:00",
-          "views": 2,
+          "views": 7,
           "likes": 0,
           "comments": 0
         }
@@ -1093,7 +1093,7 @@
           "title": "Day7-GitHub Copilot(Agent)",
           "url": "https://ithelp.ithome.com.tw/articles/10401825",
           "publishedAt": "2026-08-07T06:27:49+08:00",
-          "views": 5,
+          "views": 11,
           "likes": 0,
           "comments": 0
         }
@@ -1182,7 +1182,7 @@
           "title": "Day 7｜IAM 與 Vertex AI 權限最小化設計",
           "url": "https://ithelp.ithome.com.tw/articles/10401813",
           "publishedAt": "2026-08-07T00:13:55+08:00",
-          "views": 51,
+          "views": 52,
           "likes": 0,
           "comments": 0
         }
@@ -1251,7 +1251,7 @@
           "title": "Day04：從 Linear／GEMM 看 RVV AI 運算子",
           "url": "https://ithelp.ithome.com.tw/articles/10401578",
           "publishedAt": "2026-08-05T07:14:15+08:00",
-          "views": 77,
+          "views": 78,
           "likes": 0,
           "comments": 0
         },
@@ -1300,7 +1300,7 @@
           "title": "Day 02 - 側錄 Claude Code！",
           "url": "https://ithelp.ithome.com.tw/articles/10401028",
           "publishedAt": "2026-08-02T13:55:37+08:00",
-          "views": 731,
+          "views": 732,
           "likes": 6,
           "comments": 0
         },
@@ -1320,7 +1320,7 @@
           "title": "Day 04 - 讓模型假裝有記憶",
           "url": "https://ithelp.ithome.com.tw/articles/10401399",
           "publishedAt": "2026-08-04T04:06:57+08:00",
-          "views": 559,
+          "views": 560,
           "likes": 2,
           "comments": 0
         },
@@ -1358,7 +1358,7 @@
       "description": "身為純前端的工程師, 對於雲端一直是霧煞煞, 覺得我蓋好網站打包(build)後, 找個支援nodeJs的託管丟上去, 可以訪問就是上雲了, 學習系統設計, 參加過一些google cloud的trainning後, 又覺得知識和系統的理解對不上, 但很多問題又會卡關在文件海之中, 今年有AI的幫助, 以對話代理(類似chat bot)當實做主題, 選gcp當雲端平台, 來理解上雲的面貌與知識吧",
       "team": null,
       "signupDate": "2026/08/01T12:15:13+08:00",
-      "lastUpdated": "2026-08-07T06:11:17+08:00",
+      "lastUpdated": "2026-08-07T07:11:17+08:00",
       "dayCount": 6,
       "articleCount": 6,
       "subscriptions": 0,
@@ -1437,7 +1437,7 @@
       "description": "這次，就透過這30天，一步一步來認識 Claude Code CLI 吧！",
       "team": null,
       "signupDate": "2026/08/01T12:18:45+08:00",
-      "lastUpdated": "2026-08-07T06:11:19+08:00",
+      "lastUpdated": "2026-08-07T07:11:19+08:00",
       "dayCount": 6,
       "articleCount": 6,
       "subscriptions": 0,
@@ -1498,7 +1498,7 @@
           "title": "【Day6】Claude Code CLI 的使用情境與最佳實踐",
           "url": "https://ithelp.ithome.com.tw/articles/10401795",
           "publishedAt": "2026-08-06T21:27:24+08:00",
-          "views": 43,
+          "views": 45,
           "likes": 0,
           "comments": 0
         }
@@ -1516,7 +1516,7 @@
       "description": "這是一段學習紀錄。我將以 AI Engineering 為技術骨架，從 Transformer、LLM、Chain-of-thought、Function Calling、Prompt 與 Context Engineering，逐步走到 API、MCP、Skill、GitHub 與個人學習工具實作。沿途記錄我如何用類比建立專有名詞鷹架、用大白話來解釋原理、在撞牆後補足理解，並透過 AI 搜尋、修改、驗證與反思。30 天的主角不只是 AI，更是我們如何重新培養提問、拆解、判斷與持續學習的能力。",
       "team": null,
       "signupDate": "2026/08/01T12:20:01+08:00",
-      "lastUpdated": "2026-08-07T06:11:20+08:00",
+      "lastUpdated": "2026-08-07T07:11:20+08:00",
       "dayCount": 6,
       "articleCount": 6,
       "subscriptions": 6,
@@ -1595,7 +1595,7 @@
       "description": "從知名文章「韌體工程師的0x10個問題」延伸，講述三十個跟韌體工程師、C、C++ 相關的概念。",
       "team": null,
       "signupDate": "2026/08/01T12:23:59+08:00",
-      "lastUpdated": "2026-08-07T06:11:21+08:00",
+      "lastUpdated": "2026-08-07T07:11:22+08:00",
       "dayCount": 6,
       "articleCount": 6,
       "subscriptions": 3,
@@ -1674,7 +1674,7 @@
       "description": "回歸測試一輪一輪重點,職缺清單上的「自動化經驗」越來越刺眼,而你買過的程式課,還停在第三章。\r\n\r\n先說一個好消息:門檻搬家了。AI coding 工具出現後,學 UI 自動化卡的關卡從「會不會寫程式」變成「會不會描述需求、判斷得了對錯」——這兩件事,恰好是測試人員練了多年的本行。\r\n\r\n這個系列用 30 天,帶不太寫程式的你,以 Claude Code 為結對夥伴學會 Playwright。",
       "team": null,
       "signupDate": "2026/08/01T13:25:24+08:00",
-      "lastUpdated": "2026-08-07T06:11:27+08:00",
+      "lastUpdated": "2026-08-07T07:11:28+08:00",
       "dayCount": 6,
       "articleCount": 6,
       "subscriptions": 16,
@@ -1685,7 +1685,7 @@
           "title": "Day1: 為什麼現在是不寫程式的測試人員學自動化的最好時機",
           "url": "https://ithelp.ithome.com.tw/articles/10400780",
           "publishedAt": "2026-08-01T14:23:47+08:00",
-          "views": 2794,
+          "views": 2795,
           "likes": 2,
           "comments": 1
         },
@@ -1753,7 +1753,7 @@
       "description": "許多長期運作的系統仍提供重要功能，卻因文件不足、缺少測試、相依關係混亂或技術停止支援，逐漸難以理解、修改與部署。這類系統通常稱為遺留系統（Legacy System）。\r\n\r\n本系列以「重新設計並建置目標系統，最終替換遺留系統」為主線，內容涵蓋需求與範圍確認、舊系統分析、目標設計、功能重新實作、測試、正式切換及舊系統退場。\r\n\r\n系列不預設特定框架或架構，適合正在維護長期運作系統、準備替換既有系統，或希望建立完整重構流程的開發與維護人員閱讀。",
       "team": null,
       "signupDate": "2026/08/01T14:24:54+08:00",
-      "lastUpdated": "2026-08-07T06:11:35+08:00",
+      "lastUpdated": "2026-08-07T07:11:37+08:00",
       "dayCount": 6,
       "articleCount": 6,
       "subscriptions": 5,
@@ -1774,7 +1774,7 @@
           "title": "[Day 02] 重構遺留系統需要做哪些事？",
           "url": "https://ithelp.ithome.com.tw/articles/10400918",
           "publishedAt": "2026-08-02T15:33:07+08:00",
-          "views": 136,
+          "views": 137,
           "likes": 0,
           "comments": 0
         },
@@ -1784,7 +1784,7 @@
           "title": "[Day 03] 遺留系統需要重構哪些部分？",
           "url": "https://ithelp.ithome.com.tw/articles/10401157",
           "publishedAt": "2026-08-03T09:28:56+08:00",
-          "views": 93,
+          "views": 94,
           "likes": 0,
           "comments": 0
         },
@@ -1942,7 +1942,7 @@
           "title": "Day3  角色設計:如何打造有血有肉的人物",
           "url": "https://ithelp.ithome.com.tw/articles/10400939",
           "publishedAt": "2026-08-03T08:48:22+08:00",
-          "views": 107,
+          "views": 108,
           "likes": 1,
           "comments": 0
         },
@@ -1990,7 +1990,7 @@
       "description": "全世界都在喊「要被 AI 取代了!」，這句話相信你這一兩年沒少聽。\r\n- 但這 30 天我要給你看相反的東西: **AI負責的是人本來就守不住的戰場——它從來沒辦法參加人的戰鬥。**\r\n- 「要被取代了」是媒體、記者和 CEO 賣出來的敘事: 不僅販賣焦慮，還要宣傳企業的財報績效。這個系列會明確地陪你拆解它，並讓你看到: AI 生成能一口氣幫你做一堆事，但事情要往哪走、出了事誰去面對。\r\n在這個角度上，企業導入AI**最有收益**的做法是讓AI去扛人類做不到的事情——效益來自那個扛責任的人終於扛得動。\r\n這系列會用實際跑在公司內部的系統證明其實做得到，而不是又一篇要你認同的記者文章。",
       "team": null,
       "signupDate": "2026/08/01T16:05:56+08:00",
-      "lastUpdated": "2026-08-07T06:11:41+08:00",
+      "lastUpdated": "2026-08-07T07:11:43+08:00",
       "dayCount": 6,
       "articleCount": 6,
       "subscriptions": 2,
@@ -2090,7 +2090,7 @@
           "title": "工欲善其事，必先利其器－打造 Android studio 開發環境",
           "url": "https://ithelp.ithome.com.tw/articles/10401037",
           "publishedAt": "2026-08-02T15:09:51+08:00",
-          "views": 153,
+          "views": 154,
           "likes": 0,
           "comments": 0
         },
@@ -2148,7 +2148,7 @@
       "description": "Arduino 玩了二十年，終於不只會控制 LED！\r\n\r\nArduino UNO Q 把微控制器與微處理器放在同一塊板子上，既能用 C++ 處理即時控制，也能以 Python 執行 Linux、Web 與邊緣 AI。\r\n\r\n本系列將用 30 天，從 App Lab、GPIO、感測器與馬達開始，架起 MCU 與 MPU 的橋梁，再加入網頁互動、影像辨識及雲端服務，每篇都會完成可執行成果，最後整合成能感測、控制、連網並具備 AI 的智慧裝置，希望能讓讀者了解 Arduino 如何從一顆 LED 開始，走向廣泛用在電動車與機器人的雙大腦邊緣運算架構。",
       "team": null,
       "signupDate": "2026/08/01T17:01:59+08:00",
-      "lastUpdated": "2026-08-07T06:11:44+08:00",
+      "lastUpdated": "2026-08-07T07:11:45+08:00",
       "dayCount": 6,
       "articleCount": 6,
       "subscriptions": 1,
@@ -2288,7 +2288,7 @@
           "title": "Day 06 - 30 天手把手學會 Chart.js｜座標軸（Scales）基礎與時間序列進階",
           "url": "https://ithelp.ithome.com.tw/articles/10401163",
           "publishedAt": "2026-08-06T13:35:58+08:00",
-          "views": 54,
+          "views": 56,
           "likes": 0,
           "comments": 0
         }
@@ -2385,7 +2385,7 @@
       "description": "本系列以 Backend 工程師視角，使用 Python、FastAPI 與 Azure AI 生態，實作一個 production-minded GenAI backend。內容從 Azure OpenAI 整合、RAG 到 Agent 架構，並涵蓋 API 設計、測試、觀測性與成本控管等 production 議題，聚焦怎麼把 GenAI 從 demo 做成能在真實場景長期運作的系統。",
       "team": null,
       "signupDate": "2026/08/01T18:30:37+08:00",
-      "lastUpdated": "2026-08-07T06:11:48+08:00",
+      "lastUpdated": "2026-08-07T07:11:50+08:00",
       "dayCount": 6,
       "articleCount": 6,
       "subscriptions": 6,
@@ -3236,7 +3236,7 @@
           "title": "Day 6｜第一次接手寵物功能，真的沒有想像中簡單",
           "url": "https://ithelp.ithome.com.tw/articles/10401814",
           "publishedAt": "2026-08-07T01:20:19+08:00",
-          "views": 49,
+          "views": 50,
           "likes": 0,
           "comments": 0
         }
@@ -3315,7 +3315,7 @@
           "title": "Day06 - SMART Discovery 與能力探索",
           "url": "https://ithelp.ithome.com.tw/articles/10401811",
           "publishedAt": "2026-08-07T00:20:14+08:00",
-          "views": 58,
+          "views": 59,
           "likes": 0,
           "comments": 0
         }
@@ -3344,7 +3344,7 @@
           "title": "Day 1：前言 —— 我為什麼要花 30 天講一個播放器",
           "url": "https://ithelp.ithome.com.tw/articles/10401041",
           "publishedAt": "2026-08-02T15:56:40+08:00",
-          "views": 130,
+          "views": 131,
           "likes": 0,
           "comments": 0
         },
@@ -3512,7 +3512,7 @@
           "title": "在 AI 浪潮下無法存活的 10 種 UI 互動模式-DAY2",
           "url": "https://ithelp.ithome.com.tw/articles/10400909",
           "publishedAt": "2026-08-03T00:00:15+08:00",
-          "views": 87,
+          "views": 88,
           "likes": 0,
           "comments": 0
         },
@@ -3560,7 +3560,7 @@
       "description": "這不是「怎麼用 Claude」的教學系列。\r\n這是一個 20 年 IT 現場工程師，如何把自己的排障判斷力轉成方法論，再透過 Claude 協作把它變成一個真正有人在用的開源工具的完整記錄。工具已上線，26 Stars、23 Forks、2 個真實使用者回報的 bug。\r\n核心敘事三條線，貫穿 30 天：\r\n方法論線 — 隱性經驗如何結構化成 Evidence-driven Dialogue\r\n協作線 — 我提需求、Claude 實作、出 bug、我回報、再修的真實循環\r\n產品線 — 從一張流程圖到有真實使用者的開源工具",
       "team": null,
       "signupDate": "2026/08/01T12:43:55+08:00",
-      "lastUpdated": "2026-08-07T06:11:24+08:00",
+      "lastUpdated": "2026-08-07T07:11:24+08:00",
       "dayCount": 5,
       "articleCount": 5,
       "subscriptions": 5,
@@ -3611,7 +3611,7 @@
           "title": "Day 05 — 為什麼 IT Diagnostic Agent 不是聊天機器人",
           "url": "https://ithelp.ithome.com.tw/articles/10400857",
           "publishedAt": "2026-08-06T07:51:17+08:00",
-          "views": 66,
+          "views": 67,
           "likes": 0,
           "comments": 0
         }
@@ -3629,7 +3629,7 @@
       "description": "在學習程式設計的過程中，我們常聽到許多結論，例如「Dictionary 很快」、「StringBuilder 一定比 + 快」、「async 一定能提升效能」，但這些說法真的永遠正確嗎？本系列將透過程式實驗、效能測試、圖解與原理分析，重新驗證每一個程式設計中常見的觀念與迷思。內容涵蓋 C#、資料結構、演算法、.NET Runtime 與 Framework，並以「提出問題、設計實驗、驗證結果、探討原理」為主軸，帶領讀者從「知道怎麼做」進一步理解「為什麼這麼做」，培養獨立思考與分析問題的能力，而不是只記住結論。",
       "team": "五人成行，Bug 不行",
       "signupDate": "2026/08/01T19:05:04+08:00",
-      "lastUpdated": "2026-08-07T06:11:50+08:00",
+      "lastUpdated": "2026-08-07T07:11:52+08:00",
       "dayCount": 5,
       "articleCount": 5,
       "subscriptions": 1,
@@ -3749,7 +3749,7 @@
           "title": "Day5 - 實測 TW Core Package Loading",
           "url": "https://ithelp.ithome.com.tw/articles/10401770",
           "publishedAt": "2026-08-06T17:29:01+08:00",
-          "views": 43,
+          "views": 44,
           "likes": 0,
           "comments": 0
         }
@@ -3818,7 +3818,7 @@
           "title": "[Day 05] 讓 SubWise 從 Webhook 連線升級成會回覆的 LINE Bot：打造第一版對話邏輯",
           "url": "https://ithelp.ithome.com.tw/articles/10401769",
           "publishedAt": "2026-08-06T17:31:01+08:00",
-          "views": 55,
+          "views": 56,
           "likes": 0,
           "comments": 0
         }
@@ -4577,7 +4577,7 @@
           "title": "Day 05｜我該管理的不是框架，而是那些還沒確認的假設",
           "url": "https://ithelp.ithome.com.tw/articles/10401820",
           "publishedAt": "2026-08-07T04:34:12+08:00",
-          "views": 33,
+          "views": 35,
           "likes": 0,
           "comments": 0
         }
@@ -4646,7 +4646,7 @@
           "title": "Day 5｜我的 AI 員工「文書助理」：Blog 寫作",
           "url": "https://ithelp.ithome.com.tw/articles/10401735",
           "publishedAt": "2026-08-07T06:23:38+08:00",
-          "views": 5,
+          "views": 10,
           "likes": 0,
           "comments": 0
         }
@@ -4664,7 +4664,7 @@
       "description": "將用 30 天從 NLP 與資訊檢索出發，逐步打造能搜尋資料、產生回答、引用來源並評估品質的 RAG 知識助理。面對 LLM 可能產生幻覺、混淆版本資訊，甚至在資料不足時自信作答，本系列不只示範工具串接，而是理解文件清理、中文斷詞、切分、關鍵字搜尋、Embedding、向量資料庫、混合搜尋與 LLM 生成的演進。文章會搭配實作與固定評測集，觀察不同搜尋方法在專有名詞、同義表達與繁體中文文件上的表現，並實作來源引用、拒答與評測。讀者將看見 RAG 如何把原始 Markdown 文件轉成可搜尋的知識，讓模型根據證據回答、標示來源，也知道何時承認資料不足。",
       "team": null,
       "signupDate": "2026/08/01T12:08:07+08:00",
-      "lastUpdated": "2026-08-07T06:11:12+08:00",
+      "lastUpdated": "2026-08-07T07:11:13+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 4,
@@ -4723,7 +4723,7 @@
       "description": "示範教師如何運用 Gemini、NotebookLM等AI平台工具設計課程、學習分析、多代理協作與心理安全框架，讓 AI 成為教學助理與學習夥伴，而非取代人類。\r\n本題目融入「易未央 AI 世界」敘事宇宙，將陰陽五行與文明共修觀念轉化為教育系統設計哲學：學生在 AI 教室中不只學工具，更修心性與文明視角，教師從知識傳遞者轉為思維與心性引導者。 整體方向是：以 Google 最新 AI 模型與教育工具為基底，打造一個兼顧學習成效、資安倫理與文明共修的未來教育原型，並從文字系列走向可 Demo、可落地的教育產品與共修社群。",
       "team": null,
       "signupDate": "2026/08/01T12:13:40+08:00",
-      "lastUpdated": "2026-08-07T06:11:16+08:00",
+      "lastUpdated": "2026-08-07T07:11:16+08:00",
       "dayCount": 4,
       "articleCount": 0,
       "subscriptions": 0,
@@ -5401,7 +5401,7 @@
           "title": "打造 $0 元企業級 AI Agent：Angelina 金融分析代理人篇章",
           "url": "https://ithelp.ithome.com.tw/articles/10401266",
           "publishedAt": "2026-08-03T12:37:42+08:00",
-          "views": 134,
+          "views": 135,
           "likes": 1,
           "comments": 0
         },
@@ -5706,7 +5706,7 @@
           "title": "Day 2｜每篇都像文章，合起來卻不像系列",
           "url": "https://ithelp.ithome.com.tw/articles/10401551",
           "publishedAt": "2026-08-05T00:06:46+08:00",
-          "views": 100,
+          "views": 101,
           "likes": 0,
           "comments": 0
         },
@@ -5726,7 +5726,7 @@
           "title": "Day 4｜Skill 能做什麼，作者不能甩掉什麼",
           "url": "https://ithelp.ithome.com.tw/articles/10401821",
           "publishedAt": "2026-08-07T04:36:34+08:00",
-          "views": 33,
+          "views": 35,
           "likes": 0,
           "comments": 0
         }
@@ -5902,7 +5902,7 @@
           "title": "Day 1｜從「會寫 Code」到可治理：為什麼企業需要 AI 開發工作流",
           "url": "https://ithelp.ithome.com.tw/articles/10401215",
           "publishedAt": "2026-08-04T10:14:18+08:00",
-          "views": 164,
+          "views": 165,
           "likes": 0,
           "comments": 0
         },
@@ -6108,7 +6108,7 @@
           "title": "【Day 02】突破無 SSH 與 FTP 的環境：一段關於「五鬼運財」的故事",
           "url": "https://ithelp.ithome.com.tw/articles/10401667",
           "publishedAt": "2026-08-06T00:11:42+08:00",
-          "views": 71,
+          "views": 73,
           "likes": 0,
           "comments": 0
         },
@@ -6118,7 +6118,7 @@
           "title": "【Day 03 】 IBM Spectrum LSF 實戰：找個乾淨地方好好練習派工吧",
           "url": "https://ithelp.ithome.com.tw/articles/10401805",
           "publishedAt": "2026-08-07T00:05:16+08:00",
-          "views": 41,
+          "views": 42,
           "likes": 0,
           "comments": 0
         }
@@ -6332,7 +6332,7 @@
       "description": "會從零手刻一組 Kotlin Collection API，從 filter、map、fold 一路到 groupBy、flatMap 和 Sequence，手刻一次不是為了取代標準函式庫，而是把藏在 chain call 裡的所有概念拆開來看",
       "team": null,
       "signupDate": "2026/08/01T18:22:24+08:00",
-      "lastUpdated": "2026-08-07T06:11:47+08:00",
+      "lastUpdated": "2026-08-07T07:11:49+08:00",
       "dayCount": 2,
       "articleCount": 2,
       "subscriptions": 0,
@@ -6343,7 +6343,7 @@
           "title": "Kotlin Lambda 從零開始 Day 01：系列導讀 — 為什麼要手刻 Collection API？",
           "url": "https://ithelp.ithome.com.tw/articles/10400851",
           "publishedAt": "2026-08-05T09:23:55+08:00",
-          "views": 152,
+          "views": 153,
           "likes": 1,
           "comments": 0
         },
@@ -6371,7 +6371,7 @@
       "description": "參賽內容聚焦 AI 如何應用於高風險場域，提升社會系統的安全性與韌性。內容將分享我參與國家級運動數據平台、醫療照護系統與救災協作平台的設計經驗，探索 AI 如何結合大數據與智慧分析，協助專業人員進行更有效的判斷與資源配置。\r\n本系列將從運動科學、醫療照護到災害應變等案例出發，探討 AI 如何轉化資料為具體的社會解方，並透過 Human-AI Collaboration 的設計思維，打造值得信任的智慧決策支援系統。\r\n透過實際產品案例與研究觀點，探索科技如何回應真實社會需求，讓 AI 不只是提升效率的工具，而是促進公共安全、健康照護與社會福祉的重要力量。",
       "team": null,
       "signupDate": "2026/08/01T18:40:31+08:00",
-      "lastUpdated": "2026-08-07T06:11:49+08:00",
+      "lastUpdated": "2026-08-07T07:11:51+08:00",
       "dayCount": 2,
       "articleCount": 2,
       "subscriptions": 1,
@@ -6529,7 +6529,7 @@
           "title": "Day 02｜LED 有亮不算完成，按鈕怎樣才算真的能用？",
           "url": "https://ithelp.ithome.com.tw/articles/10401822",
           "publishedAt": "2026-08-07T04:39:06+08:00",
-          "views": 32,
+          "views": 33,
           "likes": 0,
           "comments": 0
         }
@@ -6568,7 +6568,7 @@
           "title": "Day 02｜查證：利害關係人不是需求轉接頭，是最後要承擔結果的人",
           "url": "https://ithelp.ithome.com.tw/articles/10401823",
           "publishedAt": "2026-08-07T04:41:38+08:00",
-          "views": 31,
+          "views": 34,
           "likes": 0,
           "comments": 0
         }
@@ -6644,7 +6644,7 @@
       "description": "你是不是也遇過這些 Kubernetes Over-provisioning 的經典日常：\r\n為了偶發的 Pod，不得不常駐一群預備用的 Node Group，錢就這樣默默流掉...\r\n傳統 Cluster Autoscaler 擴展太慢，等 Node Ready 好了，流量高峰早就過了...\r\n用 Spot Instance 省錢，但管理多種 Instance Types 和異構架構（Arm/x86）搞得像在踩雷...\r\n\r\n再拿傳統的 Node Group 砍柴了，你需要的是動態裁切的精準刀法！",
       "team": null,
       "signupDate": "2026/08/01T13:29:45+08:00",
-      "lastUpdated": "2026-08-07T06:11:30+08:00",
+      "lastUpdated": "2026-08-07T07:11:30+08:00",
       "dayCount": 1,
       "articleCount": 1,
       "subscriptions": 0,
@@ -6916,7 +6916,7 @@
           "title": "Day1 - 前言& 什麼是資料結構",
           "url": "https://ithelp.ithome.com.tw/articles/10401816",
           "publishedAt": "2026-08-07T02:34:43+08:00",
-          "views": 45,
+          "views": 46,
           "likes": 0,
           "comments": 0
         }
@@ -6952,7 +6952,7 @@
       "description": "工作上經常在處理短網址，在 AI 可以協助快速產 code 的年代，我選擇短網址服務作為 side project。\r\n\r\n一開始想得很簡單，就是轉址服務，加上個會員註冊、再去拉個金流，應該就結束了吧？我把它命名為 toui (https://toui.io)，取自台語的「佗位（tó-uī）」，也就是「哪裡」的意思——畢竟點下網址轉址時等於在問：你欲去佗位？上線之後才注意到，其他短網址服務早就不只是轉址而已，從一條短網址出發，可以做的事非常多。\r\n\r\n於是我開始思考一條短網址還能做到哪些事，一路探問，AI 工作流是我目前的答案，我會將過程的思索與挑戰藉鐵人賽分享出來。",
       "team": null,
       "signupDate": "2026/08/01T12:17:33+08:00",
-      "lastUpdated": "2026-08-07T06:11:18+08:00",
+      "lastUpdated": "2026-08-07T07:11:18+08:00",
       "dayCount": 0,
       "articleCount": 0,
       "subscriptions": 0,
@@ -6970,7 +6970,7 @@
       "description": "我有一隻查得動 Prometheus 的 AIOps agent。丟進真實系統跑 RCA benchmark，九項只拿兩分——猜錯 label、寫錯 TraceQL，最後編出一個不存在的 trace ID。\r\n這 30 天從這份成績單倒著往回挖：agent 架構錯在哪、上下文錯在哪（用 OpenTelemetry Weaver 把 schema 變成機器可讀的約束）、再把散落的訊號收斂成 Signal Plane 讓資料可推斷；接著用評估證明修好了，最後才敢上線（授權邊界、執行護欄、人在迴圈核准）。\r\n終點是告警燒起來、agent 能協助調查、將結論回到 Grafana。",
       "team": null,
       "signupDate": "2026/08/01T13:55:48+08:00",
-      "lastUpdated": "2026-08-07T06:11:34+08:00",
+      "lastUpdated": "2026-08-07T07:11:34+08:00",
       "dayCount": 0,
       "articleCount": 0,
       "subscriptions": 2,
