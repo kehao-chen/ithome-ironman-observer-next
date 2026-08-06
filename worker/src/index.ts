@@ -7,8 +7,9 @@
  * with Cloudflare's network-scheduled cron — same zero-cost constraint.
  *
  * - Scheduled every 10 minutes via wrangler.toml `[triggers]`.
- * - Deduplicates by workflow `run_number`: a given run is dispatched at most
- *   once even if the cron fires while a run is already queued/running.
+ * - Skips dispatch while the latest workflow run is still queued/in_progress:
+ *   prevents overlapping runs (each run takes ~2.5 min, well under the 10 min
+ *   interval, but a slow scrape must not stack a second run → push conflicts).
  * - `GET /` is a public health check (no secret required).
  *
  * Secrets: GITHUB_TOKEN (fine-grained PAT with `actions:write` on the repo),
@@ -35,34 +36,28 @@ async function dispatchWorkflow(env: Env): Promise<{ status: number; body: strin
   return { status: res.status, body: await res.text() };
 }
 
-async function latestRunNumber(env: Env): Promise<number> {
+/** True when the most recent workflow run is queued or in progress. */
+async function hasActiveRun(env: Env): Promise<boolean> {
   const res = await fetch(
     `https://api.github.com/repos/${env.GITHUB_REPO}/actions/workflows/${WORKFLOW_FILE}/runs?per_page=1`,
     { headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, Accept: "application/vnd.github+json", "User-Agent": "ironman-observer-trigger" } },
   );
-  if (!res.ok) return 0;
-  const data = (await res.json()) as { workflow_runs?: { run_number: number }[] };
-  return data.workflow_runs?.[0]?.run_number ?? 0;
+  if (!res.ok) return false; // be permissive on read errors; dispatch will still validate
+  const data = (await res.json()) as { workflow_runs?: { status: string }[] };
+  const status = data.workflow_runs?.[0]?.status;
+  return status === "queued" || status === "in_progress";
 }
 
 export default {
   async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
-    // Re-dispatch on failure, but never overlap runs: a retry only re-fires if
-    // the latest run is still the one we dispatched (no newer run started).
-    const current = await latestRunNumber(env);
-    const target = current + 1;
-    const { status, body } = await dispatchWorkflow(env);
-    if (status === 204) {
-      ctx.waitUntil(
-        (async () => {
-          for (let i = 0; i < 10; i++) {
-            await new Promise((r) => setTimeout(r, 5000));
-            if ((await latestRunNumber(env)) >= target) return;
-          }
-        })(),
-      );
+    if (await hasActiveRun(env)) {
+      // A run is still going — skip this tick rather than stacking a parallel
+      // scrape (which races on `git push` and can trigger ithelp rate limits).
+      console.log("skip: latest workflow run still active");
       return;
     }
+    const { status, body } = await dispatchWorkflow(env);
+    if (status === 204) return;
     // Non-2xx: surface via cron retry (CF retries failed scheduled events) and logs.
     throw new Error(`workflow_dispatch failed: HTTP ${status} ${body}`);
   },
