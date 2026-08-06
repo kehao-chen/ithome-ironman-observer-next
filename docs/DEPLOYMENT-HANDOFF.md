@@ -23,29 +23,30 @@ Cloudflare Worker ironman-observer-trigger (cron */10)
    │  POST /repos/.../actions/workflows/scheduled-update.yml/dispatches
    ▼
 GH Actions (.github/workflows/scheduled-update.yml)
-   ├─ bun run scripts/scrape.ts      → data/2026.json + data/meta.json
+   ├─ bun run scripts/scrape.ts      → data/{year}.json（每年度一支）+ data/meta.json
    ├─ 資料有變才 commit + push       → 無變更 exit 0 跳過
    ├─ cd web && bun install && build → dist/
    └─ npx wrangler pages deploy      → Cloudflare Pages
 ```
 
-- **零成本**：Cloudflare Workers/Pages free tier + GH Actions public-repo 免費 runner + 自有網域。無後端、無 DB（JSON 即 DB）。
+- **零成本**：Cloudflare Workers/Pages free tier + GH Actions public-repo 免費 runner + 自有網域。無後端、無 DB（JSON 即 DB；每年度一支 `data/{year}.json`，`data/meta.json` 的 `years` 是年度選項唯一權威）。
 - **每 10 分鐘全量抓取** ~250 requests（127 系列 × 2 + 分頁），約 2.5 min/run。
 
 ## 關鍵檔案地圖
 
 | 路徑 | 內容 |
 |---|---|
-| `scripts/scrape.ts` | orchestrator：分頁抓 signup → 每系列 RSS+series 頁 → merge → 寫 JSON。`taipeiTimestamp()` 輸出正確臺北時間（曾修過 toISOString 誤標 bug） |
+| `scripts/scrape.ts` | orchestrator：讀 `config/series-manifest.json` 陣列，**逐年度**跑 `runScrape`（per-year try/catch；series 為 0 或 throw = 該年度失敗，console.error 後繼續）。**至少一年成功** → 寫出每個成功年度 `data/{year}.json` + `data/meta.json`，exit 0；**全部失敗** → 零寫入（保留舊資料）、exit 1（workflow 因步驟失敗而不 commit，舊站繼續服務舊資料）。`taipeiTimestamp()` 輸出正確臺北時間（曾修過 toISOString 誤標 bug）；`collectYears`/`buildMeta` 為純函式（有測試） |
 | `scripts/parse-signup.ts` | signup 列表 HTML → SignupCard（含 `decodeHtmlEntities`，資料必須存純文字） |
 | `scripts/parse-rss.ts` | RSS → RssChannel；`parseRfc822` 保留來源 offset 牆鐘（曾修過 UTC 誤標 bug） |
 | `scripts/parse-series.ts` | series 頁 → SeriesStats（瀏覽/Like/留言/訂閱） |
 | `scripts/html-entities.ts` | 共享 entity 解碼（&amp; 等）——**必須在 parse 時解，否則 Astro/client 雙重跳脫顯示 &amp;amp;** |
 | `scripts/types.ts` | 全專案共享型別（scraper + Astro 共用） |
-| `web/src/pages/index.astro` | 頁面 + 60s client refresh（fetch /data/2026.json?t=） |
-| `web/src/components/Dashboard.astro` | **UI/UX 主戰場**：header、group filter、sort、renderCard（大量 inline style） |
+| `web/scripts/copy-data.mjs` | build 前置：清空 `web/public/data/` 所有 `^\d{4}\.json$` → 複製全部 `data/^\d{4}\.json$`；**meta.json 不複製**（client 不需要） |
+| `web/src/pages/index.astro` | 頁面：glob `data/*.json`（4 碼年份 key）+ dynamic import meta；`years = meta.years ∩ 實際存在檔案`；`<title>` 隨年度動態 |
+| `web/src/components/Dashboard.astro` | **UI/UX 主戰場**：header、**年度切換器**（`#year-select`，以 meta `years` 為權威）、**60s client refresh**（`loadYear` + fetchToken 防 stale race）、group filter（container delegation、僅年度變更時重建 chips）、sort、scrapeLog notice（`<details id="scrape-log">`，空時 hidden）、renderCard（大量 inline style） |
 | `web/src/components/SeriesCard.astro` | 靜態卡片（SSG 版）；與 client renderCard 需保持欄位一致 |
-| `config/series-manifest.json` | 年度清單（單一來源；多年度架構從這裡擴） |
+| `config/series-manifest.json` | **年度清單（單一來源；陣列）**：`[{ year, signupListUrl }]`，多年度架構從這裡擴 |
 | `.github/workflows/scheduled-update.yml` | workflow（僅 `workflow_dispatch`；原 `schedule` 已移除，由 Worker 觸發）；secrets: `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` |
 | `worker/` | Cloudflare Worker `ironman-observer-trigger`（cron `*/10 * * * *`）：`scheduled()` 打 `workflow_dispatch`，依 `run_number` 去重避免重疊；`GET /` 健康檢查、`POST /dispatch` 手動觸發；secrets: `GITHUB_TOKEN`（Actions:write PAT）、`GITHUB_REPO` |
 
@@ -60,10 +61,18 @@ GH Actions (.github/workflows/scheduled-update.yml)
 7. **群組「ChatGPT & Codex」**：entity 已解碼為正確 `&`，確認 UI 顯示正常即可。
 8. **零文章系列 30 支**：`articleCount === 0`（尚未開賽），篩選/排序時會混在最後。
 
+### 多年度（2026-08-06 新增，Task 1–6 實作）
+
+- **meta 語意**：`data/meta.json` = `{ latestYear, years（desc）, updatedAt, seriesCount }`；`years` 是 UI 年度選項的**唯一權威**（index.astro 再與實際存在的 `data/{year}.json` 取交集做防禦）。`seriesCount`/`updatedAt` 屬 latestYear。
+- **空資料年度**：某年度抓取失敗但舊檔仍在 → 保留舊 `{year}.json`，但該年度**不寫入 `meta.years`**（buildMeta 只收成功年度）→ UI 選項縮小、切換不到該年度。
+- **refresh/切換 race**：60s 自動 refresh 與使用者切換年度可能交錯；`loadYear` 以 fetchToken 遞增 + stale-drop（`token !== fetchToken` 即丟棄）防護，只讓最新一次請求 render。
+- **全部年度失敗**：CLI 零寫入（前一輪 `data/` 原封不動）且 **exit 1** → workflow 的「Commit data if changed」步驟直接失敗、不 commit 不 deploy，舊站繼續服務舊資料。若要補救需手動重跑 `workflow_dispatch`。
+- **copy-data 語意**：只複製 `^\d{4}\.json$`、清掉舊年度檔；**meta.json 故意不複製**（client 不消費它）。
+
 ## 驗證標準（改版後必跑）
 
 ```bash
-bun test                    # 目前 18 pass（scraper 單元測試，fixture-based 不打網）
+bun test                    # 目前 22 pass（scraper 單元測試，含 scrape-cli 的 collectYears/buildMeta；fixture-based 不打網）
 bunx tsc --noEmit           # 全專案型別乾淨
 cd web && bun run build     # Astro build 成功，dist/ 產出
 ```
