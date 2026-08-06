@@ -128,20 +128,37 @@ if (import.meta.main) {
     process.exit(1);
   }
 
+  // Duplicate years in the manifest would double-write the same {year}.json
+  // (second overwrites the first) and could inject duplicates into meta.years.
+  if (new Set(manifests.map((m) => m.year)).size !== manifests.length) {
+    console.error("manifest contains duplicate years — aborting; fix config/series-manifest.json");
+    process.exit(1);
+  }
+
   const dataDir = join(import.meta.dir, "..", "data");
   await mkdir(dataDir, { recursive: true });
 
-  const { succeeded } = await collectYears(manifests, runScrape);
+  const { succeeded, failures } = await collectYears(manifests, runScrape);
 
   if (succeeded.length === 0) {
+    // All-failed: log per-year reasons, then exit without writing anything
+    // (previous data/meta stay untouched).
+    for (const f of failures) console.error(`[${f}]`);
     console.error("all years failed — aborting writes, keeping previous data");
     process.exit(1);
   }
 
   const meta = buildMeta(succeeded);
-  for (const data of succeeded) {
-    await writeFile(join(dataDir, `${data.year}.json`), JSON.stringify(data, null, 2));
+  // Write all year files + meta atomically-as-a-commit: a rejection here must
+  // NOT leave a partial commit (workflow then refuses to push it).
+  try {
+    for (const data of succeeded) {
+      await writeFile(join(dataDir, `${data.year}.json`), JSON.stringify(data, null, 2));
+    }
+    await writeFile(join(dataDir, "meta.json"), JSON.stringify(meta, null, 2));
+  } catch (e) {
+    console.error(`write failed: ${e instanceof Error ? e.message : String(e)} — keeping previous data`);
+    process.exit(1);
   }
-  await writeFile(join(dataDir, "meta.json"), JSON.stringify(meta, null, 2));
   console.log(`wrote ${succeeded.length} year file(s); latest ${meta.latestYear} with ${meta.seriesCount} series`);
 }
