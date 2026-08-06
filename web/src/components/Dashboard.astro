@@ -52,6 +52,9 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
         </button>
       ))}
     </div>
+    <div class="search-wrap">
+      <input type="search" id="search" class="search-input" aria-label="搜尋系列（標題／作者／組別／團隊）" placeholder="搜尋系列…" autocomplete="off" spellcheck="false" />
+    </div>
     <div class="sort-wrap">
       <select id="sort" class="sort-select" aria-label="排序方式">
         <option value="dayCount">進度</option>
@@ -111,6 +114,8 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 <script>
   import { isDeletedSeries, statusChip, statusChipText, statusChipTitle, taipeiDay, taipeiToday } from "../lib/daily-status";
   import { loadFavorites, saveFavorites, toggleFavorite, isValidFavoriteId } from "../lib/favorites";
+  import { normalize, seriesMatchesQuery } from "../lib/search";
+  import type { Series } from "../../../scripts/types";
   // window.localStorage getter 本身可能 throw（受限環境）；wrapper 統一降級為 null。
   function getStorage(): Pick<Storage, "getItem" | "setItem"> | null {
     try { return window.localStorage; } catch { return null; }
@@ -145,6 +150,8 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 
   let viewMode: "grid" | "list" = "grid";
   let today = taipeiToday(); // 跨日由 humanizeAll 週期校正
+  let query = ""; // 搜尋 query（模組級 state；applyFilter 內直接讀取，年度切換保留）
+  const searchInput = document.getElementById("search") as HTMLInputElement; // 供 applyFilter 空狀態 raw query 與事件使用
 
   /* ---------- Time humanization (browser timezone) ---------- */
   function tzTime(iso: string) {
@@ -329,6 +336,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     } else if (group !== "全部") {
       series = series.filter((s: any) => s.group === group);
     }
+    series = series.filter((s: Series) => seriesMatchesQuery(s, query)); // 搜尋：組別 filter 之後、排序之前（spec §3.1）
     series = [...series].sort((a: any, b: any) => {
       if (sort === "views") return totalViews(b) - totalViews(a);
       if (sort === "latest") {
@@ -343,8 +351,8 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       return b.dayCount - a.dayCount;
     });
     list.replaceChildren();
-    if (group === "fav" && series.length === 0) {
-      // 空狀態是每次 render 的 output：replaceChildren() 已移除 SSR 節點，必須重建。
+    if (group === "fav" && currentYearFavCount(data) === 0) {
+      // 收藏分頁且搜尋前收藏數為 0（不可用搜尋後的 series.length——有收藏但被搜尋排除時會誤顯示）
       const empty = document.createElement("div");
       empty.className = "fav-empty";
       empty.id = "fav-empty";
@@ -356,6 +364,21 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       const p2 = document.createElement("p");
       p2.className = "fav-empty-hint";
       p2.textContent = "點卡片右上角星號開始追蹤你關心的系列。";
+      empty.append(p1, p2);
+      list.appendChild(empty);
+    } else if (series.length === 0 && query.split(/\s+/).map((t) => normalize(t)).filter(Boolean).length > 0) {
+      // 搜尋無命中（含收藏有但被搜尋排除）；顯示中的空狀態不得帶 hidden（spec §2.3）
+      const empty = document.createElement("div");
+      empty.className = "search-empty";
+      empty.id = "search-empty";
+      empty.setAttribute("role", "status");
+      empty.setAttribute("aria-live", "polite");
+      empty.tabIndex = -1;
+      const p1 = document.createElement("p");
+      p1.textContent = `沒有符合「${searchInput.value}」的系列`; // raw query（textContent 組裝，XSS 安全）
+      const p2 = document.createElement("p");
+      p2.className = "search-empty-hint";
+      p2.textContent = "試試其他關鍵字，或調整組別／排序。";
       empty.append(p1, p2);
       list.appendChild(empty);
     } else {
@@ -531,6 +554,30 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   document.getElementById("sort")?.addEventListener("change", () => {
     if (current) applyFilter(current, (document.querySelector(".filter-btn[data-active='true']")?.getAttribute("data-group")) ?? "全部",
       (document.getElementById("sort") as HTMLSelectElement).value);
+  });
+
+  /* Search */
+  const rssModal = document.getElementById("rss-modal");
+  searchInput?.addEventListener("input", () => {
+    query = searchInput.value;
+    if (current) {
+      const group = document.querySelector(".filter-btn[data-active='true']")?.getAttribute("data-group") ?? "全部";
+      const sort = (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount";
+      applyFilter(current, group, sort);
+    }
+  });
+  searchInput?.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (rssModal?.classList.contains("open")) return; // modal 開啟：冒泡到 document 關 modal，不清空搜尋（spec §2.2）
+    e.preventDefault(); // 取代 type="search" 原生 Escape 行為，避免雙重觸發
+    searchInput.value = "";
+    query = "";
+    if (current) {
+      const group = document.querySelector(".filter-btn[data-active='true']")?.getAttribute("data-group") ?? "全部";
+      const sort = (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount";
+      applyFilter(current, group, sort);
+    }
+    searchInput.focus(); // 焦點保留
   });
 
   /* View switcher */
