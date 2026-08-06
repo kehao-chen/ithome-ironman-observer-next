@@ -4,9 +4,18 @@
 // NaN/Infinity/負數一律視為 0（normalization）——單筆異常資料不破壞整張圖。
 // opts.color 同屬 API 輸入，一律 xmlEscape（不允許注入 attribute）。
 
-/** 有限非負數：否則視為 0（NaN/Infinity/負數）。 */
+// 有限非負數：否則視為 0（NaN/Infinity/負數）。
 function finite(v: number): number {
   return Number.isFinite(v) && v >= 0 ? v : 0;
+}
+// 尺寸 clamp：width 至少 70、height 至少 24（小於繪圖 padding 會產生負幾何；review round）。
+const MIN_WIDTH = 70;
+const MIN_HEIGHT = 24;
+function finiteWidth(v: number): number {
+  return Math.max(finite(v), MIN_WIDTH);
+}
+function finiteHeight(v: number): number {
+  return Math.max(finite(v), MIN_HEIGHT);
 }
 
 export function xmlEscape(s: string): string {
@@ -27,12 +36,12 @@ function barTitle(label: string, value: number, fmt?: (v: number) => string): st
 
 export function barChartSVG(data: { label: string; value: number }[], opts: BarOpts = {}): string {
   const { color, height, width } = { ...DEFAULTS, ...opts };
-  const h = finite(height);
-  const w = finite(width);
+  const h = finiteHeight(height);
+  const w = finiteWidth(width);
   const values = data.map((d) => finite(d.value));
   const max = Math.max(...values, 1);
   const gap = 4;
-  const bw = (w - gap * (data.length - 1)) / Math.max(data.length, 1);
+  const bw = Math.max((w - gap * (data.length - 1)) / Math.max(data.length, 1), 0); // 窄 width 時不為負（review round）
   const bars = data
     .map((d, i) => {
       const v = finite(d.value);
@@ -48,13 +57,13 @@ export function barChartSVG(data: { label: string; value: number }[], opts: BarO
 
 export function horizontalBarSVG(data: { label: string; value: number }[], opts: BarOpts = {}): string {
   const { color, height, width } = { ...DEFAULTS, ...opts };
-  const w = finite(width);
+  const w = finiteWidth(width);
   const values = data.map((d) => finite(d.value));
   const max = Math.max(...values, 1);
   const rowH = 20;
   // 自動加高：資料列超過指定 height 時以資料量為準（review：top 10 不再被裁切）。
   // 底部留 16px（值文字最底行 y+13 + 餘裕）；rowH = 20 → 10 列 = 216。
-  const chartHeight = Math.max(finite(height), data.length * rowH + 16);
+  const chartHeight = Math.max(finiteHeight(height), data.length * rowH + 16);
   const rows = data
     .map((d, i) => {
       const v = finite(d.value);
@@ -72,12 +81,12 @@ export function horizontalBarSVG(data: { label: string; value: number }[], opts:
 export function distributionBarSVG(buckets: { label: string; count: number }[], opts: BarOpts = {}): string {
   // spec §4.3：分桶分佈用長條圖；count 0 仍輸出 rect（高度 0）。
   const { color, height, width } = { ...DEFAULTS, ...opts };
-  const h = finite(height);
-  const w = finite(width);
+  const h = finiteHeight(height);
+  const w = finiteWidth(width);
   const counts = buckets.map((b) => finite(b.count));
   const max = Math.max(...counts, 1);
   const gap = 6;
-  const bw = (w - gap * (buckets.length - 1)) / Math.max(buckets.length, 1);
+  const bw = Math.max((w - gap * (buckets.length - 1)) / Math.max(buckets.length, 1), 0); // 窄 width 時不為負（review round）
   const bars = buckets
     .map((b, i) => {
       const bh = (counts[i] / max) * (h - 24);
@@ -95,8 +104,8 @@ export function scatterSVG(
   opts: BarOpts & { xLabel?: string; xMax?: number; yMax?: number } = {},
 ): string {
   const { color, height, width } = { ...DEFAULTS, ...opts };
-  const h = finite(height);
-  const w = finite(width);
+  const h = finiteHeight(height);
+  const w = finiteWidth(width);
   const xs = points.map((p) => finite(p.x));
   const ys = points.map((p) => finite(p.y));
   const xMax = finite(opts.xMax ?? Math.max(...xs, 1));
