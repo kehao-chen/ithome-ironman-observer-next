@@ -72,7 +72,7 @@ GH Actions (.github/workflows/scheduled-update.yml)
 ## 驗證標準（改版後必跑）
 
 ```bash
-bun test                    # 目前 34 pass：scraper 單元測試 22 pass（含 scrape-cli 的 collectYears/buildMeta；fixture-based 不打網）+ web daily-status 12 pass
+bun test                    # 目前 41 pass：scraper 單元測試 22 pass（含 scrape-cli 的 collectYears/buildMeta；fixture-based 不打網）+ web daily-status 19 pass
 bunx tsc --noEmit           # 全專案型別乾淨
 cd web && bun run build     # Astro build 成功，dist/ 產出
 ```
