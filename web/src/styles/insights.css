@@ -1,0 +1,19 @@
+/* web/src/styles/insights.css — Insights 分頁樣式（沿用 design-system.css tokens） */
+.insight-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-block-end: var(--space-5);
+}
+.insight-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0;
+}
+.insight-line { font-size: var(--text-sm); color: var(--text); margin-block: var(--space-2); }
+.insight-charts { display: flex; flex-wrap: wrap; gap: var(--space-5); }
+.insight-chart { flex: 1 1 320px; min-width: 0; }
