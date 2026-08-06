@@ -23,6 +23,13 @@ export function stalenessDays(iso: string | null | undefined, today: string): nu
   return Number.isFinite(diff) && diff >= 0 ? Math.floor(diff) : null;
 }
 
+// 已刪文：iThome 系列頁顯示「參賽天數 N 天｜共 0 篇文章」，作者把文章全刪了。
+// 判別式 = dayCount > 0 且 articleCount === 0（正常未開賽是 dayCount === 0，
+// 兩者在現有資料中互斥，此式對未開賽系列不誤傷）。
+export function isDeletedSeries(dayCount: number, articleCount: number): boolean {
+  return dayCount > 0 && articleCount === 0;
+}
+
 // 動態狀態 chip：null = 不顯示。
 // 文字一律固定長度（寬度穩定）；天數細節放 title tooltip。
 export type StatusChip =
@@ -31,9 +38,12 @@ export type StatusChip =
   | { kind: "stale"; days: number }
   | { kind: "long-stale"; days: number }
   | { kind: "done" }
+  | { kind: "deleted" }
   | null;
 
-export function statusChip(iso: string | null | undefined, dayCount: number, today: string): StatusChip {
+export function statusChip(iso: string | null | undefined, dayCount: number, today: string, articleCount: number): StatusChip {
+  // 已刪文：作者把文章全刪了（參賽天數 N / 0 篇文章）→ 最高優先，不受發文狀態影響。
+  if (isDeletedSeries(dayCount, articleCount)) return { kind: "deleted" };
   // 完賽系列：優先顯示「鐵人煉成」，不受發文狀態影響。
   if (dayCount >= 30) return { kind: "done" };
   const days = stalenessDays(iso, today);
@@ -53,6 +63,7 @@ export function statusChipText(chip: StatusChip): string {
     case "stale": return "停更中";
     case "long-stale": return "長時間停更";
     case "done": return "鐵人煉成";
+    case "deleted": return "已刪文";
   }
 }
 
