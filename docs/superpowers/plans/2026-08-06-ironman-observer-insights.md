@@ -45,8 +45,9 @@
   - `export function publishHourHistogram(articles: Article[]): { hour: number; count: number }[]` — 回傳 24 筆（hour 0–23，count ≥ 0），依 hour 升冪。
   - `export function publishWeekdayHistogram(articles: Article[]): { weekday: string; count: number }[]` — 依「一 二 三 四 五 六 日」順序，count 可為 0。**星期以臺北牆鐘（UTC+08:00）為準**：由 `publishedAt` 前 10 字元日期（`YYYY-MM-DD`）推導，不用 `new Date().getDay()` 的環境時區。日期 → 星期的對映用固定表（見下方 `taipeiWeekday`），並以「2026-08-02（日）→ 日」等固定案例鎖定。
   - `export function viewsDistribution(articles: Article[]): ViewsDistribution`
-    - `type ViewsDistribution = { total: number; max: number; p50: number; p90: number; p99: number; top10PctShare: number; buckets: { label: string; count: number }[] }`
-    - `buckets`：依 views 對數分桶，label 為 `1–9`、`10–99`、`100–999`、`1000–9999`、`10000+`，各桶 count；桶順序固定如上。
+    - `type ViewsDistribution = { total: number; max: number; p50: number; p90: number; p99: number; top10PctShare: number; hasViews: boolean; buckets: { label: string; count: number }[] }`
+    - `buckets`：依 views 對數分桶，label 為 `0`、`1–9`、`10–99`、`100–999`、`1000–9999`、`10000+`（`0` 為 0 views 桶，review round：避免「bucket 加總 < 文章總數」的困惑），各桶 count；桶順序固定如上。
+    - `hasViews`：`total > 0`（有文章但全部 0 views 時 `false`，供 UI 顯示「尚無可計算的觀看資料」，review round）。
     - `top10PctShare`：觀看最高的 top 10% 文章（`Math.ceil(n * 0.1)` 篇）佔總觀看比例（0–1，無文章時 0）。
     - 百分位：`p50/p90/p99` 為排序後 `Math.floor(idx * n)` 索引值（無文章時 0）。
   - `export function topSeriesBySubscriptions(series: Series[], n = 10): { name: string; subscriptions: number; dayCount: number; views: number }[]` — 依 subscriptions desc，同值依 name asc；回傳前 n；views = 該系列文章 views 總和。
@@ -55,7 +56,7 @@
 
 - `publishHourHistogram`：空 articles → 24 筆 count 0；單篇文章 hour 1 → hour 1 count 1、其餘 0；多篇跨小時計數正確；hour 範圍 0–23 恆定。
 - `publishWeekdayHistogram`：用固定 publishedAt 日期（`2026-08-01T..+08:00` 週六、`2026-08-03T..+08:00` 週一）驗證 weekday 映射（用固定 `taipeiWeekday` 表，非環境 getDay）；**跨日邊界**：`2026-08-02T23:30:00+08:00` → 日、`2026-08-03T00:30:00+08:00` → 一（臺北牆鐘，非 runtime timezone，review #2）；順序固定；空陣列 → 7 筆 0。
-- `viewsDistribution`：`[10,20,30]` → p50=20、p90=30、p99=30、top10PctShare = ceil(3*0.1)=1 篇最高 30/60=0.5；空陣列 → total 0、buckets 全 0；`[7,103,8678]` → buckets `1–9`=1、`100–999`=1、`1000–9999`=1；max 正確。
+- `viewsDistribution`：`[10,20,30]` → p50=20、p90=30、p99=30、top10PctShare = ceil(3*0.1)=1 篇最高 30/60=0.5、hasViews=true；空陣列 → total 0、buckets 全 0、hasViews=false；`[0,7,103,8678]` → buckets `0`=1、`1–9`=1、`100–999`=1、`1000–9999`=1；全 0 views → hasViews=false、top10PctShare=0；max 正確。
 - `topSeriesBySubscriptions`：依 subscriptions desc；同值 name asc；views = articles views 總和；n 預設 10、超過系列數回傳全部；空 series → `[]`。
 
 - [ ] **Step 1: 寫 failing tests**
@@ -326,7 +327,7 @@ git commit -m "feat(insights): add publish/views/subscription computation layer"
   - `export function groupStats(series: Series[]): { group: string; seriesCount: number; articleCount: number; avgViews: number; totalSubscriptions: number }[]` — 依 seriesCount desc，同值依 group localeCompare("zh-Hant") asc；`avgViews` = 該組文章 views 總和 / 該組文章數（無文章時 0，round 到整數）；`totalSubscriptions` = subscriptions 總和。
   - `export function titleKeywordStats(series: Series[], keywords: string[] = DEFAULT_KEYWORDS): { keyword: string; count: number }[]` — 見 Global Constraints 文字分析規則；**英文/數字關鍵詞只在 token 邊界命中**（`/[A-Za-z0-9]+/` 切 token 後比對，`AI` 不命中 `SAIL`），**中文關鍵詞**用大小寫正規化後的字典子字串比對；**關鍵詞本身為純數字或英文停用詞 → 排除、不列入**（review #3 補強 1，對任何傳入 keywords 生效）；每系列標題對同關鍵字最多計 1；依 count desc，同 count 依 keyword localeCompare("zh-Hant") asc。
   - `export function titleLengthDistribution(series: Series[]): { length: string; count: number }[]` — 標題長度分桶（spec §4.2、review #3 blocking），以 JS `String.length`（UTF-16 code unit）計算；分桶 label 為 `0–9`、`10–19`、`20–29`、`30–39`、`40+`（依序固定）；空標題（`""`）計入 `0–9`；依桶順序升冪。
-  - `export const DEFAULT_KEYWORDS: string[]` — 定義於 `lib/keywords.ts`，內容為 v1 字典（見下）。
+  - `export const DEFAULT_KEYWORDS: string[]` — **source of truth 為 `lib/keywords.ts`**（review round：非 insights.ts 產出）；`lib/insights.ts` 僅 `import { DEFAULT_KEYWORDS, ENGLISH_STOPWORDS } from "./keywords"`，caller（元件 / client script）也直接從 `lib/keywords` import。
 
 **`lib/keywords.ts`（Task 2 新增）：**
 
@@ -605,6 +606,9 @@ git commit -m "feat(insights): add groupStats and titleKeywordStats (dictionary-
   - `export function horizontalBarSVG(data: { label: string; value: number }[], opts?: { color?: string; height?: number; width?: number; formatValue?: (v: number) => string }): string` — 水平長條圖（訂閱龍頭用）。
   - `export function distributionBarSVG(buckets: { label: string; count: number }[], opts?: { color?: string; height?: number; width?: number }): string` — 分桶長條圖（spec §4.3：不建立泛用 LineChart）。
   - `export function scatterSVG(points: { x: number; y: number; label: string; tooltip: string }[], opts?: BarOpts & { xLabel?: string; xMax?: number; yMax?: number }): string` — 散點圖（組別分析），每 point 有 `<circle>` + `<title>{tooltip}</title>`。
+  - **數值輸入邊界（review round）**：所有 renderer 對數值（value / x / y / width / height）只接受**有限非負數**——`NaN`、`Infinity`、負數一律 normalization 為 0（單筆異常資料不破壞整張圖）；height/width 為 0 時仍輸出合法空 SVG。
+  - **`horizontalBarSVG` 自動加高（review round）**：`rowH = 20`，`chartHeight = Math.max(opts.height ?? 180, data.length * rowH + 16)`；viewBox 與外殼 height 都使用計算後值（top 10 = 216，不再被預設 180 裁切）。
+  - **`opts.color` XML escaping（review round）**：`fill` 一律 `xmlEscape(color)`——color 同屬 API 輸入，不允許注入 attribute（即使目前 caller 只用固定 `var(--accent)`）。
 
 **測試要點（TDD）：**
 
@@ -834,10 +838,10 @@ git commit -m "feat(insights): add XML-escaped SVG chart renderers"
 - Consumes: `taipeiTimestamp(d: Date)`（既有）；`collectYears` 回傳的 `succeeded: YearData[]`。
 - Produces: `export function historyDate(updatedAt: string): string` — 取 `updatedAt` 的臺北日期 `YYYY-MM-DD`（`slice(0,10)`；`updatedAt` 格式為 `"2026-08-06 15:13:18+08:00"`）；`export async function writeHistorySnapshots(dataDir: string, years: YearData[]): Promise<string[]>` — 對每個 year **individually attempt** 寫 `data/history/{year}/{historyDate(updatedAt)}.json`（同結構 JSON），檔案已存在且內容相同（字串比對）跳過，否則 `mkdir -p` + 寫入；**單一年度失敗記錄該年度錯誤並繼續其他年度**，函式最後回傳失敗清單 `string[]`（review #3）。
 
-**測試要點（TDD，mock fs）：**
+**測試要點（TDD，temp dir 驗證實際寫入、不 mock fs）：**
 
 - `historyDate`：`"2026-08-06 00:30:00+08:00"` → `"2026-08-06"`；`"2026-08-05 23:30:00+08:00"` → `"2026-08-05"`（臺北日期，非 UTC，spec §5.2）。
-- `writeHistorySnapshots`：用 temp dir + `readFile` 驗證「檔案寫入且內容 = YearData」；已存在相同內容 → 不覆寫（mtime 不變或內容比對）；已存在不同內容 → 覆寫；不同 year 寫不同子目錄。
+- `writeHistorySnapshots`：用 `mkdtemp(join(tmpdir(), "hist-"))` + `readFile` 驗證「檔案寫入且內容 = YearData」；已存在相同內容 → 不覆寫（mtime 不變或內容比對）；已存在不同內容 → 覆寫；不同 year 寫不同子目錄；**第一年度失敗仍寫入第二年度**（review #3）。
 
 **實作方式（在 `scripts/scrape.ts` CLI 段，`collectYears` 之後）：**
 
@@ -890,7 +894,7 @@ CLI 插入點（`collectYears` 成功後、`stageWrites` 前）:
 Append to `scripts/scrape.test.ts`:
 
 ```ts
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { historyDate, writeHistorySnapshots } from "./scrape";
@@ -968,7 +972,8 @@ describe("writeHistorySnapshots", () => {
     const dir = await mkdtemp(join(tmpdir(), "hist-"));
     try {
       // 讓 2026 的 history 目錄位置被一個普通檔案佔住 → mkdir 失敗
-      await writeFile(join(dir, "history", "2026"), "blocking file", { recursive: true });
+      await mkdir(join(dir, "history"), { recursive: true });
+      await writeFile(join(dir, "history", "2026"), "blocking file");
       const failures = await writeHistorySnapshots(dir, [
         yearData({ year: 2026 }),
         yearData({ year: 2025 }),
@@ -1015,14 +1020,15 @@ git commit -m "feat(scrape): write daily history snapshots (data/history/{year}/
 
 **Interfaces:**
 - Consumes: Task 1–3 的 `lib/insights.ts`（`publishHourHistogram`、`publishWeekdayHistogram`、`viewsDistribution`、`topSeriesBySubscriptions`、`groupStats`、`titleKeywordStats`、`titleLengthDistribution`）、`lib/charts.ts`（`barChartSVG`、`horizontalBarSVG`、`distributionBarSVG`、`scatterSVG`）、`lib/keywords.ts`（`DEFAULT_KEYWORDS`）、`type YearData`。
-- Produces: `Insights.astro` 接受 `data: YearData`、`years: number[]`、`latestYear: number`、`hasData: boolean` props（`hasData = data.series.length > 0`，review #4；`latestYear` 已正規化為 `number`，**0 = 無可用年度**，review #4b），輸出四個面板 + header（年切換器 + 主題 toggle）。四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好，render 進 HTML；同時把「資料 + 各函式」以 `define:vars` 注入，供 Task 6 的 client 重繪使用。`hasData === false` 時四個面板顯示「尚無資料」、年切換器不列出任何年度。
+- Produces: `Insights.astro` 接受 `data: YearData`、`years: number[]`、`latestYear: number` props（`latestYear` 已正規化為 `number`，**0 = 無可用年度**，review #4b），輸出四個面板 + header（年切換器 + 主題 toggle）。四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好，render 進 HTML；同時把「資料 + 各函式」以 `define:vars` 注入，供 Task 6 的 client 重繪使用。
+  - **空狀態契約（review round 取代 hasData）**：不再傳 `hasData` props；元件以 `data.year === 0`（整頁無可用年度）判定「尚無資料」四面板 + 年切換器不列出年度；以 `data.series.length === 0`（組別/文字）與 `articles.length === 0`（發文/人氣）判定面板級空狀態；年度檔存在但 series 為空 → 年度仍保留在年切換器。
 
 **四個面板（spec §4.2）：** 面板級空狀態（review #3 補強 2）——發文行為/人氣結構面板在 `articleCount === 0` 顯示「尚無資料」；組別分析/文字分析面板在 `series.length === 0` 顯示「尚無資料」；`data.year === 0`（整頁無資料）時全部面板「尚無資料」、年切換器不列出年度。
 
 1. **發文行為**：`barChartSVG(publishHourHistogram(articles))`（24 小時）+ `barChartSVG(publishWeekdayHistogram(articles))`（**星期分佈**，一…日，review #9）。洞察句：找到 count 最高的 hour → 「00 時為發文高峰（N 篇）」；`articleCount === 0` → 「尚無發文資料」。
-2. **人氣結構**：`distributionBarSVG(viewsDistribution(articles).buckets)`（分桶長條圖）+ `horizontalBarSVG(topSeriesBySubscriptions(series))`（訂閱龍頭 top 10）。洞察句：`top10PctShare` → 「前 10% 文章佔總觀看 X%」；`articleCount === 0` → 「尚無觀看資料」。
-3. **組別分析**：`scatterSVG(groupStats(series).map(g => ({x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均 ${g.avgViews} 觀看`})))`。洞察句：seriesCount 最高的組 → 「{group} 最活躍（N 系列）」；`series.length === 0` → 「尚無組別資料」。
-4. **文字分析**：`barChartSVG(titleKeywordStats(series))`（關鍵字）+ `barChartSVG(titleLengthDistribution(series))`（**字數分佈**，review #3 blocking）。洞察句：count 最高的 keyword → 「N 個系列標題包含「{keyword}」」；`series.length === 0` → 「尚無標題關鍵字」。
+2. **人氣結構**：`distributionBarSVG(viewsDistribution(articles).buckets)`（分桶長條圖）+ `horizontalBarSVG(topSeriesBySubscriptions(series))`（訂閱龍頭 top 10）。洞察句：`top10PctShare` → 「前 10% 文章佔總觀看 X%」；`articleCount === 0` → 「尚無觀看資料」；`!hasViews` → 「尚無可計算的觀看資料」（review round）。
+3. **組別分析**：`scatterSVG(groupStats(series).map(g => ({x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均每篇 ${g.avgViews} 觀看`})))`。洞察句：seriesCount 最高的組 → 「{group} 最活躍（N 系列）」；`series.length === 0` → 「尚無組別資料」。（tooltip 文案「平均每篇」避免與 seriesCount 混淆，review round）
+4. **文字分析**：`barChartSVG(titleKeywordStats(series))`（關鍵字）+ `barChartSVG(titleLengthDistribution(series))`（**字數分佈**，review #3 blocking）。洞察句：count 最高的 keyword → 「N 個系列標題包含「{keyword}」」；`series.length === 0` → 「尚無標題關鍵字」。**關鍵字無命中（`kws.length === 0`）時 keyword chart 清空（`setSvg("chart-kw", "")`）、字數分佈保留、文案「尚無標題關鍵字」**（review round：SSG 與 client 一致）。
 
 **SSG 注入（供 Task 6 client 重繪）**:
 
@@ -1118,7 +1124,7 @@ git commit -m "feat(insights): add Insights.astro component with SSG SVG panels"
 - Modify: `web/src/styles/design-system.css`（Insights 連結樣式，若有需要）
 
 **Interfaces:**
-- Consumes: `Insights.astro`（props: `data`、`years`、`latestYear`、`hasData`）；`lib/insights.ts` + `lib/charts.ts`（client 重繪）；`lib/keywords.ts`（`DEFAULT_KEYWORDS`）。
+- Consumes: `Insights.astro`（props: `data`、`years`、`latestYear`）；`lib/insights.ts` + `lib/charts.ts`（client 重繪）；`lib/keywords.ts`（`DEFAULT_KEYWORDS`）。
 - Produces: `/insights/` 路由 + header 連結 + client 年切換邏輯。
 
 **page frontmatter**（沿用 `index.astro` 的 glob pattern；**含空資料 fallback**，review #4）:
@@ -1127,8 +1133,9 @@ git commit -m "feat(insights): add Insights.astro component with SSG SVG panels"
 ---
 import Insights from "../components/Insights.astro";
 import type { MetaJson, YearData } from "../../../scripts/types";
+// Controller ruling: follow index.astro convention — exclude meta.json from the data glob.
 const dataByYear = new Map<number, YearData>();
-for (const [path, mod] of Object.entries(import.meta.glob("../../../data/*.json", { eager: true, import: "default" }))) {
+for (const [path, mod] of Object.entries(import.meta.glob(["../../../data/*.json", "!../../../data/meta.json"], { eager: true, import: "default" }))) {
   const m = path.match(/(\d{4})\.json$/);
   if (m) dataByYear.set(Number(m[1]), mod as YearData);
 }
@@ -1142,13 +1149,12 @@ const latestYear =
 // 空資料 fallback：完全沒有可用 YearData 時不 crash，顯示空狀態面板（spec §6、review #4）
 const emptyData: YearData = { year: 0, updatedAt: "", groups: [], series: [], scrapeLog: [] };
 const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYear.get(latestYear)! : emptyData;
-const hasData = data.series.length > 0;
 ---
 ```
 
-> 註：`data.year === 0` 代表無資料（`meta.years` 空且無 `data/*.json` 年度檔）；`Insights.astro` 與 client script 需處理 `hasData === false`（見下方）。
+> 註：`data.year === 0` 代表無資料（`meta.years` 空且無 `data/*.json` 年度檔）；`Insights.astro` 與 client script 以 `data.year === 0` 判定整頁空狀態（review round：不再有 `hasData`）。
 
-**theme + insights.css + Insights 元件**（head 與 body，模仿 index.astro 的 theme inline script）。`<Insights data={data} years={years} latestYear={latestYear} hasData={hasData} />`（`hasData` 供元件空狀態分支，review #4）。
+**theme + insights.css + Insights 元件**（head 與 body，模仿 index.astro 的 theme inline script）。`<Insights data={data} years={years} latestYear={latestYear} />`（review round：`hasData` prop 已移除）。
 
 **client 年切換 script**（`<script>` 內，沿用 Dashboard 的 fetchToken 模式；`window` property 的 `any` 限縮於此兩處，review #8）:
 
@@ -1156,24 +1162,49 @@ const hasData = data.series.length > 0;
 import { publishHourHistogram, publishWeekdayHistogram, viewsDistribution, topSeriesBySubscriptions, groupStats, titleKeywordStats, titleLengthDistribution } from "../lib/insights";
 import { barChartSVG, horizontalBarSVG, distributionBarSVG, scatterSVG } from "../lib/charts";
 import { DEFAULT_KEYWORDS } from "../lib/keywords";
+import type { YearData } from "../../../scripts/types";
 
 // Astro define:vars 注入的非標準 window property——僅此兩處允許 (window as any)（review #8）
 const initialData = (window as any).INSIGHTS_DATA as YearData;
 const yearsList = (window as any).INSIGHTS_YEARS as number[];
 let fetchToken = 0;
-let current: YearData = initialData;
+
+// 最小 runtime 驗證（review round #12）：避免錯誤 payload（HTML fallback / 缺欄位）進入 render。
+function isYearData(value: unknown): value is YearData {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      typeof (value as YearData).year === "number" &&
+      Array.isArray((value as YearData).series),
+  );
+}
+
+// fetch 失敗 / 無效 payload → 保持目前 render、select 回原位、toast 提示（review round #13）。
+let toastTimer: ReturnType<typeof setTimeout> | undefined;
+function showToast() {
+  const el = document.getElementById("insight-toast");
+  if (!el) return;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+}
 
 function insights(year: number) {
   const token = ++fetchToken;
+  const sel = document.getElementById("insight-year-select") as HTMLSelectElement | null;
   fetch(`/data/${year}.json?t=${Date.now()}`, { cache: "no-store" })
     .then((res) => (res.ok ? res.json() : null))
     .then((fresh) => {
-      if (!fresh || token !== fetchToken) return;
-      current = fresh;
+      if (!isYearData(fresh) || token !== fetchToken) return; // 無效 payload：直接捨棄
       render(fresh);
       history.replaceState(null, "", `?year=${fresh.year}`);
     })
-    .catch(() => { /* keep current render */ });
+    .catch(() => {
+      if (token !== fetchToken) return;
+      // 失敗：select 回原位 + toast（URL 不變，review round #13）
+      if (sel) sel.value = String(initialData.year);
+      showToast();
+    });
 }
 
 function allArticles(d: YearData) { return d.series.flatMap((s) => s.articles); }
@@ -1269,6 +1300,8 @@ document.getElementById("insight-year-select")?.addEventListener("change", (e) =
   if (Number.isInteger(y) && y !== 0) insights(y);
 });
 ```
+
+> 註：`current` state 已移除（review round #11：宣告後從未讀取，astro check hint）；`render` 內已含 `!dist.hasViews → 尚無可計算的觀看資料`、`kws.length === 0 → chart-kw 清空`、tooltip「平均每篇」；page body 需加 `<div id="insight-toast" class="insight-toast" role="status" aria-live="polite">年度資料載入失敗</div>` + `insights.css` 的 `.insight-toast` 樣式（fixed bottom toast，review round #13）。
 
 **Dashboard.astro header 加連結**（header-actions 內，GitHub icon 前）:
 
