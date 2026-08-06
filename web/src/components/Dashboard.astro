@@ -3,8 +3,8 @@
 import SeriesCard from "./SeriesCard.astro";
 import type { YearData } from "../../../scripts/types";
 
-interface Props { data: YearData }
-const { data } = Astro.props;
+interface Props { data: YearData; years: number[] }
+const { data, years } = Astro.props;
 const groups = ["全部", ...data.groups];
 const countFor = (g: string) => g === "全部" ? data.series.length : data.series.filter((s) => s.group === g).length;
 const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slice(0, 16) : "";
@@ -13,13 +13,16 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 <header class="site-header container">
   <div class="header-row">
     <div class="brand">
-      <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-year">2026</span></h1>
+      <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-year" id="brand-year">2026</span></h1>
       <p class="brand-sub">
         最後更新 <time id="updated-at" datetime={data.updatedAt} data-ts={data.updatedAt}>{updatedAtFallback}</time>
         · <span id="series-count" class="tabular-nums">{data.series.length}</span> 支系列
       </p>
     </div>
     <div class="header-actions">
+      <select id="year-select" class="sort-select" aria-label="切換年度">
+        {years.map((y) => <option value={y} selected={y === data.year}>{y} 年</option>)}
+      </select>
       <div class="seg" role="group" aria-label="顯示模式">
         <button id="view-grid" class="seg-btn" type="button" data-view="grid" aria-pressed="true" title="卡片檢視">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1"/></svg>
@@ -60,6 +63,12 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   <div class="status-bar" role="status">
     <span><span class="dot" aria-hidden="true"></span>資料已更新</span>
     <span>已顯示 <strong id="shown-count" class="tabular-nums">{data.series.length}</strong> / <strong id="total-count" class="tabular-nums">{data.series.length}</strong> 支系列</span>
+    <details class="scrape-log" id="scrape-log" hidden={data.scrapeLog.length === 0}>
+      <summary>⚠ <span id="scrape-log-count" class="tabular-nums">{data.scrapeLog.length}</span> 支系列本次抓取失敗</summary>
+      <ul id="scrape-log-list">
+        {data.scrapeLog.map((e) => <li>{e}</li>)}
+      </ul>
+    </details>
   </div>
   <div class="series-grid" id="series-list">
     {data.series.map((s) => <SeriesCard series={s} />)}
@@ -99,6 +108,26 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   const shownCount = document.getElementById("shown-count")!;
   const totalCount = document.getElementById("total-count")!;
   let current: any = null;
+  let currentYear: number = (window as any).IRONMAN_DATA?.year ?? 0;
+  let fetchToken = 0;
+  const yearSelect = document.getElementById("year-select") as HTMLSelectElement | null;
+  const brandYear = document.getElementById("brand-year");
+  const scrapeLog = document.getElementById("scrape-log");
+  const scrapeLogCount = document.getElementById("scrape-log-count");
+  const scrapeLogList = document.getElementById("scrape-log-list");
+  let lastRenderedYear: number | null = null;
+
+  async function loadYear(year: number) {
+    const token = ++fetchToken;
+    try {
+      const res = await fetch(`/data/${year}.json?t=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok) return;
+      const fresh = await res.json();
+      if (token !== fetchToken) return; // stale response — a newer request owns the render
+      render(fresh);
+    } catch { /* keep current render */ }
+  }
+
   let viewMode: "grid" | "list" = "grid";
   let today = taipeiToday(); // 跨日由 humanizeAll 週期校正
 
@@ -160,9 +189,53 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   const RSS_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>';
   const OPEN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
 
+  function groupCounts(data: any): Map<string, number> {
+    const m = new Map<string, number>();
+    for (const s of data.series) m.set(s.group, (m.get(s.group) ?? 0) + 1);
+    return m;
+  }
+  function renderFilters(groups: string[], counts: Map<string, number>, activeGroup: string) {
+    const wrap = document.getElementById("group-filters");
+    if (!wrap) return;
+    wrap.textContent = "";
+    for (const g of groups) {
+      const btn = document.createElement("button");
+      btn.className = "filter-btn";
+      btn.dataset.group = g;
+      btn.dataset.active = String(g === activeGroup);
+      const label = document.createElement("span");
+      label.className = "filter-label";
+      label.textContent = g;
+      const cnt = document.createElement("span");
+      cnt.className = "filter-count tabular-nums";
+      cnt.textContent = String(counts.get(g) ?? 0);
+      btn.append(label, cnt);
+      wrap.appendChild(btn);
+    }
+  }
+
   function render(data: any) {
     if (!data) { current = null; return; }
     current = data;
+    currentYear = data.year;
+    if (yearSelect) yearSelect.value = String(data.year);
+    if (brandYear) brandYear.textContent = String(data.year);
+    // Rebuild group filters only when the year actually changed.
+    if (lastRenderedYear !== data.year) {
+      lastRenderedYear = data.year;
+      renderFilters(["全部", ...data.groups], groupCounts(data), "全部");
+    }
+    // scrapeLog notice: fixed container, toggled by data.
+    if (scrapeLog && scrapeLogCount && scrapeLogList) {
+      scrapeLogCount.textContent = String(data.scrapeLog.length);
+      scrapeLogList.textContent = "";
+      for (const err of data.scrapeLog) {
+        const li = document.createElement("li");
+        li.textContent = err;
+        scrapeLogList.appendChild(li);
+      }
+      scrapeLog.hidden = data.scrapeLog.length === 0;
+    }
     seriesCount.textContent = String(data.series.length);
     totalCount.textContent = String(data.series.length);
     const group = document.querySelector(".filter-btn[data-active='true']")?.getAttribute("data-group") ?? "全部";
@@ -292,12 +365,13 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   }
 
   /* ---------- Events ---------- */
-  document.querySelectorAll(".filter-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".filter-btn").forEach((b) => b.setAttribute("data-active", "false"));
-      btn.setAttribute("data-active", "true");
-      if (current) applyFilter(current, btn.getAttribute("data-group")!, (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
-    });
+  const groupFilters = document.getElementById("group-filters");
+  groupFilters?.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest(".filter-btn") as HTMLElement | null;
+    if (!btn) return;
+    groupFilters.querySelectorAll(".filter-btn").forEach((b) => b.setAttribute("data-active", "false"));
+    btn.setAttribute("data-active", "true");
+    if (current) applyFilter(current, btn.dataset.group!, (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
   });
   document.getElementById("sort")?.addEventListener("change", () => {
     if (current) applyFilter(current, (document.querySelector(".filter-btn[data-active='true']")?.getAttribute("data-group")) ?? "全部",
@@ -357,7 +431,13 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     if (next === "auto") rootEl.removeAttribute("data-theme"); else rootEl.setAttribute("data-theme", next);
   });
 
-  window.addEventListener("ironman-data", ((e: CustomEvent) => render(e.detail)) as EventListener);
+  yearSelect?.addEventListener("change", () => {
+    const y = Number(yearSelect.value);
+    if (!Number.isInteger(y)) return;
+    loadYear(y);
+  });
+  setInterval(() => { if (current) loadYear(currentYear); }, 60_000);
+
   render((window as any).__SSR_DATA__ ?? (window as any).IRONMAN_DATA);
   // Re-humanize periodically so relative times stay fresh (also re-anchors 臺北 today).
   setInterval(() => { today = taipeiToday(); humanizeAll(); }, 60000);
