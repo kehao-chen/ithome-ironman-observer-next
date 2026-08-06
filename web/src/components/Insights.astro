@@ -108,6 +108,10 @@ const lenSVG =
       <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-year" id="brand-year">{latestYear || ""}</span></h1>
       <p class="brand-sub">Insights 分析</p>
     </div>
+    <nav class="page-nav" aria-label="主要導覽">
+      <a class="page-nav-link" href="/">首頁</a>
+      <a class="page-nav-link page-nav-link--active" href="/insights/" aria-current="page">分析</a>
+    </nav>
     <div class="header-actions">
       <select id="insight-year-select" class="sort-select" aria-label="切換年度">
         {years.length > 0 && years.map((y) => <option value={y} selected={y === data.year}>{y} 年</option>)}
@@ -116,45 +120,29 @@ const lenSVG =
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       </button>
     </div>
-  </div>
-</header>
-
-<main class="container" style="padding-block:var(--space-4);">
   <section class="insight-panel">
-    <h2 class="insight-title">發文行為</h2>
-    <p class="insight-line" id="insight-hour-line">{hourLine}</p>
+    <div class="insight-panel-head"><div><h2 class="insight-title">發文行為</h2><p class="insight-line" id="insight-hour-line">{hourLine}</p></div><span class="insight-panel-index">01</span></div>
     <div class="insight-charts">
-      <div class="insight-chart" id="chart-hour" set:html={hourSVG}></div>
-      <div class="insight-chart" id="chart-weekday" set:html={weekdaySVG}></div>
+      <div class="insight-chart"><h3>發文時間</h3><div id="chart-hour" set:html={hourSVG}></div></div>
+      <div class="insight-chart"><h3>星期分佈</h3><div id="chart-weekday" set:html={weekdaySVG}></div></div>
     </div>
   </section>
 
   <section class="insight-panel">
-    <h2 class="insight-title">人氣結構</h2>
-    <p class="insight-line" id="insight-dist-line">{distLine}</p>
-    <div class="insight-charts">
-      <div class="insight-chart" id="chart-dist" set:html={distSVG}></div>
-      <div class="insight-chart" id="chart-subs" set:html={subsSVG}></div>
-    </div>
+    <div class="insight-panel-head"><div><h2 class="insight-title">人氣結構</h2><p class="insight-line" id="insight-dist-line">{distLine}</p></div><span class="insight-panel-index">02</span></div>
+    <div class="insight-charts"><div class="insight-chart"><h3>文章觀看分佈</h3><div id="chart-dist" set:html={distSVG}></div></div><div class="insight-chart"><h3>訂閱數排行</h3><div id="chart-subs" set:html={subsSVG}></div></div></div>
   </section>
 
   <section class="insight-panel">
-    <h2 class="insight-title">組別分析</h2>
-    <p class="insight-line" id="insight-group-line">{groupLine}</p>
-    <div class="insight-charts">
-      <div class="insight-chart" id="chart-scatter" set:html={scatterSVGStr}></div>
-    </div>
+    <div class="insight-panel-head"><div><h2 class="insight-title">組別分析</h2><p class="insight-line" id="insight-group-line">{groupLine}</p></div><span class="insight-panel-index">03</span></div>
+    <div class="insight-charts"><div class="insight-chart insight-chart--wide"><h3>發文量與平均觀看</h3><div id="chart-scatter" set:html={scatterSVGStr}></div></div></div>
   </section>
 
   <section class="insight-panel">
-    <h2 class="insight-title">文字分析</h2>
-    <p class="insight-line" id="insight-kw-line">{kwLine}</p>
-    <div class="insight-charts">
-      <div class="insight-chart" id="chart-kw" set:html={kwSVG}></div>
-      <div class="insight-chart" id="chart-len" set:html={lenSVG}></div>
-    </div>
+    <div class="insight-panel-head"><div><h2 class="insight-title">文字分析</h2><p class="insight-line" id="insight-kw-line">{kwLine}</p></div><span class="insight-panel-index">04</span></div>
+    <div class="insight-charts"><div class="insight-chart"><h3>標題關鍵字</h3><div id="chart-kw" set:html={kwSVG}></div></div><div class="insight-chart"><h3>標題字數</h3><div id="chart-len" set:html={lenSVG}></div></div></div>
   </section>
-</main>
+  </main>
 
 <script is:inline define:vars={{ initialData: data, yearsList: years }}>
   window.INSIGHTS_DATA = initialData;
