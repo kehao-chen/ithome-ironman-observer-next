@@ -1,16 +1,25 @@
 ---
 // web/src/pages/index.astro
 import Dashboard from "../components/Dashboard.astro";
-import type { YearData } from "../../../scripts/types";
+import type { MetaJson, YearData } from "../../../scripts/types";
 
-const data: YearData = await import("../../../data/2026.json").then((m) => m.default);
+const dataByYear = new Map<number, YearData>();
+for (const [path, mod] of Object.entries(import.meta.glob("../../../data/*.json", { eager: true, import: "default" }))) {
+  const m = path.match(/(\d{4})\.json$/);
+  if (m) dataByYear.set(Number(m[1]), mod as YearData);
+}
+const meta = (await import("../../../data/meta.json").then((m) => m.default)) as MetaJson;
+// Authority: meta.years ∩ actually-present data files (defensive against stale meta).
+const years = meta.years.filter((y) => dataByYear.has(y)).sort((a, b) => b - a);
+const latestYear = years[0] ?? [...dataByYear.keys()].sort((a, b) => b - a)[0];
+const data: YearData = dataByYear.get(latestYear)!;
 ---
 <!doctype html>
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>鐵人觀察家 2026</title>
+  <title>鐵人觀察家 {latestYear}</title>
   <meta name="description" content="2026 iThome 鐵人賽每日觀察：追蹤每支參賽系列的進度與人氣" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
@@ -46,19 +55,6 @@ const data: YearData = await import("../../../data/2026.json").then((m) => m.def
     THEME: dark 預設（phosphor glass）+ light（日光下玻璃）；prefers-color-scheme 自動 + manual toggle 持久化。
     CONTRACT: 保留此 comment 於 build 後 markup（禁 innerHTML 放使用者資料；textContent only）。
   -->
-  <Dashboard data={data} />
-  <script>
-    // Refresh client-side: re-fetch JSON to pick up the latest hourly commit without full reload
-    async function refresh() {
-      try {
-        const res = await fetch(`/data/2026.json?t=${Date.now()}`, { cache: "no-store" });
-        if (!res.ok) return;
-        const fresh = await res.json();
-        // Re-render via a custom event the Dashboard listens to
-        window.dispatchEvent(new CustomEvent("ironman-data", { detail: fresh }));
-      } catch { /* keep current render */ }
-    }
-    setInterval(refresh, 60_000); // every minute
-  </script>
+  <Dashboard data={data} years={years} />
 </body>
 </html>
