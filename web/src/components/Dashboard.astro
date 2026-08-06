@@ -191,6 +191,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 
   function groupCounts(data: any): Map<string, number> {
     const m = new Map<string, number>();
+    m.set("全部", data.series.length); // matches SSR countFor("全部") semantics
     for (const s of data.series) m.set(s.group, (m.get(s.group) ?? 0) + 1);
     return m;
   }
