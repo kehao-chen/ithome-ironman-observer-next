@@ -60,7 +60,7 @@ ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispa
 2. Near-zero cost is a hard constraint — no paid services, no backend, no DB.
 3. Automation over manual ops: data changes commit and deploy themselves.
 4. Preserve the core observer experience (grasp daily activity, browse by group) while modernizing the surface.
-5. Non-goals stay out of v1: no search, no accounts.
+5. Non-goals stay out of v1: no accounts.
 
 ## Roadmap
 
