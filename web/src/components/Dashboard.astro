@@ -114,7 +114,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 <script>
   import { isDeletedSeries, statusChip, statusChipText, statusChipTitle, taipeiDay, taipeiToday } from "../lib/daily-status";
   import { loadFavorites, saveFavorites, toggleFavorite, isValidFavoriteId } from "../lib/favorites";
-  import { normalize, seriesMatchesQuery } from "../lib/search";
+  import { hasSearchTokens, seriesMatchesQuery } from "../lib/search";
   import type { Series } from "../../../scripts/types";
   // window.localStorage getter 本身可能 throw（受限環境）；wrapper 統一降級為 null。
   function getStorage(): Pick<Storage, "getItem" | "setItem"> | null {
@@ -366,7 +366,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       p2.textContent = "點卡片右上角星號開始追蹤你關心的系列。";
       empty.append(p1, p2);
       list.appendChild(empty);
-    } else if (series.length === 0 && query.split(/\s+/).map((t) => normalize(t)).filter(Boolean).length > 0) {
+    } else if (series.length === 0 && hasSearchTokens(query)) {
       // 搜尋無命中（含收藏有但被搜尋排除）；顯示中的空狀態不得帶 hidden（spec §2.3）
       const empty = document.createElement("div");
       empty.className = "search-empty";

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { normalize, seriesMatchesQuery } from "./search";
+import { hasSearchTokens, normalize, seriesMatchesQuery } from "./search";
 import type { Series } from "../../../scripts/types";
 
 describe("normalize", () => {
@@ -89,5 +89,23 @@ describe("seriesMatchesQuery", () => {
   });
   test("無命中回 false", () => {
     expect(seriesMatchesQuery(s, "區塊鏈")).toBe(false);
+  });
+});
+
+describe("hasSearchTokens", () => {
+  test("空 query → false（搜尋關閉）", () => {
+    expect(hasSearchTokens("")).toBe(false);
+  });
+  test("全空白 query → false", () => {
+    expect(hasSearchTokens("   ")).toBe(false);
+    expect(hasSearchTokens("　　")).toBe(false);
+    expect(hasSearchTokens(" \t ")).toBe(false);
+  });
+  test("有實質 token → true", () => {
+    expect(hasSearchTokens("vue")).toBe(true);
+    expect(hasSearchTokens("vue 前端")).toBe(true);
+  });
+  test("全形 token → true", () => {
+    expect(hasSearchTokens("ＶＵＥ")).toBe(true);
   });
 });

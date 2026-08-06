@@ -14,6 +14,16 @@ export function normalize(s: string): string {
   return fullToHalf(s.normalize("NFC").toLowerCase()).replace(/\s/g, "");
 }
 
+// raw query → tokens：先 split 再逐 token normalize（spec §1.1，不可先 normalize 整個 query）。
+function tokenize(query: string): string[] {
+  return query.split(/\s+/).map(normalize).filter(Boolean);
+}
+
+// 是否有搜尋 token（= 搜尋是否開啟）。與 seriesMatchesQuery 共用同一 tokenize，避免 drift（spec §3.1）。
+export function hasSearchTokens(query: string): boolean {
+  return tokenize(query).length > 0;
+}
+
 // 每個 token 在任一欄位命中即算該 token 命中；所有 token 都命中才列入候選（AND）。
 function tokenHits(series: Series, token: string): boolean {
   return (
@@ -25,7 +35,7 @@ function tokenHits(series: Series, token: string): boolean {
 }
 
 export function seriesMatchesQuery(series: Series, query: string): boolean {
-  const tokens = query.split(/\s+/).map(normalize).filter(Boolean);
+  const tokens = tokenize(query);
   if (tokens.length === 0) return true; // 空 query / 全空白 → 搜尋關閉
   return tokens.every((t) => tokenHits(series, t));
 }

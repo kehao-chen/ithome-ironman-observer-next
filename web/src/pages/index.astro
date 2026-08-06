@@ -4,12 +4,11 @@ import Dashboard from "../components/Dashboard.astro";
 import type { MetaJson, YearData } from "../../../scripts/types";
 
 const dataByYear = new Map<number, YearData>();
-for (const [path, mod] of Object.entries(import.meta.glob("../../../data/*.json", { eager: true, import: "default" }))) {
+for (const [path, mod] of Object.entries(import.meta.glob(["../../../data/*.json", "!../../../data/meta.json"], { eager: true, import: "default" }))) {
   const m = path.match(/(\d{4})\.json$/);
   if (m) dataByYear.set(Number(m[1]), mod as YearData);
 }
-const meta = (await import("../../../data/meta.json").then((m) => m.default)) as MetaJson;
-// Authority: meta.years ∩ actually-present data files (defensive against stale meta).
+const meta = (await import("../../../data/meta.json").then((m) => m.default)) as MetaJson;// Authority: meta.years ∩ actually-present data files (defensive against stale meta).
 const years = meta.years.filter((y) => dataByYear.has(y)).sort((a, b) => b - a);
 const latestYear = years[0] ?? [...dataByYear.keys()].sort((a, b) => b - a)[0];
 const data: YearData = dataByYear.get(latestYear)!;
