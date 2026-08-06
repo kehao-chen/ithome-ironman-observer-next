@@ -55,7 +55,7 @@ GH Actions (.github/workflows/scheduled-update.yml)
 1. **整體視覺**：全 inline style、暗色主題、無設計系統。使用者已表達「UI/UX 整體蠻糟」。
 2. **DAY badge 不一致**：static `SeriesCard.astro` 對 `尚未開賽`（dayCount 0）顯示 `DAY ?`，client `renderCard` 顯示 `尚未開賽`。改版時統一（client 渲染會蓋過 static，所以實際使用者看到的是 client 版）。
 3. **`尚未開賽` 30 系列**：顯示上只有 badge 差異，卡片其餘欄位（無文章）較空。
-4. **filter 按鈕的 placeholder style**：Task 7 遺留 `style="..."`（字面值），一直沒補。改版時自然處理。
+4. **filter 按鈕的 placeholder style**：2026-08-05 UI 改版 plan 遺留 `style="..."`（字面值），一直沒補。改版時自然處理。
 5. **更新時間格式**：`updatedAt` 是 `"YYYY-MM-DD HH:mm:ss+08:00"`（空格分隔、無毫秒），`lastUpdated`/`publishedAt` 是 `T` 分隔 ISO。兩者格式不統一（display-only，`<time datetime>` 兩種都吃）。
 6. **排序語意**：「最新發布」目前是 `articles` 最後一筆的 `publishedAt`（= 最新 Day）；「最多觀看」是該系列全部文章 views 總和。若有更好的定義（如當日新增文章數）可在改版討論。
 7. **群組「ChatGPT & Codex」**：entity 已解碼為正確 `&`，確認 UI 顯示正常即可。
@@ -72,7 +72,7 @@ GH Actions (.github/workflows/scheduled-update.yml)
 ## 驗證標準（改版後必跑）
 
 ```bash
-bun test                    # 目前 22 pass（scraper 單元測試，含 scrape-cli 的 collectYears/buildMeta；fixture-based 不打網）
+bun test                    # 目前 34 pass：scraper 單元測試 22 pass（含 scrape-cli 的 collectYears/buildMeta；fixture-based 不打網）+ web daily-status 12 pass
 bunx tsc --noEmit           # 全專案型別乾淨
 cd web && bun run build     # Astro build 成功，dist/ 產出
 ```
