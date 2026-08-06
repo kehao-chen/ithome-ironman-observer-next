@@ -27,14 +27,24 @@
 
 ### 1.1 Token AND 比對
 
-- query 以空白切分為 token；**每個 token 都要命中**（AND 語意），任一 token 命中任一欄位即算命中。
+- query **先依空白切分**（`/\s+/`），**再逐 token `normalize`**——順序不可顛倒：`normalize` 會移除所有空白（§1.2 步驟 4），若先 normalize 整個 query，token 邊界會消失、AND 語意失效（例：`normalize("vue 前端")` → `"vue前端"`，退化成單一子字串）。
+- 明確流程：
+
+  ```ts
+  const tokens = query.split(/\s+/).map(normalize).filter(Boolean);
+  ```
+
+  1. raw query 依空白切分（`\s+`，含多個連續空白與全形空格）。
+  2. 每個 token 個別 `normalize`。
+  3. `filter(Boolean)` 移除 normalize 後的空 token（如全形空白 token）。
+  4. 每個 token 都要命中（AND 語意）；任一 token 命中任一欄位即算該 token 命中，**所有 token 皆命中才列入候選**。
   - 例：「vue 前端」→ 標題含 `vue` **且**（作者或組別或團隊含 `前端`）才算命中。
-- 命中欄位（各欄位各自 `normalize` 後做**子字串**比對）：
+- 命中欄位（各欄位各自 `normalize` 後做**子字串**比對，比對雙方對稱）：
   - `title`（系列標題）
   - `user.name`（作者名）
   - `group`（組別）
   - `team`（團隊名，可為 `null`；`null` 不命中任何 query——比對前先處理）
-- `normalize` 後為空字串的 token（如全形空白）跳過。
+- `tokens.length === 0`（空 query 或全空白）→ 搜尋關閉，全部候選（見 §1.3）。
 
 ### 1.2 `normalize(s): string`
 
@@ -55,17 +65,20 @@
 
 ```ts
 // web/src/lib/search.ts — 純函數、無 DOM、無 window、無 runtime 依賴。
+import type { Series } from "../../../scripts/types"; // 與 Dashboard.astro 同路徑慣例
+
 export function normalize(s: string): string;
 export function seriesMatchesQuery(series: Series, query: string): boolean;
 ```
 
 - `seriesMatchesQuery` 是純函數（無副作用），與 `daily-status.ts`／`favorites.ts` 同模式（可測、可注入、不打全域）。
+- `Series` 型別**直接 import** 自 `scripts/types.ts`（跨目錄 import 是專案既有慣例：`Dashboard.astro` 即 `import type { YearData } from "../../../scripts/types"`）。**禁止**為避免跨目錄 import 而複製型別或改用 `any`——複製型別會造成後續漂移。
 
 ## 2. UI 與互動
 
 ### 2.1 輸入框（Toolbar）
 
-- `.filter-group`（組別 chips）與 `.sort-wrap`（排序器）之間新增：
+- `.filter-group`（組別 chips）與 `.sort-wrap`（排序器）之間新增（**必須是 toolbar 的 sibling**，不可放入 `#group-filters`——年度切換時 `renderFilters()` 會重建 `#group-filters`，input 若在其中會被移除，違反 §2.2 query 保留需求）：
 
   ```html
   <div class="search-wrap">
@@ -79,15 +92,20 @@ export function seriesMatchesQuery(series: Series, query: string): boolean;
 
 ### 2.2 即時過濾
 
-- `let query = ""`（模組級狀態）。
+- `let query = ""`（Dashboard script 內的**模組級 mutable state**；`applyFilter(data, group, sort)` **不新增 query 參數**，函式內直接讀取目前 `query`——年度切換後保留、60s refresh 後重新套用，且現有所有 `applyFilter` call site 不需逐一傳遞）。
 - `input` 事件 → `query = input.value` → 重跑 `applyFilter`（現有唯一渲染管線，見 §3.1）。
-- **Escape 鍵**：清空 input 並保留焦點（避免 Escape 後焦點掉到 body）。清空後重跑 `applyFilter`。
+- **Escape 鍵（與 RSS modal 的全域 handler 定義優先序）**：
+  - 現有 `document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeRss(); })` 已存在；`#search` 的 Escape 會冒泡到 document。
+  - **優先序**：
+    1. RSS modal 開啟（`#rss-modal.open`）：Escape **只**關閉 modal，**不**清空搜尋。
+    2. RSS modal 關閉：Escape 清空 input、`query = ""`、重跑 `applyFilter`、`input.focus()`（焦點保留）。
+  - 實作：在 `#search` 的 `keydown` 先檢查 modal 狀態——開啟則不處理（讓事件冒泡到 document 關 modal）；關閉則 `preventDefault()`＋清空＋聚焦（`type="search"` 原生 Escape 行為亦被此取代，不重複觸發）。
 - 年度切換：query 保留（與收藏分頁同語意——切換年度後仍套用搜尋）。
 
 ### 2.3 空狀態與計數
 
 - 現有收藏空狀態（`fav-empty`：「尚未收藏任何系列」）保留。
-- 新增搜尋空狀態，**判定優先序**（過濾後 `series.length === 0` 時）：
+- 新增搜尋空狀態，**判定基準與優先序**（見 §3.1 管線圖，兩者皆由 `applyFilter` 在 `#series-list` 內產生且**互斥**）：
 
   ```html
   <div class="search-empty" id="search-empty" role="status" aria-live="polite" tabindex="-1" hidden>
@@ -96,9 +114,13 @@ export function seriesMatchesQuery(series: Series, query: string): boolean;
   </div>
   ```
 
-  - 收藏分頁且**目前年度收藏數為 0** → 顯示現有「尚未收藏任何系列」（優先於搜尋空狀態）。
-  - 其餘（有 query 且無命中，含收藏分頁有收藏但無命中）→ 顯示搜尋空狀態（文案帶 query，`textContent` 組裝）。
-  - 兩者互斥，皆 `role="status"`、`aria-live="polite"`、`tabindex="-1"`（可聚焦，清空後可還焦）。
+  - **判定基準（重要）**：收藏空狀態看**搜尋前**的收藏數（`currentYearFavCount(data) === 0`，即 `favSeries(data).length === 0`），**不是**搜尋後的 `series.length`——若用搜尋後長度判斷，有收藏但被搜尋全部排除時會誤顯示「尚未收藏任何系列」。
+  - **優先序**：
+    1. 收藏分頁且搜尋前收藏數為 0 → 顯示現有「尚未收藏任何系列」。
+    2. 其餘且搜尋後 `series.length === 0` 且有搜尋 token → 顯示搜尋空狀態。
+    3. 其餘 → 渲染卡片。
+  - 搜尋空狀態文案：顯示**原始 `input.value`**（非 normalized query——使用者看到的與輸入一致），以 `textContent` 組裝（避免 XSS）。**僅空白的 query 視為搜尋關閉**（`tokens.length === 0`），不顯示搜尋空狀態。
+  - 兩者皆 `role="status"`、`aria-live="polite"`、`tabindex="-1"`（可聚焦，清空後可還焦）。
 - **狀態列**「已顯示 X / Y」：X = 過濾後筆數（不變），Y 維持現語意（年度總數或收藏數）——搜尋只是縮小目前視圖，分母不動。
 
 ## 3. Client 狀態與流程（Dashboard.astro script）
@@ -109,13 +131,35 @@ export function seriesMatchesQuery(series: Series, query: string): boolean;
 
 新增一步：組別 filter **之後**、排序**之前**套用 `seriesMatchesQuery(series, query)`。排序器、組別分頁、收藏分頁、搜尋四者自由組合；排序器只作用於搜尋後的子集，排序語意完全不受影響。
 
+**明確管線與空狀態分支**（`list.replaceChildren()` 之後）：
+
+```ts
+let series = data.series;
+if (group === "fav") series = favSeries(data);      // 收藏分頁：目前年度已收藏子集
+else if (group !== "全部") series = series.filter((s) => s.group === group);
+
+series = series.filter((s) => seriesMatchesQuery(s, query)); // 搜尋（新步驟，排序前）
+
+list.replaceChildren();
+if (group === "fav" && currentYearFavCount(data) === 0) {
+  renderFavEmpty();                                  // 收藏分頁且搜尋前收藏數為 0
+} else if (series.length === 0 && hasSearchTokens(query)) {
+  renderSearchEmpty();                               // 搜尋無命中（含收藏有但被搜尋排除）
+} else {
+  renderSeries(series);                              // 排序 + 渲染
+}
+```
+
+- `currentYearFavCount(data) === 0` 等價於 `favSeries(data).length === 0`（搜尋前收藏數）——**不可**用搜尋後的 `series.length` 判斷收藏是否為空。
+- `hasSearchTokens(query)`：`query.split(/\s+/).map(normalize).filter(Boolean).length > 0`（空 query／全空白 → 無 token → 不顯示搜尋空狀態，渲染卡片）。
+- 兩個空狀態（`fav-empty`／`search-empty`）皆由 `applyFilter` 在 `#series-list` 內產生且互斥；各自重建（`replaceChildren()` 已移除 SSR 節點，必須重建）。
 - `render(data)`：年度切換 / 60s refresh 時，query 保留（`applyFilter` 內讀取模組級 `query`）。
 - `shownCount`／`totalCount`：沿用現語意（X = 過濾後、Y = 年度總數或收藏數），搜尋不新增分母變體。
 
 ### 3.2 事件
 
 - `#search` 的 `input` → `query = value` → `applyFilter(current, group, sort)`。
-- `#search` 的 `keydown`（Escape）→ 清空 value、`query = ""`、重跑 `applyFilter`、`input.focus()`（焦點保留）。
+- `#search` 的 `keydown`（Escape）→ 依 §2.2 優先序：modal 開啟則不處理（冒泡至 document 關 modal）；否則清空 value、`query = ""`、重跑 `applyFilter`、`input.focus()`（焦點保留）。
 - 空狀態聚焦：清空搜尋後若原本聚焦在 `#search-empty`（搜尋空狀態），焦點還給 input（避免元素消失後焦點掉落）。
 
 ## 4. 檔案變更清單
@@ -143,10 +187,12 @@ export function seriesMatchesQuery(series: Series, query: string): boolean;
   - 繁中原文保留（`前端` → `前端`，不轉換）。
 - `seriesMatchesQuery`：
   - 空 query → `true`（搜尋關閉）。
+  - 全空白 query（`"   "`、`"　"`）→ `true`（`filter(Boolean)` 後無 token → 搜尋關閉）。
   - token AND：「vue 前端」→ 標題含 `vue` 且作者含 `前端` 才命中；缺一不命中。
   - 四欄位各命中（標題／作者／組別／團隊各自獨立命中）。
   - `team: null` 安全（不 throw、不命中）。
   - 全形 query 命中半形資料（`ＶＵＥ` 命中 `vue`）——normalize 對稱性。
+  - 全形空格分隔 token（`vue　前端`）→ AND 語意照常（split `\s+` 含全形空格）。
   - 多 token 全命中才列入（`a b`：標題含 a 但全欄位無 b → 不命中）。
 
 ### 5.2 Build / 型別
@@ -162,16 +208,19 @@ export function seriesMatchesQuery(series: Series, query: string): boolean;
 4. 多 token AND：`vue 前端` → 兩條件都滿足才顯示。
 5. 全形輸入 `ＶＵＥ` → 命中半形資料（normalize 生效）。
 6. 組別分頁 + 搜尋組合：切到特定組別再搜尋 → 交集；排序器（進度/最多觀看/今日發文）切換正常。
-7. 收藏分頁 + 搜尋組合：收藏分頁內搜尋 → 子集交集；0 收藏時顯示「尚未收藏任何系列」（優先於搜尋空狀態）。
-8. 無結果 → 搜尋空狀態出現（帶 query 文案、`role="status"`）；清空 → 恢復完整列表、空狀態消失。
+7. 收藏分頁 + 搜尋組合：收藏分頁內搜尋 → 子集交集；**有收藏但被搜尋全部排除 → 顯示搜尋空狀態**（非「尚未收藏任何系列」）；0 收藏時顯示「尚未收藏任何系列」（優先於搜尋空狀態）。
+8. 無結果 → 搜尋空狀態出現（帶 **raw query** 文案、`role="status"`）；清空 → 恢復完整列表、空狀態消失。
+8b. 全空白 query → 顯示完整列表（搜尋關閉），不顯示搜尋空狀態。
 9. Escape → 清空並保留焦點（焦點仍在 input）。
+9b. RSS modal 開啟時按 Escape → **只**關閉 modal，搜尋 input 內容不變、不觸發重 render。
 10. 年度切換：query 保留、仍套用於新年度。
 11. 無 console error；input focus 可見（鍵盤操作）。
 
 ## 6. 風險
 
 - **每 keystroke 全量掃描**：127 × 4 欄位 × normalize，每次 keyup 微秒級——無效能問題（索引化反而先付建構成本）。資料量破千再評估。
-- **Escape 與焦點**：`type="search"` 的 Escape 原生行為（清空）與我們 keydown handler 重疊——handler 統一處理（清空 + 保留焦點），原生行為不重複觸發。
+- **Escape 與焦點**：`type="search"` 的 Escape 原生行為（清空）與 keydown handler 重疊——handler 統一處理（清空 + 保留焦點），原生行為不重複觸發。RSS modal 開啟時的優先序見 §2.2（modal 優先，搜尋不清空）。
+- **token 切分 vs normalize 順序**：先 split 後逐 token normalize（§1.1）——先 normalize 整個 query 會吃掉 token 邊界、退化成單一子字串，AND 語意失效。測試已覆蓋全形空格分隔（§5.1）。
 - **全形 vs 半形資料**：iThome 標題可能混用全形標點；normalize 只收斂 ASCII 對應區段，全形中文標點（「，」）維持原樣——搜尋中文關鍵字不受影響。
 - **空狀態優先序**：收藏分頁 0 收藏 vs 有 query 無命中——優先顯示「尚未收藏任何系列」（既有 UX，不因搜尋改變）。
 - **不引入 library 的正當性**：見下。
