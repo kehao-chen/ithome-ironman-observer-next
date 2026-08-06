@@ -1015,7 +1015,7 @@ git commit -m "feat(scrape): write daily history snapshots (data/history/{year}/
 
 **Interfaces:**
 - Consumes: Task 1–3 的 `lib/insights.ts`（`publishHourHistogram`、`publishWeekdayHistogram`、`viewsDistribution`、`topSeriesBySubscriptions`、`groupStats`、`titleKeywordStats`、`titleLengthDistribution`）、`lib/charts.ts`（`barChartSVG`、`horizontalBarSVG`、`distributionBarSVG`、`scatterSVG`）、`lib/keywords.ts`（`DEFAULT_KEYWORDS`）、`type YearData`。
-- Produces: `Insights.astro` 接受 `data: YearData`、`years: number[]`、`latestYear: number`、`hasData: boolean` props（`hasData = data.series.length > 0`，review #4），輸出四個面板 + header（年切換器 + 主題 toggle）。四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好，render 進 HTML；同時把「資料 + 各函式」以 `define:vars` 注入，供 Task 6 的 client 重繪使用。`hasData === false` 時四個面板顯示「尚無資料」、年切換器不列出任何年度。
+- Produces: `Insights.astro` 接受 `data: YearData`、`years: number[]`、`latestYear: number`、`hasData: boolean` props（`hasData = data.series.length > 0`，review #4；`latestYear` 已正規化為 `number`，**0 = 無可用年度**，review #4b），輸出四個面板 + header（年切換器 + 主題 toggle）。四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好，render 進 HTML；同時把「資料 + 各函式」以 `define:vars` 注入，供 Task 6 的 client 重繪使用。`hasData === false` 時四個面板顯示「尚無資料」、年切換器不列出任何年度。
 
 **四個面板（spec §4.2）：** 面板級空狀態（review #3 補強 2）——發文行為/人氣結構面板在 `articleCount === 0` 顯示「尚無資料」；組別分析/文字分析面板在 `series.length === 0` 顯示「尚無資料」；`data.year === 0`（整頁無資料）時全部面板「尚無資料」、年切換器不列出年度。
 
@@ -1134,10 +1134,14 @@ for (const [path, mod] of Object.entries(import.meta.glob("../../../data/*.json"
 }
 const meta = (await import("../../../data/meta.json").then((m) => m.default)) as MetaJson;
 const years = meta.years.filter((y) => dataByYear.has(y)).sort((a, b) => b - a);
-const latestYear = years[0] ?? [...dataByYear.keys()].sort((a, b) => b - a)[0];
+// latestYear 正規化為 number（0 = 無可用年度）；避免 number | undefined 型別不一致（review #4b）
+const latestYear =
+  years[0] ??
+  [...dataByYear.keys()].sort((a, b) => b - a)[0] ??
+  0;
 // 空資料 fallback：完全沒有可用 YearData 時不 crash，顯示空狀態面板（spec §6、review #4）
 const emptyData: YearData = { year: 0, updatedAt: "", groups: [], series: [], scrapeLog: [] };
-const data: YearData = latestYear !== undefined && dataByYear.has(latestYear) ? dataByYear.get(latestYear)! : emptyData;
+const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYear.get(latestYear)! : emptyData;
 const hasData = data.series.length > 0;
 ---
 ```
@@ -1402,6 +1406,7 @@ hub op=start name=insights-dev application=bun args=["run","dev"] cwd=web ready.
 - **字數分佈** `titleLengthDistribution` 完整契約（Interfaces/測試/元件/client 重繪/空狀態）補齊（review #3 blocking）。
 - **停用詞/純數字排除**：`ENGLISH_STOPWORDS` + `isExcludedKeyword` 對任何傳入 keywords 生效（review #3 補強 1）。
 - **面板級空狀態**：`articleCount === 0`（發文/人氣）vs `series.length === 0`（組別/文字）分開判定；整頁 `year === 0` 才全空（review #3 補強 2）。
+- **`latestYear` 正規化為 `number`**：`years[0] ?? keys[0] ?? 0`，0 = 無可用年度；Task 5/6 的 `latestYear: number` 型別一致，與 `data.year === 0` 空資料判定一致（review #4b）。
 
 ---
 
