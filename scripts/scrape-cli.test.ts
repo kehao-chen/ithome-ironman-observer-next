@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { buildMeta, collectYears, commitWrites, stageWrites } from "./scrape";
@@ -82,8 +82,32 @@ describe("two-phase atomic write", () => {
       await commitWrites(staged);
       expect(await readFile(join(d, "2026.json"), "utf-8")).toBe(JSON.stringify(data(2026, 3), null, 2));
       expect(await readFile(join(d, "meta.json"), "utf-8")).toBe(JSON.stringify(meta, null, 2));
-      // No .tmp leftovers.
+      // No .tmp or .bak leftovers.
       expect((await import("node:fs")).readdirSync(d).sort()).toEqual(["2026.json", "meta.json"]);
+    } finally { await cleanup(d); }
+  });
+
+  test("mid-commit failure rolls back already-replaced finals and cleans up", async () => {
+    const d = await dir();
+    try {
+      // Pre-existing finals from the previous successful run.
+      await writeFile(join(d, "2025.json"), "old 2025");
+      await writeFile(join(d, "meta.json"), "old meta");
+      // Sabotage the SECOND rename: a directory at a later finalPath makes
+      // rename(tmp, finalPath) fail on POSIX, forcing a rollback of the FIRST
+      // file, which has already been renamed into place by then.
+      await mkdir(join(d, "2026.json"));
+      const meta = buildMeta([data(2025, 2), data(2026, 5)]);
+      const staged = await stageWrites(d, [data(2025, 2), data(2026, 5)], meta);
+      await expect(commitWrites(staged)).rejects.toThrow();
+      // The already-replaced 2025.json must be restored to its original content.
+      expect(await readFile(join(d, "2025.json"), "utf-8")).toBe("old 2025");
+      // The sabotaged target is untouched (still a directory), and its backup
+      // copy was removed; meta.json was never renamed (third in order).
+      expect((await import("node:fs")).statSync(join(d, "2026.json")).isDirectory()).toBe(true);
+      expect(await readFile(join(d, "meta.json"), "utf-8")).toBe("old meta");
+      // No .bak or .tmp residue.
+      expect((await import("node:fs")).readdirSync(d).sort()).toEqual(["2025.json", "2026.json", "meta.json"]);
     } finally { await cleanup(d); }
   });
 });

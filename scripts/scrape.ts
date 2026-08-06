@@ -1,5 +1,5 @@
 // scripts/scrape.ts
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fetchHtml } from "./fetch-html";
 import { parseSignupList, signupListUrl } from "./parse-signup";
@@ -120,9 +120,10 @@ export function buildMeta(succeeded: YearData[]): MetaJson {
 }
 
 // Two-phase atomic write: stage every file to a `.tmp` sibling in the SAME
-// directory first (so a mid-write failure leaves zero renamed files and the
-// previous data/meta.json stay intact), then commit with rename() — atomic
-// per-file on POSIX, so the failure window shrinks to renames only.
+// directory first (so a staging failure leaves zero renamed files and the
+// previous data/meta.json stay intact), then commit via commitWrites —
+// rename() is atomic per-file on POSIX, and the recoverable commit protocol
+// backs up finals and rolls back on mid-commit failure.
 // Returns the staged file list for commitWrites (meta.json staged last).
 export type StagedFile = { tmpPath: string; finalPath: string };
 export async function stageWrites(
@@ -144,8 +145,46 @@ export async function stageWrites(
 }
 
 export async function commitWrites(staged: StagedFile[]): Promise<void> {
-  for (const { tmpPath, finalPath } of staged) {
-    await rename(tmpPath, finalPath);
+  // Recoverable commit: back up existing finals, rename staged files into
+  // place, and on ANY failure restore the already-replaced finals from backup.
+  // (POSIX rename is atomic per file, not across files — this closes the
+  // mid-commit window so a failure never leaves a mixed year/meta set.)
+  const backups: { bakPath: string; finalPath: string }[] = [];
+  const done: StagedFile[] = [];
+  try {
+    for (const { tmpPath, finalPath } of staged) {
+      // Copy (not rename) the existing final aside as backup — the final stays
+      // in place until its staged replacement is renamed over it. A final that
+      // does not exist yet (e.g. a brand-new year) gets no backup; rollback
+      // then removes the renamed-in file to restore the absent pre-commit state.
+      try {
+        await copyFile(finalPath, `${finalPath}.bak`);
+        backups.push({ bakPath: `${finalPath}.bak`, finalPath });
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+      }
+      await rename(tmpPath, finalPath);
+      done.push({ tmpPath, finalPath });
+    }
+  } catch (e) {
+    // Rollback: restore every final we already replaced — from its backup when
+    // a previous file existed, otherwise remove the renamed-in file.
+    for (const { finalPath } of done) {
+      try {
+        const backup = backups.find((b) => b.finalPath === finalPath);
+        if (backup) await rename(backup.bakPath, backup.finalPath);
+        else await rm(finalPath, { force: true });
+      } catch { /* best-effort */ }
+    }
+    throw e;
+  } finally {
+    // Cleanup: remove backups and any leftover staged .tmp files.
+    for (const { bakPath } of backups) {
+      try { await rm(bakPath, { force: true }); } catch { /* best-effort */ }
+    }
+    for (const { tmpPath } of staged) {
+      try { await rm(tmpPath, { force: true }); } catch { /* best-effort */ }
+    }
   }
 }
 
@@ -181,8 +220,9 @@ if (import.meta.main) {
   const meta = buildMeta(succeeded);
   // Two-phase commit: stage all files to `.tmp` siblings in the same directory,
   // then rename them into place. A staging failure exits before any rename —
-  // previous data/meta stay intact (all-or-nothing). Rename is atomic per file
-  // on POSIX, so the only mid-commit failure window is the renames themselves.
+  // previous data/meta stay intact. Rename is atomic per file on POSIX, and
+  // commitWrites backs up finals and rolls back already-replaced files on any
+  // mid-commit failure, so a failure never leaves a mixed year/meta set.
   let staged: StagedFile[];
   try {
     staged = await stageWrites(dataDir, succeeded, meta);
