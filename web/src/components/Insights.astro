@@ -65,11 +65,8 @@ const kwLine = pageEmpty
 <header class="site-header container">
   <div class="header-row">
     <div class="brand">
-      <a class="insights-back" href="/">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        鐵人觀察家
-      </a>
-      <h1 class="brand-title">Insights <span class="brand-year" id="brand-year">{latestYear || ""}</span></h1>
+      <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-year" id="brand-year">{latestYear || ""}</span></h1>
+      <p class="brand-sub">Insights 分析</p>
     </div>
     <div class="header-actions">
       <select id="insight-year-select" class="sort-select" aria-label="切換年度">
@@ -78,6 +75,12 @@ const kwLine = pageEmpty
       <button id="theme-toggle" class="icon-btn" type="button" aria-label="切換明暗主題" title="切換明暗主題（自動 / 明 / 暗）">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       </button>
+      <a class="icon-btn" href="/" aria-label="回首頁" title="回首頁">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><polyline points="9,21 9,13 15,13 15,21"/></svg>
+      </a>
+      <a class="icon-btn" href="https://github.com/kehao-chen/ithome-ironman-observer-next" target="_blank" rel="noopener" aria-label="GitHub 專案" title="GitHub 專案">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12 11.5 11.5 0 0 0 8.36 23c.57.1.78-.25.78-.55v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.41-1.27.74-1.56-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.25 5.68.42.36.79 1.08.79 2.18v3.23c0 .3.21.66.79.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z" fill="currentColor" stroke="none"/></svg>
+      </a>
     </div>
   </div>
 </header>
@@ -113,11 +116,11 @@ const kwLine = pageEmpty
       <span class="insight-panel-index">02</span>
     </div>
     <div class="insight-charts">
-      <div class="insight-chart">
+      <div class="insight-chart insight-chart--full">
         <h3>文章觀看分佈</h3>
         <div id="chart-dist" class="chart-canvas is-loading"></div>
       </div>
-      <div class="insight-chart insight-chart--subs">
+      <div class="insight-chart insight-chart--full">
         <h3>訂閱數排行</h3>
         <div id="chart-subs" class="chart-canvas is-loading"></div>
       </div>
