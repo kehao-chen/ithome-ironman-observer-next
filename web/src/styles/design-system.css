@@ -404,12 +404,12 @@ input, select, textarea { caret-color: var(--accent); }
 .card-action:hover { color: var(--accent); background: var(--accent-weak); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
 .card-action svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; }
 
-/* 收藏星號（grid + list 共用）——預設 outline，收藏時填色 + accent */
+/* 收藏星號（grid + list 共用）——預設 outline；收藏時僅填色（不畫背景/邊框，
+   避免與 hover/focus 的方框樣式混淆） */
 .card-fav svg { transition: fill 0.12s ease, color 0.12s ease; }
 .card-fav[aria-pressed="true"] {
   color: var(--accent);
-  background: var(--accent-weak);
-  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  /* 只有填色：無 background / border，保持與未收藏時同尺寸、無外框 */
 }
 .card-fav[aria-pressed="true"] svg { fill: currentColor; }
 @keyframes fav-pop {
