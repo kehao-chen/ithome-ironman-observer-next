@@ -19,7 +19,6 @@ const latestYear =
 // 空資料 fallback：完全沒有可用 YearData 時不 crash，顯示空狀態面板（spec §6、review #4）
 const emptyData: YearData = { year: 0, updatedAt: "", groups: [], series: [], scrapeLog: [] };
 const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYear.get(latestYear)! : emptyData;
-const hasData = data.series.length > 0;
 ---
 <!doctype html>
 <html lang="zh-Hant">
@@ -58,7 +57,7 @@ const hasData = data.series.length > 0;
     CONTRACT: 保留此 comment 於 build 後 markup（禁 innerHTML 放使用者資料；textContent only，
       唯一 innerHTML sink 為 setSvg 的完整 SVG 字串）。
   -->
-  <Insights data={data} years={years} latestYear={latestYear} hasData={hasData} />
+  <Insights data={data} years={years} latestYear={latestYear} />
   <script>
     import { publishHourHistogram, publishWeekdayHistogram, viewsDistribution, topSeriesBySubscriptions, groupStats, titleKeywordStats, titleLengthDistribution } from "../lib/insights";
     import { barChartSVG, horizontalBarSVG, distributionBarSVG, scatterSVG } from "../lib/charts";
