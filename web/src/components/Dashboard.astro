@@ -41,6 +41,10 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   </div>
   <div class="toolbar">
     <div class="filter-group" id="group-filters" role="group" aria-label="依組別篩選">
+      <button data-group="fav" class="filter-btn" data-active="false">
+        <span class="filter-label">我的收藏</span>
+        <span class="filter-count tabular-nums" id="fav-count">0</span>
+      </button>
       {groups.map((g) => (
         <button data-group={g} class="filter-btn" data-active={g === "全部" ? "true" : "false"}>
           <span class="filter-label">{g}</span>
@@ -72,6 +76,10 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   </div>
   <div class="series-grid" id="series-list">
     {data.series.map((s) => <SeriesCard series={s} />)}
+    <div class="fav-empty" id="fav-empty" hidden>
+      <p>尚未收藏任何系列</p>
+      <p class="fav-empty-hint">點卡片右上角星號開始追蹤你關心的系列。</p>
+    </div>
   </div>
 </main>
 
@@ -102,6 +110,13 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 </script>
 <script>
   import { isDeletedSeries, statusChip, statusChipText, statusChipTitle, taipeiDay, taipeiToday } from "../lib/daily-status";
+  import { loadFavorites, saveFavorites, toggleFavorite, isValidFavoriteId } from "../lib/favorites";
+  // window.localStorage getter 本身可能 throw（受限環境）；wrapper 統一降級為 null。
+  function getStorage(): Pick<Storage, "getItem" | "setItem"> | null {
+    try { return window.localStorage; } catch { return null; }
+  }
+  const storage = getStorage();
+  let favSet = new Set<number>(loadFavorites(storage));
   const list = document.getElementById("series-list")!;
   const updatedAt = document.getElementById("updated-at")!;
   const seriesCount = document.getElementById("series-count")!;
@@ -207,6 +222,9 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     svgEl("path", { d: "M4 4a16 16 0 0 1 16 16" }),
     svgEl("circle", { cx: "5", cy: "19", r: "1.5", fill: "currentColor", stroke: "none" }),
   ]);
+  const FAV_ICON = svgEl("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, [
+    svgEl("path", { d: "M12 3l2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.4l6.1-.9z" }),
+  ]);
   const OPEN_ICON = svgEl("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, [
     svgEl("path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }),
     svgEl("polyline", { points: "15 3 21 3 21 9" }),
@@ -219,10 +237,36 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     for (const s of data.series) m.set(s.group, (m.get(s.group) ?? 0) + 1);
     return m;
   }
+  function currentGroup(): string {
+    return document.querySelector(".filter-btn[data-active='true']")?.getAttribute("data-group") ?? "全部";
+  }
+  function isFavView(): boolean { return currentGroup() === "fav"; }
+  // 目前年度資料中已收藏且存在的系列（收藏分頁的資料子集）。
+  function favSeries(data: any): any[] { return data.series.filter((s: any) => favSet.has(s.id)); }
+  // 收藏分頁的 shown/total 分母：目前年度可顯示收藏數。
+  function currentYearFavCount(data: any): number { return favSeries(data).length; }
+  // 年度切換時 resolve active：fav 恆保留；普通組別在新年度不存在 → fallback「全部」。
+  function activeGroupFor(groups: string[], requested: string): string {
+    if (requested === "fav") return "fav";
+    return groups.includes(requested) ? requested : "全部";
+  }
   function renderFilters(groups: string[], counts: Map<string, number>, activeGroup: string) {
     const wrap = document.getElementById("group-filters");
     if (!wrap) return;
     wrap.textContent = "";
+    const favBtn = document.createElement("button");
+    favBtn.className = "filter-btn";
+    favBtn.dataset.group = "fav";
+    favBtn.dataset.active = String(activeGroup === "fav");
+    const favLabel = document.createElement("span");
+    favLabel.className = "filter-label";
+    favLabel.textContent = "我的收藏";
+    const favCnt = document.createElement("span");
+    favCnt.className = "filter-count tabular-nums";
+    favCnt.id = "fav-count";
+    favCnt.textContent = "0";
+    favBtn.append(favLabel, favCnt);
+    wrap.appendChild(favBtn);
     for (const g of groups) {
       const btn = document.createElement("button");
       btn.className = "filter-btn";
@@ -248,8 +292,13 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     // Rebuild group filters only when the year actually changed.
     if (lastRenderedYear !== data.year) {
       lastRenderedYear = data.year;
-      renderFilters(["全部", ...data.groups], groupCounts(data), "全部");
+      const groups = ["全部", ...data.groups];
+      // 年度切換保留目前 active；普通組別在新年度不存在 → fallback「全部」（fav 恆保留）。
+      const active = activeGroupFor(groups, currentGroup());
+      renderFilters(groups, groupCounts(data), active);
     }
+    const favCount = document.getElementById("fav-count");
+    if (favCount) favCount.textContent = String(currentYearFavCount(data));
     // scrapeLog notice: fixed container, toggled by data.
     if (scrapeLog && scrapeLogCount && scrapeLogList) {
       scrapeLogCount.textContent = String(data.scrapeLog.length);
@@ -274,8 +323,12 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   }
 
   function applyFilter(data: any, group: string, sort: string) {
-    let series = data.series;
-    if (group !== "全部") series = series.filter((s: any) => s.group === group);
+    let series: any[] = data.series;
+    if (group === "fav") {
+      series = favSeries(data); // 收藏分頁：目前年度已收藏子集
+    } else if (group !== "全部") {
+      series = series.filter((s: any) => s.group === group);
+    }
     series = [...series].sort((a: any, b: any) => {
       if (sort === "views") return totalViews(b) - totalViews(a);
       if (sort === "latest") {
@@ -290,10 +343,26 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       return b.dayCount - a.dayCount;
     });
     list.replaceChildren();
-    const frag = document.createDocumentFragment();
-    for (const s of series) frag.appendChild(viewMode === "list" ? renderRow(s) : renderCard(s));
-    list.appendChild(frag);
+    if (group === "fav" && series.length === 0) {
+      // 空狀態是每次 render 的 output：replaceChildren() 已移除 SSR 節點，必須重建。
+      const empty = document.createElement("div");
+      empty.className = "fav-empty";
+      empty.id = "fav-empty";
+      const p1 = document.createElement("p");
+      p1.textContent = "尚未收藏任何系列";
+      const p2 = document.createElement("p");
+      p2.className = "fav-empty-hint";
+      p2.textContent = "點卡片右上角星號開始追蹤你關心的系列。";
+      empty.append(p1, p2);
+      list.appendChild(empty);
+    } else {
+      const frag = document.createDocumentFragment();
+      for (const s of series) frag.appendChild(viewMode === "list" ? renderRow(s) : renderCard(s));
+      list.appendChild(frag);
+    }
     shownCount.textContent = String(series.length);
+    // 分母語意：收藏分頁 = 目前年度可顯示收藏數；一般分頁 = 年度全部系列數。
+    totalCount.textContent = String(group === "fav" ? currentYearFavCount(data) : data.series.length);
     humanizeAll();
   }
 
@@ -321,7 +390,13 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     rss.dataset.rss = rssUrl(s); rss.dataset.title = s.title;
     rss.setAttribute("aria-label", "RSS 訂閱"); rss.title = "RSS 訂閱";
     rss.appendChild(RSS_ICON.cloneNode(true));
-    right.append(stat, rss); head.append(headLeft, right);
+    const fav = document.createElement("button");
+    fav.className = "card-action card-fav"; fav.type = "button";
+    fav.dataset.favId = String(s.id);
+    fav.setAttribute("aria-pressed", String(favSet.has(s.id)));
+    fav.setAttribute("aria-label", "收藏系列"); fav.title = "收藏系列";
+    fav.appendChild(FAV_ICON.cloneNode(true));
+    right.append(fav, stat, rss); head.append(headLeft, right);
 
     const prog = document.createElement("div"); prog.className = "progress";
     const track = document.createElement("div"); track.className = "progress-track";
@@ -392,7 +467,13 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     rss.appendChild(RSS_ICON.cloneNode(true));
     const open = document.createElement("a"); open.className = "card-action"; open.href = seriesUrl(s); open.target = "_blank"; open.rel = "noopener";
     open.setAttribute("aria-label", "開啟系列"); open.title = "開啟系列"; open.appendChild(OPEN_ICON.cloneNode(true));
-    actions.append(rss, open);
+    const fav = document.createElement("button");
+    fav.className = "card-action card-fav"; fav.type = "button";
+    fav.dataset.favId = String(s.id);
+    fav.setAttribute("aria-pressed", String(favSet.has(s.id)));
+    fav.setAttribute("aria-label", "收藏系列"); fav.title = "收藏系列";
+    fav.appendChild(FAV_ICON.cloneNode(true));
+    actions.append(fav, rss, open);
 
     row.append(left, main, views, actions);
     return row;
@@ -406,6 +487,28 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     groupFilters.querySelectorAll(".filter-btn").forEach((b) => b.setAttribute("data-active", "false"));
     btn.setAttribute("data-active", "true");
     if (current) applyFilter(current, btn.dataset.group!, (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
+  });
+  list.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest(".card-fav") as HTMLElement | null;
+    if (!btn) return;
+    e.preventDefault();
+    const id = Number(btn.dataset.favId);
+    // UI 層防禦（toggleFavorite 內亦 no-op，雙層守住邊界）。
+    if (!isValidFavoriteId(id)) return;
+    favSet = toggleFavorite(favSet, id);
+    saveFavorites(storage, favSet);
+    btn.setAttribute("aria-pressed", String(favSet.has(id)));
+    btn.classList.remove("fav-pop"); void btn.offsetWidth; btn.classList.add("fav-pop");
+    const favCount = document.getElementById("fav-count");
+    if (favCount && current) favCount.textContent = String(currentYearFavCount(current));
+    if (isFavView() && current) {
+      // 收藏分頁：子集變了 → 重 render（取消收藏的卡片立即移出，空狀態由 applyFilter 重建）。
+      applyFilter(current, "fav", (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
+    }
+  });
+  list.addEventListener("animationend", (e) => {
+    const t = e.target as HTMLElement;
+    if (t.classList?.contains("fav-pop")) t.classList.remove("fav-pop");
   });
   document.getElementById("sort")?.addEventListener("change", () => {
     if (current) applyFilter(current, (document.querySelector(".filter-btn[data-active='true']")?.getAttribute("data-group")) ?? "全部",
@@ -472,6 +575,11 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   });
   setInterval(() => { if (current) loadYear(currentYear); }, 60_000);
 
+  // SSR 星號一律 aria-pressed="false"；首輪依 favSet 同步填色狀態（避免 FOUC）。
+  document.querySelectorAll<HTMLElement>(".card-fav").forEach((b) => {
+    const id = Number(b.dataset.favId);
+    b.setAttribute("aria-pressed", String(favSet.has(id)));
+  });
   render((window as any).IRONMAN_DATA);
   // Re-humanize periodically so relative times stay fresh (also re-anchors 臺北 today).
   setInterval(() => { today = taipeiToday(); humanizeAll(); }, 60000);
