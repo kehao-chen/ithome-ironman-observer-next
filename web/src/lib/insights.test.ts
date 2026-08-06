@@ -4,6 +4,10 @@ import {
   publishWeekdayHistogram,
   viewsDistribution,
   topSeriesBySubscriptions,
+  groupStats,
+  titleKeywordStats,
+  titleLengthDistribution,
+  DEFAULT_KEYWORDS,
 } from "./insights";
 import type { Article, Series } from "../../../scripts/types";
 
@@ -140,5 +144,122 @@ describe("topSeriesBySubscriptions", () => {
   test("n 預設 10、超過系列數回傳全部；空 series → []", () => {
     expect(topSeriesBySubscriptions([])).toEqual([]);
     expect(topSeriesBySubscriptions([sA, sB], 1)).toHaveLength(1);
+  });
+});
+
+describe("groupStats", () => {
+  const g1a = makeSeries({ id: 1, group: "Web", subscriptions: 2, articles: [article({ publishedAt: "2026-08-01T00:00:00+08:00", views: 100 })] });
+  const g1b = makeSeries({ id: 2, group: "Web", subscriptions: 4, articles: [article({ publishedAt: "2026-08-01T00:00:00+08:00", views: 300 })] });
+  const g2 = makeSeries({ id: 3, group: "AI", subscriptions: 1, articles: [] });
+
+  test("聚合 seriesCount/articleCount/totalSubscriptions", () => {
+    const s = groupStats([g1a, g1b, g2]);
+    const web = s.find((x) => x.group === "Web")!;
+    expect(web.seriesCount).toBe(2);
+    expect(web.articleCount).toBe(2);
+    expect(web.totalSubscriptions).toBe(6);
+    expect(web.avgViews).toBe(200); // 400/2
+  });
+  test("無文章組 avgViews = 0", () => {
+    const s = groupStats([g2]);
+    expect(s[0].avgViews).toBe(0);
+  });
+  test("排序 seriesCount desc，同值 group asc", () => {
+    const s = groupStats([g1a, g1b, g2]);
+    expect(s.map((x) => x.group)).toEqual(["Web", "AI"]);
+  });
+  test("空 series → []", () => {
+    expect(groupStats([])).toEqual([]);
+  });
+});
+
+describe("titleKeywordStats", () => {
+  const kw = ["AI", "前端"];
+  test("字典命中，每系列標題最多 1 次", () => {
+    const s1 = makeSeries({ id: 1, title: "AI AI 前端" }); // AI 2 次、前端 1 次
+    const s2 = makeSeries({ id: 2, title: "前端開發" });
+    const stats = titleKeywordStats([s1, s2], kw);
+    expect(stats.find((x) => x.keyword === "AI")!.count).toBe(1); // 只算 1
+    expect(stats.find((x) => x.keyword === "前端")!.count).toBe(2);
+  });
+  test("大小寫正規化（ai 命中 AI）", () => {
+    const stats = titleKeywordStats([makeSeries({ id: 1, title: "ai 入門" })], kw);
+    expect(stats.find((x) => x.keyword === "AI")!.count).toBe(1);
+  });
+  test("只分析 Series.title，不混 description", () => {
+    const stats = titleKeywordStats([makeSeries({ id: 1, title: "無關鍵字", description: "AI 教學" })], kw);
+    expect(stats.every((x) => x.count === 0)).toBe(true);
+  });
+  test("英文關鍵詞不接受子字串誤判（review #1）", () => {
+    // SAIL 含 AI 子字串，但 AI 是獨立 token → 不命中
+    const stats = titleKeywordStats([makeSeries({ id: 1, title: "SAIL 入門" })], ["AI"]);
+    expect(stats).toEqual([]);
+  });
+  test("英文關鍵詞 token 邊界命中", () => {
+    const stats = titleKeywordStats([makeSeries({ id: 1, title: "AI 與 K8s 實戰" })], ["AI", "K8s"]);
+    expect(stats.find((x) => x.keyword === "AI")!.count).toBe(1);
+    expect(stats.find((x) => x.keyword === "K8s")!.count).toBe(1);
+  });
+  test("中文關鍵詞仍以子字串比對", () => {
+    // 中文無 token 邊界；「前端開發」含「前端」
+    const stats = titleKeywordStats([makeSeries({ id: 1, title: "前端開發" })], ["前端"]);
+    expect(stats.find((x) => x.keyword === "前端")!.count).toBe(1);
+  });
+  test("排序 count desc，同值 keyword asc", () => {
+    const stats = titleKeywordStats([
+      makeSeries({ id: 1, title: "前端" }),
+      makeSeries({ id: 2, title: "AI" }),
+    ], kw);
+    // localeCompare("zh-Hant")：中文在 ICU zh-Hant collation 下排在 ASCII 前（"前端" < "AI"）
+    expect(stats.map((x) => x.keyword)).toEqual(["前端", "AI"]); // 各 1，依 asc
+  });
+  test("空 series → []", () => {
+    expect(titleKeywordStats([])).toEqual([]);
+  });
+  test("純數字 / 英文停用詞關鍵詞排除（review #3 補強 1）", () => {
+    // 自訂關鍵詞：2026（純數字）、the（停用詞）、AI（有效）
+    const stats = titleKeywordStats(
+      [makeSeries({ id: 1, title: "2026 the AI" })],
+      ["2026", "the", "AI"],
+    );
+    expect(stats.map((x) => x.keyword)).toEqual(["AI"]);
+    expect(stats.find((x) => x.keyword === "AI")!.count).toBe(1);
+  });
+});
+
+describe("titleLengthDistribution", () => {
+  test("分桶正確（0–9 / 10–19 / 20–29 / 30–39 / 40+）", () => {
+    const dist = titleLengthDistribution([
+      makeSeries({ id: 1, title: "短" }),                    // length 1 → 0–9
+      makeSeries({ id: 2, title: "十個字十個字十個字十" }),   // length 10 → 10–19
+      makeSeries({ id: 3, title: "二十個字二十個字二十個字二十個字二十個字" }), // length 20 → 20–29
+    ]);
+    expect(dist).toEqual([
+      { length: "0–9", count: 1 },
+      { length: "10–19", count: 1 },
+      { length: "20–29", count: 1 },
+      { length: "30–39", count: 0 },
+      { length: "40+", count: 0 },
+    ]);
+  });
+  test("空標題計入 0–9", () => {
+    const dist = titleLengthDistribution([makeSeries({ id: 1, title: "" })]);
+    expect(dist[0]).toEqual({ length: "0–9", count: 1 });
+  });
+  test("String.length 計算（UTF-16 code unit，emoji 算 2）", () => {
+    // "A😀" length = 2（A=1 + emoji surrogate pair=2 → 3？實際 A=1, 😀=2 → total 3）
+    const dist = titleLengthDistribution([makeSeries({ id: 1, title: "A😀" })]);
+    expect("A😀".length).toBe(3); // 驗證測試前置：A(1) + 😀(2) = 3
+    expect(dist[0]).toEqual({ length: "0–9", count: 1 });
+  });
+  test("空 series → 5 桶全 0", () => {
+    const dist = titleLengthDistribution([]);
+    expect(dist).toEqual([
+      { length: "0–9", count: 0 },
+      { length: "10–19", count: 0 },
+      { length: "20–29", count: 0 },
+      { length: "30–39", count: 0 },
+      { length: "40+", count: 0 },
+    ]);
   });
 });
