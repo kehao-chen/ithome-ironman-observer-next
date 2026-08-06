@@ -76,7 +76,7 @@ Feature ideas carried over from the removed `docs/PROJECT-INTRODUCTION.md`, plus
 
 ### Mid-term candidates (from v1 non-goals; re-evaluate value before building)
 
-- **Search**: full-text search of series by title/author/group.
+- [x] **Search**（完成 2026-08-06）：`web/src/lib/search.ts` 純函數（`normalize` + token AND）＋toolbar `#search` input 即時過濾；命中標題/作者/組別/團隊；與組別分頁（含收藏分頁）、排序器自由組合；搜尋空狀態 `role="status"`；Escape 清空（RSS modal 優先）；跨年度 query 保留。
 - **Completion / activity badge enhancements**: currently only DAY 0 / in-progress / completed states; could add dynamic states like "posted today" or "no update for N days".
 - [x] **Favorites / tracking specific series**（完成 2026-08-06）：localStorage 書籤（系列 ID 跨年度共用），卡片星號 toggle（grid/list 皆可），「我的收藏」分頁沿用排序器，空狀態引導；僅限本裝置/瀏覽器。
 - **Real-time updates**: currently periodic batch (hourly) + 60s client refresh; true near-real-time needs an external trigger (e.g., Cloudflare Worker cron) — a cost vs schedule-reliability tradeoff.
