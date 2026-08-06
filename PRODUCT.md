@@ -25,7 +25,7 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 ## Operating Context
 
 - Scraper hits ithelp.ithome.com.tw (signup list + RSS + series pages), ~2 requests/series, ~250 requests/full sweep; **browser UA required** (403 otherwise).
-- Cron: Taipei 07:00–01:00 hourly (18 runs/day, ~45 min/month; user-approved tradeoff vs full 24h).
+- Cron: Cloudflare Worker `ironman-observer-trigger` fires `workflow_dispatch` every 10 min (144 runs/day; public-repo GitHub-hosted runner stays free). GitHub's native `schedule` trigger was dropped (delayed/dropped at the top of every hour).
 - Data changes commit + deploy automatically; site refreshes client-side every 60s.
 - UI is a single-page dashboard: category filter (tag row) + sort (progress / most views / latest) + series cards. Cards show: title, author, group, latest day, views, publish time, update time.
 - `data/2026.json` is the DB; entity-decoding must happen at parse time (`html-entities.ts`), never client-side (double-escaping). Client DOM uses `textContent` only — `innerHTML` with user data is forbidden (XSS).
@@ -33,7 +33,7 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 ## Capabilities and Constraints
 
 - Features: group filter, sort (dayCount / views / latest), client-side 60s refresh, responsive.
-- Hard constraint: near-zero cost — GH Actions free tier + Cloudflare Pages free tier + own domain; no backend, no DB (JSON is the DB).
+- Hard constraint: near-zero cost — Cloudflare Workers/Pages free tier + GH Actions public-repo free runners + own domain; no backend, no DB (JSON is the DB).
 - Non-goals (v1): multi-year data, search, completion/active badges, login/favorites/tracking, real-time updates (periodic batch only).
 - Browser UA mandatory for scraping; RSS/series page consistency verified.
 - Known current UI issues (from handoff): all-inline styles, dark-only theme, no design system, `DAY ?` badge inconsistency, 30 zero-article series, placeholder filter style, mixed timestamp formats.

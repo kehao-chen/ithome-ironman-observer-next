@@ -1,0 +1,6 @@
+name = "ironman-observer-trigger"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+
+[triggers]
+crons = ["*/10 * * * *"]

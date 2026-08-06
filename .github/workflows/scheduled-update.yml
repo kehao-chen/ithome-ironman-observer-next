@@ -1,8 +1,8 @@
-name: hourly-update
+name: scheduled-update
 on:
-  schedule:
-    # 臺北 08:00 → 隔天 01:00 (UTC 00:00 → 17:00) + 臺北 07:00 (UTC 23:00), 每小時一次
-    - cron: "0 0-17,23 * * *"
+  # No `schedule`: the Cloudflare Worker `ironman-observer-trigger` fires this
+  # workflow via `workflow_dispatch` every 10 min (GitHub's `schedule` trigger
+  # is delayed/dropped at the top of every hour).
   workflow_dispatch: {}
 
 permissions:

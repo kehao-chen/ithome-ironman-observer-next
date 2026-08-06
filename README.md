@@ -30,11 +30,11 @@
 
 ## 架構
 
-ithelp 鐵人賽 → GH Actions (cron) → data/2026.json commit → Astro build → Cloudflare Pages
+ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispatch → GH Actions → data/2026.json commit → Astro build → Cloudflare Pages
 
 - **Scraper**（`scripts/`，Bun + TypeScript）：抓 signup 列表全部分頁 → 每系列 RSS + series 頁 → 合併為 `data/2026.json`（瀏覽/Like/留言/訂閱數、`lastUpdated`、文章清單）。容錯：單系列失敗不中斷、指數退避重試、空結果保留舊資料。
 - **儀表板**（`web/`，Astro）：SSG 預渲染 + client 端 60 秒刷新，組別篩選 + 進度/最多觀看/最新發布排序。
-- **排程**（`.github/workflows/update.yml`）：臺北時間 07:00–01:00 每小時；資料有變才 commit + deploy（無變更跳過）。
+- **排程**（`worker/` + `.github/workflows/scheduled-update.yml`）：Cloudflare Worker `ironman-observer-trigger` 每 10 分鐘打 `workflow_dispatch` 觸發更新（GitHub 原生 `schedule` 在整點高峰會延遲/漏觸發，故改用 CF 網路排程）；資料有變才 commit + deploy（無變更跳過）。
 
 ## 本地開發
 
@@ -55,4 +55,4 @@ bun test
 1. Cloudflare Pages 專案 `ironman-observer-next`（workflow 會自動建立）
 2. GitHub repo secrets：`CLOUDFLARE_API_TOKEN`（Pages Edit 權限）、`CLOUDFLARE_ACCOUNT_ID`
 3. 自有網域在 Cloudflare dashboard → Pages 專案 → Custom domains 設定
-4. workflow 定時自動跑；也可 `gh workflow run hourly-update` 手動觸發
+4. Cloudflare Worker `ironman-observer-trigger`（cron `*/10 * * * *`，secrets: `GITHUB_TOKEN`、`GITHUB_REPO`）定時觸發 workflow；也可 `gh workflow run scheduled-update` 手動觸發
