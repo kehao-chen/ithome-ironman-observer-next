@@ -600,10 +600,10 @@ git commit -m "style(web): favorites star, tab marker, empty state"
 - Features: year switcher (meta `years` authority), group filter + favorites tab, sort (dayCount / views / latest), client-side 60s refresh, scrapeLog notice, responsive.
 ```
 
-2. Non-goals 行移除 `login/favorites/tracking`：
+2. Non-goals 行移除 `login/favorites/tracking`（**保留 `completion/active badges`**）：
 
 ```md
-- Non-goals (v1): search, real-time updates (periodic batch only).
+- Non-goals (v1): search, completion/active badges, real-time updates (periodic batch only).
 ```
 
 3. 本地開發段後加「收藏」註明：
