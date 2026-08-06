@@ -306,7 +306,7 @@ export function topSeriesBySubscriptions(
 Run: `cd web && bun test src/lib/insights.test.ts`
 Expected: PASS — 全部 tests green。
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit（optional checkpoint，非強制；適合逐 task 收斂時使用，直接執行可略過）**
 
 ```bash
 git add web/src/lib/insights.ts web/src/lib/insights.test.ts
@@ -583,7 +583,7 @@ export function titleLengthDistribution(
 Run: `cd web && bun test src/lib/insights.test.ts`
 Expected: PASS — 全部 tests green。
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit（optional checkpoint，非強制；適合逐 task 收斂時使用，直接執行可略過）**
 
 ```bash
 git add web/src/lib/keywords.ts web/src/lib/insights.ts web/src/lib/insights.test.ts
@@ -819,7 +819,7 @@ export function scatterSVG(
 Run: `cd web && bun test src/lib/charts.test.ts`
 Expected: PASS — 全部 tests green。
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit（optional checkpoint，非強制；適合逐 task 收斂時使用，直接執行可略過）**
 
 ```bash
 git add web/src/lib/charts.ts web/src/lib/charts.test.ts
@@ -1003,7 +1003,7 @@ Expected: FAIL — `historyDate is not defined` 或 `writeHistorySnapshots is no
 Run: `cd scripts && bun test scrape.test.ts`
 Expected: PASS — 既有 tests + 新 tests 全綠（`mergeCardsAndStats`、`taipeiTimestamp` 不 regression）。
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit（optional checkpoint，非強制；適合逐 task 收斂時使用，直接執行可略過）**
 
 ```bash
 git add scripts/scrape.ts scripts/scrape.test.ts
@@ -1020,7 +1020,7 @@ git commit -m "feat(scrape): write daily history snapshots (data/history/{year}/
 
 **Interfaces:**
 - Consumes: Task 1–3 的 `lib/insights.ts`（`publishHourHistogram`、`publishWeekdayHistogram`、`viewsDistribution`、`topSeriesBySubscriptions`、`groupStats`、`titleKeywordStats`、`titleLengthDistribution`）、`lib/charts.ts`（`barChartSVG`、`horizontalBarSVG`、`distributionBarSVG`、`scatterSVG`）、`lib/keywords.ts`（`DEFAULT_KEYWORDS`）、`type YearData`。
-- Produces: `Insights.astro` 接受 `data: YearData`、`years: number[]`、`latestYear: number` props（`latestYear` 已正規化為 `number`，**0 = 無可用年度**，review #4b），輸出四個面板 + header（年切換器 + 主題 toggle）。四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好，render 進 HTML；同時把「資料 + 各函式」以 `define:vars` 注入，供 Task 6 的 client 重繪使用。
+- Produces: `Insights.astro` 接受 `data: YearData`、`years: number[]`、`latestYear: number` props（`latestYear` 已正規化為 `number`，**0 = 無可用年度**，review #4b），輸出四個面板 + header（年切換器 + 主題 toggle）。四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好，render 進 HTML；以 `define:vars` 注入 `initialData` 與 `yearsList`（供 Task 6 的 client 重繪）；client functions 由 Task 6 的 `<script>` import，不經 define:vars（review round：修正「資料 + 各函式」舊描述）。
   - **空狀態契約（review round 取代 hasData）**：不再傳 `hasData` props；元件以 `data.year === 0`（整頁無可用年度）判定「尚無資料」四面板 + 年切換器不列出年度；以 `data.series.length === 0`（組別/文字）與 `articles.length === 0`（發文/人氣）判定面板級空狀態；年度檔存在但 series 為空 → 年度仍保留在年切換器。
 
 **四個面板（spec §4.2）：** 面板級空狀態（review #3 補強 2）——發文行為/人氣結構面板在 `articleCount === 0` 顯示「尚無資料」；組別分析/文字分析面板在 `series.length === 0` 顯示「尚無資料」；`data.year === 0`（整頁無資料）時全部面板「尚無資料」、年切換器不列出年度。
@@ -1329,7 +1329,7 @@ Expected: 無 error（新增 page + 元件 + client script 型別正確）。
 Run: `cd web && bun run build`
 Expected: build 成功；`dist/insights/index.html` 存在；`dist/data/2026.json` 存在（copy-data 階段）。
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit（optional checkpoint，非強制；適合逐 task 收斂時使用，直接執行可略過）**
 
 ```bash
 git add web/src/pages/insights.astro web/src/components/Dashboard.astro web/src/styles/design-system.css
