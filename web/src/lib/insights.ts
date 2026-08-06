@@ -1,6 +1,7 @@
 // web/src/lib/insights.ts — 純函數、無 DOM、無 window、無 runtime 依賴。
 // YearData / Series / Article 型別權威：scripts/types.ts（與 Dashboard.astro 同路徑慣例）。
 import type { Article, Series } from "../../../scripts/types";
+import { DEFAULT_KEYWORDS, ENGLISH_STOPWORDS } from "./keywords"; // Task 2 新增
 
 export function publishHourHistogram(articles: Article[]): { hour: number; count: number }[] {
   const counts = new Array(24).fill(0);
@@ -76,4 +77,89 @@ export function topSeriesBySubscriptions(
   }));
   rows.sort((a, b) => b.subscriptions - a.subscriptions || a.name.localeCompare(b.name, "zh-Hant"));
   return rows.slice(0, n);
+}
+
+export function groupStats(
+  series: Series[],
+): { group: string; seriesCount: number; articleCount: number; avgViews: number; totalSubscriptions: number }[] {
+  const byGroup = new Map<string, Series[]>();
+  for (const s of series) {
+    const list = byGroup.get(s.group) ?? [];
+    list.push(s);
+    byGroup.set(s.group, list);
+  }
+  const rows = [...byGroup.entries()].map(([group, list]) => {
+    const articles = list.flatMap((s) => s.articles);
+    const totalViews = articles.reduce((sum, a) => sum + a.views, 0);
+    return {
+      group,
+      seriesCount: list.length,
+      articleCount: articles.length,
+      avgViews: articles.length === 0 ? 0 : Math.round(totalViews / articles.length),
+      totalSubscriptions: list.reduce((sum, s) => sum + s.subscriptions, 0),
+    };
+  });
+  rows.sort((a, b) => b.seriesCount - a.seriesCount || a.group.localeCompare(b.group, "zh-Hant"));
+  return rows;
+}
+
+// 英文/數字連續字串 token（spec §3.3、review #1）；AI 不命中 SAIL。
+const ASCII_TOKEN = /[A-Za-z0-9]+/g;
+const STOPWORD_SET = new Set(ENGLISH_STOPWORDS);
+
+function isAsciiKeyword(k: string): boolean {
+  return /^[A-Za-z0-9]+$/.test(k);
+}
+
+// 關鍵詞排除：純數字（/^\d+$/）或英文停用詞（大小寫不敏感）→ 不列入統計（review #3 補強 1）。
+function isExcludedKeyword(k: string): boolean {
+  const lower = k.toLowerCase();
+  return /^\d+$/.test(k) || STOPWORD_SET.has(lower);
+}
+
+export function titleKeywordStats(
+  series: Series[],
+  keywords: string[] = DEFAULT_KEYWORDS,
+): { keyword: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const k of keywords) {
+    if (isExcludedKeyword(k)) continue; // 排除純數字 / 停用詞（對任何傳入 keywords 生效）
+    counts.set(k, 0);
+  }
+  for (const s of series) {
+    const title = s.title.toLowerCase();
+    for (const k of counts.keys()) {
+      let hit: boolean;
+      if (isAsciiKeyword(k)) {
+        // token 邊界命中：標題的英數 token 集合含該關鍵詞（大小寫已正規化）
+        hit = title.match(ASCII_TOKEN)?.includes(k.toLowerCase()) ?? false;
+      } else {
+        // 中文關鍵詞：大小寫正規化後子字串比對（無 token 邊界）
+        hit = title.includes(k.toLowerCase());
+      }
+      if (hit) counts.set(k, (counts.get(k) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .map(([keyword, count]) => ({ keyword, count }))
+    .filter((x) => x.count > 0)
+    .sort((a, b) => b.count - a.count || a.keyword.localeCompare(b.keyword, "zh-Hant"));
+}
+
+// 標題長度分桶（spec §4.2、review #3 blocking）：String.length（UTF-16 code unit）。
+const LENGTH_BUCKETS = [
+  { label: "0–9", test: (n: number) => n >= 0 && n <= 9 },
+  { label: "10–19", test: (n: number) => n >= 10 && n <= 19 },
+  { label: "20–29", test: (n: number) => n >= 20 && n <= 29 },
+  { label: "30–39", test: (n: number) => n >= 30 && n <= 39 },
+  { label: "40+", test: (n: number) => n >= 40 },
+];
+
+export function titleLengthDistribution(
+  series: Series[],
+): { length: string; count: number }[] {
+  return LENGTH_BUCKETS.map((b) => ({
+    length: b.label,
+    count: series.filter((s) => b.test(s.title.length)).length,
+  }));
 }
