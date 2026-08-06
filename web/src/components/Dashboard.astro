@@ -76,7 +76,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   </div>
   <div class="series-grid" id="series-list">
     {data.series.map((s) => <SeriesCard series={s} />)}
-    <div class="fav-empty" id="fav-empty" hidden>
+    <div class="fav-empty" id="fav-empty" role="status" aria-live="polite" tabindex="-1" hidden>
       <p>尚未收藏任何系列</p>
       <p class="fav-empty-hint">點卡片右上角星號開始追蹤你關心的系列。</p>
     </div>
@@ -348,6 +348,9 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       const empty = document.createElement("div");
       empty.className = "fav-empty";
       empty.id = "fav-empty";
+      empty.setAttribute("role", "status");
+      empty.setAttribute("aria-live", "polite");
+      empty.tabIndex = -1;
       const p1 = document.createElement("p");
       p1.textContent = "尚未收藏任何系列";
       const p2 = document.createElement("p");
@@ -393,8 +396,9 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     const fav = document.createElement("button");
     fav.className = "card-action card-fav"; fav.type = "button";
     fav.dataset.favId = String(s.id);
-    fav.setAttribute("aria-pressed", String(favSet.has(s.id)));
-    fav.setAttribute("aria-label", "收藏系列"); fav.title = "收藏系列";
+    const isFav = favSet.has(s.id);
+    fav.setAttribute("aria-pressed", String(isFav));
+    fav.setAttribute("aria-label", isFav ? "取消收藏" : "收藏系列"); fav.title = isFav ? "取消收藏" : "收藏系列";
     fav.appendChild(FAV_ICON.cloneNode(true));
     right.append(fav, stat, rss); head.append(headLeft, right);
 
@@ -470,8 +474,9 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     const fav = document.createElement("button");
     fav.className = "card-action card-fav"; fav.type = "button";
     fav.dataset.favId = String(s.id);
-    fav.setAttribute("aria-pressed", String(favSet.has(s.id)));
-    fav.setAttribute("aria-label", "收藏系列"); fav.title = "收藏系列";
+    const isFav = favSet.has(s.id);
+    fav.setAttribute("aria-pressed", String(isFav));
+    fav.setAttribute("aria-label", isFav ? "取消收藏" : "收藏系列"); fav.title = isFav ? "取消收藏" : "收藏系列";
     fav.appendChild(FAV_ICON.cloneNode(true));
     actions.append(fav, rss, open);
 
@@ -497,13 +502,26 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     if (!isValidFavoriteId(id)) return;
     favSet = toggleFavorite(favSet, id);
     saveFavorites(storage, favSet);
-    btn.setAttribute("aria-pressed", String(favSet.has(id)));
+    const nowFav = favSet.has(id);
+    btn.setAttribute("aria-pressed", String(nowFav));
+    btn.setAttribute("aria-label", nowFav ? "取消收藏" : "收藏系列"); btn.title = nowFav ? "取消收藏" : "收藏系列";
     btn.classList.remove("fav-pop"); void btn.offsetWidth; btn.classList.add("fav-pop");
     const favCount = document.getElementById("fav-count");
     if (favCount && current) favCount.textContent = String(currentYearFavCount(current));
     if (isFavView() && current) {
       // 收藏分頁：子集變了 → 重 render（取消收藏的卡片立即移出，空狀態由 applyFilter 重建）。
       applyFilter(current, "fav", (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
+      // 移除最後一張收藏 → 卡片已不存在：焦點移至空狀態（已宣告），避免掉到 body。
+      const emptied = list.querySelector(".series-card, .series-row") === null;
+      if (emptied) {
+        const emptyEl = document.getElementById("fav-empty");
+        emptyEl?.focus();
+      } else {
+        // 仍有收藏：焦點還給同 id 的新卡片星號按鈕；該卡已被移除時退而聚焦列表首顆星。
+        const nextFav = list.querySelector<HTMLElement>(`.card-fav[data-fav-id="${id}"]`)
+          ?? list.querySelector<HTMLElement>(".card-fav");
+        nextFav?.focus();
+      }
     }
   });
   list.addEventListener("animationend", (e) => {
