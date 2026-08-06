@@ -166,3 +166,32 @@ export function titleLengthDistribution(
     count: series.filter((s) => b.test(s.title.length)).length,
   }));
 }
+
+
+// 棄賽進度分佈：series.dayCount 分六桶（每 5 天），看出棄賽斷崖。
+export function dayCountDistribution(series: Series[]): { label: string; count: number }[] {
+  const buckets = [
+    { label: "1–5",   min: 0,  max: 5  },
+    { label: "6–10",  min: 6,  max: 10 },
+    { label: "11–15", min: 11, max: 15 },
+    { label: "16–20", min: 16, max: 20 },
+    { label: "21–25", min: 21, max: 25 },
+    { label: "26–30", min: 26, max: 30 },
+  ];
+  return buckets.map((b) => ({
+    label: b.label,
+    count: series.filter((s) => s.dayCount >= b.min && s.dayCount <= b.max).length,
+  }));
+}
+
+// 文章觀看 CDF：每 5 百分位一點（共 21 點），揭露長尾分佈。
+export function viewsPercentiles(articles: Article[]): { pct: number; views: number }[] {
+  if (articles.length === 0) return [];
+  const sorted = articles.map((a) => a.views).sort((a, b) => a - b);
+  const n = sorted.length;
+  return Array.from({ length: 21 }, (_, i) => {
+    const pct = i * 5;
+    const idx = Math.min(Math.floor((pct / 100) * n), n - 1);
+    return { pct, views: sorted[idx] };
+  });
+}
