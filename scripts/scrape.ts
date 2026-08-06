@@ -41,6 +41,33 @@ export function taipeiTimestamp(d: Date): string {
   return new Date(d.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ") + "+08:00";
 }
 
+export function historyDate(updatedAt: string): string {
+  return updatedAt.slice(0, 10); // 臺北日期 = updatedAt 前 10 字元（+08:00 牆鐘）
+}
+
+export async function writeHistorySnapshots(dataDir: string, years: YearData[]): Promise<string[]> {
+  const failures: string[] = [];
+  for (const data of years) {
+    try {
+      const dir = join(dataDir, "history", String(data.year));
+      const path = join(dir, `${historyDate(data.updatedAt)}.json`);
+      await mkdir(dir, { recursive: true });
+      const content = JSON.stringify(data, null, 2);
+      try {
+        const existing = await readFile(path, "utf-8");
+        if (existing === content) continue; // 相同內容跳過（無變更不 commit）
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+      }
+      await writeFile(path, content);
+    } catch (e) {
+      // 單一年度失敗：記錄並繼續其他年度（review #3）
+      failures.push(`${data.year}: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+  return failures;
+}
+
 export async function runScrape(manifest: Manifest): Promise<YearData> {
   // 1. fetch all pages of signup list
   const cards: SignupCard[] = [];
@@ -215,6 +242,17 @@ if (import.meta.main) {
     // All-failed: abort without writing anything (previous data/meta stay untouched).
     console.error("all years failed — aborting writes, keeping previous data");
     process.exit(1);
+  }
+
+  // History snapshots: independent of the atomic main-file commit (spec §5.2).
+  // Per-year failures are collected and logged; they never block the main
+  // {year}.json write (review #3).
+  try {
+    const failures = await writeHistorySnapshots(dataDir, succeeded);
+    for (const f of failures) console.error(`history snapshot failed: ${f}`);
+  } catch (e) {
+    // writeHistorySnapshots 本身不 throw（單年度失敗已內收），此 catch 為防護
+    console.error(`history snapshot error: ${e instanceof Error ? e.message : String(e)}`);
   }
 
   const meta = buildMeta(succeeded);
