@@ -10,7 +10,7 @@
 | 後備網址 | https://ironman-observer-next.pages.dev/ |
 | GitHub | https://github.com/kehao-chen/ithome-ironman-observer-next |
 | 資料 | 127 支系列 / 17 組別（2026-08-05，報名持續增加中） |
-| 排程 | 臺北時間 07:00–01:00 每小時（18 次/天 ≈ 547 runs/月；public repo 的 GitHub-hosted runner 免費且不計分鐘） |
+| 排程 | Cloudflare Worker cron 每 10 分鐘 → `workflow_dispatch`（144 次/天；public repo 的 GitHub-hosted runner 免費且不計分鐘） |
 | 部署鏈 | 全自動，最後一次手動驗證 run 30978443677 全綠 |
 
 ## 架構（已上線，勿破壞契約）
@@ -19,15 +19,18 @@
 ithelp 鐵人賽 (signup 列表 + RSS + series 頁)
    │  browser UA 必帶 (403 否則)
    ▼
-GH Actions cron (.github/workflows/update.yml)
+Cloudflare Worker ironman-observer-trigger (cron */10)
+   │  POST /repos/.../actions/workflows/scheduled-update.yml/dispatches
+   ▼
+GH Actions (.github/workflows/scheduled-update.yml)
    ├─ bun run scripts/scrape.ts      → data/2026.json + data/meta.json
    ├─ 資料有變才 commit + push       → 無變更 exit 0 跳過
    ├─ cd web && bun install && build → dist/
    └─ npx wrangler pages deploy      → Cloudflare Pages
 ```
 
-- **零成本**：GH Actions free tier + Cloudflare Pages free tier + 自有網域。無後端、無 DB（JSON 即 DB）。
-- **每小時全量抓取** ~250 requests（127 系列 × 2 + 分頁），約 2.5 min/run。
+- **零成本**：Cloudflare Workers/Pages free tier + GH Actions public-repo 免費 runner + 自有網域。無後端、無 DB（JSON 即 DB）。
+- **每 10 分鐘全量抓取** ~250 requests（127 系列 × 2 + 分頁），約 2.5 min/run。
 
 ## 關鍵檔案地圖
 
@@ -43,7 +46,8 @@ GH Actions cron (.github/workflows/update.yml)
 | `web/src/components/Dashboard.astro` | **UI/UX 主戰場**：header、group filter、sort、renderCard（大量 inline style） |
 | `web/src/components/SeriesCard.astro` | 靜態卡片（SSG 版）；與 client renderCard 需保持欄位一致 |
 | `config/series-manifest.json` | 年度清單（單一來源；多年度架構從這裡擴） |
-| `.github/workflows/update.yml` | cron + 部署鏈；secrets: `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` |
+| `.github/workflows/scheduled-update.yml` | workflow（僅 `workflow_dispatch`；原 `schedule` 已移除，由 Worker 觸發）；secrets: `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` |
+| `worker/` | Cloudflare Worker `ironman-observer-trigger`（cron `*/10 * * * *`）：`scheduled()` 打 `workflow_dispatch`，依 `run_number` 去重避免重疊；`GET /` 健康檢查、`POST /dispatch` 手動觸發；secrets: `GITHUB_TOKEN`（Actions:write PAT）、`GITHUB_REPO` |
 
 ## 已知問題 / UI/UX 改版候選（新 session 討論起點）
 
@@ -70,8 +74,16 @@ cd web && bun run build     # Astro build 成功，dist/ 產出
 
 ```bash
 # 手動觸發更新
-gh workflow run hourly-update --repo kehao-chen/ithome-ironman-observer-next
+gh workflow run scheduled-update --repo kehao-chen/ithome-ironman-observer-next
 gh run watch <run-id> --repo kehao-chen/ithome-ironman-observer-next
+
+# Worker 手動觸發（等於 cron 做的事）
+curl -X POST https://ironman-observer-trigger.happyhacking.workers.dev/dispatch
+curl https://ironman-observer-trigger.happyhacking.workers.dev/   # 健康檢查
+
+# Worker secrets（已設，勿刪）
+cd worker && npx wrangler secret list
+# → GITHUB_TOKEN（fine-grained PAT，Actions: Read and write）、GITHUB_REPO
 
 # secrets（已設，勿刪）
 gh secret list --repo kehao-chen/ithome-ironman-observer-next
@@ -90,10 +102,10 @@ gh secret list --repo kehao-chen/ithome-ironman-observer-next
 - 修正 `6b699e6`：改寫成 `0 0-17,23 * * *`（等效、更明確），推送後下一個整點（20:48 臺北）排程恢復自動觸發。
 - **教訓**：`schedule` 觸發由 GitHub 排程器負責，**與 runner 無關**；低頻 repo 可能被排程服務節流、整點高峰可能延遲甚至跳過。改 cron 後若沒觸發，先在 Actions 看 run 是否存在，再考慮外部觸發保險。
 
-### 決策：維持 GitHub 免費資源，暫不引進 self-hosted runner / Cloudflare Worker
+### 決策：改用 Cloudflare Worker cron 觸發（2026-08-06）
 
-- **現在**：public repo 的 GitHub-hosted runner **免費且不計分鐘**。目前用量 ≈ 547 runs/月 × 2.5 min ≈ **22 小時/月**，遠低於任何額度上限。**$0 成本，無需任何變動。**
-- **不要**為了解決排程漏觸發去裝 VPS self-hosted runner——排程在 GitHub 端，runner 換到哪都一樣；且 public repo 用 self-hosted runner 有 GitHub 官方安全警告（任何人開 PR 即可在 VPS 執行任意程式碼）。
-- **觸發條件（使用者明確認可）**：
-  1. GitHub-hosted 免費額度開始不夠用（public repo 幾乎不可能）→ 上 self-hosted runner，且只讓 `schedule`/`workflow_dispatch` 用它，PR 相關 job 一律 GitHub-hosted。
-  2. 若排程又開始漏觸發（「每小時」是硬需求時）→ 兩個免費保險擇一：VPS cron 每小時打 `workflow_dispatch` API，或 Cloudflare Free Worker Cron Trigger（$0，CPU <10ms 只做 dispatch 觸發）。
+- **原因**：更新頻率提升到每 10 分鐘後，GH `schedule` 的整點高峰延遲/漏觸發問題（官方文件確認 high-load 時可能 delay/drop）不可接受。
+- **方案**：`worker/` 新增 `ironman-observer-trigger`（Cloudflare Workers free tier，cron `*/10 * * * *`，10ms CPU 只做 HTTP dispatch，遠低於免費額度）。`scheduled()` 打 GitHub `workflow_dispatch` API 觸發 `scheduled-update` workflow。依 `run_number` 去重：同一個 run 最多 dispatch 一次，避免 cron 重疊造成並行抓取。
+- **改動**：`.github/workflows/update.yml` → `scheduled-update.yml`，移除 `schedule` 只留 `workflow_dispatch`（避免雙重觸發）。
+- **成本**：144 次/天 × ~2.5 min ≈ **6 小時/天** runner 時間，public repo 免費；Worker 請求 ~144/天遠低於 100k/day 免費額度。對 ithelp 請求量 ~250 req × 144 ≈ **3.6 萬次/天**（原 18 次/天時為 4,500 次/天）。
+- **self-hosted runner 明確排除**：public repo 用 self-hosted 是 GitHub 官方安全警告（任何人開 PR 可在你的機器跑任意程式碼）；且排程觸發在 GitHub 端，換 runner 無法改善排程可靠性。
