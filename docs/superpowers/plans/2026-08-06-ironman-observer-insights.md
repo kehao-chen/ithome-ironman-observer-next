@@ -17,9 +17,12 @@
 - **`meta.years` 是唯一可選年度來源**；history 快照**不進** `meta.years`、不影響年切換器（spec §3.1、§4.1）。
 - **年切換不得用 query param 驅動 SSR**：Astro `output: "static"` 下 `/insights/?year=N` 不會重跑 frontmatter（spec §4.1）；一律 client-side fetch + `replaceState`。
 - **文字分析只分析 `Series.title`**：不混入 `Series.description` / `Article.title`；每系列標題對同關鍵字最多計 1（spec §3.3）。
+- **文字分析包含「字數分佈」**（spec §4.2 版面、review #3）：`titleLengthDistribution` 輸出標題長度分桶（0–9、10–19、20–29、30–39、40+），以 JS `String.length`（UTF-16 code unit）計算；SSG 與 client 都要渲染；空標題計入 0–9 桶。
 - **英文關鍵詞 token 邊界命中**：英文/數字連續字串（`/[A-Za-z0-9]+/`）切 token 後比對，**不接受子字串誤判**（`AI` 不得命中 `SAIL`）；中文關鍵詞用大小寫正規化後的字典子字串比對（review #1）。
+- **關鍵詞排除規則**：關鍵詞本身若為**純數字**或**英文停用詞**，不列入統計（review #3 補強 1）；`titleKeywordStats(series, keywords)` 是公開函式，此規則對**任何傳入的 keywords** 生效（含自訂字典）。
 - **發文行為統計以臺北牆鐘（UTC+08:00）為準**：`publishedAt` 的 hour / weekday 統計**不得依 runtime local timezone**（review #2）；`weekday` 由 `publishedAt` 前 10 字元日期推導，不用 `new Date().getDay()` 的環境時區。
 - **「星期分佈」語意**：`publishWeekdayHistogram` 輸出七日（一…日），所有 UI 文案用「星期分佈」，**不用「週末/平日」二分類**（review #9）。
+- **面板級空狀態（review #3 補強 2）**：`pageHasSeries`（`series.length > 0`）與 `articleCount`（全系列文章總數）分開判定——發文行為/人氣結構面板在 `articleCount === 0` 顯示「尚無資料」；組別分析/文字分析面板在 `series.length === 0` 顯示「尚無資料」；檔案存在但 series 為空時年切換器仍保留該年度。
 - **觀看分佈用分桶長條圖，不建立泛用 LineChart**（spec §4.3）。
 - **History snapshot 語意**：代表「一次成功完成的 scrape 結果」，與主檔 atomic commit 不綁定；寫入失敗僅 `console.error`、不阻止主檔 commit（spec §5.2）。
 - **臺北日期**：快照檔名日期取自 `updatedAt` 的臺北時區日期（`taipeiTimestamp` 日期部分），不得用 runner local timezone（spec §5.2）。
@@ -321,7 +324,8 @@ git commit -m "feat(insights): add publish/views/subscription computation layer"
 - Consumes: Task 1 的 `import type { Series }`；新增 `lib/keywords.ts`（Task 本身上午完成）。
 - Produces:
   - `export function groupStats(series: Series[]): { group: string; seriesCount: number; articleCount: number; avgViews: number; totalSubscriptions: number }[]` — 依 seriesCount desc，同值依 group localeCompare("zh-Hant") asc；`avgViews` = 該組文章 views 總和 / 該組文章數（無文章時 0，round 到整數）；`totalSubscriptions` = subscriptions 總和。
-  - `export function titleKeywordStats(series: Series[], keywords: string[] = DEFAULT_KEYWORDS): { keyword: string; count: number }[]` — 見 Global Constraints 文字分析規則；**英文/數字關鍵詞只在 token 邊界命中**（`/[A-Za-z0-9]+/` 切 token 後比對，`AI` 不命中 `SAIL`），**中文關鍵詞**用大小寫正規化後的字典子字串比對；每系列標題對同關鍵字最多計 1；依 count desc，同 count 依 keyword localeCompare("zh-Hant") asc。
+  - `export function titleKeywordStats(series: Series[], keywords: string[] = DEFAULT_KEYWORDS): { keyword: string; count: number }[]` — 見 Global Constraints 文字分析規則；**英文/數字關鍵詞只在 token 邊界命中**（`/[A-Za-z0-9]+/` 切 token 後比對，`AI` 不命中 `SAIL`），**中文關鍵詞**用大小寫正規化後的字典子字串比對；**關鍵詞本身為純數字或英文停用詞 → 排除、不列入**（review #3 補強 1，對任何傳入 keywords 生效）；每系列標題對同關鍵字最多計 1；依 count desc，同 count 依 keyword localeCompare("zh-Hant") asc。
+  - `export function titleLengthDistribution(series: Series[]): { length: string; count: number }[]` — 標題長度分桶（spec §4.2、review #3 blocking），以 JS `String.length`（UTF-16 code unit）計算；分桶 label 為 `0–9`、`10–19`、`20–29`、`30–39`、`40+`（依序固定）；空標題（`""`）計入 `0–9`；依桶順序升冪。
   - `export const DEFAULT_KEYWORDS: string[]` — 定義於 `lib/keywords.ts`，內容為 v1 字典（見下）。
 
 **`lib/keywords.ts`（Task 2 新增）：**
@@ -331,21 +335,29 @@ git commit -m "feat(insights): add publish/views/subscription computation layer"
 // spec §3.3：文字分析只分析 Series.title，每系列標題對同關鍵字最多計 1。
 // 英文關鍵詞在 token 邊界命中（/^[A-Za-z0-9]+$/ → 以 token 集合比對，AI 不命中 SAIL）；
 // 中文關鍵詞以子字串比對（不執行期切詞）。
+// 關鍵詞本身為純數字或英文停用詞 → titleKeywordStats 排除（review #3 補強 1）。
 export const DEFAULT_KEYWORDS: string[] = [
   "AI", "機器學習", "K8s", "Kubernetes", "安全", "雲端", "前端", "後端",
   "資料", "開發", "部署", "測試", "開源", "效能", "設計", "自動化",
   "Vibe", "SideProject", "Claude", "ChatGPT", "Compiler",
+];
+
+// 英文停用詞：作為關鍵詞傳入時被排除（不列入統計）。
+export const ENGLISH_STOPWORDS: string[] = [
+  "a", "an", "the", "of", "for", "with", "and", "to", "in", "on",
+  "at", "from", "by", "is", "are", "it", "this", "that", "as", "or",
 ];
 ```
 
 **測試要點：**
 
 - `groupStats`：多組聚合（seriesCount、articleCount、avgViews 整數 round、totalSubscriptions）；avgViews 無文章組 = 0；排序 seriesCount desc + group asc；空 series → `[]`。
-- `titleKeywordStats`：字典命中；**每系列標題最多計 1**（同一標題含同關鍵字 2 次只算 1）；大小寫正規化（`ai` 命中 `AI`）；只分析 `Series.title`（description 含關鍵字不計）；排序 count desc + keyword asc；空 series → `[]`。
+- `titleKeywordStats`：字典命中；**每系列標題最多計 1**（同一標題含同關鍵字 2 次只算 1）；大小寫正規化（`ai` 命中 `AI`）；只分析 `Series.title`（description 含關鍵字不計）；排序 count desc + keyword asc；空 series → `[]`；**純數字 / 英文停用詞關鍵詞排除**（review #3 補強 1）。
+- `titleLengthDistribution`：分桶正確（0–9、10–19、20–29、30–39、40+）；空標題計入 0–9；`String.length` 計算（含全形/emoji UTF-16）；空 series → 5 桶全 0；桶順序固定。
 
 - [ ] **Step 1: 寫 failing tests**
 
-Append to `web/src/lib/insights.test.ts`（更新 import 加入 `groupStats, titleKeywordStats, DEFAULT_KEYWORDS`）:
+Append to `web/src/lib/insights.test.ts`（更新 import 加入 `groupStats, titleKeywordStats, titleLengthDistribution, DEFAULT_KEYWORDS`）:
 
 ```ts
 describe("groupStats", () => {
@@ -416,6 +428,52 @@ describe("titleKeywordStats", () => {
   test("空 series → []", () => {
     expect(titleKeywordStats([])).toEqual([]);
   });
+  test("純數字 / 英文停用詞關鍵詞排除（review #3 補強 1）", () => {
+    // 自訂關鍵詞：2026（純數字）、the（停用詞）、AI（有效）
+    const stats = titleKeywordStats(
+      [makeSeries({ id: 1, title: "2026 the AI" })],
+      ["2026", "the", "AI"],
+    );
+    expect(stats.map((x) => x.keyword)).toEqual(["AI"]);
+    expect(stats.find((x) => x.keyword === "AI")!.count).toBe(1);
+  });
+});
+
+describe("titleLengthDistribution", () => {
+  test("分桶正確（0–9 / 10–19 / 20–29 / 30–39 / 40+）", () => {
+    const dist = titleLengthDistribution([
+      makeSeries({ id: 1, title: "短" }),                    // length 1 → 0–9
+      makeSeries({ id: 2, title: "十個字十個字十個字十" }),   // length 10 → 10–19
+      makeSeries({ id: 3, title: "二十個字二十個字二十個字二十個" }), // length 20 → 20–29
+    ]);
+    expect(dist).toEqual([
+      { length: "0–9", count: 1 },
+      { length: "10–19", count: 1 },
+      { length: "20–29", count: 1 },
+      { length: "30–39", count: 0 },
+      { length: "40+", count: 0 },
+    ]);
+  });
+  test("空標題計入 0–9", () => {
+    const dist = titleLengthDistribution([makeSeries({ id: 1, title: "" })]);
+    expect(dist[0]).toEqual({ length: "0–9", count: 1 });
+  });
+  test("String.length 計算（UTF-16 code unit，emoji 算 2）", () => {
+    // "A😀" length = 2（A=1 + emoji surrogate pair=2 → 3？實際 A=1, 😀=2 → total 3）
+    const dist = titleLengthDistribution([makeSeries({ id: 1, title: "A😀" })]);
+    expect("A😀".length).toBe(3); // 驗證測試前置：A(1) + 😀(2) = 3
+    expect(dist[0]).toEqual({ length: "0–9", count: 1 });
+  });
+  test("空 series → 5 桶全 0", () => {
+    const dist = titleLengthDistribution([]);
+    expect(dist).toEqual([
+      { length: "0–9", count: 0 },
+      { length: "10–19", count: 0 },
+      { length: "20–29", count: 0 },
+      { length: "30–39", count: 0 },
+      { length: "40+", count: 0 },
+    ]);
+  });
 });
 ```
 
@@ -431,7 +489,7 @@ Create `web/src/lib/keywords.ts`（見上方 Interfaces 的完整內容）。
 Append to `web/src/lib/insights.ts`:
 
 ```ts
-import { DEFAULT_KEYWORDS } from "./keywords"; // Task 2 新增
+import { DEFAULT_KEYWORDS, ENGLISH_STOPWORDS } from "./keywords"; // Task 2 新增
 
 export function groupStats(
   series: Series[],
@@ -459,9 +517,16 @@ export function groupStats(
 
 // 英文/數字連續字串 token（spec §3.3、review #1）；AI 不命中 SAIL。
 const ASCII_TOKEN = /[A-Za-z0-9]+/g;
+const STOPWORD_SET = new Set(ENGLISH_STOPWORDS);
 
 function isAsciiKeyword(k: string): boolean {
   return /^[A-Za-z0-9]+$/.test(k);
+}
+
+// 關鍵詞排除：純數字（/^\d+$/）或英文停用詞（大小寫不敏感）→ 不列入統計（review #3 補強 1）。
+function isExcludedKeyword(k: string): boolean {
+  const lower = k.toLowerCase();
+  return /^\d+$/.test(k) || STOPWORD_SET.has(lower);
 }
 
 export function titleKeywordStats(
@@ -469,10 +534,13 @@ export function titleKeywordStats(
   keywords: string[] = DEFAULT_KEYWORDS,
 ): { keyword: string; count: number }[] {
   const counts = new Map<string, number>();
-  for (const k of keywords) counts.set(k, 0);
+  for (const k of keywords) {
+    if (isExcludedKeyword(k)) continue; // 排除純數字 / 停用詞（對任何傳入 keywords 生效）
+    counts.set(k, 0);
+  }
   for (const s of series) {
     const title = s.title.toLowerCase();
-    for (const k of keywords) {
+    for (const k of counts.keys()) {
       let hit: boolean;
       if (isAsciiKeyword(k)) {
         // token 邊界命中：標題的英數 token 集合含該關鍵詞（大小寫已正規化）
@@ -488,6 +556,24 @@ export function titleKeywordStats(
     .map(([keyword, count]) => ({ keyword, count }))
     .filter((x) => x.count > 0)
     .sort((a, b) => b.count - a.count || a.keyword.localeCompare(b.keyword, "zh-Hant"));
+}
+
+// 標題長度分桶（spec §4.2、review #3 blocking）：String.length（UTF-16 code unit）。
+const LENGTH_BUCKETS = [
+  { label: "0–9", test: (n: number) => n >= 0 && n <= 9 },
+  { label: "10–19", test: (n: number) => n >= 10 && n <= 19 },
+  { label: "20–29", test: (n: number) => n >= 20 && n <= 29 },
+  { label: "30–39", test: (n: number) => n >= 30 && n <= 39 },
+  { label: "40+", test: (n: number) => n >= 40 },
+];
+
+export function titleLengthDistribution(
+  series: Series[],
+): { length: string; count: number }[] {
+  return LENGTH_BUCKETS.map((b) => ({
+    length: b.label,
+    count: series.filter((s) => b.test(s.title.length)).length,
+  }));
 }
 ```
 
@@ -928,15 +1014,15 @@ git commit -m "feat(scrape): write daily history snapshots (data/history/{year}/
 - Create: `web/src/styles/insights.css`
 
 **Interfaces:**
-- Consumes: Task 1–3 的 `lib/insights.ts`（`publishHourHistogram`、`publishWeekdayHistogram`、`viewsDistribution`、`topSeriesBySubscriptions`、`groupStats`、`titleKeywordStats`）、`lib/charts.ts`（`barChartSVG`、`horizontalBarSVG`、`distributionBarSVG`、`scatterSVG`）、`lib/keywords.ts`（`DEFAULT_KEYWORDS`）、`type YearData`。
+- Consumes: Task 1–3 的 `lib/insights.ts`（`publishHourHistogram`、`publishWeekdayHistogram`、`viewsDistribution`、`topSeriesBySubscriptions`、`groupStats`、`titleKeywordStats`、`titleLengthDistribution`）、`lib/charts.ts`（`barChartSVG`、`horizontalBarSVG`、`distributionBarSVG`、`scatterSVG`）、`lib/keywords.ts`（`DEFAULT_KEYWORDS`）、`type YearData`。
 - Produces: `Insights.astro` 接受 `data: YearData`、`years: number[]`、`latestYear: number`、`hasData: boolean` props（`hasData = data.series.length > 0`，review #4），輸出四個面板 + header（年切換器 + 主題 toggle）。四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好，render 進 HTML；同時把「資料 + 各函式」以 `define:vars` 注入，供 Task 6 的 client 重繪使用。`hasData === false` 時四個面板顯示「尚無資料」、年切換器不列出任何年度。
 
-**四個面板（spec §4.2）：** 若 `data.year === 0` 或 `data.series.length === 0`（空資料），所有面板顯示「尚無資料」、圖表容器留空（review #4）。
+**四個面板（spec §4.2）：** 面板級空狀態（review #3 補強 2）——發文行為/人氣結構面板在 `articleCount === 0` 顯示「尚無資料」；組別分析/文字分析面板在 `series.length === 0` 顯示「尚無資料」；`data.year === 0`（整頁無資料）時全部面板「尚無資料」、年切換器不列出年度。
 
-1. **發文行為**：`barChartSVG(publishHourHistogram(articles))`（24 小時）+ `barChartSVG(publishWeekdayHistogram(articles))`（**星期分佈**，一…日，review #9）。洞察句：找到 count 最高的 hour → 「00 時為發文高峰（N 篇）」；無文章 → 「尚無發文資料」。
-2. **人氣結構**：`distributionBarSVG(viewsDistribution(articles).buckets)`（分桶長條圖）+ `horizontalBarSVG(topSeriesBySubscriptions(series))`（訂閱龍頭 top 10）。洞察句：`top10PctShare` → 「前 10% 文章佔總觀看 X%」；無文章 → 「尚無觀看資料」。
-3. **組別分析**：`scatterSVG(groupStats(series).map(g => ({x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均 ${g.avgViews} 觀看`})))`。洞察句：seriesCount 最高的組 → 「{group} 最活躍（N 系列）」。
-4. **文字分析**：`barChartSVG(titleKeywordStats(series))`（關鍵字）。洞察句：count 最高的 keyword → 「N 個系列標題包含「{keyword}」」；全部 0 → 「尚無標題關鍵字」。
+1. **發文行為**：`barChartSVG(publishHourHistogram(articles))`（24 小時）+ `barChartSVG(publishWeekdayHistogram(articles))`（**星期分佈**，一…日，review #9）。洞察句：找到 count 最高的 hour → 「00 時為發文高峰（N 篇）」；`articleCount === 0` → 「尚無發文資料」。
+2. **人氣結構**：`distributionBarSVG(viewsDistribution(articles).buckets)`（分桶長條圖）+ `horizontalBarSVG(topSeriesBySubscriptions(series))`（訂閱龍頭 top 10）。洞察句：`top10PctShare` → 「前 10% 文章佔總觀看 X%」；`articleCount === 0` → 「尚無觀看資料」。
+3. **組別分析**：`scatterSVG(groupStats(series).map(g => ({x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均 ${g.avgViews} 觀看`})))`。洞察句：seriesCount 最高的組 → 「{group} 最活躍（N 系列）」；`series.length === 0` → 「尚無組別資料」。
+4. **文字分析**：`barChartSVG(titleKeywordStats(series))`（關鍵字）+ `barChartSVG(titleLengthDistribution(series))`（**字數分佈**，review #3 blocking）。洞察句：count 最高的 keyword → 「N 個系列標題包含「{keyword}」」；`series.length === 0` → 「尚無標題關鍵字」。
 
 **SSG 注入（供 Task 6 client 重繪）**:
 
@@ -958,6 +1044,16 @@ git commit -m "feat(scrape): write daily history snapshots (data/history/{year}/
   <div class="insight-charts">
     <div class="insight-chart" id="chart-hour">{hourSVG}</div>
     <div class="insight-chart" id="chart-weekday">{weekdaySVG}</div>
+  </div>
+</section>
+
+<!-- 文字分析面板含關鍵字 + 字數分佈兩張圖（review #3 blocking） -->
+<section class="insight-panel">
+  <h2 class="insight-title">文字分析</h2>
+  <p class="insight-line" id="insight-kw-line">12 個系列標題包含「AI」</p>
+  <div class="insight-charts">
+    <div class="insight-chart" id="chart-kw">{keywordSVG}</div>
+    <div class="insight-chart" id="chart-len">{lengthSVG}</div>
   </div>
 </section>
 ```
@@ -1022,7 +1118,7 @@ git commit -m "feat(insights): add Insights.astro component with SSG SVG panels"
 - Modify: `web/src/styles/design-system.css`（Insights 連結樣式，若有需要）
 
 **Interfaces:**
-- Consumes: `Insights.astro`（props: `data`、`years`、`latestYear`）；`lib/insights.ts` + `lib/charts.ts`（client 重繪）；`lib/keywords.ts`。
+- Consumes: `Insights.astro`（props: `data`、`years`、`latestYear`、`hasData`）；`lib/insights.ts` + `lib/charts.ts`（client 重繪）；`lib/keywords.ts`（`DEFAULT_KEYWORDS`）。
 - Produces: `/insights/` 路由 + header 連結 + client 年切換邏輯。
 
 **page frontmatter**（沿用 `index.astro` 的 glob pattern；**含空資料 fallback**，review #4）:
@@ -1053,7 +1149,7 @@ const hasData = data.series.length > 0;
 **client 年切換 script**（`<script>` 內，沿用 Dashboard 的 fetchToken 模式；`window` property 的 `any` 限縮於此兩處，review #8）:
 
 ```ts
-import { publishHourHistogram, publishWeekdayHistogram, viewsDistribution, topSeriesBySubscriptions, groupStats, titleKeywordStats } from "../lib/insights";
+import { publishHourHistogram, publishWeekdayHistogram, viewsDistribution, topSeriesBySubscriptions, groupStats, titleKeywordStats, titleLengthDistribution } from "../lib/insights";
 import { barChartSVG, horizontalBarSVG, distributionBarSVG, scatterSVG } from "../lib/charts";
 import { DEFAULT_KEYWORDS } from "../lib/keywords";
 
@@ -1079,46 +1175,68 @@ function insights(year: number) {
 function allArticles(d: YearData) { return d.series.flatMap((s) => s.articles); }
 
 function render(d: YearData) {
-  // 空資料（data.year === 0）：全部面板顯示空狀態，不重繪（review #4）
-  if (d.year === 0 || d.series.length === 0) {
+  // 整頁無資料（year === 0）：全部面板空狀態（review #4）
+  if (d.year === 0) {
     renderEmpty();
     return;
   }
   const arts = allArticles(d);
-  // 1. 發文行為
-  const hour = publishHourHistogram(arts);
-  const weekday = publishWeekdayHistogram(arts);
-  const peakHour = hour.reduce((a, b) => (b.count > a.count ? b : a), hour[0]);
-  setText("insight-hour-line", arts.length === 0 ? "尚無發文資料" : `${String(peakHour.hour).padStart(2, "0")} 時為發文高峰（${peakHour.count} 篇）`);
-  setSvg("chart-hour", barChartSVG(hour.map((h) => ({ label: `${String(h.hour).padStart(2, "0")} 時`, value: h.count }))));
-  setSvg("chart-weekday", barChartSVG(weekday.map((w) => ({ label: `${w.weekday}`, value: w.count }))));
-  // 2. 人氣結構
-  const dist = viewsDistribution(arts);
-  setText("insight-dist-line", arts.length === 0 ? "尚無觀看資料" : `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`);
-  setSvg("chart-dist", distributionBarSVG(dist.buckets));
-  setSvg("chart-subs", horizontalBarSVG(topSeriesBySubscriptions(d.series).map((s) => ({ label: s.name, value: s.subscriptions }))));
-  // 3. 組別分析
-  const groups = groupStats(d.series);
-  setSvg("chart-scatter", scatterSVG(groups.map((g) => ({ x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均 ${g.avgViews} 觀看` }))));
-  const topGroup = groups[0];
-  setText("insight-group-line", groups.length === 0 ? "尚無組別資料" : `${topGroup.group} 最活躍（${topGroup.seriesCount} 系列）`);
-  // 4. 文字分析
-  const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
-  setSvg("chart-kw", barChartSVG(kws.map((k) => ({ label: k.keyword, value: k.count }))));
-  const topKw = kws[0];
-  setText("insight-kw-line", kws.length === 0 ? "尚無標題關鍵字" : `${topKw.count} 個系列標題包含「${topKw.keyword}」`);
+  const hasSeries = d.series.length > 0;
+  // 1. 發文行為（面板級：articleCount === 0 → 空狀態，review #3 補強 2）
+  if (arts.length === 0) {
+    setText("insight-hour-line", "尚無發文資料");
+    for (const id of ["chart-hour", "chart-weekday"]) setSvg(id, "");
+  } else {
+    const hour = publishHourHistogram(arts);
+    const weekday = publishWeekdayHistogram(arts);
+    const peakHour = hour.reduce((a, b) => (b.count > a.count ? b : a), hour[0]);
+    setText("insight-hour-line", `${String(peakHour.hour).padStart(2, "0")} 時為發文高峰（${peakHour.count} 篇）`);
+    setSvg("chart-hour", barChartSVG(hour.map((h) => ({ label: `${String(h.hour).padStart(2, "0")} 時`, value: h.count }))));
+    setSvg("chart-weekday", barChartSVG(weekday.map((w) => ({ label: `${w.weekday}`, value: w.count }))));
+  }
+  // 2. 人氣結構（面板級：articleCount === 0 → 空狀態）
+  if (arts.length === 0) {
+    setText("insight-dist-line", "尚無觀看資料");
+    for (const id of ["chart-dist", "chart-subs"]) setSvg(id, "");
+  } else {
+    const dist = viewsDistribution(arts);
+    setText("insight-dist-line", `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`);
+    setSvg("chart-dist", distributionBarSVG(dist.buckets));
+    setSvg("chart-subs", horizontalBarSVG(topSeriesBySubscriptions(d.series).map((s) => ({ label: s.name, value: s.subscriptions }))));
+  }
+  // 3. 組別分析（面板級：series.length === 0 → 空狀態）
+  if (!hasSeries) {
+    setText("insight-group-line", "尚無組別資料");
+    setSvg("chart-scatter", "");
+  } else {
+    const groups = groupStats(d.series);
+    setSvg("chart-scatter", scatterSVG(groups.map((g) => ({ x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均 ${g.avgViews} 觀看` }))));
+    const topGroup = groups[0];
+    setText("insight-group-line", `${topGroup.group} 最活躍（${topGroup.seriesCount} 系列）`);
+  }
+  // 4. 文字分析（面板級：series.length === 0 → 空狀態；含字數分佈，review #3 blocking）
+  if (!hasSeries) {
+    setText("insight-kw-line", "尚無標題關鍵字");
+    for (const id of ["chart-kw", "chart-len"]) setSvg(id, "");
+  } else {
+    const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
+    setSvg("chart-kw", barChartSVG(kws.map((k) => ({ label: k.keyword, value: k.count }))));
+    setSvg("chart-len", barChartSVG(titleLengthDistribution(d.series).map((b) => ({ label: b.length, value: b.count }))));
+    const topKw = kws[0];
+    setText("insight-kw-line", kws.length === 0 ? "尚無標題關鍵字" : `${topKw.count} 個系列標題包含「${topKw.keyword}」`);
+  }
   // 年切換器同步
   const sel = document.getElementById("insight-year-select") as HTMLSelectElement | null;
   if (sel) sel.value = String(d.year);
 }
 
 function renderEmpty() {
-  // 空資料狀態：所有面板「尚無資料」，年切換器清空（review #4）
+  // 整頁無資料（year === 0）：所有面板「尚無資料」，年切換器清空（review #4）
   for (const id of ["insight-hour-line", "insight-dist-line", "insight-group-line", "insight-kw-line"]) {
     const el = document.getElementById(id);
     if (el) el.textContent = "尚無資料";
   }
-  for (const id of ["chart-hour", "chart-weekday", "chart-dist", "chart-subs", "chart-scatter", "chart-kw"]) {
+  for (const id of ["chart-hour", "chart-weekday", "chart-dist", "chart-subs", "chart-scatter", "chart-kw", "chart-len"]) {
     const el = document.getElementById(id);
     if (el) el.textContent = "";
   }
@@ -1251,13 +1369,13 @@ hub op=start name=insights-dev application=bun args=["run","dev"] cwd=web ready.
 | Spec 要求 | Task |
 |---|---|
 | §3.2 計算層六函式 | Task 1（hour/weekday/views/subs）、Task 2（group/keywords） |
-| §3.3 文字分析（series.title only、字典、計 1、排序） | Task 2 |
+| §3.3 文字分析（series.title only、字典、計 1、排序、停用詞/純數字排除） | Task 2 |
 | §4.1 `/insights/` 路由 + header 連結 + client 年切換 | Task 6 |
-| §4.2 四面板 + 洞察句 | Task 5（元件）+ Task 6（page） |
+| §4.2 四面板 + 洞察句（含**字數分佈**） | Task 5（元件）+ Task 6（page） |
 | §4.3 charts.ts 唯一 SVG 來源 + XML escaping + 分桶長條圖 | Task 3 |
 | §4.4 client 重繪 + fetchToken + replaceState | Task 6 |
 | §5 history snapshot + 臺北日期 + 不綁 atomic | Task 4 |
-| §6 空資料狀態 / 空陣列安全 | Task 5/6 |
+| §6 空資料狀態 / 空陣列安全（含面板級空狀態） | Task 5/6 |
 | §7 測試 | Task 1–4 |
 | §9 Acceptance 1–8 | Task 5–7 |
 
@@ -1268,6 +1386,7 @@ hub op=start name=insights-dev application=bun args=["run","dev"] cwd=web ready.
 - `viewsDistribution` 回傳 `{total,max,p50,p90,p99,top10PctShare,buckets}` → Task 5/6 用 `dist.top10PctShare`、`dist.buckets` ✓
 - `groupStats` 回傳 `{group,seriesCount,articleCount,avgViews,totalSubscriptions}[]` → Task 5/6 用 `g.group/g.articleCount/g.avgViews/g.seriesCount` ✓
 - `titleKeywordStats(series, DEFAULT_KEYWORDS)` → Task 5/6 一致 ✓
+- `titleLengthDistribution` 回傳 `{length,count}[]`（5 桶）→ Task 5/6 用 `b.length/b.count`、`chart-len` ✓
 - `barChartSVG`/`horizontalBarSVG`/`distributionBarSVG`/`scatterSVG` 的 data shape 在 Task 5/6 對齊（`{label,value}[]`、`{label,count}[]`、`{x,y,label,tooltip}[]`）✓
 - `window.INSIGHTS_DATA` / `INSIGHTS_YEARS`（Task 5 define:vars）→ Task 6 讀取 ✓
 - `historyDate`/`writeHistorySnapshots`（Task 4）命名一致 ✓
@@ -1280,6 +1399,9 @@ hub op=start name=insights-dev application=bun args=["run","dev"] cwd=web ready.
 - page frontmatter 空資料 fallback（`emptyData`，review #4）。
 - scatterSVG 每 point 單一 `<title>`（review #6）；XML escaping attribute/title context 測試補全（review #7）。
 - innerHTML 例外縮到 charts.ts SVG、`(window as any)` 限兩處（review #8）；「星期分佈」統一文案（review #9）。
+- **字數分佈** `titleLengthDistribution` 完整契約（Interfaces/測試/元件/client 重繪/空狀態）補齊（review #3 blocking）。
+- **停用詞/純數字排除**：`ENGLISH_STOPWORDS` + `isExcludedKeyword` 對任何傳入 keywords 生效（review #3 補強 1）。
+- **面板級空狀態**：`articleCount === 0`（發文/人氣）vs `series.length === 0`（組別/文字）分開判定；整頁 `year === 0` 才全空（review #3 補強 2）。
 
 ---
 
