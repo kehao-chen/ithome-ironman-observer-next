@@ -128,4 +128,26 @@ describe("數值輸入邊界（review：NaN/Infinity/負數 normalization）", (
     expect(svg).not.toContain('cx="NaN"');
     expect(svg).not.toContain('cy="Infinity"');
   });
+  test("尺寸 clamp：width/height 0 → 下限 70/24，無負幾何", () => {
+    const svg = barChartSVG([{ label: "A", value: 5 }, { label: "B", value: 3 }], { width: 0, height: 0 });
+    expect(svg).toContain('viewBox="0 0 70 24"');
+    expect(svg).not.toContain('width="-');
+    expect(svg).not.toContain('height="-');
+  });
+  test("horizontalBarSVG：width 0 → clamp 70（bar width 不為負）", () => {
+    const svg = horizontalBarSVG([{ label: "A", value: 5 }], { width: 0 });
+    expect(svg).toContain('viewBox="0 0 70 180"');
+    expect(svg).not.toContain('width="-');
+  });
+  test("scatterSVG：width/height 0 → clamp 70/24，cx/cy 有限", () => {
+    const svg = scatterSVG([{ x: 1, y: 2, label: "L", tooltip: "T" }], { width: 0, height: 0 });
+    expect(svg).toContain('viewBox="0 0 70 24"');
+    expect(svg).not.toContain('cx="NaN"');
+    expect(svg).not.toContain('cy="NaN"');
+  });
+  test("窄 width + 多 bar（24 小時）：bw guard 不為負", () => {
+    const data = Array.from({ length: 24 }, (_, i) => ({ label: `${i} 時`, value: 1 }));
+    const svg = barChartSVG(data, { width: 70 });
+    expect(svg).not.toContain('width="-');
+  });
 });

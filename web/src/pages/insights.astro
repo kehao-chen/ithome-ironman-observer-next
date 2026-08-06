@@ -90,20 +90,27 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
     }
 
+    let currentYear = initialData.year; // 目前 render 的年度（failure 時 select 恢復至此，review round）
+
     function insights(year: number) {
       const token = ++fetchToken;
       const sel = document.getElementById("insight-year-select") as HTMLSelectElement | null;
       fetch(`/data/${year}.json?t=${Date.now()}`, { cache: "no-store" })
-        .then((res) => (res.ok ? res.json() : null))
+        .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`)))) // 404/5xx 進 catch
         .then((fresh) => {
-          if (!isYearData(fresh) || token !== fetchToken) return; // 無效 payload：直接捨棄
+          if (token !== fetchToken) return null;
+          if (!isYearData(fresh)) throw new Error("invalid year data"); // 無效 payload 進 catch（review round）
+          return fresh;
+        })
+        .then((fresh) => {
+          if (!fresh || token !== fetchToken) return;
           render(fresh);
           history.replaceState(null, "", `?year=${fresh.year}`);
         })
         .catch(() => {
           if (token !== fetchToken) return;
-          // 失敗：select 回原位 + toast（URL 不變，review #13）
-          if (sel) sel.value = String(initialData.year);
+          // 失敗：select 恢復到「目前顯示的年度」（非最新年度），URL 不變 + toast（review round）
+          if (sel) sel.value = String(currentYear);
           showToast();
         });
     }
@@ -111,6 +118,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
     function allArticles(d: YearData) { return d.series.flatMap((s) => s.articles); }
 
     function render(d: YearData) {
+      currentYear = d.year; // 追蹤目前顯示年度（review round）
       // 整頁無資料（year === 0）：全部面板空狀態（review #4）
       if (d.year === 0) {
         renderEmpty();
