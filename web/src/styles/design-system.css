@@ -199,20 +199,45 @@ input, select, textarea { caret-color: var(--accent); }
 }
 .header-actions { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
 
-/* ---------- Toolbar (filters + sort) ---------- */
+/* ---------- Toolbar (controls row + filter row) ---------- */
 .toolbar {
   display: flex;
-  align-items: flex-end;
-  gap: var(--space-3);
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Row 1: search + sort — always a single line, high-priority controls */
+.toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Row 2: filter chips — horizontal scroll, never wraps */
+.filter-row {
+  position: relative;
+}
+.filter-row::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none;
+  border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
 }
 .filter-group {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--space-2);
-  flex: 1 1 320px;
-  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px; /* prevent clip on focus rings */
 }
+.filter-group::-webkit-scrollbar { display: none; }
+
 .filter-btn {
   appearance: none;
   display: inline-flex;
@@ -227,6 +252,8 @@ input, select, textarea { caret-color: var(--accent); }
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-pill);
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
 .filter-btn:hover { color: var(--text); border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
@@ -264,8 +291,19 @@ input, select, textarea { caret-color: var(--accent); }
 
 /* ---------- Search input ---------- */
 .search-wrap {
-  flex: 1 1 200px;
+  position: relative;
+  flex: 1 1 0;
   min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.search-icon {
+  position: absolute;
+  left: 10px;
+  width: 14px; height: 14px;
+  color: var(--muted);
+  pointer-events: none;
+  flex-shrink: 0;
 }
 .search-input {
   appearance: none;
@@ -276,7 +314,7 @@ input, select, textarea { caret-color: var(--accent); }
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-2) 32px;
   transition: border-color 0.12s ease;
 }
 .search-input::placeholder { color: var(--muted); }
