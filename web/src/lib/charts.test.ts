@@ -16,6 +16,13 @@ describe("barChartSVG", () => {
     expect(svg.startsWith("<svg")).toBe(true);
     expect(svg.endsWith("</svg>")).toBe(true);
   });
+  test("包含基線與水平網格，協助比較柱高", () => {
+    expect(svg).toContain('stroke="var(--border)"');
+    expect(svg).toContain('class="chart-baseline"');
+  });
+  test("顯示可讀的最大值標籤", () => {
+    expect(svg).toContain('class="chart-value"');
+  });
   test("每 bar 有 rect", () => {
     expect(svg.match(/<rect/g)).toHaveLength(2);
   });

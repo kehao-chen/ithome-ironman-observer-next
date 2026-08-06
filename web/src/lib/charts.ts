@@ -40,19 +40,26 @@ export function barChartSVG(data: { label: string; value: number }[], opts: BarO
   const w = finiteWidth(width);
   const values = data.map((d) => finite(d.value));
   const max = Math.max(...values, 1);
-  const gap = 4;
-  const bw = Math.max((w - gap * (data.length - 1)) / Math.max(data.length, 1), 0); // 窄 width 時不為負（review round）
-  const bars = data
-    .map((d, i) => {
-      const v = finite(d.value);
-      const bh = (v / max) * (h - 20);
-      const x = i * (bw + gap);
-      const y = h - bh;
-      const label = `<text x="${(x + bw / 2).toFixed(1)}" y="${h - 4}" text-anchor="middle" font-size="9" fill="var(--muted)">${xmlEscape(d.label)}</text>`;
-      return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" fill="${xmlEscape(color)}" aria-label="${xmlEscape(d.label)}: ${v}">${barTitle(d.label, v, opts.formatValue)}</rect>${label}`;
-    })
-    .join("");
-  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" role="img" xmlns="http://www.w3.org/2000/svg">${bars}</svg>`;
+  const padT = 0;
+  const padB = 20;
+  const plotH = Math.max(h - padT - padB, 0);
+  const gap = 6;
+  const bw = Math.max((w - gap * Math.max(data.length - 1, 0)) / Math.max(data.length, 1), 0);
+  const grid = [0, 0.5, 1].map((ratio) => {
+    const y = plotH * (1 - ratio);
+    return `<line class="chart-grid" x1="0" y1="${y.toFixed(1)}" x2="${w}" y2="${y.toFixed(1)}" stroke="var(--border)" stroke-width="1" opacity="${ratio === 0 ? "0.9" : "0.45"}/>`;
+  }).join("");
+  const bars = data.map((d, i) => {
+    const v = finite(d.value);
+    const bh = (v / max) * plotH;
+    const x = i * (bw + gap);
+    const y = plotH - bh;
+    const value = opts.formatValue ? opts.formatValue(v) : String(v);
+    const label = `<text class="chart-label" x="${(x + bw / 2).toFixed(1)}" y="${h - 4}" text-anchor="middle" font-size="9" fill="var(--muted)">${xmlEscape(d.label)}</text>`;
+    const valueLabel = `<text class="chart-value" x="${(x + bw / 2).toFixed(1)}" y="${Math.max(y - 4, 11).toFixed(1)}" text-anchor="middle" font-size="9" fill="var(--text)">${xmlEscape(value)}</text>`;
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="${xmlEscape(color)}" aria-label="${xmlEscape(d.label)}: ${v}">${barTitle(d.label, v, opts.formatValue)}</rect>${valueLabel}${label}`;
+  }).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" role="img" xmlns="http://www.w3.org/2000/svg"><g aria-hidden="true">${grid}</g><line class="chart-baseline" x1="0" y1="${plotH.toFixed(1)}" x2="${w}" y2="${plotH.toFixed(1)}" stroke="var(--border)" stroke-width="1"/>${bars}</svg>`;
 }
 
 export function horizontalBarSVG(data: { label: string; value: number }[], opts: BarOpts = {}): string {
@@ -61,42 +68,36 @@ export function horizontalBarSVG(data: { label: string; value: number }[], opts:
   const values = data.map((d) => finite(d.value));
   const max = Math.max(...values, 1);
   const rowH = 20;
-  // 自動加高：資料列超過指定 height 時以資料量為準（review：top 10 不再被裁切）。
-  // 底部留 16px（值文字最底行 y+13 + 餘裕）；rowH = 20 → 10 列 = 216。
   const chartHeight = Math.max(finiteHeight(height), data.length * rowH + 16);
-  const rows = data
-    .map((d, i) => {
-      const v = finite(d.value);
-      const bw = (v / max) * (w - 70);
-      const y = i * rowH;
-      const label = `<text x="0" y="${y + 13}" font-size="10" fill="var(--text)">${xmlEscape(d.label)}</text>`;
-      const rect = `<rect x="65" y="${y + 3}" width="${bw.toFixed(1)}" height="${rowH - 8}" fill="${xmlEscape(color)}" aria-label="${xmlEscape(d.label)}: ${v}">${barTitle(d.label, v, opts.formatValue)}</rect>`;
-      const val = `<text x="${(65 + bw + 4).toFixed(1)}" y="${y + 13}" font-size="9" fill="var(--muted)">${xmlEscape(opts.formatValue ? opts.formatValue(v) : String(v))}</text>`;
-      return label + rect + val;
-    })
-    .join("");
+  const rows = data.map((d, i) => {
+    const v = finite(d.value);
+    const bw = (v / max) * Math.max(w - 70, 0);
+    const y = i * rowH;
+    const value = opts.formatValue ? opts.formatValue(v) : String(v);
+    return `<text class="chart-label" x="0" y="${y + 13}" font-size="10" fill="var(--text)">${xmlEscape(d.label)}</text><rect x="65" y="${y + 3}" width="${bw.toFixed(1)}" height="${rowH - 8}" rx="3" fill="${xmlEscape(color)}" aria-label="${xmlEscape(d.label)}: ${v}">${barTitle(d.label, v, opts.formatValue)}</rect><text class="chart-value" x="${(65 + bw + 4).toFixed(1)}" y="${y + 13}" font-size="9" fill="var(--muted)">${xmlEscape(value)}</text>`;
+  }).join("");
   return `<svg viewBox="0 0 ${w} ${chartHeight}" width="100%" height="${chartHeight}" role="img" xmlns="http://www.w3.org/2000/svg">${rows}</svg>`;
 }
 
+
 export function distributionBarSVG(buckets: { label: string; count: number }[], opts: BarOpts = {}): string {
-  // spec §4.3：分桶分佈用長條圖；count 0 仍輸出 rect（高度 0）。
   const { color, height, width } = { ...DEFAULTS, ...opts };
   const h = finiteHeight(height);
   const w = finiteWidth(width);
   const counts = buckets.map((b) => finite(b.count));
   const max = Math.max(...counts, 1);
+  const padT = 18, padB = 28, plotH = h - padT - padB;
   const gap = 6;
-  const bw = Math.max((w - gap * (buckets.length - 1)) / Math.max(buckets.length, 1), 0); // 窄 width 時不為負（review round）
-  const bars = buckets
-    .map((b, i) => {
-      const bh = (counts[i] / max) * (h - 24);
-      const x = i * (bw + gap);
-      const y = h - bh;
-      const label = `<text x="${(x + bw / 2).toFixed(1)}" y="${h - 4}" text-anchor="middle" font-size="9" fill="var(--muted)">${xmlEscape(b.label)}</text>`;
-      return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" fill="${xmlEscape(color)}" aria-label="${xmlEscape(b.label)}: ${counts[i]}">${barTitle(b.label, counts[i])}</rect>${label}`;
-    })
-    .join("");
-  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" role="img" xmlns="http://www.w3.org/2000/svg">${bars}</svg>`;
+  const bw = Math.max((w - gap * Math.max(buckets.length - 1, 0)) / Math.max(buckets.length, 1), 0);
+  const bars = buckets.map((b, i) => {
+    const count = counts[i];
+    const bh = (count / max) * plotH;
+    const x = i * (bw + gap);
+    const y = padT + plotH - bh;
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="${xmlEscape(color)}" aria-label="${xmlEscape(b.label)}: ${count}">${barTitle(b.label, count)}</rect><text class="chart-value" x="${(x + bw / 2).toFixed(1)}" y="${Math.max(y - 4, 11).toFixed(1)}" text-anchor="middle" font-size="9" fill="var(--text)">${count}</text><text class="chart-label" x="${(x + bw / 2).toFixed(1)}" y="${h - 7}" text-anchor="middle" font-size="9" fill="var(--muted)">${xmlEscape(b.label)}</text>`;
+  }).join("");
+  const grid = [0, 0.5, 1].map((ratio) => `<line class="chart-grid" x1="0" y1="${(padT + plotH * (1 - ratio)).toFixed(1)}" x2="${w}" y2="${(padT + plotH * (1 - ratio)).toFixed(1)}" stroke="var(--border)" stroke-width="1" opacity="${ratio === 0 ? "0.9" : "0.45"}"/>`).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" role="img" xmlns="http://www.w3.org/2000/svg"><g aria-hidden="true">${grid}</g><line class="chart-baseline" x1="0" y1="${(padT + plotH).toFixed(1)}" x2="${w}" y2="${(padT + plotH).toFixed(1)}" stroke="var(--border)" stroke-width="1"/>${bars}</svg>`;
 }
 
 export function scatterSVG(

@@ -19,6 +19,10 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
         · <span id="series-count" class="tabular-nums">{data.series.length}</span> 支系列
       </p>
     </div>
+    <nav class="page-nav" aria-label="主要導覽">
+      <a class="page-nav-link page-nav-link--active" href="/" aria-current="page">首頁</a>
+      <a class="page-nav-link" href="/insights/">分析</a>
+    </nav>
     <div class="header-actions">
       <select id="year-select" class="sort-select" aria-label="切換年度">
         {years.map((y) => <option value={y} selected={y === data.year}>{y} 年</option>)}
