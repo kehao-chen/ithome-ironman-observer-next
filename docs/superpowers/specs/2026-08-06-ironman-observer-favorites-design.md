@@ -21,30 +21,41 @@ localStorage 書籤（零後端、零成本，符合架構）＋「我的收藏�
 
 ## 1. 資料模型
 
-### 1.1 localStorage 與 `favorites.ts` API
+### 1.1 localStorage 與 `favorites.ts` API（Storage 注入 + 純函數 toggle）
 
 - key：`ironman-observer:favorites`，值：`number[]`（系列 ID 陣列，順序=收藏順序，但 UI 不依賴順序）。
 - 系列 ID 即 `YearData.series[].id`（`scripts/types.ts` 既有欄位），跨年度共用。
 - **寫入策略**：每次 toggle 全量覆寫 `storage.setItem(key, JSON.stringify(ids))`。127 支上限、寫入頻率極低（使用者手動點擊），全量覆寫最單純且無併發問題。
-- **API（`web/src/lib/favorites.ts`，純函數 + 注入 Storage）**：
+- **API（`web/src/lib/favorites.ts`）**：
 
   ```ts
   export type StorageLike = Pick<Storage, "getItem" | "setItem">;
 
-  export function loadFavorites(storage: StorageLike): Set<number>;
-  export function saveFavorites(storage: StorageLike, ids: Iterable<number>): void;
+  export function loadFavorites(storage: StorageLike | null): Set<number>;
+  export function saveFavorites(storage: StorageLike | null, ids: Iterable<number>): void;
   export function toggleFavorite(set: ReadonlySet<number>, id: number): Set<number>;
   ```
 
-  - Production 呼叫端明確傳入：`loadFavorites(window.localStorage)`、`saveFavorites(window.localStorage, favSet)`。
-  - **`toggleFavorite` 是純函數**：回傳新 `Set`（`const next = new Set(set)` 後加/刪），**不 mutation 傳入的集合**；呼叫端 `favSet = toggleFavorite(favSet, id)`。
+  - 用詞：`loadFavorites`/`saveFavorites` 是**可測試函式（依賴注入）**，非純函數（有讀/寫副作用）；只有 `toggleFavorite` 是純函數（回傳新 Set、不 mutation 傳入集合）。
+  - **`storage: null` 語意**：視為「storage 不可用」——`loadFavorites` 回傳空集合、`saveFavorites` no-op（皆不 throw）。
+  - **Production access wrapper**（呼叫端）：`window.localStorage` getter 本身在受限環境可能 throw（發生在參數求值階段，函式內 try/catch 捕捉不到）。呼叫端必須：
+
+    ```ts
+    function getStorage(): StorageLike | null {
+      try { return window.localStorage; } catch { return null; }
+    }
+    ```
+
+    模組級 `const storage = getStorage()` 之後傳入 `loadFavorites(storage)` / `saveFavorites(storage, favSet)`。
+  - **`toggleFavorite` 純函數 + 非法 ID no-op**：`const next = new Set(set)` 後加/刪；對非正 safe integer（`!Number.isSafeInteger(id) || id <= 0`）回傳不變的集合副本（no-op）。呼叫端 `favSet = toggleFavorite(favSet, id)`。
 - **讀取容錯（`loadFavorites`）**：
+  - `storage === null`（getter throw）→ 回傳空集合，不 throw。
   - `getItem` throw（隱私模式/權限拒絕）→ 回傳空集合，不 throw。
   - key 不存在 → 空集合。
   - JSON 解析失敗 / 解析結果不是 array → 空集合（整體失敗），**不嘗試修復或覆寫寫回**。
   - array 內容逐項過濾（元素錯誤不拖垮整體）：只保留 `Number.isSafeInteger(id) && id > 0` 的項目（排除 `NaN`、`Infinity`、小數、負數、`null`、字串）；重複 ID 由 `Set` 自然去重。
   - 範例：`[1, "2", null, 3]` → `Set {1, 3}`。
-- **寫入容錯（`saveFavorites`）**：`setItem` throw → try/catch 靜默忽略（星號仍可點、但刷新後不保留）；不影響其他功能。
+- **寫入容錯（`saveFavorites`）**：`storage === null` → no-op；`setItem` throw → try/catch 靜默忽略（星號仍可點、但刷新後不保留）；不影響其他功能。
 - **版本策略**：key 不帶版本。**明確禁止自動遷移**——不支援其他格式/版本；解析失敗即回傳空集合，絕不嘗試把使用者資料「修復」或覆寫成其他形狀。
 
 ## 2. UI
@@ -100,13 +111,14 @@ localStorage 書籤（零後端、零成本，符合架構）＋「我的收藏�
 
 ### 2.3 Client 狀態與流程（Dashboard.astro script）
 
-- 模組級 `let favSet = new Set<number>(loadFavorites(window.localStorage))`。
+- 模組級 `const storage = getStorage()`（try/catch 包 `window.localStorage`，失敗回傳 `null`）；`let favSet = new Set<number>(loadFavorites(storage))`。
 - **toggle handler（事件委派）**：`#series-list` 容器 `click` 委派 `.card-fav`：
-  1. `const id = Number(btn.dataset.favId)`；`favSet = toggleFavorite(favSet, id)`（純函數回傳新集合）。
-  2. `saveFavorites(window.localStorage, favSet)`。
-  3. 更新該按鈕 `aria-pressed`/填色 class + 觸發動畫。
-  4. `#fav-count` 重算（目前年度收藏數）。
-  5. 若 active 是 `fav` 分頁 → 重 render 列表（子集變了）。
+  1. `const id = Number(btn.dataset.favId)`；**`if (!Number.isSafeInteger(id) || id <= 0) return;`**（UI 層防禦；`toggleFavorite` 內亦 no-op，雙層守住邊界）。
+  2. `favSet = toggleFavorite(favSet, id)`（純函數回傳新集合）。
+  3. `saveFavorites(storage, favSet)`。
+  4. 更新該按鈕 `aria-pressed`/填色 class + 觸發動畫。
+  5. `#fav-count` 重算（目前年度收藏數）。
+  6. 若 active 是 `fav` 分頁 → 重 render 列表（子集變了）。
 - **`render(data)` 整合**：現有 `render` 流程中，filter/sort 套用後若 active 是 `fav`，子集計算改用 `favSet`；`#fav-count` 每次 render 更新（年度切換後收藏數不同）。
 - **60s refresh 與收藏分頁**：refresh 的 `render` 已包含 fav 子集重算（`favSet` 是模組級、直接引用），不需額外處理。
 - **SSR 初始星號狀態**：SSR 一律 `aria-pressed="false"`；client script 於 `DOMContentLoaded` 前（module 頂層）遍歷 `.card-fav`，依 `favSet` 設定初始 `aria-pressed` 與 fill class，再進入首輪 render。因 SSR 已輸出星形 stroke，僅需補 `aria-pressed` 與 fill class，FOUC 範圍限於星號填色。
@@ -125,7 +137,7 @@ localStorage 書籤（零後端、零成本，符合架構）＋「我的收藏�
 | `web/src/components/Dashboard.astro` | 「我的收藏」filter 按鈕 + `#fav-count`、`favSet`/`loadFavorites`/`saveFavorites`/toggle 委派、fav 子集 filter 邏輯、空狀態區塊、SSR 初始星號狀態同步 |
 | `web/src/styles/design-system.css` | `.card-fav` 樣式＋`[aria-pressed="true"]` 填色、`fav-pop` 動畫、收藏 filter 按鈕醒目標記、`.fav-empty` 空狀態樣式 |
 | `web/src/lib/favorites.ts` | 純函數：`loadFavorites`/`saveFavorites`（注入 Storage）/`toggleFavorite`（純函數回傳新 Set）（單元測試對象，見 §4） |
-| `README.md` | 更新 Features 行（加 favorites）＋ Non-goals 行移除 `login/favorites/tracking`；註明收藏僅限本裝置/瀏覽器（localStorage） |
+| `README.md` | **實作後同步更新**（與實作同一 commit）：Features 行加 favorites；Non-goals 行移除 `login/favorites/tracking`；註明收藏僅限本裝置/瀏覽器（localStorage）。本 spec commit 不含 README 變更。 |
 | `docs/superpowers/specs/…favorites-design.md` | 本 spec |
 | `PRODUCT.md` | roadmap mid-term「Favorites」標記完成（實作後） |
 
@@ -135,17 +147,18 @@ localStorage 書籤（零後端、零成本，符合架構）＋「我的收藏�
 
 ### 4.1 單元（`web/src/lib/favorites.test.ts`，Bun test，模式同 `daily-status.test.ts`）
 
-- `toggleFavorite`：加/減/再加往返；對不存在的 id 移除是 no-op；**不 mutation 原 Set**（傳入 `ReadonlySet`，回傳新集合，原集合不變）。
+- `toggleFavorite`：加/減/再加往返；對不存在的 id 移除是 no-op；**不 mutation 原 Set**（傳入 `ReadonlySet`，回傳新集合，原集合不變）；**非法 id（`0`、負數、`NaN`、小數、`Infinity`）→ no-op**（回傳內容不變的副本）。
 - `loadFavorites` 容錯（注入 stub Storage）：
+  - `storage` 為 `null` → 空集合、不 throw。
   - `getItem` **throw** → 回傳空集合、不 throw。
   - key 不存在 → 空集合。
-  - JSON 解析失敗（`"{{{"`）→ 空集合。
+  - JSON 解析失敗（`"{{{"`、`"[NaN]"`、`"[Infinity]"`——JSON 不支援這些值，parse 即 throw）→ 空集合。
   - JSON 是合法值但不是 array（`"42"`、`"null"`、`"{}"`）→ 空集合。
-  - array 內混入 `null` / 字串 / 小數 / 負數 / `NaN` / `Infinity` → 逐項過濾（`[1, "2", null, 3]` → `Set {1, 3}`）。
+  - array 內混入 `null` / 字串 / 小數 / 負數 → 逐項過濾（`[1, "2", null, 3]` → `Set {1, 3}`）；`Number.isSafeInteger` 為 runtime defensive check（NaN/Infinity 無法以合法 JSON 進入此路徑，由 parse throw 涵蓋）。
   - duplicate IDs → 去重（`[1, 1, 2]` → `Set {1, 2}`）。
   - 解析失敗**不覆寫** localStorage（stub 驗證 `setItem` 未被呼叫）。
-- `saveFavorites`：round-trip（`save` 後 `load` 得原集合）；**`setItem` throw → 不拋錯**（靜默）。
-- 純函數不打全域 localStorage：`loadFavorites`/`saveFavorites` 接受注入的 `StorageLike` 物件（測試用 stub），prod 傳 `window.localStorage`。
+- `saveFavorites`：round-trip（`save` 後 `load` 得原集合）；`storage` 為 `null` → no-op；**`setItem` throw → 不拋錯**（靜默）。
+- 可測試函式不打全域 localStorage：`loadFavorites`/`saveFavorites` 接受注入的 `StorageLike | null` 物件（測試用 stub / `null`），prod 傳 `getStorage()` 的結果。
 
 ### 4.2 Build / 型別
 
@@ -166,7 +179,7 @@ localStorage 書籤（零後端、零成本，符合架構）＋「我的收藏�
 
 ## 5. 風險
 
-- **localStorage 不可用**（隱私模式）：`getItem`/`setItem` throw 皆被 `loadFavorites`/`saveFavorites` 捕捉——讀取回傳空集合、寫入靜默忽略；星號仍可點但刷新不保留。可接受的降級，README 註明收藏僅限本裝置/瀏覽器。
+- **localStorage 不可用**（隱私模式）：`window.localStorage` getter / `getItem` / `setItem` 任一步 throw 皆降級——`getStorage()` 回傳 `null`、`loadFavorites(null)` 回傳空集合、`saveFavorites(null, …)` no-op；星號仍可點但刷新不保留。可接受的降級，README 註明收藏僅限本裝置/瀏覽器。
 - **收藏分頁＋排序器**：`latest`（今日發文）排序套用於收藏子集，無收藏時空狀態顯示（`0 / 0`）——語意一致。
 - **SSR 星號初始狀態 FOUC**：SSR 一律未填色、client 首輪同步——星號是小型視覺元素，閃爍可接受；inline script 盡量前置。
 - **`aria-pressed` 語意**：用 toggle button 而非 checkbox——星號是「釘選」動作，`aria-pressed` 是正確的 ARIA 語意（非表單送出）。
