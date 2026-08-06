@@ -247,6 +247,9 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       // 4. 訂閱數排行：horizontal bar ───────────────────────────────────────
       {
         const subs = topSeriesBySubscriptions(d.series);
+        // 動態高度：每項約 28px + 邊距，確保所有條目完整顯示不需 hover
+        const subsEl = document.getElementById("chart-subs");
+        if (subsEl && subs.length > 0) subsEl.style.height = `${subs.length * 28 + 24}px`;
         getChart("chart-subs")?.setOption({
           backgroundColor: "transparent",
           grid: { top: 12, right: 48, bottom: 12, left: 12, containLabel: true },
@@ -301,6 +304,8 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       // 6. 標題關鍵字：horizontal bar（標籤橫列，易讀）──────────────────────
       {
         const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
+        const kwEl = document.getElementById("chart-kw");
+        if (kwEl && kws.length > 0) kwEl.style.height = `${kws.length * 28 + 24}px`;
         getChart("chart-kw")?.setOption({
           backgroundColor: "transparent",
           grid: { top: 12, right: 48, bottom: 12, left: 12, containLabel: true },
