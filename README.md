@@ -30,9 +30,9 @@
 
 ## 架構
 
-- Features: year switcher (meta `years` authority), group filter, sort (dayCount / views / latest), client-side 60s refresh, scrapeLog notice, responsive.
+- Features: year switcher (meta `years` authority), group filter + favorites tab, sort (dayCount / views / latest), client-side 60s refresh, scrapeLog notice, responsive.
 - Hard constraint: near-zero cost — Cloudflare Workers/Pages free tier + GH Actions public-repo free runners + own domain; no backend, no DB (JSON is the DB).
-- Non-goals (v1): search, completion/active badges, login/favorites/tracking, real-time updates (periodic batch only).
+- Non-goals (v1): search, real-time updates (periodic batch only).
 
 ## 本地開發
 
@@ -41,6 +41,11 @@ bun install
 bun run scripts/scrape.ts     # 依 series-manifest 陣列逐年度抓取；全失敗零寫入、exit 1
 cd web && bun install && bun run dev
 ```
+
+## 收藏（Favorites）
+
+卡片右上角星號可收藏系列；「我的收藏」分頁只顯示已收藏系列，沿用排序器。
+收藏以系列 ID 為 key 跨年度共用，僅存於本裝置瀏覽器（localStorage），不同裝置/瀏覽器不互通。
 
 ## 測試
 
