@@ -47,7 +47,7 @@
   gap: var(--space-5);
 }
 .insight-chart {
-  flex: 1 1 300px;
+  flex: 1 1 100%;
   min-width: 0;
   padding: var(--space-3);
   border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
@@ -61,20 +61,6 @@
   font-weight: 600;
 }
 
-/* Panel 02: 觀看分佈 & 訂閱排行各佔一整行，需要足夠寬度顯示標籤 */
-.insight-chart--full {
-  flex-basis: 100%;
-}
-
-/* 組別 scatter 和其他 wide 圖 */
-.insight-chart--wide {
-  flex-basis: 100%;
-}
-
-@media (max-width: 639px) {
-  .insight-charts { gap: var(--space-3); }
-  .insight-chart { flex-basis: 100%; padding: var(--space-2); }
-}
 
 /* ── Chart canvas ────────────────────────────────────────────── */
 .chart-canvas {
