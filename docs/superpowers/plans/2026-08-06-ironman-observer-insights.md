@@ -17,11 +17,16 @@
 - **`meta.years` 是唯一可選年度來源**；history 快照**不進** `meta.years`、不影響年切換器（spec §3.1、§4.1）。
 - **年切換不得用 query param 驅動 SSR**：Astro `output: "static"` 下 `/insights/?year=N` 不會重跑 frontmatter（spec §4.1）；一律 client-side fetch + `replaceState`。
 - **文字分析只分析 `Series.title`**：不混入 `Series.description` / `Article.title`；每系列標題對同關鍵字最多計 1（spec §3.3）。
+- **英文關鍵詞 token 邊界命中**：英文/數字連續字串（`/[A-Za-z0-9]+/`）切 token 後比對，**不接受子字串誤判**（`AI` 不得命中 `SAIL`）；中文關鍵詞用大小寫正規化後的字典子字串比對（review #1）。
+- **發文行為統計以臺北牆鐘（UTC+08:00）為準**：`publishedAt` 的 hour / weekday 統計**不得依 runtime local timezone**（review #2）；`weekday` 由 `publishedAt` 前 10 字元日期推導，不用 `new Date().getDay()` 的環境時區。
+- **「星期分佈」語意**：`publishWeekdayHistogram` 輸出七日（一…日），所有 UI 文案用「星期分佈」，**不用「週末/平日」二分類**（review #9）。
 - **觀看分佈用分桶長條圖，不建立泛用 LineChart**（spec §4.3）。
 - **History snapshot 語意**：代表「一次成功完成的 scrape 結果」，與主檔 atomic commit 不綁定；寫入失敗僅 `console.error`、不阻止主檔 commit（spec §5.2）。
 - **臺北日期**：快照檔名日期取自 `updatedAt` 的臺北時區日期（`taipeiTimestamp` 日期部分），不得用 runner local timezone（spec §5.2）。
 - **不修改**：`scripts/parse-*.ts`、`scripts/fetch-html.ts`、`scripts/types.ts`、`.github/workflows/scheduled-update.yml`（`git add data/` 已涵蓋 `data/history/**`）、`SeriesCard.astro`、`daily-status.ts`、`favorites.ts`、`search.ts`（spec 未要求）。
 - **測試用 bun:test**：`import { describe, expect, test } from "bun:test"`（既有慣例）；每個 Task 先寫 failing test 再實作。
+- **innerHTML 例外縮到最小**：`el.innerHTML = svg` 僅允許用於 `charts.ts` 回傳的完整 `<svg>` 字串（受信任本地產生，已 XML escaping），是**唯一** innerHTML sink；所有文字洞察句一律 `textContent`；`set:html` 僅用於 charts.ts 的 SVG 輸出（review #8）。
+- **`(window as any)` 限縮**：僅允許在讀 `window.INSIGHTS_DATA` / `INSIGHTS_YEARS` 兩處使用並加註解（Astro define:vars 注入的非標準 window property）；其餘程式碼禁止 `any`（review #8）。
 
 ---
 
@@ -35,7 +40,7 @@
 - Consumes: `import type { YearData, Series, Article } from "../../../scripts/types"`（與 Dashboard.astro 同路徑慣例）。
 - Produces:
   - `export function publishHourHistogram(articles: Article[]): { hour: number; count: number }[]` — 回傳 24 筆（hour 0–23，count ≥ 0），依 hour 升冪。
-  - `export function publishWeekdayHistogram(articles: Article[]): { weekday: string; count: number }[]` — 依「一 二 三 四 五 六 日」順序，count 可為 0。
+  - `export function publishWeekdayHistogram(articles: Article[]): { weekday: string; count: number }[]` — 依「一 二 三 四 五 六 日」順序，count 可為 0。**星期以臺北牆鐘（UTC+08:00）為準**：由 `publishedAt` 前 10 字元日期（`YYYY-MM-DD`）推導，不用 `new Date().getDay()` 的環境時區。日期 → 星期的對映用固定表（見下方 `taipeiWeekday`），並以「2026-08-02（日）→ 日」等固定案例鎖定。
   - `export function viewsDistribution(articles: Article[]): ViewsDistribution`
     - `type ViewsDistribution = { total: number; max: number; p50: number; p90: number; p99: number; top10PctShare: number; buckets: { label: string; count: number }[] }`
     - `buckets`：依 views 對數分桶，label 為 `1–9`、`10–99`、`100–999`、`1000–9999`、`10000+`，各桶 count；桶順序固定如上。
@@ -46,7 +51,7 @@
 **測試要點（實作前先寫）：**
 
 - `publishHourHistogram`：空 articles → 24 筆 count 0；單篇文章 hour 1 → hour 1 count 1、其餘 0；多篇跨小時計數正確；hour 範圍 0–23 恆定。
-- `publishWeekdayHistogram`：用固定 publishedAt 日期（`2026-08-01T..+08:00` 週六、`2026-08-03T..+08:00` 週一）驗證 weekday 映射（用 `new Date(iso).getDay()`：0=日…6=六；輸出字串用 `["日","一","二","三","四","五","六"]`）；順序固定；空陣列 → 7 筆 0。
+- `publishWeekdayHistogram`：用固定 publishedAt 日期（`2026-08-01T..+08:00` 週六、`2026-08-03T..+08:00` 週一）驗證 weekday 映射（用固定 `taipeiWeekday` 表，非環境 getDay）；**跨日邊界**：`2026-08-02T23:30:00+08:00` → 日、`2026-08-03T00:30:00+08:00` → 一（臺北牆鐘，非 runtime timezone，review #2）；順序固定；空陣列 → 7 筆 0。
 - `viewsDistribution`：`[10,20,30]` → p50=20、p90=30、p99=30、top10PctShare = ceil(3*0.1)=1 篇最高 30/60=0.5；空陣列 → total 0、buckets 全 0；`[7,103,8678]` → buckets `1–9`=1、`100–999`=1、`1000–9999`=1；max 正確。
 - `topSeriesBySubscriptions`：依 subscriptions desc；同值 name asc；views = articles views 總和；n 預設 10、超過系列數回傳全部；空 series → `[]`。
 
@@ -122,6 +127,15 @@ describe("publishWeekdayHistogram", () => {
       { weekday: "六", count: 1 },
       { weekday: "日", count: 0 },
     ]);
+  });
+  test("跨日邊界：以臺北牆鐘為準（review #2）", () => {
+    // 2026-08-02 臺北 23:30 → 日；2026-08-03 臺北 00:30 → 一（UTC 前一/當日）
+    const h = publishWeekdayHistogram([
+      article({ publishedAt: "2026-08-02T23:30:00+08:00" }),
+      article({ publishedAt: "2026-08-03T00:30:00+08:00" }),
+    ]);
+    expect(h.find((x) => x.weekday === "日")!.count).toBe(1);
+    expect(h.find((x) => x.weekday === "一")!.count).toBe(1);
   });
   test("空陣列 → 7 筆 count 0、順序固定", () => {
     const h = publishWeekdayHistogram([]);
@@ -215,18 +229,23 @@ export function publishHourHistogram(articles: Article[]): { hour: number; count
   return counts.map((count, hour) => ({ hour, count }));
 }
 
-const WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"]; // getDay(): 0=日…6=六
 const WEEKDAY_ORDER = ["一", "二", "三", "四", "五", "六", "日"];
+
+// 臺北牆鐘（UTC+08:00）的星期：由 publishedAt 前 10 字元日期（YYYY-MM-DD）推導，
+// 不依 runtime local timezone（review #2）。以 T00:00:00Z 解析日期字串取 UTC 星期
+// （getUTCDay 與環境時區無關），0=日…6=六 → 對映 WEEKDAY_ORDER 索引 (day+6)%7。
+function taipeiWeekday(dateStr: string): string {
+  const d = new Date(`${dateStr}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return "";
+  return WEEKDAY_ORDER[(d.getUTCDay() + 6) % 7];
+}
 
 export function publishWeekdayHistogram(articles: Article[]): { weekday: string; count: number }[] {
   const counts = new Map<string, number>();
   for (const w of WEEKDAY_ORDER) counts.set(w, 0);
   for (const a of articles) {
-    const d = new Date(a.publishedAt);
-    if (!Number.isNaN(d.getTime())) {
-      const w = WEEKDAYS[d.getDay()];
-      counts.set(w, (counts.get(w) ?? 0) + 1);
-    }
+    const w = taipeiWeekday(a.publishedAt.slice(0, 10));
+    if (w) counts.set(w, (counts.get(w) ?? 0) + 1);
   }
   return WEEKDAY_ORDER.map((weekday) => ({ weekday, count: counts.get(weekday) ?? 0 }));
 }
@@ -302,7 +321,7 @@ git commit -m "feat(insights): add publish/views/subscription computation layer"
 - Consumes: Task 1 的 `import type { Series }`；新增 `lib/keywords.ts`（Task 本身上午完成）。
 - Produces:
   - `export function groupStats(series: Series[]): { group: string; seriesCount: number; articleCount: number; avgViews: number; totalSubscriptions: number }[]` — 依 seriesCount desc，同值依 group localeCompare("zh-Hant") asc；`avgViews` = 該組文章 views 總和 / 該組文章數（無文章時 0，round 到整數）；`totalSubscriptions` = subscriptions 總和。
-  - `export function titleKeywordStats(series: Series[], keywords: string[] = DEFAULT_KEYWORDS): { keyword: string; count: number }[]` — 見 Global Constraints 文字分析規則；每系列標題對同關鍵字最多計 1；依 count desc，同 count 依 keyword localeCompare("zh-Hant") asc。
+  - `export function titleKeywordStats(series: Series[], keywords: string[] = DEFAULT_KEYWORDS): { keyword: string; count: number }[]` — 見 Global Constraints 文字分析規則；**英文/數字關鍵詞只在 token 邊界命中**（`/[A-Za-z0-9]+/` 切 token 後比對，`AI` 不命中 `SAIL`），**中文關鍵詞**用大小寫正規化後的字典子字串比對；每系列標題對同關鍵字最多計 1；依 count desc，同 count 依 keyword localeCompare("zh-Hant") asc。
   - `export const DEFAULT_KEYWORDS: string[]` — 定義於 `lib/keywords.ts`，內容為 v1 字典（見下）。
 
 **`lib/keywords.ts`（Task 2 新增）：**
@@ -310,7 +329,8 @@ git commit -m "feat(insights): add publish/views/subscription computation layer"
 ```ts
 // web/src/lib/keywords.ts — v1 中文/英文關鍵詞字典（人工列舉，非完整分詞）。
 // spec §3.3：文字分析只分析 Series.title，每系列標題對同關鍵字最多計 1。
-// 英文 token 由 /[A-Za-z0-9]+/ 切出；中文以本字典子字串比對（不執行期切詞）。
+// 英文關鍵詞在 token 邊界命中（/^[A-Za-z0-9]+$/ → 以 token 集合比對，AI 不命中 SAIL）；
+// 中文關鍵詞以子字串比對（不執行期切詞）。
 export const DEFAULT_KEYWORDS: string[] = [
   "AI", "機器學習", "K8s", "Kubernetes", "安全", "雲端", "前端", "後端",
   "資料", "開發", "部署", "測試", "開源", "效能", "設計", "自動化",
@@ -371,6 +391,21 @@ describe("titleKeywordStats", () => {
     const stats = titleKeywordStats([makeSeries({ id: 1, title: "無關鍵字", description: "AI 教學" })], kw);
     expect(stats.every((x) => x.count === 0)).toBe(true);
   });
+  test("英文關鍵詞不接受子字串誤判（review #1）", () => {
+    // SAIL 含 AI 子字串，但 AI 是獨立 token → 不命中
+    const stats = titleKeywordStats([makeSeries({ id: 1, title: "SAIL 入門" })], ["AI"]);
+    expect(stats).toEqual([]);
+  });
+  test("英文關鍵詞 token 邊界命中", () => {
+    const stats = titleKeywordStats([makeSeries({ id: 1, title: "AI 與 K8s 實戰" })], ["AI", "K8s"]);
+    expect(stats.find((x) => x.keyword === "AI")!.count).toBe(1);
+    expect(stats.find((x) => x.keyword === "K8s")!.count).toBe(1);
+  });
+  test("中文關鍵詞仍以子字串比對", () => {
+    // 中文無 token 邊界；「前端開發」含「前端」
+    const stats = titleKeywordStats([makeSeries({ id: 1, title: "前端開發" })], ["前端"]);
+    expect(stats.find((x) => x.keyword === "前端")!.count).toBe(1);
+  });
   test("排序 count desc，同值 keyword asc", () => {
     const stats = titleKeywordStats([
       makeSeries({ id: 1, title: "前端" }),
@@ -422,6 +457,13 @@ export function groupStats(
   return rows;
 }
 
+// 英文/數字連續字串 token（spec §3.3、review #1）；AI 不命中 SAIL。
+const ASCII_TOKEN = /[A-Za-z0-9]+/g;
+
+function isAsciiKeyword(k: string): boolean {
+  return /^[A-Za-z0-9]+$/.test(k);
+}
+
 export function titleKeywordStats(
   series: Series[],
   keywords: string[] = DEFAULT_KEYWORDS,
@@ -431,7 +473,15 @@ export function titleKeywordStats(
   for (const s of series) {
     const title = s.title.toLowerCase();
     for (const k of keywords) {
-      if (title.includes(k.toLowerCase())) counts.set(k, (counts.get(k) ?? 0) + 1);
+      let hit: boolean;
+      if (isAsciiKeyword(k)) {
+        // token 邊界命中：標題的英數 token 集合含該關鍵詞（大小寫已正規化）
+        hit = title.match(ASCII_TOKEN)?.includes(k.toLowerCase()) ?? false;
+      } else {
+        // 中文關鍵詞：大小寫正規化後子字串比對（無 token 邊界）
+        hit = title.includes(k.toLowerCase());
+      }
+      if (hit) counts.set(k, (counts.get(k) ?? 0) + 1);
     }
   }
   return [...counts.entries()]
@@ -547,6 +597,27 @@ describe("scatterSVG", () => {
     expect(svg).toContain("<title>Web: 5 系列</title>");
     expect(svg).toContain("<title>AI: 3 系列</title>");
   });
+  test("每個 circle 只有一個 <title>（review #6）", () => {
+    const svg = scatterSVG([{ x: 1, y: 2, label: "Web", tooltip: "Web: 5 系列" }]);
+    expect(svg.match(/<title>/g)).toHaveLength(1);
+  });
+});
+
+describe("XML escaping 完整性（review #7）", () => {
+  test("attribute context：label 含 quote 不逃逸出 attribute", () => {
+    const label = `" onclick="alert(1)`;
+    const svg = barChartSVG([{ label, value: 1 }]);
+    // attribute 內不得出現未 escaped quote —— 否則可注入新 attribute
+    expect(svg).not.toContain(`aria-label="${label}`);
+    expect(svg).toContain("&quot;");
+    // 產生的 SVG 不含可執行的 onclick
+    expect(svg).not.toContain("onclick");
+  });
+  test("title context：tooltip 含 & < > \" ' 全 escaping", () => {
+    const svg = scatterSVG([{ x: 1, y: 2, label: "L", tooltip: `& < > " '` }]);
+    expect(svg).toContain("<title>&amp; &lt; &gt; &quot; &apos;</title>");
+    expect(svg).not.toContain("<title>& < >");
+  });
 });
 ```
 
@@ -632,7 +703,7 @@ export function distributionBarSVG(buckets: { label: string; count: number }[], 
 
 export function scatterSVG(
   points: { x: number; y: number; label: string; tooltip: string }[],
-  opts: BarOpts & { xMax?: number; yMax?: number } = {},
+  opts: BarOpts & { xLabel?: string; xMax?: number; yMax?: number } = {},
 ): string {
   const { color, height, width } = { ...DEFAULTS, ...opts };
   const xMax = opts.xMax ?? Math.max(...points.map((p) => p.x), 1);
@@ -644,15 +715,14 @@ export function scatterSVG(
     .map((p) => {
       const cx = padL + (p.x / xMax) * plotW;
       const cy = padT + plotH - (p.y / yMax) * plotH;
-      return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4" fill="${color}" aria-label="${xmlEscape(p.label)}">${barTitle(p.label, p.y)}<title>${xmlEscape(p.tooltip)}</title></circle>`;
+      // 單一 <title>（完整 tooltip）；aria-label 帶 label（review #6）
+      return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4" fill="${color}" aria-label="${xmlEscape(p.label)}"><title>${xmlEscape(p.tooltip)}</title></circle>`;
     })
     .join("");
   const xLabel = `<text x="${padL + plotW / 2}" y="${height - 4}" text-anchor="middle" font-size="9" fill="var(--muted)">${xmlEscape(opts.xLabel ?? "")}</text>`;
   return `<svg viewBox="0 0 ${width} ${height}" width="100%" height="${height}" role="img" xmlns="http://www.w3.org/2000/svg">${circles}${xLabel}</svg>`;
 }
 ```
-
-> 註：`scatterSVG` 的 `opts.xLabel` 是 BarOpts 沒有的欄位——修正型別為 `BarOpts & { xLabel?: string; xMax?: number; yMax?: number }` 於 Step 4 前調整（見下方「修正」）。
 
 - [ ] **Step 4: 跑測試確認通過**
 
@@ -676,7 +746,7 @@ git commit -m "feat(insights): add XML-escaped SVG chart renderers"
 
 **Interfaces:**
 - Consumes: `taipeiTimestamp(d: Date)`（既有）；`collectYears` 回傳的 `succeeded: YearData[]`。
-- Produces: `export function historyDate(updatedAt: string): string` — 取 `updatedAt` 的臺北日期 `YYYY-MM-DD`（`slice(0,10)`；`updatedAt` 格式為 `"2026-08-06 15:13:18+08:00"`）；`export async function writeHistorySnapshots(dataDir: string, years: YearData[]): Promise<void>` — 對每個 year 寫 `data/history/{year}/{historyDate(updatedAt)}.json`（同結構 JSON），檔案已存在且內容相同（字串比對）跳過，否則 `mkdir -p` + 寫入；寫入失敗 throw（由 CLI catch 後 `console.error` 不阻止主檔）。
+- Produces: `export function historyDate(updatedAt: string): string` — 取 `updatedAt` 的臺北日期 `YYYY-MM-DD`（`slice(0,10)`；`updatedAt` 格式為 `"2026-08-06 15:13:18+08:00"`）；`export async function writeHistorySnapshots(dataDir: string, years: YearData[]): Promise<string[]>` — 對每個 year **individually attempt** 寫 `data/history/{year}/{historyDate(updatedAt)}.json`（同結構 JSON），檔案已存在且內容相同（字串比對）跳過，否則 `mkdir -p` + 寫入；**單一年度失敗記錄該年度錯誤並繼續其他年度**，函式最後回傳失敗清單 `string[]`（review #3）。
 
 **測試要點（TDD，mock fs）：**
 
@@ -690,20 +760,27 @@ export function historyDate(updatedAt: string): string {
   return updatedAt.slice(0, 10); // 臺北日期 = updatedAt 前 10 字元（+08:00 牆鐘）
 }
 
-export async function writeHistorySnapshots(dataDir: string, years: YearData[]): Promise<void> {
+export async function writeHistorySnapshots(dataDir: string, years: YearData[]): Promise<string[]> {
+  const failures: string[] = [];
   for (const data of years) {
-    const dir = join(dataDir, "history", String(data.year));
-    const path = join(dir, `${historyDate(data.updatedAt)}.json`);
-    await mkdir(dir, { recursive: true });
-    const content = JSON.stringify(data, null, 2);
     try {
-      const existing = await readFile(path, "utf-8");
-      if (existing === content) continue; // 相同內容跳過（無變更不 commit）
+      const dir = join(dataDir, "history", String(data.year));
+      const path = join(dir, `${historyDate(data.updatedAt)}.json`);
+      await mkdir(dir, { recursive: true });
+      const content = JSON.stringify(data, null, 2);
+      try {
+        const existing = await readFile(path, "utf-8");
+        if (existing === content) continue; // 相同內容跳過（無變更不 commit）
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+      }
+      await writeFile(path, content);
     } catch (e) {
-      if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+      // 單一年度失敗：記錄並繼續其他年度（review #3）
+      failures.push(`${data.year}: ${e instanceof Error ? e.message : String(e)}`);
     }
-    await writeFile(path, content);
   }
+  return failures;
 }
 ```
 
@@ -711,11 +788,14 @@ CLI 插入點（`collectYears` 成功後、`stageWrites` 前）:
 
 ```ts
   // History snapshots: independent of the atomic main-file commit (spec §5.2).
-  // Failure is logged and does NOT block the main {year}.json write.
+  // Per-year failures are collected and logged; they never block the main
+  // {year}.json write (review #3).
   try {
-    await writeHistorySnapshots(dataDir, succeeded);
+    const failures = await writeHistorySnapshots(dataDir, succeeded);
+    for (const f of failures) console.error(`history snapshot failed: ${f}`);
   } catch (e) {
-    console.error(`history snapshot failed: ${e instanceof Error ? e.message : String(e)}`);
+    // writeHistorySnapshots 本身不 throw（單年度失敗已內收），此 catch 為防護
+    console.error(`history snapshot error: ${e instanceof Error ? e.message : String(e)}`);
   }
 ```
 
@@ -797,6 +877,24 @@ describe("writeHistorySnapshots", () => {
       await rm(dir, { recursive: true, force: true });
     }
   });
+
+  test("第一年度失敗仍寫入第二年度（review #3）", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "hist-"));
+    try {
+      // 讓 2026 的 history 目錄位置被一個普通檔案佔住 → mkdir 失敗
+      await writeFile(join(dir, "history", "2026"), "blocking file", { recursive: true });
+      const failures = await writeHistorySnapshots(dir, [
+        yearData({ year: 2026 }),
+        yearData({ year: 2025 }),
+      ]);
+      // 2026 失敗、2025 成功
+      expect(failures.length).toBe(1);
+      expect(failures[0]).toContain("2026");
+      expect(JSON.parse(await readFile(join(dir, "history", "2025", "2026-08-06.json"), "utf-8")).year).toBe(2025);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
 });
 ```
 
@@ -831,11 +929,11 @@ git commit -m "feat(scrape): write daily history snapshots (data/history/{year}/
 
 **Interfaces:**
 - Consumes: Task 1–3 的 `lib/insights.ts`（`publishHourHistogram`、`publishWeekdayHistogram`、`viewsDistribution`、`topSeriesBySubscriptions`、`groupStats`、`titleKeywordStats`）、`lib/charts.ts`（`barChartSVG`、`horizontalBarSVG`、`distributionBarSVG`、`scatterSVG`）、`lib/keywords.ts`（`DEFAULT_KEYWORDS`）、`type YearData`。
-- Produces: `Insights.astro` 接受 `data: YearData`、`years: number[]`、`latestYear: number` props，輸出四個面板 + header（年切換器 + 主題 toggle）。四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好，render 進 HTML；同時把「資料 + 各函式」以 `define:vars` 注入，供 Task 6 的 client 重繪使用。
+- Produces: `Insights.astro` 接受 `data: YearData`、`years: number[]`、`latestYear: number`、`hasData: boolean` props（`hasData = data.series.length > 0`，review #4），輸出四個面板 + header（年切換器 + 主題 toggle）。四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好，render 進 HTML；同時把「資料 + 各函式」以 `define:vars` 注入，供 Task 6 的 client 重繪使用。`hasData === false` 時四個面板顯示「尚無資料」、年切換器不列出任何年度。
 
-**四個面板（spec §4.2）：**
+**四個面板（spec §4.2）：** 若 `data.year === 0` 或 `data.series.length === 0`（空資料），所有面板顯示「尚無資料」、圖表容器留空（review #4）。
 
-1. **發文行為**：`barChartSVG(publishHourHistogram(articles))`（24 小時）+ `barChartSVG(publishWeekdayHistogram(articles))`（週末/平日）。洞察句：找到 count 最高的 hour → 「00 時為發文高峰（N 篇）」；無文章 → 「尚無發文資料」。
+1. **發文行為**：`barChartSVG(publishHourHistogram(articles))`（24 小時）+ `barChartSVG(publishWeekdayHistogram(articles))`（**星期分佈**，一…日，review #9）。洞察句：找到 count 最高的 hour → 「00 時為發文高峰（N 篇）」；無文章 → 「尚無發文資料」。
 2. **人氣結構**：`distributionBarSVG(viewsDistribution(articles).buckets)`（分桶長條圖）+ `horizontalBarSVG(topSeriesBySubscriptions(series))`（訂閱龍頭 top 10）。洞察句：`top10PctShare` → 「前 10% 文章佔總觀看 X%」；無文章 → 「尚無觀看資料」。
 3. **組別分析**：`scatterSVG(groupStats(series).map(g => ({x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均 ${g.avgViews} 觀看`})))`。洞察句：seriesCount 最高的組 → 「{group} 最活躍（N 系列）」。
 4. **文字分析**：`barChartSVG(titleKeywordStats(series))`（關鍵字）。洞察句：count 最高的 keyword → 「N 個系列標題包含「{keyword}」」；全部 0 → 「尚無標題關鍵字」。
@@ -848,6 +946,8 @@ git commit -m "feat(scrape): write daily history snapshots (data/history/{year}/
   window.INSIGHTS_YEARS = yearsList;
 </script>
 ```
+
+> 註：`data.year === 0`（空資料）時 `yearsList` 為空、`initialData` 為 emptyData；client script 依 `data.year === 0` 分支顯示空狀態（review #4）。
 
 **洞察句 HTML 結構（每個面板）**:
 
@@ -925,7 +1025,7 @@ git commit -m "feat(insights): add Insights.astro component with SSG SVG panels"
 - Consumes: `Insights.astro`（props: `data`、`years`、`latestYear`）；`lib/insights.ts` + `lib/charts.ts`（client 重繪）；`lib/keywords.ts`。
 - Produces: `/insights/` 路由 + header 連結 + client 年切換邏輯。
 
-**page frontmatter**（沿用 `index.astro` 的 glob pattern）:
+**page frontmatter**（沿用 `index.astro` 的 glob pattern；**含空資料 fallback**，review #4）:
 
 ```astro
 ---
@@ -939,19 +1039,25 @@ for (const [path, mod] of Object.entries(import.meta.glob("../../../data/*.json"
 const meta = (await import("../../../data/meta.json").then((m) => m.default)) as MetaJson;
 const years = meta.years.filter((y) => dataByYear.has(y)).sort((a, b) => b - a);
 const latestYear = years[0] ?? [...dataByYear.keys()].sort((a, b) => b - a)[0];
-const data: YearData = dataByYear.get(latestYear)!;
+// 空資料 fallback：完全沒有可用 YearData 時不 crash，顯示空狀態面板（spec §6、review #4）
+const emptyData: YearData = { year: 0, updatedAt: "", groups: [], series: [], scrapeLog: [] };
+const data: YearData = latestYear !== undefined && dataByYear.has(latestYear) ? dataByYear.get(latestYear)! : emptyData;
+const hasData = data.series.length > 0;
 ---
 ```
 
-**theme + insights.css + Insights 元件**（head 與 body，模仿 index.astro 的 theme inline script）。
+> 註：`data.year === 0` 代表無資料（`meta.years` 空且無 `data/*.json` 年度檔）；`Insights.astro` 與 client script 需處理 `hasData === false`（見下方）。
 
-**client 年切換 script**（`<script>` 內，沿用 Dashboard 的 fetchToken 模式）:
+**theme + insights.css + Insights 元件**（head 與 body，模仿 index.astro 的 theme inline script）。`<Insights data={data} years={years} latestYear={latestYear} hasData={hasData} />`（`hasData` 供元件空狀態分支，review #4）。
+
+**client 年切換 script**（`<script>` 內，沿用 Dashboard 的 fetchToken 模式；`window` property 的 `any` 限縮於此兩處，review #8）:
 
 ```ts
 import { publishHourHistogram, publishWeekdayHistogram, viewsDistribution, topSeriesBySubscriptions, groupStats, titleKeywordStats } from "../lib/insights";
 import { barChartSVG, horizontalBarSVG, distributionBarSVG, scatterSVG } from "../lib/charts";
 import { DEFAULT_KEYWORDS } from "../lib/keywords";
 
+// Astro define:vars 注入的非標準 window property——僅此兩處允許 (window as any)（review #8）
 const initialData = (window as any).INSIGHTS_DATA as YearData;
 const yearsList = (window as any).INSIGHTS_YEARS as number[];
 let fetchToken = 0;
@@ -973,6 +1079,11 @@ function insights(year: number) {
 function allArticles(d: YearData) { return d.series.flatMap((s) => s.articles); }
 
 function render(d: YearData) {
+  // 空資料（data.year === 0）：全部面板顯示空狀態，不重繪（review #4）
+  if (d.year === 0 || d.series.length === 0) {
+    renderEmpty();
+    return;
+  }
   const arts = allArticles(d);
   // 1. 發文行為
   const hour = publishHourHistogram(arts);
@@ -1001,27 +1112,39 @@ function render(d: YearData) {
   if (sel) sel.value = String(d.year);
 }
 
+function renderEmpty() {
+  // 空資料狀態：所有面板「尚無資料」，年切換器清空（review #4）
+  for (const id of ["insight-hour-line", "insight-dist-line", "insight-group-line", "insight-kw-line"]) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = "尚無資料";
+  }
+  for (const id of ["chart-hour", "chart-weekday", "chart-dist", "chart-subs", "chart-scatter", "chart-kw"]) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = "";
+  }
+}
+
 function setText(id: string, text: string) {
   const el = document.getElementById(id);
-  if (el) el.textContent = text;
+  if (el) el.textContent = text; // 文字洞察句一律 textContent（review #8）
 }
 function setSvg(id: string, svg: string) {
   const el = document.getElementById(id);
-  if (el) el.innerHTML = svg; // 受信任本地產生（charts.ts 已 XML escaping）——唯一 innerHTML sink，禁止其他用途
+  if (el) el.innerHTML = svg; // 唯一 innerHTML sink：charts.ts 回傳的完整 SVG（已 XML escaping）（review #8）
 }
 
-// init: 讀 ?year= 還原（無效 fallback latestYear）
+// init: 讀 ?year= 還原（無效 fallback latestYear；無資料時不 fetch）
 const q = new URLSearchParams(location.search).get("year");
 const initYear = yearsList.includes(Number(q)) ? Number(q) : initialData.year;
-if (initYear !== initialData.year) {
+if (initYear !== initialData.year && initYear !== 0) {
   insights(initYear); // 會 fetch 並 render + replaceState
 } else {
   render(initialData);
-  history.replaceState(null, "", `?year=${initialData.year}`);
+  if (initialData.year !== 0) history.replaceState(null, "", `?year=${initialData.year}`);
 }
 document.getElementById("insight-year-select")?.addEventListener("change", (e) => {
   const y = Number((e.target as HTMLSelectElement).value);
-  if (Number.isInteger(y)) insights(y);
+  if (Number.isInteger(y) && y !== 0) insights(y);
 });
 ```
 
@@ -1097,16 +1220,21 @@ hub op=start name=insights-dev application=bun args=["run","dev"] cwd=web ready.
 
 - [ ] **Step 4: 驗證 hover tooltip**
 
-- 桌面 hover 任一 bar / point：瀏覽器原生 `<title>` tooltip 出現（含 label + value）。
+不依賴瀏覽器原生 tooltip「是否出現」（原生 `<title>` 顯示由瀏覽器控制，headless 難可靠驗證）；改驗證（review「驗證計畫評語」）:
+- 每個 bar / point 有 `<title>`（`tab.evaluate` 數 `svg title` 數量 > 0）。
+- `<title>` 內容包含 label + value（如 `"00 時: 5"`）。
+- pointer hover 任一 bar / point 不造成 console error（`tab.evaluate` 觸發 `mouseover` 後檢查無例外）。
 
-- [ ] **Step 5: 驗證 history 快照**
+- [ ] **Step 5: 驗證 history 快照（寫入契約由 Task 4 unit test 驗證）**
 
-- 確認 `data/history/2026/2026-08-06.json` 存在（本機若已跑過 scrape 或手動 `bun run scripts/scrape.ts`；若無資料則略過並註記）。
-- `diff <(cat data/2026.json) <(cat data/history/2026/2026-08-06.json)` 應為空（同日最後一次結構相同）。
+- 本機若已跑過 scrape 或手動 `bun run scripts/scrape.ts`：確認 `data/history/2026/2026-08-06.json` 存在，`diff <(cat data/2026.json) <(cat data/history/2026/2026-08-06.json)` 為空（同日最後一次結構相同）。
+- **若未執行 live scrape**：明確記錄「未做 live scrape，寫入契約由 Task 4 unit test 驗證」——不把 acceptance 視為通過（review「驗證計畫評語」）。
 
-- [ ] **Step 6: 驗證無資料年度空狀態**
+- [ ] **Step 6: 驗證無資料年度空狀態（經真實 copy/build 流程）**
 
-- 手動刪 `web/public/data/2026.json`（或改 copy-data 後 rebuild）→ `/insights/` 顯示「尚無資料」不 crash（spec §6、Acceptance #5 情形一）。驗證後還原。
+空資料狀態的單元層級由 Task 6 的 `renderEmpty` + `emptyData` fallback 保證（review #4）；此步驗證**真實 build 流程**（review「驗證計畫評語」——不依賴手動 public 目錄狀態）：
+- 暫時把 `data/*.json` 年度檔移開（`mv data/2026.json data/2026.json.bak`），`cd web && bun run build` → 確認 build 成功、`/insights/` 顯示「尚無資料」四面板、不 crash。
+- 還原 `mv data/2026.json.bak data/2026.json`，重新 `bun run build` 確認恢復正常。
 
 - [ ] **Step 7: 關 dev server + 回歸**
 
@@ -1144,7 +1272,14 @@ hub op=start name=insights-dev application=bun args=["run","dev"] cwd=web ready.
 - `window.INSIGHTS_DATA` / `INSIGHTS_YEARS`（Task 5 define:vars）→ Task 6 讀取 ✓
 - `historyDate`/`writeHistorySnapshots`（Task 4）命名一致 ✓
 
-**已解決矛盾：** scatterSVG 的 opts 型別在 Step 4 修正（加 `xLabel`）——plan 內已寫明。
+**已解決矛盾 / review 修正：**
+- scatterSVG opts 型別一致為 `BarOpts & { xLabel?: string; xMax?: number; yMax?: number }`（Interfaces + 實作同步，無 stale snippet，review #5）。
+- `titleKeywordStats` 英文關鍵詞 token 邊界、中文子字串（review #1）。
+- weekday 統計以臺北牆鐘為準，非 runtime timezone（review #2）。
+- `writeHistorySnapshots` 回傳 failures、單年度失敗繼續（review #3）。
+- page frontmatter 空資料 fallback（`emptyData`，review #4）。
+- scatterSVG 每 point 單一 `<title>`（review #6）；XML escaping attribute/title context 測試補全（review #7）。
+- innerHTML 例外縮到 charts.ts SVG、`(window as any)` 限兩處（review #8）；「星期分佈」統一文案（review #9）。
 
 ---
 
