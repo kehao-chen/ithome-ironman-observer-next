@@ -67,6 +67,7 @@ GH Actions (.github/workflows/scheduled-update.yml)
 - **空資料年度**：某年度抓取失敗但舊檔仍在 → 保留舊 `{year}.json`，但該年度**不寫入 `meta.years`**（buildMeta 只收成功年度）→ UI 選項縮小、切換不到該年度。
 - **refresh/切換 race**：60s 自動 refresh 與使用者切換年度可能交錯；`loadYear` 以 fetchToken 遞增 + stale-drop（`token !== fetchToken` 即丟棄）防護，只讓最新一次請求 render。
 - **全部年度失敗**：CLI 零寫入（前一輪 `data/` 原封不動）且 **exit 1** → workflow 的「Commit data if changed」步驟直接失敗、不 commit 不 deploy，舊站繼續服務舊資料。若要補救需手動重跑 `workflow_dispatch`。
+- **寫入流程（可回復 commit protocol）**：全年度抓取結果先留 memory → 全部寫 `.tmp` 暫存（同目錄、meta 最後）→ 成功才依序 rename 覆蓋（POSIX 單檔 rename atomic）→ **中途失敗會從 `.bak` 還原已覆蓋檔案並清理暫存**。保證：staging 失敗 → 零 rename、舊資料完整；commit 中途失敗 → rollback 還原，不會留下跨年度混合狀態（best-effort per-file rollback，原錯誤仍 rethrow、CLI exit 1）→ workflow 不 commit。
 - **copy-data 語意**：只複製 `^\d{4}\.json$`、清掉舊年度檔；**meta.json 故意不複製**（client 不消費它）。
 
 ## 驗證標準（改版後必跑）
