@@ -52,7 +52,7 @@
 
 1. NFC 正規化（`String.prototype.normalize("NFC")`）——組合字元統一，避免全形／半形與組字差異。
 2. `toLowerCase()`——英文大小寫歸一。
-3. **全形 → 半形**：全形字母、數字、空格、標點收斂成半形（`ＶＵＥ`→`vue`、`　`→` `）。僅收斂 ASCII 對應區段（U+FF01–U+FF5E → 對應 ASCII）；全形標點（如「，」）不在 ASCII 區段，維持原樣。
+3. **全形 → 半形**：全形字母、數字、空格、標點收斂成半形（`ＶＵＥ`→`vue`、`　`→` `、`，`→`,`）。收斂範圍是 ASCII 對應區段（U+FF01–U+FF5E → 對應 ASCII）；**所有落在 U+FF01–U+FF5E 的字元（含全形標點如「，」U+FF0C）都收斂**。
 4. **移除所有空白**（`\s`，含一般空格、全形空格、tab）——token 內部無空格，token 邊界靠 query 的空白切分決定。
 
 > 註：欄位資料（標題/作者/組別/團隊）與 query 都走同一 `normalize`，比對雙方對稱。
@@ -222,7 +222,7 @@ if (group === "fav" && currentYearFavCount(data) === 0) {
 - **每 keystroke 全量掃描**：127 × 4 欄位 × normalize，每次 keyup 微秒級——無效能問題（索引化反而先付建構成本）。資料量破千再評估。
 - **Escape 與焦點**：`type="search"` 的 Escape 原生行為（清空）與 keydown handler 重疊——handler 統一處理（清空 + 保留焦點），原生行為不重複觸發。RSS modal 開啟時的優先序見 §2.2（modal 優先，搜尋不清空）。
 - **token 切分 vs normalize 順序**：先 split 後逐 token normalize（§1.1）——先 normalize 整個 query 會吃掉 token 邊界、退化成單一子字串，AND 語意失效。測試已覆蓋全形空格分隔（§5.1）。
-- **全形 vs 半形資料**：iThome 標題可能混用全形標點；normalize 只收斂 ASCII 對應區段，全形中文標點（「，」）維持原樣——搜尋中文關鍵字不受影響。
+- **全形 vs 半形資料**：iThome 標題可能混用全形標點；normalize 收斂 U+FF01–U+FF5E 全形區段（含全形標點如「，」→`,`），比對雙方對稱——搜尋中文關鍵字不受影響。
 - **空狀態優先序**：收藏分頁 0 收藏 vs 有 query 無命中——優先顯示「尚未收藏任何系列」（既有 UX，不因搜尋改變）。
 - **不引入 library 的正當性**：見下。
 
