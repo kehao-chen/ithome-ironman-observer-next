@@ -5,7 +5,7 @@ import { fetchHtml } from "./fetch-html";
 import { parseSignupList, signupListUrl } from "./parse-signup";
 import { parseRss, rssUrl } from "./parse-rss";
 import { parseSeriesPage, seriesUrl } from "./parse-series";
-import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel } from "./types";
+import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel, MetaJson } from "./types";
 
 export function mergeCardsAndStats(
   cards: SignupCard[],
@@ -88,22 +88,49 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
 // CLI entry
 if (import.meta.main) {
   const manifestPath = join(import.meta.dir, "..", "config", "series-manifest.json");
-  const manifest: Manifest = JSON.parse(await readFile(manifestPath, "utf-8"));
-  const data = await runScrape(manifest);
+  const manifests: Manifest[] = JSON.parse(await readFile(manifestPath, "utf-8"));
+  if (!Array.isArray(manifests) || manifests.length === 0) {
+    console.error(`manifest must be a non-empty array: ${manifestPath}`);
+    process.exit(1);
+  }
 
   const dataDir = join(import.meta.dir, "..", "data");
   await mkdir(dataDir, { recursive: true });
 
-  // empty-guard: if nothing parsed, keep previous data
-  if (data.series.length === 0) {
-    console.error("scrape produced 0 series — aborting write, keeping previous data");
+  // Per-year isolation: runScrape rejection or empty result = year failure.
+  // Keep writing until all years are attempted; decide writes atomically after.
+  const succeeded: YearData[] = [];
+  for (const m of manifests) {
+    try {
+      const data = await runScrape(m);
+      if (data.series.length === 0) {
+        console.error(`[${m.year}] scrape produced 0 series — keeping previous data, skipping write`);
+        continue;
+      }
+      succeeded.push(data);
+      console.log(`[${m.year}] scraped ${data.series.length} series`);
+    } catch (e) {
+      console.error(`[${m.year}] scrape failed: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+
+  if (succeeded.length === 0) {
+    // Atomic: nothing written, keep previous data/meta untouched.
+    console.error("all years failed — aborting writes, keeping previous data");
     process.exit(1);
   }
 
-  await writeFile(join(dataDir, `${manifest.year}.json`), JSON.stringify(data, null, 2));
-  await writeFile(
-    join(dataDir, "meta.json"),
-    JSON.stringify({ updatedAt: data.updatedAt, seriesCount: data.series.length }, null, 2),
-  );
-  console.log(`wrote data/${manifest.year}.json with ${data.series.length} series`);
+  succeeded.sort((a, b) => b.year - a.year); // desc
+  const latest = succeeded[0];
+  for (const data of succeeded) {
+    await writeFile(join(dataDir, `${data.year}.json`), JSON.stringify(data, null, 2));
+  }
+  const meta: MetaJson = {
+    latestYear: latest.year,
+    years: succeeded.map((d) => d.year),
+    updatedAt: latest.updatedAt,
+    seriesCount: latest.series.length,
+  };
+  await writeFile(join(dataDir, "meta.json"), JSON.stringify(meta, null, 2));
+  console.log(`wrote ${succeeded.length} year file(s); latest ${latest.year} with ${latest.series.length} series`);
 }
