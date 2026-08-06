@@ -59,7 +59,8 @@
 
 ### 1.3 空 query
 
-- `normalize(query)` 為空字串 → 搜尋關閉，回傳 `true`（全部候選）。
+- `tokens.length === 0`（空 query 或全空白，`filter(Boolean)` 後無 token）→ 搜尋關閉，回傳 `true`（全部候選）。
+- **注意**：判斷基準是 token 數（§1.1 流程），**不是** `normalize(query) === ""`——後者需對整個 query 呼叫 normalize，會破壞 token 邊界（§1.1 已禁止）。
 
 ### 1.4 API
 
@@ -152,7 +153,7 @@ if (group === "fav" && currentYearFavCount(data) === 0) {
 
 - `currentYearFavCount(data) === 0` 等價於 `favSeries(data).length === 0`（搜尋前收藏數）——**不可**用搜尋後的 `series.length` 判斷收藏是否為空。
 - `hasSearchTokens(query)`：`query.split(/\s+/).map(normalize).filter(Boolean).length > 0`（空 query／全空白 → 無 token → 不顯示搜尋空狀態，渲染卡片）。
-- 兩個空狀態（`fav-empty`／`search-empty`）皆由 `applyFilter` 在 `#series-list` 內產生且互斥；各自重建（`replaceChildren()` 已移除 SSR 節點，必須重建）。
+- **兩個空狀態（`fav-empty`／`search-empty`）皆由 `applyFilter` 在 `#series-list` 內動態產生且互斥**；各自重建（`replaceChildren()` 已移除 SSR 節點，必須重建）。**`hidden` 屬性規則**：§2.3 的 SSR 範例（含 `hidden`）僅適用於預先輸出的靜態節點；**動態建立且顯示中的空狀態不得帶 `hidden`**（或建立時明確 `empty.hidden = false`）——否則節點存在但不可見。
 - `render(data)`：年度切換 / 60s refresh 時，query 保留（`applyFilter` 內讀取模組級 `query`）。
 - `shownCount`／`totalCount`：沿用現語意（X = 過濾後、Y = 年度總數或收藏數），搜尋不新增分母變體。
 
