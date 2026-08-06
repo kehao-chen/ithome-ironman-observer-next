@@ -3,7 +3,6 @@
 import Insights from "../components/Insights.astro";
 import type { MetaJson, YearData } from "../../../scripts/types";
 
-// Controller ruling: follow index.astro convention — exclude meta.json from the data glob.
 const dataByYear = new Map<number, YearData>();
 for (const [path, mod] of Object.entries(import.meta.glob(["../../../data/*.json", "!../../../data/meta.json"], { eager: true, import: "default" }))) {
   const m = path.match(/(\d{4})\.json$/);
@@ -11,12 +10,10 @@ for (const [path, mod] of Object.entries(import.meta.glob(["../../../data/*.json
 }
 const meta = (await import("../../../data/meta.json").then((m) => m.default)) as MetaJson;
 const years = meta.years.filter((y) => dataByYear.has(y)).sort((a, b) => b - a);
-// latestYear 正規化為 number（0 = 無可用年度）；避免 number | undefined 型別不一致（review #4b）
 const latestYear =
   years[0] ??
   [...dataByYear.keys()].sort((a, b) => b - a)[0] ??
   0;
-// 空資料 fallback：完全沒有可用 YearData 時不 crash，顯示空狀態面板（spec §6、review #4）
 const emptyData: YearData = { year: 0, updatedAt: "", groups: [], series: [], scrapeLog: [] };
 const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYear.get(latestYear)! : emptyData;
 ---
@@ -42,35 +39,44 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       if (stored === "light" || stored === "dark") {
         root.setAttribute("data-theme", stored);
       } else {
-        root.removeAttribute("data-theme"); // let prefers-color-scheme decide
+        root.removeAttribute("data-theme");
       }
     })();
   </script>
 </head>
 <body>
-  <!--
-    鐵人觀察家 Insights — Direction Contract (impeccable roll C4)
-    THESIS: 與 Dashboard 同一台量測儀器，換上分析 readout 模式；四面板（發文行為／人氣結構／
-      組別分析／文字分析）延續 phosphor green + glass graticule 語彙，SVG 皆由 lib/charts.ts
-      （唯一 SVG 來源，外部資料 XML escaping）產生；文字洞察句一律 textContent。
-    MODE: Operate — 掃讀效率與資料密度最高指導。
-    CONTRACT: 保留此 comment 於 build 後 markup（禁 innerHTML 放使用者資料；textContent only，
-      唯一 innerHTML sink 為 setSvg 的完整 SVG 字串）。
-  -->
   <Insights data={data} years={years} latestYear={latestYear} />
   <div id="insight-toast" class="insight-toast" role="status" aria-live="polite">年度資料載入失敗</div>
+
   <script>
-    import { publishHourHistogram, publishWeekdayHistogram, viewsDistribution, topSeriesBySubscriptions, groupStats, titleKeywordStats, titleLengthDistribution } from "../lib/insights";
-    import { barChartSVG, horizontalBarSVG, distributionBarSVG, scatterSVG } from "../lib/charts";
+    import * as echarts from "echarts/core";
+    import { BarChart, LineChart, ScatterChart } from "echarts/charts";
+    import { GridComponent, TooltipComponent } from "echarts/components";
+    import { CanvasRenderer } from "echarts/renderers";
+    import {
+      publishHourHistogram,
+      viewsDistribution,
+      viewsPercentiles,
+      topSeriesBySubscriptions,
+      groupStats,
+      titleKeywordStats,
+      titleLengthDistribution,
+      dayCountDistribution,
+    } from "../lib/insights";
     import { DEFAULT_KEYWORDS } from "../lib/keywords";
     import type { YearData } from "../../../scripts/types";
 
-    // Astro define:vars 注入的非標準 window property——僅此兩處允許 (window as any)（review #8）
+    echarts.use([BarChart, LineChart, ScatterChart, GridComponent, TooltipComponent, CanvasRenderer]);
+
+    // ── State ──────────────────────────────────────────────────────────────
     const initialData = (window as any).INSIGHTS_DATA as YearData;
     const yearsList = (window as any).INSIGHTS_YEARS as number[];
     let fetchToken = 0;
+    let currentYear = initialData.year;
+    let currentData: YearData = initialData;
+    const chartInstances = new Map<string, echarts.ECharts>();
 
-    // 最小 runtime 驗證（review #12）：避免錯誤 payload（HTML fallback / 缺欄位）進入 render。
+    // ── Validation ─────────────────────────────────────────────────────────
     function isYearData(value: unknown): value is YearData {
       return Boolean(
         value &&
@@ -80,7 +86,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       );
     }
 
-    // fetch 失敗 / 無效 payload → 保持目前 render、select 回原位、toast 提示（review #13）。
+    // ── Toast ──────────────────────────────────────────────────────────────
     let toastTimer: ReturnType<typeof setTimeout> | undefined;
     function showToast() {
       const el = document.getElementById("insight-toast");
@@ -90,16 +96,341 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
     }
 
-    let currentYear = initialData.year; // 目前 render 的年度（failure 時 select 恢復至此，review round）
+    // ── Color tokens (re-read on each render for theme support) ────────────
+    function getColors() {
+      const s = getComputedStyle(document.documentElement);
+      const v = (n: string) => s.getPropertyValue(n).trim();
+      return {
+        accent:      v("--accent"),
+        success:     v("--success"),
+        warning:     v("--warning"),
+        muted:       v("--muted"),
+        text:        v("--text"),
+        border:      v("--border"),
+        surfaceMuted: v("--surface-muted"),
+      };
+    }
 
-    function insights(year: number) {
+    function axisBase(c: ReturnType<typeof getColors>) {
+      return {
+        axisLine:  { lineStyle: { color: c.border } },
+        axisTick:  { show: false },
+        axisLabel: { color: c.muted, fontSize: 11, fontFamily: "inherit" },
+        splitLine: { lineStyle: { color: c.border, type: "dashed" as const } },
+      };
+    }
+
+    function tooltip(c: ReturnType<typeof getColors>, extra?: object) {
+      return {
+        trigger: "axis" as const,
+        backgroundColor: c.surfaceMuted,
+        borderColor: c.border,
+        textStyle: { color: c.text, fontSize: 12 },
+        ...extra,
+      };
+    }
+
+    // ── Chart init / get ───────────────────────────────────────────────────
+    function getChart(id: string): echarts.ECharts | null {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      let inst = chartInstances.get(id);
+      if (!inst) {
+        inst = echarts.init(el, null, { renderer: "canvas" });
+        chartInstances.set(id, inst);
+      }
+      return inst;
+    }
+
+    function disposeAll() {
+      chartInstances.forEach((inst) => inst.dispose());
+      chartInstances.clear();
+    }
+
+    function setLoadingState(loading: boolean) {
+      document.querySelectorAll<HTMLElement>(".chart-canvas").forEach((el) => {
+        el.classList.toggle("is-loading", loading);
+      });
+    }
+
+    // ── Render all charts ──────────────────────────────────────────────────
+    function renderCharts(d: YearData) {
+      const arts = d.series.flatMap((s) => s.articles);
+      const hasSeries = d.series.length > 0;
+      const hasArts = arts.length > 0;
+      const c = getColors();
+      const ax = axisBase(c);
+
+      const grid = (extra?: object) => ({
+        top: 12, right: 12, bottom: 24, left: 12, containLabel: true, ...extra,
+      });
+
+      // 1. 發文時間（bar）
+      {
+        const hour = publishHourHistogram(arts);
+        const inst = getChart("chart-hour");
+        inst?.setOption({
+          backgroundColor: "transparent",
+          grid: grid(),
+          tooltip: tooltip(c),
+          xAxis: {
+            type: "category",
+            data: hour.map((h) => String(h.hour).padStart(2, "0")),
+            ...ax,
+            axisLabel: { ...ax.axisLabel, interval: 3 },
+          },
+          yAxis: { type: "value", ...ax },
+          series: [{
+            type: "bar",
+            data: hasArts ? hour.map((h) => h.count) : [],
+            itemStyle: { color: c.accent, borderRadius: [2, 2, 0, 0] },
+          }],
+        }, true);
+      }
+
+      // 2. 賽程進度（bar，dayCount 分六桶）
+      {
+        const dayDist = dayCountDistribution(d.series);
+        // 漸層色：早期棄賽橘→後期完賽綠
+        const barColors = [c.warning, c.warning, c.muted, c.muted, c.success, c.success];
+        const inst = getChart("chart-daycount");
+        inst?.setOption({
+          backgroundColor: "transparent",
+          grid: grid(),
+          tooltip: {
+            ...tooltip(c),
+            formatter: (params: any) =>
+              `第 ${params[0].axisValue} 天：${params[0].value} 系列`,
+          },
+          xAxis: { type: "category", data: dayDist.map((b) => b.label), ...ax },
+          yAxis: { type: "value", ...ax },
+          series: [{
+            type: "bar",
+            data: hasSeries ? dayDist.map((b, i) => ({
+              value: b.count,
+              itemStyle: { color: barColors[i] ?? c.accent, borderRadius: [2, 2, 0, 0] },
+            })) : [],
+          }],
+        }, true);
+      }
+
+      // 3. 文章觀看 CDF（line area）
+      {
+        const percs = viewsPercentiles(arts);
+        const inst = getChart("chart-dist");
+        inst?.setOption({
+          backgroundColor: "transparent",
+          grid: grid(),
+          tooltip: {
+            ...tooltip(c),
+            trigger: "axis" as const,
+            formatter: (params: any) =>
+              `第 ${params[0].data[0]}% 百分位<br/>觀看數 ≤ <b>${Number(params[0].data[1]).toLocaleString()}</b>`,
+          },
+          xAxis: {
+            type: "value", min: 0, max: 100, ...ax,
+            axisLabel: { ...ax.axisLabel, formatter: (v: number) => `${v}%` },
+          },
+          yAxis: { type: "value", ...ax },
+          series: [{
+            type: "line",
+            data: hasArts ? percs.map((p) => [p.pct, p.views]) : [],
+            smooth: 0.35,
+            symbol: "none",
+            lineStyle: { color: c.accent, width: 2 },
+            areaStyle: {
+              color: {
+                type: "linear", x: 0, y: 0, x2: 0, y2: 1,
+                colorStops: [
+                  { offset: 0, color: c.accent + "44" },
+                  { offset: 1, color: c.accent + "00" },
+                ],
+              },
+            },
+          }],
+        }, true);
+      }
+
+      // 4. 訂閱數排行（horizontal bar）
+      {
+        const subs = topSeriesBySubscriptions(d.series);
+        const inst = getChart("chart-subs");
+        inst?.setOption({
+          backgroundColor: "transparent",
+          grid: { top: 12, right: 16, bottom: 12, left: 12, containLabel: true },
+          tooltip: { ...tooltip(c), trigger: "item" as const },
+          xAxis: { type: "value", ...ax },
+          yAxis: {
+            type: "category",
+            data: hasSeries ? subs.map((s) => s.name) : [],
+            inverse: true,
+            ...ax,
+            axisLabel: { ...ax.axisLabel, width: 130, overflow: "truncate" },
+          },
+          series: [{
+            type: "bar",
+            data: hasSeries ? subs.map((s) => s.subscriptions) : [],
+            itemStyle: { color: c.success, borderRadius: [0, 2, 2, 0] },
+          }],
+        }, true);
+      }
+
+      // 5. 組別 scatter（發文量 × 平均觀看）
+      {
+        const grps = groupStats(d.series);
+        const inst = getChart("chart-scatter");
+        inst?.setOption({
+          backgroundColor: "transparent",
+          grid: { top: 16, right: 16, bottom: 28, left: 12, containLabel: true },
+          tooltip: {
+            trigger: "item" as const,
+            backgroundColor: c.surfaceMuted,
+            borderColor: c.border,
+            textStyle: { color: c.text, fontSize: 12 },
+            formatter: (_p: any, _t: any, idx: number) => {
+              const g = grps[idx];
+              return g
+                ? `${g.group}<br/>${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均 ${g.avgViews} 觀看`
+                : "";
+            },
+          },
+          xAxis: { type: "value", name: "文章數", nameTextStyle: { color: c.muted, fontSize: 11 }, ...ax },
+          yAxis: { type: "value", name: "平均觀看", nameTextStyle: { color: c.muted, fontSize: 11 }, ...ax },
+          series: [{
+            type: "scatter",
+            data: hasSeries ? grps.map((g) => [g.articleCount, g.avgViews, g.seriesCount]) : [],
+            symbolSize: (d: number[]) => Math.max(8, Math.min(42, (d[2] ?? 1) * 1.8)),
+            itemStyle: { color: c.accent, opacity: 0.75 },
+          }],
+        }, true);
+      }
+
+      // 6. 標題關鍵字（bar）
+      {
+        const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
+        const inst = getChart("chart-kw");
+        inst?.setOption({
+          backgroundColor: "transparent",
+          grid: grid(),
+          tooltip: tooltip(c),
+          xAxis: {
+            type: "category",
+            data: kws.map((k) => k.keyword),
+            ...ax,
+            axisLabel: { ...ax.axisLabel, rotate: kws.length > 8 ? 30 : 0 },
+          },
+          yAxis: { type: "value", ...ax },
+          series: [{
+            type: "bar",
+            data: kws.map((k) => k.count),
+            itemStyle: { color: c.warning, borderRadius: [2, 2, 0, 0] },
+          }],
+        }, true);
+      }
+
+      // 7. 標題字數（bar）
+      {
+        const lenDist = titleLengthDistribution(d.series);
+        const inst = getChart("chart-len");
+        inst?.setOption({
+          backgroundColor: "transparent",
+          grid: grid(),
+          tooltip: tooltip(c),
+          xAxis: { type: "category", data: lenDist.map((b) => b.length), ...ax },
+          yAxis: { type: "value", ...ax },
+          series: [{
+            type: "bar",
+            data: hasSeries ? lenDist.map((b) => b.count) : [],
+            itemStyle: { color: c.muted, borderRadius: [2, 2, 0, 0] },
+          }],
+        }, true);
+      }
+
+      setLoadingState(false);
+    }
+
+    // ── Text helpers ───────────────────────────────────────────────────────
+    function setText(id: string, text: string) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+
+    function renderText(d: YearData) {
+      const arts = d.series.flatMap((s) => s.articles);
+      const hasSeries = d.series.length > 0;
+
+      if (d.year === 0) {
+        for (const id of ["insight-hour-line", "insight-dist-line", "insight-group-line", "insight-kw-line"])
+          setText(id, "尚無資料");
+        return;
+      }
+
+      // 1. 發文行為
+      if (arts.length === 0) {
+        setText("insight-hour-line", "尚無發文資料");
+      } else {
+        const hour = publishHourHistogram(arts);
+        const peak = hour.reduce((a, b) => (b.count > a.count ? b : a), hour[0]);
+        setText("insight-hour-line", `${String(peak.hour).padStart(2, "0")} 時為發文高峰（${peak.count} 篇）`);
+      }
+
+      // 2. 人氣結構
+      if (arts.length === 0) {
+        setText("insight-dist-line", "尚無觀看資料");
+      } else {
+        const dist = viewsDistribution(arts);
+        setText(
+          "insight-dist-line",
+          !dist.hasViews
+            ? "尚無可計算的觀看資料"
+            : `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`,
+        );
+      }
+
+      // 3. 組別
+      if (!hasSeries) {
+        setText("insight-group-line", "尚無組別資料");
+      } else {
+        const grps = groupStats(d.series);
+        setText("insight-group-line", `${grps[0].group} 最活躍（${grps[0].seriesCount} 系列）`);
+      }
+
+      // 4. 文字
+      if (!hasSeries) {
+        setText("insight-kw-line", "尚無標題關鍵字");
+      } else {
+        const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
+        setText(
+          "insight-kw-line",
+          kws.length === 0
+            ? "尚無標題關鍵字"
+            : `${kws[0].count} 個系列標題包含「${kws[0].keyword}」`,
+        );
+      }
+    }
+
+    // ── Full render ────────────────────────────────────────────────────────
+    function render(d: YearData) {
+      currentYear = d.year;
+      currentData = d;
+      renderText(d);
+      renderCharts(d);
+      const sel = document.getElementById("insight-year-select") as HTMLSelectElement | null;
+      if (sel) sel.value = String(d.year);
+      const brandYear = document.getElementById("brand-year");
+      if (brandYear) brandYear.textContent = d.year ? String(d.year) : "";
+    }
+
+    // ── Fetch year ─────────────────────────────────────────────────────────
+    function fetchYear(year: number) {
       const token = ++fetchToken;
       const sel = document.getElementById("insight-year-select") as HTMLSelectElement | null;
+      setLoadingState(true);
       fetch(`/data/${year}.json?t=${Date.now()}`, { cache: "no-store" })
-        .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`)))) // 404/5xx 進 catch
+        .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
         .then((fresh) => {
           if (token !== fetchToken) return null;
-          if (!isYearData(fresh)) throw new Error("invalid year data"); // 無效 payload 進 catch（review round）
+          if (!isYearData(fresh)) throw new Error("invalid year data");
           return fresh;
         })
         .then((fresh) => {
@@ -109,106 +440,40 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         })
         .catch(() => {
           if (token !== fetchToken) return;
-          // 失敗：select 恢復到「目前顯示的年度」（非最新年度），URL 不變 + toast（review round）
           if (sel) sel.value = String(currentYear);
+          setLoadingState(false);
           showToast();
         });
     }
 
-    function allArticles(d: YearData) { return d.series.flatMap((s) => s.articles); }
+    // ── Theme re-render ────────────────────────────────────────────────────
+    new MutationObserver(() => {
+      disposeAll();
+      setLoadingState(true);
+      // rAF: let the new CSS vars settle before reading them
+      requestAnimationFrame(() => renderCharts(currentData));
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
-    function render(d: YearData) {
-      currentYear = d.year; // 追蹤目前顯示年度（review round）
-      // 整頁無資料（year === 0）：全部面板空狀態（review #4）
-      if (d.year === 0) {
-        renderEmpty();
-        return;
-      }
-      const arts = allArticles(d);
-      const hasSeries = d.series.length > 0;
-      // 1. 發文行為（面板級：articleCount === 0 → 空狀態，review #3 補強 2）
-      if (arts.length === 0) {
-        setText("insight-hour-line", "尚無發文資料");
-        for (const id of ["chart-hour", "chart-weekday"]) setSvg(id, "");
-      } else {
-        const hour = publishHourHistogram(arts);
-        const weekday = publishWeekdayHistogram(arts);
-        const peakHour = hour.reduce((a, b) => (b.count > a.count ? b : a), hour[0]);
-        setText("insight-hour-line", `${String(peakHour.hour).padStart(2, "0")} 時為發文高峰（${peakHour.count} 篇）`);
-        setSvg("chart-hour", barChartSVG(hour.map((h) => ({ label: `${String(h.hour).padStart(2, "0")} 時`, value: h.count }))));
-        setSvg("chart-weekday", barChartSVG(weekday.map((w) => ({ label: `${w.weekday}`, value: w.count }))));
-      }
-      // 2. 人氣結構（面板級：articleCount === 0 → 空狀態）
-      if (arts.length === 0) {
-        setText("insight-dist-line", "尚無觀看資料");
-        for (const id of ["chart-dist", "chart-subs"]) setSvg(id, "");
-      } else {
-        const dist = viewsDistribution(arts);
-        setText("insight-dist-line", !dist.hasViews ? "尚無可計算的觀看資料" : `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`);
-        setSvg("chart-dist", distributionBarSVG(dist.buckets));
-        setSvg("chart-subs", horizontalBarSVG(topSeriesBySubscriptions(d.series).map((s) => ({ label: s.name, value: s.subscriptions }))));
-      }
-      // 3. 組別分析（面板級：series.length === 0 → 空狀態）
-      if (!hasSeries) {
-        setText("insight-group-line", "尚無組別資料");
-        setSvg("chart-scatter", "");
-      } else {
-        const groups = groupStats(d.series);
-        setSvg("chart-scatter", scatterSVG(groups.map((g) => ({ x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均每篇 ${g.avgViews} 觀看` }))));
-        const topGroup = groups[0];
-        setText("insight-group-line", `${topGroup.group} 最活躍（${topGroup.seriesCount} 系列）`);
-      }
-      // 4. 文字分析（面板級：series.length === 0 → 空狀態；含字數分佈，review #3 blocking）
-      if (!hasSeries) {
-        setText("insight-kw-line", "尚無標題關鍵字");
-        for (const id of ["chart-kw", "chart-len"]) setSvg(id, "");
-      } else {
-        const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
-        // 關鍵字無命中：清空 keyword chart（保留字數分佈），文案「尚無標題關鍵字」
-        setSvg("chart-kw", kws.length === 0 ? "" : barChartSVG(kws.map((k) => ({ label: k.keyword, value: k.count }))));
-        setSvg("chart-len", barChartSVG(titleLengthDistribution(d.series).map((b) => ({ label: b.length, value: b.count }))));
-        const topKw = kws[0];
-        setText("insight-kw-line", kws.length === 0 ? "尚無標題關鍵字" : `${topKw.count} 個系列標題包含「${topKw.keyword}」`);
-      }
-      // 年切換器同步
-      const sel = document.getElementById("insight-year-select") as HTMLSelectElement | null;
-      if (sel) sel.value = String(d.year);
-    }
+    // ── Resize ────────────────────────────────────────────────────────────
+    window.addEventListener("resize", () => {
+      chartInstances.forEach((inst) => inst.resize());
+    });
 
-    function renderEmpty() {
-      // 整頁無資料（year === 0）：所有面板「尚無資料」，年切換器清空（review #4）
-      for (const id of ["insight-hour-line", "insight-dist-line", "insight-group-line", "insight-kw-line"]) {
-        const el = document.getElementById(id);
-        if (el) el.textContent = "尚無資料";
-      }
-      for (const id of ["chart-hour", "chart-weekday", "chart-dist", "chart-subs", "chart-scatter", "chart-kw", "chart-len"]) {
-        const el = document.getElementById(id);
-        if (el) el.textContent = "";
-      }
-    }
+    // ── Year select ───────────────────────────────────────────────────────
+    document.getElementById("insight-year-select")?.addEventListener("change", (e) => {
+      const y = Number((e.target as HTMLSelectElement).value);
+      if (Number.isInteger(y) && y !== 0) fetchYear(y);
+    });
 
-    function setText(id: string, text: string) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = text; // 文字洞察句一律 textContent（review #8）
-    }
-    function setSvg(id: string, svg: string) {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = svg; // 唯一 innerHTML sink：charts.ts 回傳的完整 SVG（已 XML escaping）（review #8）
-    }
-
-    // init: 讀 ?year= 還原（無效 fallback latestYear；無資料時不 fetch）
+    // ── Init ──────────────────────────────────────────────────────────────
     const q = new URLSearchParams(location.search).get("year");
     const initYear = yearsList.includes(Number(q)) ? Number(q) : initialData.year;
     if (initYear !== initialData.year && initYear !== 0) {
-      insights(initYear); // 會 fetch 並 render + replaceState
+      fetchYear(initYear);
     } else {
       render(initialData);
       if (initialData.year !== 0) history.replaceState(null, "", `?year=${initialData.year}`);
     }
-    document.getElementById("insight-year-select")?.addEventListener("change", (e) => {
-      const y = Number((e.target as HTMLSelectElement).value);
-      if (Number.isInteger(y) && y !== 0) insights(y);
-    });
   </script>
 </body>
 </html>

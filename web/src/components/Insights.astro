@@ -1,56 +1,37 @@
 ---
-// web/src/components/Insights.astro — Insights 分頁元件（SSG 版面 + SVG 面板）。
-// 四個面板的 SVG 與洞察句在 SSG 時由 frontmatter 算好（lib/charts.ts 是唯一 SVG 來源，
-// 外部資料一律 XML escaping）；資料以 define:vars 注入供 Task 6 client 年切換重繪。
+// web/src/components/Insights.astro — Insights 分頁元件（ECharts 版）。
+// 僅在 SSG 時計算 insight 文字句（lib/insights.ts）；圖表由 client-side ECharts 渲染。
 import type { YearData } from "../../../scripts/types";
 import {
   publishHourHistogram,
-  publishWeekdayHistogram,
   viewsDistribution,
-  topSeriesBySubscriptions,
   groupStats,
   titleKeywordStats,
-  titleLengthDistribution,
 } from "../lib/insights";
-import { barChartSVG, horizontalBarSVG, distributionBarSVG, scatterSVG } from "../lib/charts";
 import { DEFAULT_KEYWORDS } from "../lib/keywords";
 
 interface Props {
   data: YearData;
   years: number[];
-  latestYear: number; // 0 = 無可用年度（review #4b）
+  latestYear: number;
 }
 const { data, years, latestYear } = Astro.props;
 
 const articles = data.series.flatMap((s) => s.articles);
 const articleCount = articles.length;
 const hasSeries = data.series.length > 0;
-
-// 整頁空狀態（review #4）：僅「無可用年度」（data.year === 0，emptyData fallback）時
-// 四個面板「尚無資料」、年切換器不列出年度。
-// 年度檔存在但 series 為空 → 面板級空狀態（發文/人氣 articleCount===0、組別/文字 series===0），
-// 該年度仍保留在年切換器（review #3 補強 2）。
 const pageEmpty = data.year === 0;
 
-// 1. 發文行為（面板級空狀態：articleCount === 0，review #3 補強 2）
+// 1. 發文行為
 const hour = publishHourHistogram(articles);
-const weekday = publishWeekdayHistogram(articles);
 const peakHour = hour.reduce((a, b) => (b.count > a.count ? b : a), hour[0]);
 const hourLine = pageEmpty
   ? "尚無資料"
   : articleCount === 0
     ? "尚無發文資料"
     : `${String(peakHour.hour).padStart(2, "0")} 時為發文高峰（${peakHour.count} 篇）`;
-const hourSVG =
-  pageEmpty || articleCount === 0
-    ? ""
-    : barChartSVG(hour.map((h) => ({ label: `${String(h.hour).padStart(2, "0")} 時`, value: h.count })));
-const weekdaySVG =
-  pageEmpty || articleCount === 0
-    ? ""
-    : barChartSVG(weekday.map((w) => ({ label: w.weekday, value: w.count })));
 
-// 2. 人氣結構（面板級空狀態：articleCount === 0）
+// 2. 人氣結構
 const dist = viewsDistribution(articles);
 const distLine = pageEmpty
   ? "尚無資料"
@@ -59,13 +40,8 @@ const distLine = pageEmpty
     : !dist.hasViews
       ? "尚無可計算的觀看資料"
       : `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`;
-const distSVG = pageEmpty || articleCount === 0 ? "" : distributionBarSVG(dist.buckets);
-const subsSVG =
-  pageEmpty || articleCount === 0
-    ? ""
-    : horizontalBarSVG(topSeriesBySubscriptions(data.series).map((s) => ({ label: s.name, value: s.subscriptions })));
 
-// 3. 組別分析（面板級空狀態：series.length === 0）
+// 3. 組別分析
 const groups = groupStats(data.series);
 const topGroup = groups[0];
 const groupLine = pageEmpty
@@ -73,19 +49,8 @@ const groupLine = pageEmpty
   : !hasSeries
     ? "尚無組別資料"
     : `${topGroup.group} 最活躍（${topGroup.seriesCount} 系列）`;
-const scatterSVGStr =
-  pageEmpty || !hasSeries
-    ? ""
-    : scatterSVG(
-        groups.map((g) => ({
-          x: g.articleCount,
-          y: g.avgViews,
-          label: g.group,
-          tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均每篇 ${g.avgViews} 觀看`,
-        })),
-      );
 
-// 4. 文字分析（面板級空狀態：series.length === 0；含關鍵字 + 字數分佈，review #3 blocking）
+// 4. 文字分析
 const kws = titleKeywordStats(data.series, DEFAULT_KEYWORDS);
 const topKw = kws[0];
 const kwLine = pageEmpty
@@ -95,23 +60,17 @@ const kwLine = pageEmpty
     : kws.length === 0
       ? "尚無標題關鍵字"
       : `${topKw.count} 個系列標題包含「${topKw.keyword}」`;
-const kwSVG = pageEmpty || !hasSeries ? "" : kws.length === 0 ? "" : barChartSVG(kws.map((k) => ({ label: k.keyword, value: k.count })));
-const lenSVG =
-  pageEmpty || !hasSeries
-    ? ""
-    : barChartSVG(titleLengthDistribution(data.series).map((b) => ({ label: b.length, value: b.count })));
 ---
 
 <header class="site-header container">
   <div class="header-row">
     <div class="brand">
-      <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-year" id="brand-year">{latestYear || ""}</span></h1>
-      <p class="brand-sub">Insights 分析</p>
+      <a class="insights-back" href="/">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        鐵人觀察家
+      </a>
+      <h1 class="brand-title">Insights <span class="brand-year" id="brand-year">{latestYear || ""}</span></h1>
     </div>
-    <nav class="page-nav" aria-label="主要導覽">
-      <a class="page-nav-link" href="/">首頁</a>
-      <a class="page-nav-link page-nav-link--active" href="/insights/" aria-current="page">分析</a>
-    </nav>
     <div class="header-actions">
       <select id="insight-year-select" class="sort-select" aria-label="切換年度">
         {years.length > 0 && years.map((y) => <option value={y} selected={y === data.year}>{y} 年</option>)}
@@ -120,36 +79,95 @@ const lenSVG =
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       </button>
     </div>
+  </div>
+</header>
+
+<main class="container insights-main">
+
   <section class="insight-panel">
-    <div class="insight-panel-head"><div><h2 class="insight-title">發文行為</h2><p class="insight-line" id="insight-hour-line">{hourLine}</p></div><span class="insight-panel-index">01</span></div>
+    <div class="insight-panel-head">
+      <div>
+        <h2 class="insight-title">發文行為</h2>
+        <p class="insight-line" id="insight-hour-line">{hourLine}</p>
+      </div>
+      <span class="insight-panel-index">01</span>
+    </div>
     <div class="insight-charts">
-      <div class="insight-chart"><h3>發文時間</h3><div id="chart-hour" set:html={hourSVG}></div></div>
-      <div class="insight-chart"><h3>星期分佈</h3><div id="chart-weekday" set:html={weekdaySVG}></div></div>
+      <div class="insight-chart">
+        <h3>發文時間</h3>
+        <div id="chart-hour" class="chart-canvas is-loading"></div>
+      </div>
+      <div class="insight-chart">
+        <h3>賽程進度</h3>
+        <div id="chart-daycount" class="chart-canvas is-loading"></div>
+      </div>
     </div>
   </section>
 
   <section class="insight-panel">
-    <div class="insight-panel-head"><div><h2 class="insight-title">人氣結構</h2><p class="insight-line" id="insight-dist-line">{distLine}</p></div><span class="insight-panel-index">02</span></div>
-    <div class="insight-charts"><div class="insight-chart"><h3>文章觀看分佈</h3><div id="chart-dist" set:html={distSVG}></div></div><div class="insight-chart"><h3>訂閱數排行</h3><div id="chart-subs" set:html={subsSVG}></div></div></div>
+    <div class="insight-panel-head">
+      <div>
+        <h2 class="insight-title">人氣結構</h2>
+        <p class="insight-line" id="insight-dist-line">{distLine}</p>
+      </div>
+      <span class="insight-panel-index">02</span>
+    </div>
+    <div class="insight-charts">
+      <div class="insight-chart">
+        <h3>文章觀看分佈</h3>
+        <div id="chart-dist" class="chart-canvas is-loading"></div>
+      </div>
+      <div class="insight-chart insight-chart--subs">
+        <h3>訂閱數排行</h3>
+        <div id="chart-subs" class="chart-canvas is-loading"></div>
+      </div>
+    </div>
   </section>
 
   <section class="insight-panel">
-    <div class="insight-panel-head"><div><h2 class="insight-title">組別分析</h2><p class="insight-line" id="insight-group-line">{groupLine}</p></div><span class="insight-panel-index">03</span></div>
-    <div class="insight-charts"><div class="insight-chart insight-chart--wide"><h3>發文量與平均觀看</h3><div id="chart-scatter" set:html={scatterSVGStr}></div></div></div>
+    <div class="insight-panel-head">
+      <div>
+        <h2 class="insight-title">組別分析</h2>
+        <p class="insight-line" id="insight-group-line">{groupLine}</p>
+      </div>
+      <span class="insight-panel-index">03</span>
+    </div>
+    <div class="insight-charts">
+      <div class="insight-chart insight-chart--wide">
+        <h3>發文量與平均觀看</h3>
+        <div id="chart-scatter" class="chart-canvas is-loading"></div>
+      </div>
+    </div>
   </section>
 
   <section class="insight-panel">
-    <div class="insight-panel-head"><div><h2 class="insight-title">文字分析</h2><p class="insight-line" id="insight-kw-line">{kwLine}</p></div><span class="insight-panel-index">04</span></div>
-    <div class="insight-charts"><div class="insight-chart"><h3>標題關鍵字</h3><div id="chart-kw" set:html={kwSVG}></div></div><div class="insight-chart"><h3>標題字數</h3><div id="chart-len" set:html={lenSVG}></div></div></div>
+    <div class="insight-panel-head">
+      <div>
+        <h2 class="insight-title">文字分析</h2>
+        <p class="insight-line" id="insight-kw-line">{kwLine}</p>
+      </div>
+      <span class="insight-panel-index">04</span>
+    </div>
+    <div class="insight-charts">
+      <div class="insight-chart">
+        <h3>標題關鍵字</h3>
+        <div id="chart-kw" class="chart-canvas is-loading"></div>
+      </div>
+      <div class="insight-chart">
+        <h3>標題字數</h3>
+        <div id="chart-len" class="chart-canvas is-loading"></div>
+      </div>
+    </div>
   </section>
-  </main>
+
+</main>
 
 <script is:inline define:vars={{ initialData: data, yearsList: years }}>
   window.INSIGHTS_DATA = initialData;
   window.INSIGHTS_YEARS = yearsList;
 </script>
 <script is:inline>
-  /* Theme toggle: cycle auto → light → dark, persisted（與 Dashboard.astro 同 handler）。 */
+  /* Theme toggle: cycle auto → light → dark（與 Dashboard.astro 同 handler）。 */
   const themeToggle = document.getElementById("theme-toggle");
   const rootEl = document.documentElement;
   function currentTheme() { try { return localStorage.getItem("theme") ?? "auto"; } catch { return "auto"; } }
