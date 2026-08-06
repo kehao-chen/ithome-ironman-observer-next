@@ -85,6 +85,40 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
   };
 }
 
+// CLI pure helpers (injectable run for tests; no network).
+export type ScrapeOutcome = { ok: true; data: YearData } | { ok: false; reason: string };
+export async function collectYears(
+  manifests: Manifest[],
+  run: (m: Manifest) => Promise<YearData>,
+): Promise<{ succeeded: YearData[]; failures: string[] }> {
+  const succeeded: YearData[] = [];
+  const failures: string[] = [];
+  for (const m of manifests) {
+    try {
+      const data = await run(m);
+      if (data.series.length === 0) {
+        failures.push(`${m.year}: 0 series`);
+        continue;
+      }
+      succeeded.push(data);
+    } catch (e) {
+      failures.push(`${m.year}: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+  return { succeeded, failures };
+}
+
+export function buildMeta(succeeded: YearData[]): MetaJson {
+  const sorted = [...succeeded].sort((a, b) => b.year - a.year);
+  const latest = sorted[0];
+  return {
+    latestYear: latest.year,
+    years: sorted.map((d) => d.year),
+    updatedAt: latest.updatedAt,
+    seriesCount: latest.series.length,
+  };
+}
+
 // CLI entry
 if (import.meta.main) {
   const manifestPath = join(import.meta.dir, "..", "config", "series-manifest.json");
@@ -97,40 +131,17 @@ if (import.meta.main) {
   const dataDir = join(import.meta.dir, "..", "data");
   await mkdir(dataDir, { recursive: true });
 
-  // Per-year isolation: runScrape rejection or empty result = year failure.
-  // Keep writing until all years are attempted; decide writes atomically after.
-  const succeeded: YearData[] = [];
-  for (const m of manifests) {
-    try {
-      const data = await runScrape(m);
-      if (data.series.length === 0) {
-        console.error(`[${m.year}] scrape produced 0 series — keeping previous data, skipping write`);
-        continue;
-      }
-      succeeded.push(data);
-      console.log(`[${m.year}] scraped ${data.series.length} series`);
-    } catch (e) {
-      console.error(`[${m.year}] scrape failed: ${e instanceof Error ? e.message : String(e)}`);
-    }
-  }
+  const { succeeded } = await collectYears(manifests, runScrape);
 
   if (succeeded.length === 0) {
-    // Atomic: nothing written, keep previous data/meta untouched.
     console.error("all years failed — aborting writes, keeping previous data");
     process.exit(1);
   }
 
-  succeeded.sort((a, b) => b.year - a.year); // desc
-  const latest = succeeded[0];
+  const meta = buildMeta(succeeded);
   for (const data of succeeded) {
     await writeFile(join(dataDir, `${data.year}.json`), JSON.stringify(data, null, 2));
   }
-  const meta: MetaJson = {
-    latestYear: latest.year,
-    years: succeeded.map((d) => d.year),
-    updatedAt: latest.updatedAt,
-    seriesCount: latest.series.length,
-  };
   await writeFile(join(dataDir, "meta.json"), JSON.stringify(meta, null, 2));
-  console.log(`wrote ${succeeded.length} year file(s); latest ${latest.year} with ${latest.series.length} series`);
+  console.log(`wrote ${succeeded.length} year file(s); latest ${meta.latestYear} with ${meta.seriesCount} series`);
 }
