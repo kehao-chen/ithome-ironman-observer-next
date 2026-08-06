@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { buildMeta, collectYears } from "./scrape";
+import { mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { buildMeta, collectYears, commitWrites, stageWrites } from "./scrape";
 import type { Manifest, YearData } from "./types";
 
 const m2025: Manifest = { year: 2025, signupListUrl: "https://x/2025" };
@@ -45,5 +48,42 @@ describe("buildMeta", () => {
     expect(meta.latestYear).toBe(2026);
     expect(meta.seriesCount).toBe(5);
     expect(meta.updatedAt).toBe("2026-01-01 00:00:00+08:00");
+  });
+});
+
+describe("two-phase atomic write", () => {
+  const dir = () => mkdtemp(join(tmpdir(), "scrape-cli-"));
+  const cleanup = (d: string) => rm(d, { recursive: true, force: true });
+
+  test("stageWrites creates .tmp siblings; finals untouched until commitWrites", async () => {
+    const d = await dir();
+    try {
+      // Pre-existing data stays readable while staging is in flight.
+      await writeFile(join(d, "2025.json"), "old 2025");
+      await writeFile(join(d, "meta.json"), "old meta");
+      const meta = buildMeta([data(2025, 2), data(2026, 5)]);
+      const staged = await stageWrites(d, [data(2025, 2), data(2026, 5)], meta);
+      expect(staged.map((s) => s.finalPath)).toEqual([join(d, "2025.json"), join(d, "2026.json"), join(d, "meta.json")]);
+      // Finals untouched, temps staged, meta staged last.
+      expect(await readFile(join(d, "2025.json"), "utf-8")).toBe("old 2025");
+      expect(await readFile(join(d, "meta.json"), "utf-8")).toBe("old meta");
+      expect(await readFile(join(d, "2025.json.tmp"), "utf-8")).toBe(JSON.stringify(data(2025, 2), null, 2));
+      expect(await readFile(join(d, "2026.json.tmp"), "utf-8")).toBe(JSON.stringify(data(2026, 5), null, 2));
+      expect(await readFile(join(d, "meta.json.tmp"), "utf-8")).toBe(JSON.stringify(meta, null, 2));
+    } finally { await cleanup(d); }
+  });
+
+  test("commitWrites renames temps into place, replacing previous finals", async () => {
+    const d = await dir();
+    try {
+      await writeFile(join(d, "2026.json"), "old 2026");
+      const meta = buildMeta([data(2026, 3)]);
+      const staged = await stageWrites(d, [data(2026, 3)], meta);
+      await commitWrites(staged);
+      expect(await readFile(join(d, "2026.json"), "utf-8")).toBe(JSON.stringify(data(2026, 3), null, 2));
+      expect(await readFile(join(d, "meta.json"), "utf-8")).toBe(JSON.stringify(meta, null, 2));
+      // No .tmp leftovers.
+      expect((await import("node:fs")).readdirSync(d).sort()).toEqual(["2026.json", "meta.json"]);
+    } finally { await cleanup(d); }
   });
 });

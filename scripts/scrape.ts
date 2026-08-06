@@ -1,5 +1,5 @@
 // scripts/scrape.ts
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fetchHtml } from "./fetch-html";
 import { parseSignupList, signupListUrl } from "./parse-signup";
@@ -119,6 +119,36 @@ export function buildMeta(succeeded: YearData[]): MetaJson {
   };
 }
 
+// Two-phase atomic write: stage every file to a `.tmp` sibling in the SAME
+// directory first (so a mid-write failure leaves zero renamed files and the
+// previous data/meta.json stay intact), then commit with rename() — atomic
+// per-file on POSIX, so the failure window shrinks to renames only.
+// Returns the staged file list for commitWrites (meta.json staged last).
+export type StagedFile = { tmpPath: string; finalPath: string };
+export async function stageWrites(
+  dataDir: string,
+  years: YearData[],
+  meta: MetaJson,
+): Promise<StagedFile[]> {
+  const staged: StagedFile[] = [];
+  for (const data of years) {
+    const finalPath = join(dataDir, `${data.year}.json`);
+    const tmpPath = `${finalPath}.tmp`;
+    await writeFile(tmpPath, JSON.stringify(data, null, 2));
+    staged.push({ tmpPath, finalPath });
+  }
+  const metaPath = join(dataDir, "meta.json");
+  await writeFile(`${metaPath}.tmp`, JSON.stringify(meta, null, 2));
+  staged.push({ tmpPath: `${metaPath}.tmp`, finalPath: metaPath });
+  return staged;
+}
+
+export async function commitWrites(staged: StagedFile[]): Promise<void> {
+  for (const { tmpPath, finalPath } of staged) {
+    await rename(tmpPath, finalPath);
+  }
+}
+
 // CLI entry
 if (import.meta.main) {
   const manifestPath = join(import.meta.dir, "..", "config", "series-manifest.json");
@@ -140,24 +170,30 @@ if (import.meta.main) {
 
   const { succeeded, failures } = await collectYears(manifests, runScrape);
 
+  // Report per-year failures regardless of outcome (partial scrape visibility).
+  for (const f of failures) console.error(`[${f}]`);
   if (succeeded.length === 0) {
-    // All-failed: log per-year reasons, then exit without writing anything
-    // (previous data/meta stay untouched).
-    for (const f of failures) console.error(`[${f}]`);
+    // All-failed: abort without writing anything (previous data/meta stay untouched).
     console.error("all years failed — aborting writes, keeping previous data");
     process.exit(1);
   }
 
   const meta = buildMeta(succeeded);
-  // Write all year files + meta atomically-as-a-commit: a rejection here must
-  // NOT leave a partial commit (workflow then refuses to push it).
+  // Two-phase commit: stage all files to `.tmp` siblings in the same directory,
+  // then rename them into place. A staging failure exits before any rename —
+  // previous data/meta stay intact (all-or-nothing). Rename is atomic per file
+  // on POSIX, so the only mid-commit failure window is the renames themselves.
+  let staged: StagedFile[];
   try {
-    for (const data of succeeded) {
-      await writeFile(join(dataDir, `${data.year}.json`), JSON.stringify(data, null, 2));
-    }
-    await writeFile(join(dataDir, "meta.json"), JSON.stringify(meta, null, 2));
+    staged = await stageWrites(dataDir, succeeded, meta);
   } catch (e) {
     console.error(`write failed: ${e instanceof Error ? e.message : String(e)} — keeping previous data`);
+    process.exit(1);
+  }
+  try {
+    await commitWrites(staged);
+  } catch (e) {
+    console.error(`commit failed: ${e instanceof Error ? e.message : String(e)} — keeping previous data`);
     process.exit(1);
   }
   console.log(`wrote ${succeeded.length} year file(s); latest ${meta.latestYear} with ${meta.seriesCount} series`);
