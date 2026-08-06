@@ -246,37 +246,45 @@ describe("titleKeywordStats", () => {
 });
 
 describe("titleLengthDistribution", () => {
-  test("分桶正確（0–9 / 10–19 / 20–29 / 30–39 / 40+）", () => {
+  test("分桶正確（5 字一桶）", () => {
     const dist = titleLengthDistribution([
-      makeSeries({ id: 1, title: "短" }),                    // length 1 → 0–9
-      makeSeries({ id: 2, title: "十個字十個字十個字十" }),   // length 10 → 10–19
-      makeSeries({ id: 3, title: "二十個字二十個字二十個字二十個字二十個字" }), // length 20 → 20–29
+      makeSeries({ id: 1, title: "短" }),                    // length 1 → 0–4
+      makeSeries({ id: 2, title: "十個字十個字十個字十" }),   // length 10 → 10–14
+      makeSeries({ id: 3, title: "二十個字二十個字二十個字二十個字二十個字" }), // length 20 → 20–24
     ]);
     expect(dist).toEqual([
-      { length: "0–9", count: 1 },
-      { length: "10–19", count: 1 },
-      { length: "20–29", count: 1 },
-      { length: "30–39", count: 0 },
+      { length: "0–4", count: 1 },
+      { length: "5–9", count: 0 },
+      { length: "10–14", count: 1 },
+      { length: "15–19", count: 0 },
+      { length: "20–24", count: 1 },
+      { length: "25–29", count: 0 },
+      { length: "30–34", count: 0 },
+      { length: "35–39", count: 0 },
       { length: "40+", count: 0 },
     ]);
   });
-  test("空標題計入 0–9", () => {
+  test("空標題計入 0–4", () => {
     const dist = titleLengthDistribution([makeSeries({ id: 1, title: "" })]);
-    expect(dist[0]).toEqual({ length: "0–9", count: 1 });
+    expect(dist[0]).toEqual({ length: "0–4", count: 1 });
   });
   test("String.length 計算（UTF-16 code unit，emoji 算 2）", () => {
-    // "A😀" length = 2（A=1 + emoji surrogate pair=2 → 3？實際 A=1, 😀=2 → total 3）
+    // "A😀" length = 3（A=1 + emoji surrogate pair=2）
     const dist = titleLengthDistribution([makeSeries({ id: 1, title: "A😀" })]);
-    expect("A😀".length).toBe(3); // 驗證測試前置：A(1) + 😀(2) = 3
-    expect(dist[0]).toEqual({ length: "0–9", count: 1 });
+    expect("A😀".length).toBe(3);
+    expect(dist[0]).toEqual({ length: "0–4", count: 1 });
   });
-  test("空 series → 5 桶全 0", () => {
+  test("空 series → 9 桶全 0", () => {
     const dist = titleLengthDistribution([]);
     expect(dist).toEqual([
-      { length: "0–9", count: 0 },
-      { length: "10–19", count: 0 },
-      { length: "20–29", count: 0 },
-      { length: "30–39", count: 0 },
+      { length: "0–4", count: 0 },
+      { length: "5–9", count: 0 },
+      { length: "10–14", count: 0 },
+      { length: "15–19", count: 0 },
+      { length: "20–24", count: 0 },
+      { length: "25–29", count: 0 },
+      { length: "30–34", count: 0 },
+      { length: "35–39", count: 0 },
       { length: "40+", count: 0 },
     ]);
   });

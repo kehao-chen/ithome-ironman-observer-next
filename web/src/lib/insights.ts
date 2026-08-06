@@ -151,10 +151,14 @@ export function titleKeywordStats(
 
 // 標題長度分桶（spec §4.2、review #3 blocking）：String.length（UTF-16 code unit）。
 const LENGTH_BUCKETS = [
-  { label: "0–9", test: (n: number) => n >= 0 && n <= 9 },
-  { label: "10–19", test: (n: number) => n >= 10 && n <= 19 },
-  { label: "20–29", test: (n: number) => n >= 20 && n <= 29 },
-  { label: "30–39", test: (n: number) => n >= 30 && n <= 39 },
+  { label: "0–4", test: (n: number) => n >= 0 && n <= 4 },
+  { label: "5–9", test: (n: number) => n >= 5 && n <= 9 },
+  { label: "10–14", test: (n: number) => n >= 10 && n <= 14 },
+  { label: "15–19", test: (n: number) => n >= 15 && n <= 19 },
+  { label: "20–24", test: (n: number) => n >= 20 && n <= 24 },
+  { label: "25–29", test: (n: number) => n >= 25 && n <= 29 },
+  { label: "30–34", test: (n: number) => n >= 30 && n <= 34 },
+  { label: "35–39", test: (n: number) => n >= 35 && n <= 39 },
   { label: "40+", test: (n: number) => n >= 40 },
 ];
 
