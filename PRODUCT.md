@@ -35,7 +35,7 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispatch → GH Actions → data/{year}.json + data/meta.json commit → Astro build → Cloudflare Pages
 
 - **Scraper**（`scripts/`，Bun + TypeScript）：依 `config/series-manifest.json` 陣列**逐年度**抓取（signup 列表全部分頁 → 每系列 RSS + series 頁），成功年度各寫一支 `data/{year}.json`（瀏覽/Like/留言/訂閱數、`lastUpdated`、文章清單），並寫出 `data/meta.json`（`latestYear` / `years` / `updatedAt` / `seriesCount`）。容錯：單系列失敗不中斷、指數退避重試；年度層級 per-year try/catch——**全部年度失敗時零寫入（保留舊資料）且 exit 1，至少一年成功則寫出成功年度並 exit 0**。
-- **儀表板**（`web/`，Astro）：SSG 預渲染 + client 端 60 秒刷新（於 Dashboard 元件），header 年度切換器、組別篩選 + 進度/最多觀看/今日發文排序，抓取失敗系列數以 scrapeLog notice 顯示。年度切換器（header select）以 `data/meta.json` 的 `years` 為唯一權威；空資料年度保留舊檔、但選項縮小。
+- **儀表板**（`web/`，Astro）：SSG 預渲染 + client 端 60 秒刷新（於 Dashboard 元件），header 年度切換器、組別篩選 + 進度/最多觀看/今日發文排序、**「我的收藏」分頁（localStorage 書籤，系列 ID 跨年度共用）**，抓取失敗系列數以 scrapeLog notice 顯示。年度切換器（header select）以 `data/meta.json` 的 `years` 為唯一權威；空資料年度保留舊檔、但選項縮小。
 - **排程**（`worker/` + `.github/workflows/scheduled-update.yml`）：Cloudflare Worker `ironman-observer-trigger` 每 10 分鐘打 `workflow_dispatch` 觸發更新（GitHub 原生 `schedule` 在整點高峰會延遲/漏觸發，故改用 CF 網路排程）；資料有變才 commit + deploy（無變更跳過）。
 - Browser UA mandatory for scraping; RSS/series page consistency verified.
 - Known current UI issues (from handoff): all-inline styles, dark-only theme, no design system, `DAY ?` badge inconsistency, 30 zero-article series, placeholder filter style, mixed timestamp formats.
@@ -78,7 +78,7 @@ Feature ideas carried over from the removed `docs/PROJECT-INTRODUCTION.md`, plus
 
 - **Search**: full-text search of series by title/author/group.
 - **Completion / activity badge enhancements**: currently only DAY 0 / in-progress / completed states; could add dynamic states like "posted today" or "no update for N days".
-- **Favorites / tracking specific series**: localStorage bookmarks, pinned to top or a separate tab (no backend, zero-cost compatible).
+- [x] **Favorites / tracking specific series**（完成 2026-08-06）：localStorage 書籤（系列 ID 跨年度共用），卡片星號 toggle（grid/list 皆可），「我的收藏」分頁沿用排序器，空狀態引導；僅限本裝置/瀏覽器。
 - **Real-time updates**: currently periodic batch (hourly) + 60s client refresh; true near-real-time needs an external trigger (e.g., Cloudflare Worker cron) — a cost vs schedule-reliability tradeoff.
 
 ### Already covered, no action needed
