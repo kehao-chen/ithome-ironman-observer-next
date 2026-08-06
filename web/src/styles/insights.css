@@ -5,30 +5,6 @@
   padding-block: var(--space-5);
 }
 
-/* ── Back link ───────────────────────────────────────────────── */
-.insights-back {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  color: var(--muted);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.12s ease;
-  margin-block-end: var(--space-1);
-}
-.insights-back:hover {
-  color: var(--accent);
-  text-decoration: none;
-}
-.insights-back svg {
-  flex-shrink: 0;
-  transition: transform 0.12s ease;
-}
-.insights-back:hover svg {
-  transform: translateX(-2px);
-}
-
 /* ── Panels ──────────────────────────────────────────────────── */
 .insight-panel {
   background: var(--surface);
@@ -84,33 +60,36 @@
   font-size: var(--text-xs);
   font-weight: 600;
 }
+
+/* Panel 02: 觀看分佈 & 訂閱排行各佔一整行，需要足夠寬度顯示標籤 */
+.insight-chart--full {
+  flex-basis: 100%;
+}
+
+/* 組別 scatter 和其他 wide 圖 */
 .insight-chart--wide {
   flex-basis: 100%;
 }
-.insight-chart--subs {
-  flex-basis: 100%;
-}
-@media (min-width: 900px) {
-  .insight-chart--subs {
-    flex-basis: 300px;
-  }
-}
+
 @media (max-width: 639px) {
   .insight-charts { gap: var(--space-3); }
   .insight-chart { flex-basis: 100%; padding: var(--space-2); }
 }
 
-/* ── Chart canvas + skeleton ─────────────────────────────────── */
+/* ── Chart canvas ────────────────────────────────────────────── */
 .chart-canvas {
   position: relative;
   border-radius: var(--radius);
   overflow: hidden;
   height: 180px;
 }
-#chart-subs  { height: 220px; }
-#chart-scatter { height: 220px; }
 
-/* Skeleton shimmer while loading */
+/* 需要更多縱向空間的圖 */
+#chart-subs    { height: 260px; }
+#chart-scatter { height: 240px; }
+#chart-kw      { height: 240px; }
+
+/* Skeleton shimmer */
 .chart-canvas.is-loading {
   background: var(--surface-muted);
 }
@@ -132,7 +111,7 @@
   to   { background-position: -200% 0; }
 }
 
-/* Fade-in when chart content appears */
+/* Fade-in when chart renders */
 .chart-canvas:not(.is-loading) canvas {
   animation: chart-fadein 0.25s ease;
 }
