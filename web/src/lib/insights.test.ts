@@ -7,7 +7,6 @@ import {
   groupStats,
   titleKeywordStats,
   titleLengthDistribution,
-  DEFAULT_KEYWORDS,
 } from "./insights";
 import type { Article, Series } from "../../../scripts/types";
 
