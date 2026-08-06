@@ -36,6 +36,19 @@ describe("horizontalBarSVG", () => {
     expect(svg.startsWith("<svg")).toBe(true);
     expect(svg.match(/<rect/g)).toHaveLength(2);
   });
+  test("資料超過預設高度時自動加高（viewBox 用計算後高度）", () => {
+    const svg = horizontalBarSVG(
+      Array.from({ length: 10 }, (_, i) => ({ label: `S${i}`, value: 10 - i })),
+      { height: 180 },
+    );
+    // 10 列 × 20 = 200 > 180 → viewBox height 應為 216（200 + 16 底部留白）
+    expect(svg).toContain('viewBox="0 0 320 216"');
+    expect(svg).toContain('height="216"');
+  });
+  test("高度夠時維持指定 height", () => {
+    const svg = horizontalBarSVG([{ label: "A", value: 33 }], { height: 180 });
+    expect(svg).toContain('viewBox="0 0 320 180"');
+  });
 });
 
 describe("distributionBarSVG", () => {
@@ -83,5 +96,36 @@ describe("XML escaping 完整性（review #7）", () => {
     const svg = scatterSVG([{ x: 1, y: 2, label: "L", tooltip: `& < > " '` }]);
     expect(svg).toContain("<title>&amp; &lt; &gt; &quot; &apos;</title>");
     expect(svg).not.toContain("<title>& < >");
+  });
+  test("color 也 XML escaping（opts.color 是 API 輸入）", () => {
+    const evil = `" onmouseover="alert(1)`;
+    const svg = barChartSVG([{ label: "A", value: 1 }], { color: evil });
+    expect(svg).toContain(`fill="${xmlEscape(evil)}"`);
+    expect(svg).not.toContain(`onmouseover="`);
+  });
+});
+
+describe("數值輸入邊界（review：NaN/Infinity/負數 normalization）", () => {
+  test("barChartSVG：NaN / Infinity / 負數 value → 視為 0（有限非負）", () => {
+    const svg = barChartSVG([
+      { label: "NaN", value: NaN },
+      { label: "Inf", value: Infinity },
+      { label: "Neg", value: -5 },
+      { label: "Ok", value: 10 },
+    ]);
+    expect(svg).not.toContain('height="NaN"');
+    expect(svg).not.toContain('height="Infinity"');
+    // NaN/Inf/-5 → 0 高（height="0.0"）；Ok → 10 高 > 0（max 以正規化後最大值 10 計）
+    expect(svg).toContain('height="0.0"');
+    expect(svg).toContain('height="160.0"');
+  });
+  test("horizontalBarSVG：width NaN → 0；負數 label 數值同", () => {
+    const svg = horizontalBarSVG([{ label: "A", value: NaN }]);
+    expect(svg).not.toContain('width="NaN"');
+  });
+  test("scatterSVG：x/y NaN → 視為 0（不噴 NaN 到 cx/cy）", () => {
+    const svg = scatterSVG([{ x: NaN, y: Infinity, label: "L", tooltip: "T" }]);
+    expect(svg).not.toContain('cx="NaN"');
+    expect(svg).not.toContain('cy="Infinity"');
   });
 });

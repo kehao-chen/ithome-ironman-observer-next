@@ -101,15 +101,17 @@ describe("viewsDistribution", () => {
     expect(d.p90).toBe(30);
     expect(d.p99).toBe(30);
     expect(d.top10PctShare).toBeCloseTo(0.5); // 最高 1 篇（ceil(0.3)=1）：30/60
+    expect(d.hasViews).toBe(true);
   });
-  test("buckets 對數分桶", () => {
+  test("buckets 對數分桶（含 0 views 桶）", () => {
     const d = viewsDistribution([
+      article({ publishedAt: "2026-08-01T00:00:00+08:00", views: 0 }),
       article({ publishedAt: "2026-08-01T00:00:00+08:00", views: 7 }),
       article({ publishedAt: "2026-08-01T00:00:00+08:00", views: 103 }),
       article({ publishedAt: "2026-08-01T00:00:00+08:00", views: 8678 }),
-      article({ publishedAt: "2026-08-01T00:00:00+08:00", views: 0 }),
     ]);
     expect(d.buckets).toEqual([
+      { label: "0", count: 1 },
       { label: "1–9", count: 1 },
       { label: "10–99", count: 0 },
       { label: "100–999", count: 1 },
@@ -117,11 +119,28 @@ describe("viewsDistribution", () => {
       { label: "10000+", count: 0 },
     ]);
   });
-  test("空陣列 → 全 0", () => {
+  test("全 0 views → hasViews false、top10PctShare 0", () => {
+    const d = viewsDistribution([
+      article({ publishedAt: "2026-08-01T00:00:00+08:00", views: 0 }),
+      article({ publishedAt: "2026-08-01T00:00:00+08:00", views: 0 }),
+    ]);
+    expect(d.hasViews).toBe(false);
+    expect(d.top10PctShare).toBe(0);
+    expect(d.buckets[0]).toEqual({ label: "0", count: 2 });
+  });
+  test("空陣列 → 全 0、hasViews false", () => {
     const d = viewsDistribution([]);
     expect(d.total).toBe(0);
     expect(d.top10PctShare).toBe(0);
-    expect(d.buckets.every((b) => b.count === 0)).toBe(true);
+    expect(d.hasViews).toBe(false);
+    expect(d.buckets).toEqual([
+      { label: "0", count: 0 },
+      { label: "1–9", count: 0 },
+      { label: "10–99", count: 0 },
+      { label: "100–999", count: 0 },
+      { label: "1000–9999", count: 0 },
+      { label: "10000+", count: 0 },
+    ]);
   });
 });
 

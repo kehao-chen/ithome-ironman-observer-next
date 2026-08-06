@@ -58,6 +58,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       唯一 innerHTML sink 為 setSvg 的完整 SVG 字串）。
   -->
   <Insights data={data} years={years} latestYear={latestYear} />
+  <div id="insight-toast" class="insight-toast" role="status" aria-live="polite">年度資料載入失敗</div>
   <script>
     import { publishHourHistogram, publishWeekdayHistogram, viewsDistribution, topSeriesBySubscriptions, groupStats, titleKeywordStats, titleLengthDistribution } from "../lib/insights";
     import { barChartSVG, horizontalBarSVG, distributionBarSVG, scatterSVG } from "../lib/charts";
@@ -68,19 +69,43 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
     const initialData = (window as any).INSIGHTS_DATA as YearData;
     const yearsList = (window as any).INSIGHTS_YEARS as number[];
     let fetchToken = 0;
-    let current: YearData = initialData;
+
+    // 最小 runtime 驗證（review #12）：避免錯誤 payload（HTML fallback / 缺欄位）進入 render。
+    function isYearData(value: unknown): value is YearData {
+      return Boolean(
+        value &&
+          typeof value === "object" &&
+          typeof (value as YearData).year === "number" &&
+          Array.isArray((value as YearData).series),
+      );
+    }
+
+    // fetch 失敗 / 無效 payload → 保持目前 render、select 回原位、toast 提示（review #13）。
+    let toastTimer: ReturnType<typeof setTimeout> | undefined;
+    function showToast() {
+      const el = document.getElementById("insight-toast");
+      if (!el) return;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+    }
 
     function insights(year: number) {
       const token = ++fetchToken;
+      const sel = document.getElementById("insight-year-select") as HTMLSelectElement | null;
       fetch(`/data/${year}.json?t=${Date.now()}`, { cache: "no-store" })
         .then((res) => (res.ok ? res.json() : null))
         .then((fresh) => {
-          if (!fresh || token !== fetchToken) return;
-          current = fresh;
+          if (!isYearData(fresh) || token !== fetchToken) return; // 無效 payload：直接捨棄
           render(fresh);
           history.replaceState(null, "", `?year=${fresh.year}`);
         })
-        .catch(() => { /* keep current render */ });
+        .catch(() => {
+          if (token !== fetchToken) return;
+          // 失敗：select 回原位 + toast（URL 不變，review #13）
+          if (sel) sel.value = String(initialData.year);
+          showToast();
+        });
     }
 
     function allArticles(d: YearData) { return d.series.flatMap((s) => s.articles); }
@@ -111,7 +136,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         for (const id of ["chart-dist", "chart-subs"]) setSvg(id, "");
       } else {
         const dist = viewsDistribution(arts);
-        setText("insight-dist-line", `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`);
+        setText("insight-dist-line", !dist.hasViews ? "尚無可計算的觀看資料" : `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`);
         setSvg("chart-dist", distributionBarSVG(dist.buckets));
         setSvg("chart-subs", horizontalBarSVG(topSeriesBySubscriptions(d.series).map((s) => ({ label: s.name, value: s.subscriptions }))));
       }
@@ -121,7 +146,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         setSvg("chart-scatter", "");
       } else {
         const groups = groupStats(d.series);
-        setSvg("chart-scatter", scatterSVG(groups.map((g) => ({ x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均 ${g.avgViews} 觀看` }))));
+        setSvg("chart-scatter", scatterSVG(groups.map((g) => ({ x: g.articleCount, y: g.avgViews, label: g.group, tooltip: `${g.group}: ${g.seriesCount} 系列 / ${g.articleCount} 文 / 平均每篇 ${g.avgViews} 觀看` }))));
         const topGroup = groups[0];
         setText("insight-group-line", `${topGroup.group} 最活躍（${topGroup.seriesCount} 系列）`);
       }
@@ -131,7 +156,8 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         for (const id of ["chart-kw", "chart-len"]) setSvg(id, "");
       } else {
         const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
-        setSvg("chart-kw", barChartSVG(kws.map((k) => ({ label: k.keyword, value: k.count }))));
+        // 關鍵字無命中：清空 keyword chart（保留字數分佈），文案「尚無標題關鍵字」
+        setSvg("chart-kw", kws.length === 0 ? "" : barChartSVG(kws.map((k) => ({ label: k.keyword, value: k.count }))));
         setSvg("chart-len", barChartSVG(titleLengthDistribution(d.series).map((b) => ({ label: b.length, value: b.count }))));
         const topKw = kws[0];
         setText("insight-kw-line", kws.length === 0 ? "尚無標題關鍵字" : `${topKw.count} 個系列標題包含「${topKw.keyword}」`);
