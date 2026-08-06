@@ -32,7 +32,7 @@
 
 - Features: year switcher (meta `years` authority), group filter + favorites tab, sort (dayCount / views / latest), client-side 60s refresh, scrapeLog notice, responsive.
 - Hard constraint: near-zero cost — Cloudflare Workers/Pages free tier + GH Actions public-repo free runners + own domain; no backend, no DB (JSON is the DB).
-- Non-goals (v1): search, real-time updates (periodic batch only).
+- Non-goals (v1): search, completion/active badges, real-time updates (periodic batch only).
 
 ## 本地開發
 
