@@ -239,6 +239,10 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     }
     seriesCount.textContent = String(data.series.length);
     totalCount.textContent = String(data.series.length);
+    // Re-anchor #updated-at to the newly loaded year's data; textContent is
+    // set by humanizeAll (which reads data-ts and renders abs for this id).
+    updatedAt.setAttribute("datetime", data.updatedAt);
+    updatedAt.setAttribute("data-ts", data.updatedAt);
     const group = document.querySelector(".filter-btn[data-active='true']")?.getAttribute("data-group") ?? "全部";
     const sort = (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount";
     applyFilter(data, group, sort);
@@ -439,7 +443,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   });
   setInterval(() => { if (current) loadYear(currentYear); }, 60_000);
 
-  render((window as any).__SSR_DATA__ ?? (window as any).IRONMAN_DATA);
+  render((window as any).IRONMAN_DATA);
   // Re-humanize periodically so relative times stay fresh (also re-anchors 臺北 today).
   setInterval(() => { today = taipeiToday(); humanizeAll(); }, 60000);
 </script>
