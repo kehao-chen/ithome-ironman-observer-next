@@ -28,3 +28,9 @@ export type Series = {
 };
 export type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[]; scrapeLog: string[] };
 export type Manifest = { year: number; signupListUrl: string };
+export type MetaJson = {
+  latestYear: number;   // years[0]（成功年度 desc 的第一個 = 最新）
+  years: number[];      // 成功寫檔年度 desc 排序 —— UI 年度選項的唯一權威來源
+  updatedAt: string;    // latestYear 年度資料的 updatedAt
+  seriesCount: number;  // latestYear 年度資料的 seriesCount
+};
