@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Astro 5 static site (`web/`), TypeScript shared with scraper (`scripts/types.ts`), native CSS with custom properties, no framework. Data pipeline: GH Actions cron → `bun run scripts/scrape.ts` → `data/2026.json` → Astro build → Cloudflare Pages. Zero-cost constraint (no paid backend/db; JSON is the DB).
+Astro 5 static site (`web/`), TypeScript shared with scraper (`scripts/types.ts`), native CSS with custom properties, no framework. Data pipeline: GH Actions cron → `bun run scripts/scrape.ts` → per-year `data/{year}.json` + `data/meta.json` (`years` = year-switcher authority) → Astro build → Cloudflare Pages. Zero-cost constraint (no paid backend/db; JSON is the DB).
 
 ## Users
 
@@ -27,14 +27,16 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 - Scraper hits ithelp.ithome.com.tw (signup list + RSS + series pages), ~2 requests/series, ~250 requests/full sweep; **browser UA required** (403 otherwise).
 - Cron: Cloudflare Worker `ironman-observer-trigger` fires `workflow_dispatch` every 10 min (144 runs/day; public-repo GitHub-hosted runner stays free). GitHub's native `schedule` trigger was dropped (delayed/dropped at the top of every hour).
 - Data changes commit + deploy automatically; site refreshes client-side every 60s.
-- UI is a single-page dashboard: category filter (tag row) + sort (progress / most views / latest) + series cards. Cards show: title, author, group, latest day, views, publish time, update time.
-- `data/2026.json` is the DB; entity-decoding must happen at parse time (`html-entities.ts`), never client-side (double-escaping). Client DOM uses `textContent` only — `innerHTML` with user data is forbidden (XSS).
+- UI is a single-page dashboard: year switcher (header select) + category filter (tag row) + sort (progress / most views / today's posts) + series cards. Cards show: title, author, group, latest day, views, publish time, update time.
+- Per-year `data/{year}.json` is the DB (2026 data currently); `data/meta.json`'s `years` is the sole authority for the year switcher options; entity-decoding must happen at parse time (`html-entities.ts`), never client-side (double-escaping). Client DOM uses `textContent` only — `innerHTML` with user data is forbidden (XSS).
 
 ## Capabilities and Constraints
 
-- Features: group filter, sort (dayCount / views / latest), client-side 60s refresh, responsive.
-- Hard constraint: near-zero cost — Cloudflare Workers/Pages free tier + GH Actions public-repo free runners + own domain; no backend, no DB (JSON is the DB).
-- Non-goals (v1): multi-year data, search, completion/active badges, login/favorites/tracking, real-time updates (periodic batch only).
+ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispatch → GH Actions → data/{year}.json + data/meta.json commit → Astro build → Cloudflare Pages
+
+- **Scraper**（`scripts/`，Bun + TypeScript）：依 `config/series-manifest.json` 陣列**逐年度**抓取（signup 列表全部分頁 → 每系列 RSS + series 頁），成功年度各寫一支 `data/{year}.json`（瀏覽/Like/留言/訂閱數、`lastUpdated`、文章清單），並寫出 `data/meta.json`（`latestYear` / `years` / `updatedAt` / `seriesCount`）。容錯：單系列失敗不中斷、指數退避重試；年度層級 per-year try/catch——**全部年度失敗時零寫入（保留舊資料）且 exit 1，至少一年成功則寫出成功年度並 exit 0**。
+- **儀表板**（`web/`，Astro）：SSG 預渲染 + client 端 60 秒刷新（於 Dashboard 元件），header 年度切換器、組別篩選 + 進度/最多觀看/今日發文排序，抓取失敗系列數以 scrapeLog notice 顯示。年度切換器（header select）以 `data/meta.json` 的 `years` 為唯一權威；空資料年度保留舊檔、但選項縮小。
+- **排程**（`worker/` + `.github/workflows/scheduled-update.yml`）：Cloudflare Worker `ironman-observer-trigger` 每 10 分鐘打 `workflow_dispatch` 觸發更新（GitHub 原生 `schedule` 在整點高峰會延遲/漏觸發，故改用 CF 網路排程）；資料有變才 commit + deploy（無變更跳過）。
 - Browser UA mandatory for scraping; RSS/series page consistency verified.
 - Known current UI issues (from handoff): all-inline styles, dark-only theme, no design system, `DAY ?` badge inconsistency, 30 zero-article series, placeholder filter style, mixed timestamp formats.
 
@@ -47,7 +49,7 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 
 ## Evidence on Hand
 
-- `data/2026.json` + `data/meta.json`: live scraped data (127 series / 17 groups, 2026-08-05).
+- `data/2026.json` (current year) + `data/meta.json` (`latestYear` / `years` / `updatedAt` / `seriesCount`): live scraped data — 2026: 127 series / 17 groups (2026-08-05).
 - `docs/DEPLOYMENT-HANDOFF.md`: deployment + handoff record, known-issues list.
 - `docs/superpowers/specs/2026-08-05-ironman-observer-next-design.md`: original design spec (approved).
 - No logos/assets provided; no testimonials, benchmarks, or pricing claims exist and must not be fabricated.
@@ -58,7 +60,7 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 2. Near-zero cost is a hard constraint — no paid services, no backend, no DB.
 3. Automation over manual ops: data changes commit and deploy themselves.
 4. Preserve the core observer experience (grasp daily activity, browse by group) while modernizing the surface.
-5. Non-goals stay out of v1: no search, no multi-year, no accounts.
+5. Non-goals stay out of v1: no search, no accounts.
 
 ## Roadmap
 
@@ -66,9 +68,11 @@ Feature ideas carried over from the removed `docs/PROJECT-INTRODUCTION.md`, plus
 
 ### Near-term (low cost, fits current architecture)
 
-1. **Multi-year support**: `data/2026.json` is already year-named, and `config/series-manifest.json` is the per-year single source. A year switcher in the UI would serve future editions.
-2. **Sort refinement**: redefine "latest" sort as "articles published today" (currently the last article's timestamp; definition is vague — same as DEPLOYMENT-HANDOFF known issue #6).
-3. **Surface scrapeLog errors**: per-series failures are already written to `data/2026.json`'s `scrapeLog` but never shown in the UI — a corner notice like "N series failed this update" plus the error list would surface them.
+近程三項已全數完成（2026-08-05/06）；以下保留紀錄。
+
+1. [x] **Multi-year support**（完成 2026-08-06）：`config/series-manifest.json` 是年度單一來源；scraper 逐年度寫出 `data/{year}.json` + `data/meta.json`（`years` = 年度切換器唯一權威，`latestYear`/`updatedAt`/`seriesCount`）。**Meta 語意**：空資料年度（抓取失敗但舊檔仍在）保留舊 `{year}.json`、但從 `meta.years` 排除——UI 選項縮小。
+2. [x] **Sort refinement**（完成 2026-08-05，daily-status 功能）：`latest` 排序重定義為「今日發文」（依臺北日 desc，同日內按發文秒 desc；無文章系列沉底）。
+3. [x] **Surface scrapeLog errors**（完成 2026-08-06）：固定 scrapeLog notice（`<details id="scrape-log">`）顯示「N 支系列本次抓取失敗」+ 錯誤清單，空時隱藏（`hidden`）。
 
 ### Mid-term candidates (from v1 non-goals; re-evaluate value before building)
 
