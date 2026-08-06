@@ -185,9 +185,29 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     if (s.dayCount >= 30) return "完賽";
     return `DAY ${s.dayCount}`;
   }
-  const EYE_SVG = '<svg class="ico-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>';
-  const RSS_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>';
-  const OPEN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  // Trusted static icons built via DOM APIs (no innerHTML sinks); attributes
+  // mirror the SSR markup in SeriesCard.astro exactly.
+  function svgEl(tag: string, attrs: Record<string, string>, children: SVGElement[] = []): SVGElement {
+    const el = document.createElementNS(SVG_NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    for (const c of children) el.appendChild(c);
+    return el;
+  }
+  const EYE_ICON = svgEl("svg", { class: "ico-eye", viewBox: "0 0 24 24", "aria-hidden": "true" }, [
+    svgEl("path", { d: "M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z" }),
+    svgEl("circle", { cx: "12", cy: "12", r: "3", fill: "currentColor", stroke: "none" }),
+  ]);
+  const RSS_ICON = svgEl("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, [
+    svgEl("path", { d: "M4 11a9 9 0 0 1 9 9" }),
+    svgEl("path", { d: "M4 4a16 16 0 0 1 16 16" }),
+    svgEl("circle", { cx: "5", cy: "19", r: "1.5", fill: "currentColor", stroke: "none" }),
+  ]);
+  const OPEN_ICON = svgEl("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, [
+    svgEl("path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }),
+    svgEl("polyline", { points: "15 3 21 3 21 9" }),
+    svgEl("line", { x1: "10", y1: "14", x2: "21", y2: "3" }),
+  ]);
 
   function groupCounts(data: any): Map<string, number> {
     const m = new Map<string, number>();
@@ -265,7 +285,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       }
       return b.dayCount - a.dayCount;
     });
-    list.innerHTML = "";
+    list.replaceChildren();
     const frag = document.createDocumentFragment();
     for (const s of series) frag.appendChild(viewMode === "list" ? renderRow(s) : renderCard(s));
     list.appendChild(frag);
@@ -296,7 +316,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     rss.className = "card-action"; rss.type = "button";
     rss.dataset.rss = rssUrl(s); rss.dataset.title = s.title;
     rss.setAttribute("aria-label", "RSS 訂閱"); rss.title = "RSS 訂閱";
-    rss.innerHTML = RSS_SVG;
+    rss.appendChild(RSS_ICON.cloneNode(true));
     right.append(stat, rss); head.append(headLeft, right);
 
     const prog = document.createElement("div"); prog.className = "progress";
@@ -324,9 +344,13 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       const tag = document.createElement("span"); tag.className = "latest-tag"; tag.textContent = "最新";
       la.append(tag, latest.title);
       const lv = document.createElement("span"); lv.className = "latest-views tabular-nums";
-      lv.innerHTML = `${EYE_SVG}${latest.views.toLocaleString()} 當篇觀看`;
+      lv.appendChild(EYE_ICON.cloneNode(true));
+      lv.appendChild(document.createTextNode(`${latest.views.toLocaleString()} 當篇觀看`));
       lat.append(la, lv);
-    } else { lat.innerHTML = '<span class="latest-link muted">尚未開賽</span>'; }
+    } else {
+      const span = document.createElement("span"); span.className = "latest-link muted"; span.textContent = "尚未開賽";
+      lat.appendChild(span);
+    }
 
     art.append(head, prog, h, meta, lat);
     if (latest && latest.publishedAt) {
@@ -355,14 +379,15 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     main.append(t, m);
 
     const views = document.createElement("span"); views.className = "row-views tabular-nums";
-    views.innerHTML = `${EYE_SVG}${totalViews(s).toLocaleString()}`;
+    views.appendChild(EYE_ICON.cloneNode(true));
+    views.appendChild(document.createTextNode(totalViews(s).toLocaleString()));
 
     const actions = document.createElement("div"); actions.className = "row-actions";
     const rss = document.createElement("button"); rss.className = "card-action"; rss.type = "button";
     rss.dataset.rss = rssUrl(s); rss.dataset.title = s.title; rss.setAttribute("aria-label", "RSS 訂閱"); rss.title = "RSS 訂閱";
-    rss.innerHTML = RSS_SVG;
+    rss.appendChild(RSS_ICON.cloneNode(true));
     const open = document.createElement("a"); open.className = "card-action"; open.href = seriesUrl(s); open.target = "_blank"; open.rel = "noopener";
-    open.setAttribute("aria-label", "開啟系列"); open.title = "開啟系列"; open.innerHTML = OPEN_SVG;
+    open.setAttribute("aria-label", "開啟系列"); open.title = "開啟系列"; open.appendChild(OPEN_ICON.cloneNode(true));
     actions.append(rss, open);
 
     row.append(left, main, views, actions);
