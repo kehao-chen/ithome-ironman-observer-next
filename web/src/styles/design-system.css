@@ -364,6 +364,8 @@ input, select, textarea { caret-color: var(--accent); }
 .status-chip--stale { color: var(--warning); background: var(--warning-weak); }
 .status-chip--long { color: var(--danger); background: var(--danger-weak); }
 .status-chip--yesterday { color: var(--muted); background: var(--surface-muted); }
+/* 已刪文：作者把文章全刪了 — 用 danger 表現，與「停更」的 warning 區分 */
+.status-chip--deleted { color: var(--danger); background: var(--danger-weak); }
 /* 鐵人煉成：完賽榮譽 chip — 綠 + 呼吸發光 */
 .status-chip--done {
   color: var(--success);
@@ -505,6 +507,8 @@ input, select, textarea { caret-color: var(--accent); }
 }
 .day-badge--pending { color: var(--warning); background: var(--warning-weak); }
 .day-badge--done { color: var(--success); background: color-mix(in srgb, var(--success) 16%, transparent); }
+/* 已刪文：作者刪光文章 — danger 色（與「尚未開賽」的 warning 區分） */
+.day-badge--deleted { color: var(--danger); background: var(--danger-weak); }
 
 /* ---------- List row ---------- */
 .series-row {

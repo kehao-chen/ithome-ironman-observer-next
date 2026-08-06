@@ -1,15 +1,17 @@
 ---
 // web/src/components/SeriesCard.astro
 import type { Series } from "../../../scripts/types";
-import { statusChip, statusChipText, statusChipTitle, taipeiToday } from "../lib/daily-status";
+import { isDeletedSeries, statusChip, statusChipText, statusChipTitle, taipeiToday } from "../lib/daily-status";
 interface Props { series: Series }
 const { series: s } = Astro.props;
 const latest = s.articles[s.articles.length - 1];
 const totalViews = s.articles.reduce((n, a) => n + a.views, 0);
-const isPending = s.dayCount === 0;
+const isDeleted = isDeletedSeries(s.dayCount, s.articleCount);
+const isPending = !isDeleted && s.dayCount === 0;
 const isDone = s.dayCount >= 30;
-const badgeClass = isDone ? "day-badge day-badge--done" : isPending ? "day-badge day-badge--pending" : "day-badge";
-const badgeText = isPending ? "尚未開賽" : isDone ? "完賽" : `DAY ${s.dayCount}`;
+const badgeClass = isDeleted ? "day-badge day-badge--deleted" : isDone ? "day-badge day-badge--done" : isPending ? "day-badge day-badge--pending" : "day-badge";
+// 刪文案例保留歷史進度（他奮鬥到 DAY n）；狀態由 chip「已刪文」標示，badge 以 danger 色暗示異常。
+const badgeText = isDeleted ? `DAY ${s.dayCount}` : isPending ? "尚未開賽" : isDone ? "完賽" : `DAY ${s.dayCount}`;
 const fillClass = isDone ? "progress-fill progress-fill--done" : isPending ? "progress-fill progress-fill--pending" : "progress-fill";
 const pct = Math.min((s.dayCount / 30) * 100, 100);
 const label = `${Math.min(s.dayCount, 30)}/30`;
@@ -19,12 +21,13 @@ const rssUrl = `https://ithelp.ithome.com.tw/rss/series/${s.id}`;
 // Clean absolute fallback (source tz, no-JS); JS swaps to browser-local + relative.
 const tsFallback = latest && latest.publishedAt ? latest.publishedAt.replace("T", " ").slice(0, 16) : "";
 // 動態狀態 chip（SSR build 時點的臺北日；client 首次 render 會用最新覆蓋）。
-const chip = statusChip(latest?.publishedAt, s.dayCount, taipeiToday());
+const chip = statusChip(latest?.publishedAt, s.dayCount, taipeiToday(), s.articleCount);
 const chipText = statusChipText(chip);
 const chipTitle = statusChipTitle(chip);
 const chipClass = !chip ? "" : chip.kind === "today" ? "status-chip"
   : chip.kind === "yesterday" ? "status-chip status-chip--yesterday"
   : chip.kind === "done" ? "status-chip status-chip--done"
+  : chip.kind === "deleted" ? "status-chip status-chip--deleted"
   : chip.kind === "long-stale" ? "status-chip status-chip--long" : "status-chip status-chip--stale";
 ---
 

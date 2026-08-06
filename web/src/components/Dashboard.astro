@@ -101,7 +101,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   window.IRONMAN_DATA = initialData;
 </script>
 <script>
-  import { statusChip, statusChipText, statusChipTitle, taipeiDay, taipeiToday } from "../lib/daily-status";
+  import { isDeletedSeries, statusChip, statusChipText, statusChipTitle, taipeiDay, taipeiToday } from "../lib/daily-status";
   const list = document.getElementById("series-list")!;
   const updatedAt = document.getElementById("updated-at")!;
   const seriesCount = document.getElementById("series-count")!;
@@ -163,12 +163,13 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   function profileUrl(s: any) { return `https://ithelp.ithome.com.tw/users/${s.user.id}`; }
   function rssUrl(s: any) { return `https://ithelp.ithome.com.tw/rss/series/${s.id}`; }
   function chip(s: any): HTMLElement | null {
-    const c = statusChip(lastPubIso(s), s.dayCount, today);
+    const c = statusChip(lastPubIso(s), s.dayCount, today, s.articleCount);
     if (!c) return null;
     const el = document.createElement("span");
     el.className = c.kind === "today" ? "status-chip"
       : c.kind === "yesterday" ? "status-chip status-chip--yesterday"
       : c.kind === "done" ? "status-chip status-chip--done"
+      : c.kind === "deleted" ? "status-chip status-chip--deleted"
       : c.kind === "long-stale" ? "status-chip status-chip--long" : "status-chip status-chip--stale";
     el.textContent = statusChipText(c);
     const t = statusChipTitle(c);
@@ -176,11 +177,14 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     return el;
   }
   function badgeClass(s: any) {
+    if (isDeletedSeries(s.dayCount, s.articleCount)) return "day-badge day-badge--deleted";
     if (s.dayCount >= 30) return "day-badge day-badge--done";
     if (s.dayCount === 0) return "day-badge day-badge--pending";
     return "day-badge";
   }
   function badgeText(s: any) {
+    // 刪文案例保留歷史進度 DAY n（他奮鬥到哪天）；狀態由 chip 標示，badge 以 danger 色暗示異常。
+    if (isDeletedSeries(s.dayCount, s.articleCount)) return `DAY ${s.dayCount}`;
     if (s.dayCount === 0) return "尚未開賽";
     if (s.dayCount >= 30) return "完賽";
     return `DAY ${s.dayCount}`;
