@@ -402,6 +402,24 @@ input, select, textarea { caret-color: var(--accent); }
 .card-action:hover { color: var(--accent); background: var(--accent-weak); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
 .card-action svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; }
 
+/* 收藏星號（grid + list 共用）——預設 outline，收藏時填色 + accent */
+.card-fav svg { transition: fill 0.12s ease, color 0.12s ease; }
+.card-fav[aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--accent-weak);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.card-fav[aria-pressed="true"] svg { fill: currentColor; }
+@keyframes fav-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+.fav-pop { animation: fav-pop 0.25s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .fav-pop { animation: none; }
+}
+
 /* Progress bar (the marathon score) */
 .progress {
   display: flex;
@@ -598,6 +616,29 @@ input, select, textarea { caret-color: var(--accent); }
   padding-left: var(--space-4);
   color: var(--danger);
 }
+
+/* 我的收藏：filter 按鈕醒目標記（星號）＋空狀態引導 */
+.filter-btn[data-group="fav"] .filter-label::before {
+  content: "☆ ";
+  color: var(--accent);
+}
+.filter-btn[data-active="true"][data-group="fav"] .filter-label::before {
+  content: "★ ";
+}
+.fav-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.fav-empty-hint {
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--muted);
+  opacity: 0.8;
+}
+.fav-empty[hidden] { display: none; }
 
 /* ---------- RSS modal ---------- */
 .modal { display: none; }
