@@ -14,12 +14,13 @@
 - **Scraper 零變動**：`scripts/`、`daily-status.ts`、RSS modal、`data/` shape、`.github/workflows/` 皆不改。
 - **DOM 安全**：使用者/爬蟲資料一律 `textContent`；唯一允許 `innerHTML` 的是程式內常數 SVG 樣板（無使用者資料）。
 - **localStorage 降級**：`window.localStorage` getter / `getItem` / `setItem` 任一步 throw → `getStorage()` 回傳 `null` → `loadFavorites(null)` 空集合、`saveFavorites(null, …)` no-op。**getter throw 必須由 wrapper 捕捉（函式內 try/catch 捕捉不到參數求值階段）。**
-- **ID 有效性**：只有 `Number.isSafeInteger(id) && id > 0` 是合法收藏 ID；`toggleFavorite` 對非法 id no-op、UI handler 也防禦（雙層）。
+- **ID 有效性**：只有 `Number.isSafeInteger(id) && id > 0` 是合法收藏 ID；`toggleFavorite` 對非法 id no-op、UI handler 也防禦（雙層）。`saveFavorites` 預期接收由 `toggleFavorite`/`loadFavorites` 產生的合法 ID 集合，**不負責重新驗證資料**。
 - **版本策略**：key 不帶版本；解析失敗回傳空集合，**禁止自動遷移/覆寫**。
 - **`fav-count` 語意**：目前年度資料中存在且已收藏的系列數（非跨年度總數）。
 - **分母語意**：一般分頁 `shown / data.series.length`；收藏分頁 `shown / 目前年度收藏數`；無收藏 `0 / 0`。
-- **年度切換**：active filter（含 fav）跨年度保留；收藏 ID 在新年度不存在者自然排除。
-- **驗證門檻**：`bun test` 全綠、`bunx tsc --noEmit` 乾淨、`cd web && bun run build` 成功。
+- **年度切換**：active filter 跨年度保留；**普通組別在新年度不存在時 fallback 到「全部」（fav 恆保留）**；收藏 ID 在新年度不存在者自然排除。
+- **空狀態是 render state**：`#fav-empty` 由 `applyFilter` 每次重建（`list.replaceChildren()` 會移除 SSR 節點，不能依賴 SSR 初始節點）。
+- **驗證門檻**：`bun test` 全綠、`cd web && bunx astro check` 乾淨、`bunx tsc --noEmit` 乾淨、`cd web && bun run build` 成功。
 
 ---
 
@@ -35,6 +36,7 @@
   - `export function loadFavorites(storage: StorageLike | null): Set<number>;`
   - `export function saveFavorites(storage: StorageLike | null, ids: Iterable<number>): void;`
   - `export function toggleFavorite(set: ReadonlySet<number>, id: number): Set<number>;`
+  - `export function isValidFavoriteId(id: number): boolean;`
 
 - [ ] **Step 1: 寫失敗測試**
 
@@ -194,6 +196,7 @@ export function loadFavorites(storage: StorageLike | null): Set<number> {
 }
 
 // storage 不可用（null）或 setItem throw → 靜默 no-op。
+// 預期接收由 toggleFavorite／loadFavorites 產生的合法 ID 集合；不負責重新驗證資料。
 export function saveFavorites(storage: StorageLike | null, ids: Iterable<number>): void {
   if (!storage) return;
   try {
@@ -270,11 +273,33 @@ git commit -m "feat(web): star toggle button in SeriesCard SSR"
 **Interfaces:**
 - Consumes: `favorites.ts`（Task 1）的 `loadFavorites`/`saveFavorites`/`toggleFavorite`/`isValidFavoriteId`。
 - Produces（CSS Task 4 依賴）：
-  - SSR filter 按鈕：`<button data-group="fav" class="filter-btn" data-active="false"><span class="filter-label">我的收藏</span><span class="filter-count tabular-nums" id="fav-count">0</span></button>`（`#group-filters` 最左）。
-  - 空狀態容器：`<div class="fav-empty" id="fav-empty" hidden><p>尚未收藏任何系列</p><p class="fav-empty-hint">點卡片右上角星號開始追蹤你關心的系列。</p></div>`（`#series-list` 內、SSR 恆輸出、`hidden`）。
+  - SSR filter 按鈕：`<button data-group="fav" class="filter-btn" data-active="false"><span class="filter-label">我的收藏</span><span class="filter-count tabular-nums" id="fav-count">0</span></button>`（`#group-filters` 最左，`{groups.map(...)}` 之前）。
+  - 空狀態容器：`<div class="fav-empty" id="fav-empty" hidden>…</div>`（`#series-list` 內、`{data.series.map(...)}` 之後、SSR 恆輸出、`hidden`）——**注意：client 首次 render 的 `list.replaceChildren()` 會移除它；空狀態是 `applyFilter` 的 render output（Task 3 Step 7 每次重建），SSR 節點只是 no-JS 兜底，不可依賴**。
   - 動態按鈕：`.card-fav`（grid `renderCard` 與 list `renderRow` 皆輸出，SVG 用常數 `FAV_ICON`）。
 
-- [ ] **Step 1: 加 import + storage wrapper + 模組級狀態**
+- [ ] **Step 1: SSR markup — 收藏分頁按鈕 + 空狀態容器**
+
+`web/src/components/Dashboard.astro`：
+
+1. `#group-filters` 內、`{groups.map((g) => (…))}` **之前**加：
+
+```astro
+      <button data-group="fav" class="filter-btn" data-active="false">
+        <span class="filter-label">我的收藏</span>
+        <span class="filter-count tabular-nums" id="fav-count">0</span>
+      </button>
+```
+
+2. `#series-list` 內、`{data.series.map((s) => <SeriesCard series={s} />)}` **之後**加（保留既有 map）：
+
+```astro
+    <div class="fav-empty" id="fav-empty" hidden>
+      <p>尚未收藏任何系列</p>
+      <p class="fav-empty-hint">點卡片右上角星號開始追蹤你關心的系列。</p>
+    </div>
+```
+
+- [ ] **Step 2: 加 import + storage wrapper + 模組級狀態**
 
 Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/daily-status";` 之後）加：
 
@@ -288,7 +313,7 @@ Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/dail
   let favSet = new Set<number>(loadFavorites(storage));
 ```
 
-- [ ] **Step 2: 加 FAV_ICON 常數**
+- [ ] **Step 3: 加 FAV_ICON 常數**
 
 `const RSS_ICON = svgEl(...)` 附近加：
 
@@ -298,7 +323,7 @@ Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/dail
   ]);
 ```
 
-- [ ] **Step 3: 加 fav 狀態 helper（renderFilters 前）**
+- [ ] **Step 4: 加 fav 狀態 helper（renderFilters 前）**
 
 ```ts
   function currentGroup(): string {
@@ -309,17 +334,14 @@ Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/dail
   function favSeries(data: any): any[] { return data.series.filter((s: any) => favSet.has(s.id)); }
   // 收藏分頁的 shown/total 分母：目前年度可顯示收藏數。
   function currentYearFavCount(data: any): number { return favSeries(data).length; }
-  // 收藏分頁時移除空狀態容器並回傳收藏子集；非收藏分頁回傳 null（沿用原流程）。
-  function favFiltered(data: any, group: string): any[] | null {
-    if (group !== "fav") return null;
-    const series = favSeries(data);
-    const empty = document.getElementById("fav-empty");
-    if (empty) empty.hidden = series.length > 0;
-    return series;
+  // 年度切換時 resolve active：fav 恆保留；普通組別在新年度不存在 → fallback「全部」。
+  function activeGroupFor(groups: string[], requested: string): string {
+    if (requested === "fav") return "fav";
+    return groups.includes(requested) ? requested : "全部";
   }
 ```
 
-- [ ] **Step 4: renderFilters 加「我的收藏」按鈕 + 保留 active**
+- [ ] **Step 5: renderFilters 加「我的收藏」按鈕 + 保留 active**
 
 `renderFilters` 內 `for (const g of groups)` 之前加：
 
@@ -339,44 +361,63 @@ Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/dail
     wrap.appendChild(favBtn);
 ```
 
-- [ ] **Step 5: render() 年度切換保留 active + 更新 fav-count**
+- [ ] **Step 6: render() 年度切換保留 active（含 fallback）+ 更新 fav-count**
 
 `render()` 內 `if (lastRenderedYear !== data.year)` 區塊替換為：
 
 ```ts
     if (lastRenderedYear !== data.year) {
       lastRenderedYear = data.year;
-      // 年度切換保留目前 active（含「我的收藏」），不重設為「全部」。
-      renderFilters(["全部", ...data.groups], groupCounts(data), currentGroup());
+      const groups = ["全部", ...data.groups];
+      // 年度切換保留目前 active；普通組別在新年度不存在 → fallback「全部」（fav 恆保留）。
+      const active = activeGroupFor(groups, currentGroup());
+      renderFilters(groups, groupCounts(data), active);
     }
     const favCount = document.getElementById("fav-count");
     if (favCount) favCount.textContent = String(currentYearFavCount(data));
 ```
 
-- [ ] **Step 6: applyFilter 支援 fav 子集 + 分母語意**
+- [ ] **Step 7: applyFilter 支援 fav 子集 + 分母語意 + 空狀態 render output**
 
 `applyFilter` 內 `let series = data.series; if (group !== "全部") ...` 改為：
 
 ```ts
     let series: any[] = data.series;
     if (group === "fav") {
-      const fav = favFiltered(data, group);
-      series = fav ?? [];
+      series = favSeries(data); // 收藏分頁：目前年度已收藏子集
     } else if (group !== "全部") {
       series = series.filter((s: any) => s.group === group);
     }
 ```
 
-`applyFilter` 結尾（`list.appendChild(frag);` 之後）改為：
+`applyFilter` 結尾（`const frag = document.createDocumentFragment();` 那段）整段替換為：
 
 ```ts
+    list.replaceChildren();
+    if (group === "fav" && series.length === 0) {
+      // 空狀態是每次 render 的 output：replaceChildren() 已移除 SSR 節點，必須重建。
+      const empty = document.createElement("div");
+      empty.className = "fav-empty";
+      empty.id = "fav-empty";
+      const p1 = document.createElement("p");
+      p1.textContent = "尚未收藏任何系列";
+      const p2 = document.createElement("p");
+      p2.className = "fav-empty-hint";
+      p2.textContent = "點卡片右上角星號開始追蹤你關心的系列。";
+      empty.append(p1, p2);
+      list.appendChild(empty);
+    } else {
+      const frag = document.createDocumentFragment();
+      for (const s of series) frag.appendChild(viewMode === "list" ? renderRow(s) : renderCard(s));
+      list.appendChild(frag);
+    }
     shownCount.textContent = String(series.length);
     // 分母語意：收藏分頁 = 目前年度可顯示收藏數；一般分頁 = 年度全部系列數。
     totalCount.textContent = String(group === "fav" ? currentYearFavCount(data) : data.series.length);
     humanizeAll();
 ```
 
-- [ ] **Step 7: renderCard 加星號（grid 動態卡片）**
+- [ ] **Step 8: renderCard 加星號（grid 動態卡片）**
 
 `renderCard` 內 `right.append(stat, rss)` 之前加：
 
@@ -391,7 +432,7 @@ Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/dail
 
 改為 `right.append(fav, stat, rss);`。
 
-- [ ] **Step 8: renderRow 加星號（list view）**
+- [ ] **Step 9: renderRow 加星號（list view）**
 
 `renderRow` 內 `actions.append(rss, open)` 之前加：
 
@@ -406,7 +447,7 @@ Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/dail
 
 改為 `actions.append(fav, rss, open);`。
 
-- [ ] **Step 9: 事件委派 toggle handler**
+- [ ] **Step 10: 事件委派 toggle handler**
 
 `/* ---------- Events ---------- */` 的 `groupFilters?.addEventListener("click", ...)` 區塊加（`#series-list` 委派，與既有 `document.addEventListener("click", ...)` 處理 `[data-rss]` 並存）：
 
@@ -425,13 +466,13 @@ Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/dail
     const favCount = document.getElementById("fav-count");
     if (favCount && current) favCount.textContent = String(currentYearFavCount(current));
     if (isFavView() && current) {
-      // 收藏分頁：子集變了 → 重 render（取消收藏的卡片立即移出）。
+      // 收藏分頁：子集變了 → 重 render（取消收藏的卡片立即移出，空狀態由 applyFilter 重建）。
       applyFilter(current, "fav", (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
     }
   });
 ```
 
-- [ ] **Step 10: 首輪同步 SSR 星號狀態**
+- [ ] **Step 11: 首輪同步 SSR 星號狀態**
 
 `render((window as any).IRONMAN_DATA);` 之前加：
 
@@ -443,7 +484,7 @@ Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/dail
   });
 ```
 
-- [ ] **Step 11: fav-pop 動畫清理（animationend）**
+- [ ] **Step 12: fav-pop 動畫清理（animationend）**
 
 `list.addEventListener("click", ...)` 之後加：
 
@@ -454,12 +495,12 @@ Dashboard `<script>` 頂部（`import { isDeletedSeries, ... } from "../lib/dail
   });
 ```
 
-- [ ] **Step 12: Build + 既有測試**
+- [ ] **Step 13: Build + astro check + 既有測試**
 
-Run: `cd web && bun run build && cd .. && bun test`
-Expected: build 成功；`bun test` 全綠（既有 + Task 1 新增）。
+Run: `cd web && bunx astro check && bun run build && cd .. && bun test`
+Expected: astro check 乾淨、build 成功、`bun test` 全綠（既有 + Task 1 新增）。
 
-- [ ] **Step 13: Commit**
+- [ ] **Step 14: Commit**
 
 ```bash
 git add web/src/components/Dashboard.astro
@@ -624,28 +665,46 @@ git commit -m "docs: mark favorites roadmap item done"
 **Interfaces:**
 - 驗證 Task 1–4 的整合行為。
 
-- [ ] **Step 1: 啟動 preview server**
+- [ ] **Step 1: 啟動 preview server + 清空既有 localStorage**
 
 Run: `cd web && bun run preview`（或 `bun run dev`），背景執行，記住 port（預設 4321）。
 
+開啟瀏覽器後**先**執行（避免前次測試殘留造成非決定性結果）：
+
+```js
+localStorage.removeItem("ironman-observer:favorites");
+localStorage.removeItem("view"); // 避免殘留 list view 影響初始 grid 驗證
+location.reload();
+```
+
 - [ ] **Step 2: 驗證收藏流程（browser automation）**
 
-用 browser 工具（Chromium）依序驗證：
-
 1. 載入首頁 → 確認 `.card-fav` 出現、`aria-pressed="false"`、未填色；「我的收藏」tab 出現、`#fav-count` 0。
-2. 點第一張卡片的星號 → `aria-pressed="true"`、填色（`fill: currentColor`）＋`fav-pop` 動畫 class；`#fav-count` 變 1。
-3. `localStorage.getItem("ironman-observer:favorites")` → 含該系列 id。
-4. 切到「我的收藏」分頁 → 只顯示該系列；切換排序（進度/最多觀看/今日發文）正常。
-5. 取消最後一個收藏 → 卡片立即移出、出現「尚未收藏任何系列」引導；`shown-count` 顯示 `0 / 0`。
-6. 重新整理 → 收藏保留（localStorage 持久）。
-7. 切到 list view → 每列有 `.card-fav`、狀態與 grid 一致、可取消；切回 grid → 同步。
-8. 無 console error；星號 focus 可見（鍵盤 Tab）。
+2. 點第一張卡片的星號 → **立即（同步）檢查**：`aria-pressed="true"`、填色（`fill: currentColor`）、`fav-pop` class 存在、`#fav-count` 1；`localStorage.getItem("ironman-observer:favorites")` 含該系列 id。
+   - `fav-pop` 驗證時機：`animationend` 0.25s 後會移除 class——點擊後立刻讀取，不要等動畫結束。
+   - 等待 `animationend`（約 0.3s）後確認 class 已被移除。
+   - **prefers-reduced-motion 例外**：若系統設定 reduced-motion，`fav-pop` 動畫被 CSS 關閉（`animation: none`），class 可能因無動畫而不觸發 animationend——此模式下只驗證 `aria-pressed`/填色/localStorage，不驗證動畫 class。
+3. 切到「我的收藏」分頁 → 只顯示該系列；切換排序（進度/最多觀看/今日發文）正常。
+4. **空狀態再次出現**：取消最後一個收藏 → 卡片立即移出、空狀態「尚未收藏任何系列」出現（驗證 `applyFilter` 重建、非 SSR 殘留）、`shown-count` 顯示 `0 / 0`。
+5. 重新整理 → 收藏保留（localStorage 持久）。
+6. 切到 list view → 每列有 `.card-fav`、狀態與 grid 一致、可取消；切回 grid → 同步。
+7. 無 console error；星號 focus 可見（鍵盤 Tab）。
 
 - [ ] **Step 3: 年度切換驗證（如有第二年度資料）**
 
-若有 `data/{other-year}.json` 且 meta.years 含之：切換年度 → 仍停留在「我的收藏」分頁（active 不重設）、`#fav-count` 依新年度重算、新年度無對應收藏 → 空狀態 `0 / 0`。若只有 2026 一年，此步略過（無年度切換入口）。
+若有 `data/{other-year}.json` 且 meta.years 含之：
 
-- [ ] **Step 4: 收尾**
+1. 在年度 A 收藏某系列 + active「我的收藏」分頁 → 切換年度 B → 仍停留在「我的收藏」分頁（active 不重設）、`#fav-count` 依新年度重算、新年度無對應收藏 → 空狀態 `0 / 0`。
+2. **普通組別 fallback**：年度 A active 某組別（如「Software Development」）→ 切換到沒有該組別的年度 B → 該組別按鈕不存在、**「全部」為 active**、列表顯示年度 B 完整資料。
+3. 年度 A/B 都有 fav 時 → fav 維持 active。
+
+若只有 2026 一年，此步略過（無年度切換入口）。
+
+- [ ] **Step 4: 收尾清理**
+
+```js
+localStorage.removeItem("ironman-observer:favorites");
+```
 
 停止 preview server；確認無殘留 process。
 
@@ -657,26 +716,28 @@ Run: `cd web && bun run preview`（或 `bun run dev`），背景執行，記住 
 
 | Spec 需求 | Task |
 |---|---|
-| favorites.ts API（StorageLike \| null、純函數 toggle、非法 id no-op） | Task 1 |
+| favorites.ts API（StorageLike \| null、純函數 toggle、非法 id no-op、saveFavorites 契約） | Task 1 |
 | loadFavorites 容錯（getter/getItem throw、非 array、逐項過濾、去重、不覆寫） | Task 1 |
 | saveFavorites（null no-op、setItem throw 靜默） | Task 1 |
 | SeriesCard 星號（SSR grid） | Task 2 |
-| Dashboard 收藏分頁 + fav-count + 空狀態 + 分母語意 | Task 3 |
-| list view 同款星號（renderRow） | Task 3 Step 8 |
-| toggle 委派 + pop 動畫（含收藏分頁取消直接移除） | Task 3 Step 9/11 |
-| 年度切換保留 active + fav-count 重算 | Task 3 Step 5 |
-| SSR 首輪同步星號狀態 | Task 3 Step 10 |
+| Dashboard 收藏分頁 SSR markup（button + fav-empty） | Task 3 Step 1 |
+| Dashboard 收藏分頁 + fav-count + 空狀態（render output）+ 分母語意 | Task 3 Step 4/6/7 |
+| list view 同款星號（renderRow） | Task 3 Step 9 |
+| toggle 委派 + pop 動畫（含收藏分頁取消直接移除、空狀態重建） | Task 3 Step 10/12 |
+| 年度切換保留 active + 組別 fallback「全部」+ fav-count 重算 | Task 3 Step 6 |
+| SSR 首輪同步星號狀態 | Task 3 Step 11 |
 | CSS（星號填色、pop、收藏 tab 醒目、空狀態） | Task 4 |
 | README / PRODUCT 同步 | Task 5/6 |
-| 端到端驗證 | Task 7 |
+| 端到端驗證（含 localStorage 清理、reduced-motion 例外、fallback 案例） | Task 7 |
 
 **2. Placeholder scan:** 無 TBD/TODO；所有 code step 含完整 code block；驗證步驟有明確指令。
 
 **3. Type consistency:**
-- `StorageLike`（Task 1）→ `getStorage()` 回傳型別（Task 3 Step 1，`Pick<Storage, "getItem" | "setItem">` 相符）。
+- `StorageLike`（Task 1）→ `getStorage()` 回傳型別（Task 3 Step 2，`Pick<Storage, "getItem" | "setItem">` 相符）。
 - `loadFavorites`/`saveFavorites`/`toggleFavorite`/`isValidFavoriteId` 在 Task 3 使用與 Task 1 定義一致。
-- `favSeries`/`currentYearFavCount`/`favFiltered`/`currentGroup`/`isFavView` 在 render/applyFilter/toggle handler 使用一致。
-- `renderFilters(groups, counts, activeGroup)` 第三參數改傳 `currentGroup()`（Task 3 Step 5）與 Task 3 定義一致。
+- `favSeries`/`currentYearFavCount`/`currentGroup`/`isFavView`/`activeGroupFor` 在 render/applyFilter/toggle handler 使用一致。
+- `renderFilters(groups, counts, activeGroup)` 第三參數改傳 `activeGroupFor(...)` 的 resolved 值（Task 3 Step 6）——`renderFilters` 內部以 `activeGroup` 設 `data-active`，後續 `applyFilter` 讀 `currentGroup()` 取得同一 resolved 值，一致。
 - `applyFilter` 簽名不變（`(data, group, sort)`），toggle handler 呼叫 `applyFilter(current, "fav", sort)` 一致。
 - `FAV_ICON` 在 renderCard/renderRow 皆以 `cloneNode(true)` 使用。
-- `fav-pop` class 在 toggle handler 加、animationend 移除、CSS 定義——三處一致。
+- `fav-pop` class 在 toggle handler 加、animationend 移除、CSS 定義、reduced-motion 關閉——四處一致。
+- `#fav-empty`：SSR 輸出（hidden）→ 首次 render 被 `replaceChildren()` 移除 → `applyFilter` 在 fav 空子集時重建——生命週期一致（Task 3 Step 1/7/10）。
