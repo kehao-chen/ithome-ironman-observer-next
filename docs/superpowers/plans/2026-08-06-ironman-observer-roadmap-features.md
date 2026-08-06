@@ -30,7 +30,7 @@
 **Interfaces:**
 - Produces: `Manifest = { year: number; signupListUrl: string }`（entry 型別，不變）、`MetaJson = { latestYear: number; years: number[]; updatedAt: string; seriesCount: number }`。
 
-- [ ] **Step 1: manifest 改陣列**
+- [x] **Step 1: manifest 改陣列**
 
 `config/series-manifest.json` 內容改為：
 
@@ -40,7 +40,7 @@
 ]
 ```
 
-- [ ] **Step 2: types.ts 新增 MetaJson**
+- [x] **Step 2: types.ts 新增 MetaJson**
 
 `scripts/types.ts` 現有 `Manifest` 型別之後追加：
 
@@ -53,12 +53,12 @@ export type MetaJson = {
 };
 ```
 
-- [ ] **Step 3: 型別檢查**
+- [x] **Step 3: 型別檢查**
 
 Run: `bunx tsc --noEmit`
 Expected: 乾淨（scraper CLI 尚未改，仍以單一物件讀 manifest → 此刻可能有 `Manifest` 型別相容錯誤，屬預期，Task 2 修）。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add config/series-manifest.json scripts/types.ts
@@ -76,7 +76,7 @@ git commit -m "feat: manifest as year array, add MetaJson type"
 - Consumes: `runScrape(manifest: Manifest): Promise<YearData>`（不變）、`MetaJson`（Task 1）、`taipeiTimestamp`（現有）。
 - Produces: CLI 行為 — 依序每年度 `runScrape`；年度失敗（rejection 或 `series.length === 0`）記錄 `console.error` 後繼續；至少一年成功才一次寫出全部成功年度 `data/{year}.json` + `meta.json`，exit 0；全失敗零寫入，exit 1。
 
-- [ ] **Step 1: 重寫 CLI entry**
+- [x] **Step 1: 重寫 CLI entry**
 
 `scripts/scrape.ts` 的 `if (import.meta.main) { ... }` 整段替換為：
 
@@ -132,7 +132,7 @@ if (import.meta.main) {
 }
 ```
 
-- [ ] **Step 2: 確認 import**
+- [x] **Step 2: 確認 import**
 
 `scripts/scrape.ts` 頂部 import 確認含 `MetaJson` 型別：
 
@@ -140,22 +140,22 @@ if (import.meta.main) {
 import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel, MetaJson } from "./types";
 ```
 
-- [ ] **Step 3: 型別檢查**
+- [x] **Step 3: 型別檢查**
 
 Run: `bunx tsc --noEmit`
 Expected: 乾淨。
 
-- [ ] **Step 4: 既有測試**
+- [x] **Step 4: 既有測試**
 
 Run: `bun test scripts/scrape.test.ts`
 Expected: 3 pass（`runScrape`/`mergeCardsAndStats` 未動）。
 
-- [ ] **Step 5: 手動 dry-run（不打網）**
+- [x] **Step 5: 手動 dry-run（不打網）**
 
 Run: `bun -e "import('./scripts/scrape.ts').then(async m => { const { readFile } = await import('node:fs/promises'); const manifests = JSON.parse(await readFile('config/series-manifest.json','utf-8')); const ok = manifests.length === 1 && manifests[0].year === 2026; console.log('manifest array:', ok); })"`
 Expected: `manifest array: true`。
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add scripts/scrape.ts
@@ -174,7 +174,7 @@ git commit -m "feat(scraper): per-year isolation + atomic write in CLI"
 - Consumes: `YearData`、`MetaJson`（Task 1）。
 - Produces: `type ScrapeOutcome = { ok: true; data: YearData } | { ok: false; reason: string }`；`collectYears(manifests: Manifest[], run: (m: Manifest) => Promise<YearData>): Promise<{ succeeded: YearData[]; failures: string[] }>`（純函數，注入 run 以測 throw/空資料）；`buildMeta(succeeded: YearData[]): MetaJson`（純函數）。
 
-- [ ] **Step 1: 寫失敗測試**
+- [x] **Step 1: 寫失敗測試**
 
 Create `scripts/scrape-cli.test.ts`：
 
@@ -230,12 +230,12 @@ describe("buildMeta", () => {
 });
 ```
 
-- [ ] **Step 2: 跑測試確認失敗**
+- [x] **Step 2: 跑測試確認失敗**
 
 Run: `bun test scripts/scrape-cli.test.ts`
 Expected: FAIL — `collectYears`/`buildMeta` 未定義。
 
-- [ ] **Step 3: 實作純函數**
+- [x] **Step 3: 實作純函數**
 
 `scripts/scrape.ts` 的 `runScrape` 之後、CLI entry 之前插入：
 
@@ -275,7 +275,7 @@ export function buildMeta(succeeded: YearData[]): MetaJson {
 }
 ```
 
-- [ ] **Step 4: CLI entry 改用純函數**
+- [x] **Step 4: CLI entry 改用純函數**
 
 `scripts/scrape.ts` CLI entry 的 for 迴圈與 meta 建構替換為：
 
@@ -297,17 +297,17 @@ export function buildMeta(succeeded: YearData[]): MetaJson {
 
 （`collectYears` 內部已含 per-year try/catch 與空資料判定，CLI 不再重複。）
 
-- [ ] **Step 5: 跑測試確認通過**
+- [x] **Step 5: 跑測試確認通過**
 
 Run: `bun test scripts/scrape-cli.test.ts`
 Expected: 4 pass。
 
-- [ ] **Step 6: 全測試 + 型別**
+- [x] **Step 6: 全測試 + 型別**
 
 Run: `bun test && bunx tsc --noEmit`
 Expected: 既有 18 pass + 新增 4 pass；型別乾淨。
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add scripts/scrape.ts scripts/scrape-cli.test.ts
@@ -325,7 +325,7 @@ git commit -m "feat(scraper): extract collectYears/buildMeta pure helpers with t
 - Consumes: `data/` 下所有 `^\d{4}\.json$` 檔（不含 meta.json）。
 - Produces: `web/public/data/` 恰好含來源全部年度檔；先清除既有 `^\d{4}\.json$`（stale 防殘留）。
 
-- [ ] **Step 1: 改寫 copy-data.mjs**
+- [x] **Step 1: 改寫 copy-data.mjs**
 
 `web/scripts/copy-data.mjs` 整檔替換為：
 
@@ -355,7 +355,7 @@ for (const f of readdirSync(dataDir)) {
 console.log(`copied ${copied} year file(s) -> web/public/data`);
 ```
 
-- [ ] **Step 2: 驗證 multi-year copy + clean + 干擾檔排除**
+- [x] **Step 2: 驗證 multi-year copy + clean + 干擾檔排除**
 
 ```bash
 cd web && cp ../data/2026.json /tmp/2026.json && printf '{"year":2025,"updatedAt":"2025-01-01 00:00:00+08:00","groups":[],"series":[],"scrapeLog":[]}' > ../data/2025.json && echo '{}' > ../data/foo.json && echo '{}' > ../data/2026.backup.json && mkdir -p public/data && echo 'x' > public/data/2024.json && node scripts/copy-data.mjs && echo "--- public/data:" && ls public/data && rm ../data/2025.json ../data/foo.json ../data/2026.backup.json && mv /tmp/2026.json ../data/2026.json
@@ -364,13 +364,13 @@ cd web && cp ../data/2026.json /tmp/2026.json && printf '{"year":2025,"updatedAt
 Expected:
 - `public/data/` 含 `2025.json`、`2026.json`；**不含** `2024.json`（stale 清除）、`meta.json`、`foo.json`、`2026.backup.json`。
 
-- [ ] **Step 3: 清理驗證產物**
+- [x] **Step 3: 清理驗證產物**
 
 ```bash
 rm -f web/public/data/2025.json
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add web/scripts/copy-data.mjs
@@ -388,7 +388,7 @@ git commit -m "feat(web): clean+copy all year data files, exclude meta.json"
 - Consumes: `meta.json`（build 期 glob）、`data/{year}.json`（build 期 glob）。
 - Produces: `years: number[]`（`meta.years` ∩ 實際資料檔 keys）、`latestYear`、初始 `data`；Dashboard props 增加 `years`。移除 `ironman-data` CustomEvent 與 60s refresh（移入 Dashboard）。
 
-- [ ] **Step 1: frontmatter 改為 glob 年度資料 + meta**
+- [x] **Step 1: frontmatter 改為 glob 年度資料 + meta**
 
 `web/src/pages/index.astro` 的 frontmatter 替換為：
 
@@ -410,11 +410,11 @@ const data: YearData = dataByYear.get(latestYear)!;
 ---
 ```
 
-- [ ] **Step 2: `<title>` 帶 year**
+- [x] **Step 2: `<title>` 帶 year**
 
 `<title>鐵人觀察家 2026</title>` → `<title>鐵人觀察家 {latestYear}</title>`。
 
-- [ ] **Step 3: 移除 refresh script + CustomEvent**
+- [x] **Step 3: 移除 refresh script + CustomEvent**
 
 `<body>` 尾端整段移除：
 
@@ -428,16 +428,16 @@ const data: YearData = dataByYear.get(latestYear)!;
 
 （refresh 邏輯移入 Dashboard，Task 6。）
 
-- [ ] **Step 4: 傳 years prop**
+- [x] **Step 4: 傳 years prop**
 
 `<Dashboard data={data} />` → `<Dashboard data={data} years={years} />`。
 
-- [ ] **Step 5: 型別 + build**
+- [x] **Step 5: 型別 + build**
 
 Run: `bunx tsc --noEmit && cd web && bun run build`
 Expected: 型別乾淨、build 成功（Dashboard 尚未接受 `years` prop 的錯誤此刻會出現——Task 6 一併修）。
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add web/src/pages/index.astro
@@ -456,7 +456,7 @@ git commit -m "feat(web): glob year data + meta authority in index page"
 - Consumes: `years: number[]` prop（Task 5）、`YearData`（不變）。
 - Produces: `#year-select`（change → `loadYear`）、`#brand-year`、`#scrape-log`/`#scrape-log-count`/`#scrape-log-list`（固定容器）、`#group-filters` 容器委派、模組級 `fetchToken`、`loadYear(year)` + 60s interval、`renderFilters(groups, counts, activeGroup)`。
 
-- [ ] **Step 1: Props + SSR markup**
+- [x] **Step 1: Props + SSR markup**
 
 `web/src/components/Dashboard.astro` frontmatter：
 
@@ -490,7 +490,7 @@ const { data, years } = Astro.props;
 </details>
 ```
 
-- [ ] **Step 2: client script — 年度狀態 + token + loadYear**
+- [x] **Step 2: client script — 年度狀態 + token + loadYear**
 
 `<script>` 頂部（`let current: any = null;` 附近）追加：
 
@@ -516,7 +516,7 @@ const { data, years } = Astro.props;
   }
 ```
 
-- [ ] **Step 3: render() 同步 year/select/brand/scrapeLog + filter 重建**
+- [x] **Step 3: render() 同步 year/select/brand/scrapeLog + filter 重建**
 
 `render(data)` 開頭（`current = data;` 之後）插入：
 
@@ -573,7 +573,7 @@ const { data, years } = Astro.props;
 
 （`data.groups` 含全部組別；「全部」按鈕由 `renderFilters` 首項 `g === "全部"` 處理——`groups` 參數須含 `"全部"` 首項，見 Step 4 呼叫端。）
 
-- [ ] **Step 4: filter 事件委派 + 年度 select change + refresh interval**
+- [x] **Step 4: filter 事件委派 + 年度 select change + refresh interval**
 
 現有 `document.querySelectorAll(".filter-btn").forEach(...)` 綁定區塊**整個替換**為容器委派：
 
@@ -601,7 +601,7 @@ const { data, years } = Astro.props;
   setInterval(() => { if (current) loadYear(currentYear); }, 60_000);
 ```
 
-- [ ] **Step 5: 移除舊 refresh 依賴**
+- [x] **Step 5: 移除舊 refresh 依賴**
 
 確認 client script 不再有 `window.addEventListener("ironman-data", ...)`（Task 5 已移除 dispatch；此 listener 移除，改為初始 `render`）：
 
@@ -611,7 +611,7 @@ const { data, years } = Astro.props;
 
 （保留既有 `setInterval(() => { today = taipeiToday(); humanizeAll(); }, 60000)` 不變。）
 
-- [ ] **Step 6: `.scrape-log` 樣式**
+- [x] **Step 6: `.scrape-log` 樣式**
 
 `web/src/styles/design-system.css` 的 `.status-bar` 區塊之後追加：
 
@@ -639,12 +639,12 @@ const { data, years } = Astro.props;
 }
 ```
 
-- [ ] **Step 7: 型別 + build + 全測試**
+- [x] **Step 7: 型別 + build + 全測試**
 
 Run: `bunx tsc --noEmit && cd web && bun run build && cd .. && bun test`
 Expected: 全乾淨（`dashboard` client 內 `data`/`year` 等用 `any` 存取，無型別錯誤；Astro template 的 `hidden` 條件用三元字串合法）。
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add web/src/components/Dashboard.astro web/src/styles/design-system.css
@@ -663,31 +663,31 @@ git commit -m "feat(web): year switcher, fetch token, filter delegation, scrapeL
 **Interfaces:**
 - Consumes: Task 2–6 的實際行為（多年度、meta 語意、年度切換器、scrapeLog notice）。
 
-- [ ] **Step 1: README.md 單年度 → 多年度**
+- [x] **Step 1: README.md 單年度 → 多年度**
 
 - 架構段：`data/2026.json` → `data/{year}.json`（每年度一支）+ `meta.json`（`years` = 年度選項唯一權威）。
 - 本地開發段：`bun run scripts/scrape.ts` 說明改為「依 `config/series-manifest.json` 陣列逐年度抓取；全失敗零寫入、exit 1」。
 - 新增一句：「年度切換器（header select）以 `meta.json` 的 `years` 為唯一權威」。
 
-- [ ] **Step 2: PRODUCT.md**
+- [x] **Step 2: PRODUCT.md**
 
 - Stack 段：`data/2026.json` → `data/{year}.json` + `meta.json`（`years` 權威）。
 - Evidence 段：`data/2026.json` + `data/meta.json` 描述更新（meta 現含 `years`/`latestYear`）。
 - Roadmap near-term：第 1、3 項標記完成（`[x]`），保留第 2 項（今日發文已完成——補標）。
 - 加註 meta 語意：空資料年度保留舊檔、但選項縮小。
 
-- [ ] **Step 3: DEPLOYMENT-HANDOFF.md**
+- [x] **Step 3: DEPLOYMENT-HANDOFF.md**
 
 - 架構段（line ~23）：`data/2026.json + meta.json` → 「每年度 `data/{year}.json` + `meta.json`（`years` 權威）」。
 - 檔案地圖（line ~42-45）：scrape.ts 描述加「CLI 逐年度、per-year try/catch、atomic write」；index.astro 描述改「年度切換器 + 60s refresh 於 Dashboard」。
 - 已知問題區：追加「多年度」小節，載明：meta 語意、空資料年度行為、refresh/切換 race 已由 request token 防護。
 
-- [ ] **Step 4: 一致性檢查**
+- [x] **Step 4: 一致性檢查**
 
 Run: `grep -rn "data/2026.json" README.md PRODUCT.md docs/DEPLOYMENT-HANDOFF.md`
 Expected: 僅剩「既有/相容」語意的合理提及（例如證據段描述現有資料），無「架構上只有 2026」的陳述。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add README.md PRODUCT.md docs/DEPLOYMENT-HANDOFF.md
@@ -704,12 +704,12 @@ git commit -m "docs: multi-year + scrapeLog in README/PRODUCT/handoff"
 **Interfaces:**
 - Consumes: Task 1–7 全部產出。
 
-- [ ] **Step 1: 全測試 + 型別 + build**
+- [x] **Step 1: 全測試 + 型別 + build**
 
 Run: `bun test && bunx tsc --noEmit && cd web && bun run build && cd ..`
 Expected: 全綠；`web/public/data/` 含 `2026.json`、不含 `meta.json`。
 
-- [ ] **Step 2: 合成 2025 年度 — 切換器出現且切換正確**
+- [x] **Step 2: 合成 2025 年度 — 切換器出現且切換正確**
 
 ```bash
 cp data/2026.json /tmp/2026.json && node -e "
@@ -728,14 +728,14 @@ Run headless browser（Playwright/puppeteer，`npx astro preview` 或 `file://` 
 - 切回 2026 → 還原 127 系列、filter 恢復。
 - 無 console error。
 
-- [ ] **Step 3: scrapeLog transition + race**
+- [x] **Step 3: scrapeLog transition + race**
 
 - 初始空（現況）：`#scrape-log` 有 `hidden`。
 - 注入錯誤：`node -e "const fs=require('fs');const p='web/public/data/2026.json';const d=JSON.parse(fs.readFileSync(p,'utf-8'));d.scrapeLog=['9066: HTTP 403','9101: timeout'];fs.writeFileSync(p,JSON.stringify(d));"` → 手動 `loadYear` 或等 60s refresh → `#scrape-log` 出現、count = 2、展開兩條錯誤、無 XSS（list 內容 = text）。
 - 還原：`mv /tmp/2026.json data/2026.json && cd web && bun run build && cd ..` → refresh 後 `hidden` 回來。
 - Race：DevTools 網路 throttling 下快速 2026→2025→2026，或直接以不同延遲模擬兩次 `loadYear` 反序完成 → 最終畫面 = 最後一次呼叫的年度、`#year-select.value` 一致。
 
-- [ ] **Step 4: 清理合成產物**
+- [x] **Step 4: 清理合成產物**
 
 ```bash
 rm -f data/2025.json data/foo.json data/2026.backup.json web/public/data/2024.json web/public/data/2025.json
@@ -744,7 +744,7 @@ git status --short
 
 Expected: 工作樹乾淨（除既定變更）。
 
-- [ ] **Step 5: 最終 commit（若有殘留）**
+- [x] **Step 5: 最終 commit（若有殘留）**
 
 ```bash
 git add -A && git commit -m "chore: finalize multi-year + scrapeLog verification" || echo "nothing to commit"
