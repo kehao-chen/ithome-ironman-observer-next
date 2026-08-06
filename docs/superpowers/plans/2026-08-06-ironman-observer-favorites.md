@@ -73,8 +73,8 @@ describe("toggleFavorite", () => {
     s = toggleFavorite(s, 101);
     expect([...s]).toEqual([101]);
   });
-  test("移除不存在的 id 是 no-op", () => {
-    const s = new Set([101]);
+  test("移除已存在的 id", () => {
+    const s = new Set([101, 999]);
     expect([...toggleFavorite(s, 999)]).toEqual([101]);
   });
   test("不 mutation 原 Set（純函數）", () => {
