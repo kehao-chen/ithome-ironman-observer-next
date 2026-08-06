@@ -10,8 +10,11 @@ for (const [path, mod] of Object.entries(import.meta.glob(["../../../data/*.json
 }
 const meta = (await import("../../../data/meta.json").then((m) => m.default)) as MetaJson;// Authority: meta.years ∩ actually-present data files (defensive against stale meta).
 const years = meta.years.filter((y) => dataByYear.has(y)).sort((a, b) => b - a);
-const latestYear = years[0] ?? [...dataByYear.keys()].sort((a, b) => b - a)[0];
-const data: YearData = dataByYear.get(latestYear)!;
+// latestYear 正規化為 number（0 = 無可用年度）；避免 number | undefined（review #4b）。
+const latestYear = years[0] ?? [...dataByYear.keys()].sort((a, b) => b - a)[0] ?? 0;
+// 空資料 fallback：完全沒有可用 YearData 時不 crash，Dashboard 顯示空狀態（spec §6、review #4）。
+const emptyData: YearData = { year: 0, updatedAt: "", groups: [], series: [], scrapeLog: [] };
+const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYear.get(latestYear)! : emptyData;
 ---
 <!doctype html>
 <html lang="zh-Hant">
