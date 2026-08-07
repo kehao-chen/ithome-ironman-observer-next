@@ -171,6 +171,7 @@ input, select, textarea { caret-color: var(--accent); }
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 28%, transparent);
   animation: brand-pulse 2.6s ease-in-out infinite;
 }
+.brand-title .brand-next,
 .brand-title .brand-year {
   background: linear-gradient(120deg, var(--accent) 10%, #10b981 90%);
   -webkit-background-clip: text;
