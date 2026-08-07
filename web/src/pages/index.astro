@@ -2,6 +2,7 @@
 // web/src/pages/index.astro
 import Dashboard from "../components/Dashboard.astro";
 import type { MetaJson, YearData } from "../../../scripts/types";
+import "../styles/design-system.css";
 
 const dataByYear = new Map<number, YearData>();
 for (const [path, mod] of Object.entries(import.meta.glob(["../../../data/*.json", "!../../../data/meta.json"], { eager: true, import: "default" }))) {
@@ -26,9 +27,6 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
   <link rel="shortcut icon" href="/favicon.ico" />
-  <style is:global>
-    @import "../styles/design-system.css";
-  </style>
   <script is:inline>
     // Theme: auto (prefers-color-scheme) + manual toggle, persisted in localStorage.
     (function () {
