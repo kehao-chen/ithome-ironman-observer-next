@@ -417,7 +417,6 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
             chunkFrag.appendChild(viewMode === "list" ? renderRow(remaining[idx]) : renderCard(remaining[idx]));
           }
           list.appendChild(chunkFrag);
-          humanizeAll();
           if (idx < remaining.length) {
             if (typeof requestIdleCallback !== "undefined") requestIdleCallback(renderChunk);
             else setTimeout(renderChunk, 16);
