@@ -11,7 +11,7 @@
   --surface: #181b22;
   --surface-muted: #1f232c;
   --text: #e5e7eb;
-  --muted: #9ca3af;
+  --muted: #b0b7c3;
   --accent: #3b82f6;
   --accent-weak: rgba(59, 130, 246, 0.16);
   --success: #22c55e;
@@ -20,6 +20,12 @@
   --danger: #ef4444;
   --danger-weak: rgba(239, 68, 68, 0.16);
   --border: #2a2f3a;
+  --badge-accent-text: #60a5fa;
+  --badge-accent-count-text: #60a5fa;
+  --badge-warning-text: #f59e0b;
+  --badge-success-text: #22c55e;
+  --badge-danger-text: #f87171;
+  --badge-success-bg: color-mix(in srgb, var(--success) 16%, transparent);
 
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
@@ -55,7 +61,7 @@
   --surface: #ffffff;
   --surface-muted: #eef1f5;
   --text: #1a1f2e;
-  --muted: #6b7280;
+  --muted: #4b5563;
   --accent: #2563eb;
   --accent-weak: #eff6ff;
   --success: #16a34a;
@@ -64,6 +70,12 @@
   --danger: #dc2626;
   --danger-weak: #fef2f2;
   --border: #e5e7eb;
+  --badge-accent-text: #2563eb;
+  --badge-accent-count-text: #1d4ed8;
+  --badge-warning-text: #b45309;
+  --badge-success-text: #15803d;
+  --badge-danger-text: #b91c1c;
+  --badge-success-bg: color-mix(in srgb, var(--success) 8%, transparent);
 
   --shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
   --shadow-hover: 0 8px 24px rgba(15, 23, 42, 0.1);
@@ -76,7 +88,7 @@
     --surface: #ffffff;
     --surface-muted: #eef1f5;
     --text: #1a1f2e;
-    --muted: #6b7280;
+    --muted: #4b5563;
     --accent: #2563eb;
     --accent-weak: #eff6ff;
     --success: #16a34a;
@@ -85,6 +97,12 @@
     --danger: #dc2626;
     --danger-weak: #fef2f2;
     --border: #e5e7eb;
+    --badge-accent-text: #2563eb;
+    --badge-accent-count-text: #1d4ed8;
+    --badge-warning-text: #b45309;
+    --badge-success-text: #15803d;
+    --badge-danger-text: #b91c1c;
+    --badge-success-bg: color-mix(in srgb, var(--success) 8%, transparent);
     --shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
     --shadow-hover: 0 8px 24px rgba(15, 23, 42, 0.1);
   }
@@ -247,7 +265,7 @@ input, select, textarea { caret-color: var(--accent); }
 .filter-btn:hover { color: var(--text); border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
 .filter-btn[data-active="true"] {
   background: var(--accent-weak);
-  color: var(--accent);
+  color: var(--badge-accent-text);
   border-color: var(--accent);
 }
 .filter-count {
@@ -258,7 +276,7 @@ input, select, textarea { caret-color: var(--accent); }
   padding: 2px 5px;
   border-radius: var(--radius-pill);
 }
-.filter-btn[data-active="true"] .filter-count { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.filter-btn[data-active="true"] .filter-count { color: var(--badge-accent-count-text); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 
 .sort-select, .icon-btn {
   appearance: none;
@@ -426,7 +444,7 @@ input, select, textarea { caret-color: var(--accent); }
   font-family: var(--font-sans);
   font-size: var(--text-2xs);
   line-height: 1.4;
-  color: var(--accent);
+  color: var(--badge-accent-text);
   background: var(--accent-weak);
   padding: 2px 8px;
   border-radius: var(--radius-pill);
@@ -435,15 +453,15 @@ input, select, textarea { caret-color: var(--accent); }
   min-width: 72px;
   text-align: center;
 }
-.status-chip--stale { color: var(--warning); background: var(--warning-weak); }
-.status-chip--long { color: var(--danger); background: var(--danger-weak); }
+.status-chip--stale { color: var(--badge-warning-text); background: var(--warning-weak); }
+.status-chip--long { color: var(--badge-danger-text); background: var(--danger-weak); }
 .status-chip--yesterday { color: var(--muted); background: var(--surface-muted); }
 /* 已刪文：作者把文章全刪了 — 用 danger 表現，與「停更」的 warning 區分 */
-.status-chip--deleted { color: var(--danger); background: var(--danger-weak); }
+.status-chip--deleted { color: var(--badge-danger-text); background: var(--danger-weak); }
 /* 鐵人煉成：完賽榮譽 chip — 綠 + 呼吸發光 */
 .status-chip--done {
-  color: var(--success);
-  background: color-mix(in srgb, var(--success) 16%, transparent);
+  color: var(--badge-success-text);
+  background: var(--badge-success-bg);
   animation: chip-done-breathe 2.8s ease-in-out infinite;
 }
 @keyframes chip-done-breathe {
@@ -593,14 +611,14 @@ input, select, textarea { caret-color: var(--accent); }
   letter-spacing: 0.02em;
   padding: 4px var(--space-2);
   border-radius: var(--radius-pill);
-  color: var(--accent);
+  color: var(--badge-accent-text);
   background: var(--accent-weak);
   white-space: nowrap;
 }
-.day-badge--pending { color: var(--warning); background: var(--warning-weak); }
-.day-badge--done { color: var(--success); background: color-mix(in srgb, var(--success) 16%, transparent); }
+.day-badge--pending { color: var(--badge-warning-text); background: var(--warning-weak); }
+.day-badge--done { color: var(--badge-success-text); background: var(--badge-success-bg); }
 /* 已刪文：作者刪光文章 — danger 色（與「尚未開賽」的 warning 區分） */
-.day-badge--deleted { color: var(--danger); background: var(--danger-weak); }
+.day-badge--deleted { color: var(--badge-danger-text); background: var(--danger-weak); }
 
 /* ---------- List row ---------- */
 .series-row {
