@@ -5,6 +5,15 @@ import type { YearData } from "../../../scripts/types";
 
 interface Props { data: YearData; years: number[] }
 const { data, years } = Astro.props;
+const compactSeries = data.series.map((s) => {
+  const latest = s.articles.length ? s.articles[s.articles.length - 1] : null;
+  const sumViews = s.articles.reduce((n, a) => n + a.views, 0);
+  return {
+    ...s,
+    articles: latest ? [{ title: latest.title, url: latest.url, views: sumViews, publishedAt: latest.publishedAt }] : []
+  };
+});
+const compactData = { ...data, series: compactSeries };
 const groups = ["全部", ...data.groups];
 const countFor = (g: string) => g === "全部" ? data.series.length : data.series.filter((s) => s.group === g).length;
 const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slice(0, 16) : "";
@@ -89,7 +98,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     </details>
   </div>
   <div class="series-grid" id="series-list">
-    {data.series.slice(0, 24).map((s) => <SeriesCard series={s} />)}
+    {data.series.map((s) => <SeriesCard series={s} />)}
     <div class="fav-empty" id="fav-empty" role="status" aria-live="polite" tabindex="-1" hidden>
       <p>尚未收藏任何系列</p>
       <p class="fav-empty-hint">點卡片右上角星號開始追蹤你關心的系列。</p>
@@ -119,7 +128,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   </div>
 </div>
 
-<script is:inline define:vars={{ initialData: data }}>
+<script is:inline define:vars={{ initialData: compactData }}>
   window.IRONMAN_DATA = initialData;
 </script>
 <script>
@@ -150,7 +159,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   async function loadYear(year: number) {
     const token = ++fetchToken;
     try {
-      const res = await fetch(`/data/${year}.json?t=${Date.now()}`, { cache: "no-store" });
+      const res = await fetch(`/data/${year}.json`);
       if (!res.ok) return;
       const fresh = await res.json();
       if (token !== fetchToken) return; // stale response — a newer request owns the render
@@ -654,11 +663,6 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     const id = Number(b.dataset.favId);
     b.setAttribute("aria-pressed", String(favSet.has(id)));
   });
-  if (typeof requestIdleCallback !== "undefined") {
-    requestIdleCallback(() => render((window as any).IRONMAN_DATA));
-  } else {
-    setTimeout(() => render((window as any).IRONMAN_DATA), 0);
-  }
-  // Re-humanize periodically so relative times stay fresh (also re-anchors 臺北 today).
+  render((window as any).IRONMAN_DATA);
   setInterval(() => { today = taipeiToday(); humanizeAll(); }, 60000);
 </script>
