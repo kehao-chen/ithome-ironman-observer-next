@@ -400,9 +400,32 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       empty.append(p1, p2);
       list.appendChild(empty);
     } else {
+      const initialBatch = series.slice(0, 24);
+      const remaining = series.slice(24);
       const frag = document.createDocumentFragment();
-      for (const s of series) frag.appendChild(viewMode === "list" ? renderRow(s) : renderCard(s));
+      for (const s of initialBatch) frag.appendChild(viewMode === "list" ? renderRow(s) : renderCard(s));
       list.appendChild(frag);
+
+      if (remaining.length > 0) {
+        let idx = 0;
+        const chunkSize = 30;
+        function renderChunk() {
+          if (idx >= remaining.length) return;
+          const chunkFrag = document.createDocumentFragment();
+          const end = Math.min(idx + chunkSize, remaining.length);
+          for (; idx < end; idx++) {
+            chunkFrag.appendChild(viewMode === "list" ? renderRow(remaining[idx]) : renderCard(remaining[idx]));
+          }
+          list.appendChild(chunkFrag);
+          humanizeAll();
+          if (idx < remaining.length) {
+            if (typeof requestIdleCallback !== "undefined") requestIdleCallback(renderChunk);
+            else setTimeout(renderChunk, 16);
+          }
+        }
+        if (typeof requestIdleCallback !== "undefined") requestIdleCallback(renderChunk);
+        else setTimeout(renderChunk, 16);
+      }
     }
     shownCount.textContent = String(series.length);
     // 分母語意：收藏分頁 = 目前年度可顯示收藏數；一般分頁 = 年度全部系列數。
