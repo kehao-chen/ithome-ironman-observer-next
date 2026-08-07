@@ -410,6 +410,8 @@ input, select, textarea { caret-color: var(--accent); }
 
 /* ---------- Series card (grid) ---------- */
 .series-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 180px;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -622,6 +624,8 @@ input, select, textarea { caret-color: var(--accent); }
 
 /* ---------- List row ---------- */
 .series-row {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 48px;
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) 84px auto;
