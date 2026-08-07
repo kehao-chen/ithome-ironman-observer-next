@@ -13,7 +13,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
 <header class="site-header container">
   <div class="header-row">
     <div class="brand">
-      <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-year" id="brand-year">2026</span></h1>
+      <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-next">Next</span></h1>
       <p class="brand-sub">
         最後更新 <time id="updated-at" datetime={data.updatedAt} data-ts={data.updatedAt}>{updatedAtFallback}</time>
         · <span id="series-count" class="tabular-nums">{data.series.length}</span> 支系列
@@ -142,7 +142,6 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   let currentYear: number = (window as any).IRONMAN_DATA?.year ?? 0;
   let fetchToken = 0;
   const yearSelect = document.getElementById("year-select") as HTMLSelectElement | null;
-  const brandYear = document.getElementById("brand-year");
   const scrapeLog = document.getElementById("scrape-log");
   const scrapeLogCount = document.getElementById("scrape-log-count");
   const scrapeLogList = document.getElementById("scrape-log-list");
@@ -306,7 +305,6 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     current = data;
     currentYear = data.year;
     if (yearSelect) yearSelect.value = String(data.year);
-    if (brandYear) brandYear.textContent = String(data.year);
     // Rebuild group filters only when the year actually changed.
     if (lastRenderedYear !== data.year) {
       lastRenderedYear = data.year;

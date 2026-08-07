@@ -22,7 +22,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>鐵人觀察家 Insights {latestYear || ""}</title>
+  <title>鐵人觀察家 Next — Insights</title>
   <meta name="description" content={`${latestYear || ""} iThome 鐵人賽 Insights 分析：發文行為、人氣結構、組別分析與標題文字分析`} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
@@ -518,8 +518,6 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       renderCharts(d);
       const sel = document.getElementById("insight-year-select") as HTMLSelectElement | null;
       if (sel) sel.value = String(d.year);
-      const brandYear = document.getElementById("brand-year");
-      if (brandYear) brandYear.textContent = d.year ? String(d.year) : "";
     }
 
     // ── Fetch year ─────────────────────────────────────────────────────────
