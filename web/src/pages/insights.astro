@@ -49,8 +49,8 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
 
   <script>
     import * as echarts from "echarts/core";
-    import { BarChart, LineChart, ScatterChart } from "echarts/charts";
-    import { GridComponent, TooltipComponent } from "echarts/components";
+    import { BarChart, LineChart, ScatterChart, HeatmapChart } from "echarts/charts";
+    import { GridComponent, TooltipComponent, VisualMapComponent } from "echarts/components";
     import { CanvasRenderer } from "echarts/renderers";
     import {
       publishHourHistogram,
@@ -60,11 +60,14 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       titleKeywordStats,
       titleLengthDistribution,
       dayCountDistribution,
+      publishHeatmap,
+      engagementLeaderboard,
+      behindSchedule,
     } from "../lib/insights";
     import { DEFAULT_KEYWORDS } from "../lib/keywords";
     import type { YearData } from "../../../scripts/types";
 
-    echarts.use([BarChart, LineChart, ScatterChart, GridComponent, TooltipComponent, CanvasRenderer]);
+    echarts.use([BarChart, LineChart, ScatterChart, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent, CanvasRenderer]);
 
     // ── State ──────────────────────────────────────────────────────────────
     const initialData = (window as any).INSIGHTS_DATA as YearData;
@@ -106,6 +109,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         text:         v("--text"),
         border:       v("--border"),
         surfaceMuted: v("--surface-muted"),
+        danger:       v("--danger"),
       };
     }
 
@@ -346,6 +350,123 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         }, true);
       }
 
+      // 8. 星期 × 小時 熱力圖 ──────────────────────────────────────────────
+      {
+        const hm = publishHeatmap(arts);
+        const peak = hm.data.reduce((a, b) => (b[2] > a[2] ? b : a), [0, 0, 0] as [number, number, number]);
+        getChart("chart-heatmap")?.setOption({
+          backgroundColor: "transparent",
+          grid: { top: 16, right: 12, bottom: 48, left: 12, containLabel: true },
+          tooltip: {
+            ...tip(c),
+            formatter: (p: any) =>
+              `${hm.weekdays[p.value[1]]} · ${String(p.value[0]).padStart(2, "0")} 時：${p.value[2]} 篇`,
+          },
+          visualMap: {
+            min: 0,
+            max: peak[2] || 1,
+            calculable: false,
+            orient: "horizontal",
+            left: "center",
+            bottom: 4,
+            itemWidth: 12,
+            itemHeight: 120,
+            textStyle: { color: c.muted, fontSize: 10, fontFamily: "inherit" },
+            inRange: { color: [c.surfaceMuted, c.accent, c.warning] },
+          },
+          xAxis: {
+            type: "category",
+            data: hm.hours.map((h) => String(h).padStart(2, "0")),
+            ...ax,
+            axisLabel: { ...ax.axisLabel, interval: 2 },
+            splitArea: { show: false },
+          },
+          yAxis: { type: "category", data: hm.weekdays, ...ax, splitArea: { show: false } },
+          series: [{
+            type: "heatmap",
+            data: hasArts ? hm.data : [],
+            label: { show: false },
+            emphasis: { itemStyle: { borderColor: c.text, borderWidth: 1 } },
+          }],
+        }, true);
+      }
+
+      // 9. 互動轉換率排行（views → like）────────────────────────────────────
+      {
+        const eng = engagementLeaderboard(d.series, { minViews: 50, metric: "likeRate", limit: 12 });
+        const engEl = document.getElementById("chart-engage");
+        if (engEl && eng.length > 0) engEl.style.height = `${eng.length * 28 + 24}px`;
+        getChart("chart-engage")?.setOption({
+          backgroundColor: "transparent",
+          grid: { top: 12, right: 56, bottom: 12, left: 12, containLabel: true },
+          tooltip: {
+            trigger: "item",
+            ...tip(c),
+            formatter: (p: any) => {
+              const r = eng[p.dataIndex];
+              return r
+                ? `<b>${r.title}</b><br/>${(r.likeRate * 100).toFixed(1)}% 按讚率<br/>${r.likes} 讚 · ${r.views.toLocaleString()} 觀看 · ${r.comments} 留言`
+                : "";
+            },
+          },
+          xAxis: {
+            type: "value",
+            name: "按讚率 %",
+            nameTextStyle: { color: c.muted, fontSize: 11 },
+            ...ax,
+            axisLabel: { ...ax.axisLabel, formatter: (v: number) => `${v}%` },
+          },
+          yAxis: {
+            type: "category",
+            data: hasSeries ? eng.map((r) => r.title) : [],
+            inverse: true,
+            ...ax,
+            axisLabel: { ...ax.axisLabel, width: 150, overflow: "truncate" },
+          },
+          series: [{
+            type: "bar",
+            data: hasSeries ? eng.map((r) => +(r.likeRate * 100).toFixed(2)) : [],
+            itemStyle: { color: c.success, borderRadius: [0, 2, 2, 0] },
+            label: { show: true, position: "right", color: c.muted, fontSize: 10, fontFamily: "inherit", formatter: (p: any) => `${p.value}%` },
+          }],
+        }, true);
+      }
+
+      // 10. 完賽風險：進度落後天數 ────────────────────────────────────────────
+      {
+        const risk = behindSchedule(d.series, d.updatedAt);
+        const riskEl = document.getElementById("chart-risk");
+        if (riskEl && risk.length > 0) riskEl.style.height = `${risk.length * 28 + 24}px`;
+        getChart("chart-risk")?.setOption({
+          backgroundColor: "transparent",
+          grid: { top: 12, right: 56, bottom: 12, left: 12, containLabel: true },
+          tooltip: {
+            trigger: "item",
+            ...tip(c),
+            formatter: (p: any) => {
+              const r = risk[p.dataIndex];
+              return r
+                ? `<b>${r.title}</b><br/>落後 ${r.deficit} 天<br/>實發 ${r.dayCount} / 應發 ${r.expected} 篇`
+                : "";
+            },
+          },
+          xAxis: { type: "value", name: "落後天數", nameTextStyle: { color: c.muted, fontSize: 11 }, ...ax },
+          yAxis: {
+            type: "category",
+            data: hasSeries ? risk.map((r) => r.title) : [],
+            inverse: true,
+            ...ax,
+            axisLabel: { ...ax.axisLabel, width: 150, overflow: "truncate" },
+          },
+          series: [{
+            type: "bar",
+            data: hasSeries ? risk.map((r) => r.deficit) : [],
+            itemStyle: { color: c.danger, borderRadius: [0, 2, 2, 0] },
+            label: { show: true, position: "right", color: c.muted, fontSize: 10, fontFamily: "inherit", formatter: (p: any) => `${p.value} 天` },
+          }],
+        }, true);
+      }
+
       setLoadingState(false);
     }
 
@@ -360,7 +481,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       const hasSeries = d.series.length > 0;
 
       if (d.year === 0) {
-        for (const id of ["insight-hour-line", "insight-dist-line", "insight-group-line", "insight-kw-line"])
+        for (const id of ["insight-hour-line", "insight-dist-line", "insight-group-line", "insight-kw-line", "insight-risk-line"])
           setText(id, "尚無資料");
         return;
       }
@@ -385,6 +506,8 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
         setText("insight-kw-line", kws.length === 0 ? "尚無標題關鍵字" : `${kws[0].count} 個系列標題包含「${kws[0].keyword}」`);
       }
+      const risk = behindSchedule(d.series, d.updatedAt);
+      setText("insight-risk-line", risk.length === 0 ? "所有系列進度正常" : `${risk.length} 個系列進度落後（最多落後 ${risk[0].deficit} 天）`);
     }
 
     // ── Full render ────────────────────────────────────────────────────────

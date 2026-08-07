@@ -7,6 +7,7 @@ import {
   viewsDistribution,
   groupStats,
   titleKeywordStats,
+  behindSchedule,
 } from "../lib/insights";
 import { DEFAULT_KEYWORDS } from "../lib/keywords";
 
@@ -60,6 +61,16 @@ const kwLine = pageEmpty
     : kws.length === 0
       ? "尚無標題關鍵字"
       : `${topKw.count} 個系列標題包含「${topKw.keyword}」`;
+
+// 5. 完賽風險
+const risk = behindSchedule(data.series, data.updatedAt);
+const riskLine = pageEmpty
+  ? "尚無資料"
+  : !hasSeries
+    ? "尚無系列資料"
+    : risk.length === 0
+      ? "所有系列進度正常"
+      : `${risk.length} 個系列進度落後（最多落後 ${risk[0].deficit} 天）`;
 ---
 
 <header class="site-header container">
@@ -104,6 +115,10 @@ const kwLine = pageEmpty
         <h3>賽程進度</h3>
         <div id="chart-daycount" class="chart-canvas is-loading"></div>
       </div>
+      <div class="insight-chart insight-chart--full">
+        <h3>星期 × 小時 熱力圖</h3>
+        <div id="chart-heatmap" class="chart-canvas is-loading"></div>
+      </div>
     </div>
   </section>
 
@@ -123,6 +138,10 @@ const kwLine = pageEmpty
       <div class="insight-chart insight-chart--full">
         <h3>訂閱數排行</h3>
         <div id="chart-subs" class="chart-canvas is-loading"></div>
+      </div>
+      <div class="insight-chart insight-chart--full">
+        <h3>互動轉換率（views → like）</h3>
+        <div id="chart-engage" class="chart-canvas is-loading"></div>
       </div>
     </div>
   </section>
@@ -159,6 +178,22 @@ const kwLine = pageEmpty
       <div class="insight-chart">
         <h3>標題字數</h3>
         <div id="chart-len" class="chart-canvas is-loading"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="insight-panel">
+    <div class="insight-panel-head">
+      <div>
+        <h2 class="insight-title">完賽風險</h2>
+        <p class="insight-line" id="insight-risk-line">{riskLine}</p>
+      </div>
+      <span class="insight-panel-index">05</span>
+    </div>
+    <div class="insight-charts">
+      <div class="insight-chart insight-chart--full">
+        <h3>進度落後天數</h3>
+        <div id="chart-risk" class="chart-canvas is-loading"></div>
       </div>
     </div>
   </section>
