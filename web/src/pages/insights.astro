@@ -3,6 +3,7 @@
 import Insights from "../components/Insights.astro";
 import type { MetaJson, YearData } from "../../../scripts/types";
 import designSystemCss from "../styles/design-system.css?inline";
+import insightsCss from "../styles/insights.css?inline";
 
 const dataByYear = new Map<number, YearData>();
 for (const [path, mod] of Object.entries(import.meta.glob(["../../../data/*.json", "!../../../data/meta.json"], { eager: true, import: "default" }))) {
@@ -28,7 +29,9 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
   <link rel="shortcut icon" href="/favicon.ico" />
-  <style is:inline set:html={designSystemCss} />
+  <link rel="preconnect" href="https://ithelp.ithome.com.tw" />
+  <link rel="dns-prefetch" href="https://ithelp.ithome.com.tw" />
+  <style is:inline set:html={designSystemCss + "\n" + insightsCss} />
   <script is:inline>
     (function () {
       var stored = null;
