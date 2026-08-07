@@ -444,7 +444,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     pl.className = "progress-label tabular-nums"; pl.textContent = `${Math.min(s.dayCount, 30)}/30`;
     prog.append(track, pl);
 
-    const h = document.createElement("h3"); h.className = "card-title";
+    const h = document.createElement("h2"); h.className = "card-title";
     const a = document.createElement("a"); a.href = seriesUrl(s); a.target = "_blank"; a.rel = "noopener"; a.textContent = s.title;
     h.appendChild(a);
 

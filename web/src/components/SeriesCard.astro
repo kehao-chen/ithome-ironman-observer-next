@@ -51,7 +51,7 @@ const chipClass = !chip ? "" : chip.kind === "today" ? "status-chip"
     <div class="progress-track"><div class={fillClass} style={`width:${pct}%`}></div></div>
     <span class="progress-label tabular-nums">{label}</span>
   </div>
-  <h3 class="card-title"><a href={seriesUrl} target="_blank" rel="noopener">{s.title}</a></h3>
+  <h2 class="card-title"><a href={seriesUrl} target="_blank" rel="noopener">{s.title}</a></h2>
   <p class="meta">
     <a class="meta-author" href={profileUrl} target="_blank" rel="noopener">{s.user.name}</a>
     <span class="meta-sep">·</span>{s.group}{s.team ? <><span class="meta-sep">·</span>團隊 {s.team}</> : null}
