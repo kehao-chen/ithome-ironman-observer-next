@@ -10,7 +10,10 @@ const compactSeries = data.series.map((s) => {
   const sumViews = s.articles.reduce((n, a) => n + a.views, 0);
   return {
     ...s,
-    articles: latest ? [{ title: latest.title, url: latest.url, views: sumViews, publishedAt: latest.publishedAt }] : []
+    // 總瀏覽數獨立帶；compact 只保留最新一篇，其 views 是「該篇」觀看數，
+    // 不能拿單篇求和冒充總和（否則 client 卡片的「瀏覽」與「當篇觀看」會相同）。
+    sumViews,
+    articles: latest ? [{ title: latest.title, url: latest.url, views: latest.views, publishedAt: latest.publishedAt }] : []
   };
 });
 const compactData = { ...data, series: compactSeries };
@@ -197,7 +200,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   }
 
   /* ---------- Card helpers ---------- */
-  function totalViews(s: any) { return s.articles.reduce((n: number, a: any) => n + a.views, 0); }
+  function totalViews(s: any) { return typeof s.sumViews === "number" ? s.sumViews : s.articles.reduce((n: number, a: any) => n + a.views, 0); }
   function latestPub(s: any) { return s.articles.length ? new Date(s.articles[s.articles.length - 1].publishedAt).getTime() : 0; }
   function lastPubIso(s: any): string | null { return s.articles.length ? s.articles[s.articles.length - 1].publishedAt : null; }
   function seriesUrl(s: any) { return `https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`; }
