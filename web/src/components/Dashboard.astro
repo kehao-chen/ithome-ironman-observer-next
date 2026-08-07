@@ -89,7 +89,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     </details>
   </div>
   <div class="series-grid" id="series-list">
-    {data.series.map((s) => <SeriesCard series={s} />)}
+    {data.series.slice(0, 24).map((s) => <SeriesCard series={s} />)}
     <div class="fav-empty" id="fav-empty" role="status" aria-live="polite" tabindex="-1" hidden>
       <p>尚未收藏任何系列</p>
       <p class="fav-empty-hint">點卡片右上角星號開始追蹤你關心的系列。</p>
@@ -654,7 +654,11 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     const id = Number(b.dataset.favId);
     b.setAttribute("aria-pressed", String(favSet.has(id)));
   });
-  render((window as any).IRONMAN_DATA);
+  if (typeof requestIdleCallback !== "undefined") {
+    requestIdleCallback(() => render((window as any).IRONMAN_DATA));
+  } else {
+    setTimeout(() => render((window as any).IRONMAN_DATA), 0);
+  }
   // Re-humanize periodically so relative times stay fresh (also re-anchors 臺北 today).
   setInterval(() => { today = taipeiToday(); humanizeAll(); }, 60000);
 </script>

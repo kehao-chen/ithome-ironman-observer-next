@@ -27,6 +27,12 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
   <link rel="shortcut icon" href="/favicon.ico" />
+  <style is:inline>
+    :root,[data-theme="dark"]{--bg:#0f1115;--surface:#181b22;--text:#e5e7eb;--border:#2a2f3a;}
+    [data-theme="light"]{--bg:#f7f8fa;--surface:#ffffff;--text:#1a1f2e;--border:#e5e7eb;}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+    .container{max-width:1280px;margin:0 auto;padding:0 1rem;}
+  </style>
   <script is:inline>
     // Theme: auto (prefers-color-scheme) + manual toggle, persisted in localStorage.
     (function () {
