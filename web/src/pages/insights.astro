@@ -2,7 +2,7 @@
 // web/src/pages/insights.astro — Insights 分析分頁（SSG 最新年度 + client 年切換）。
 import Insights from "../components/Insights.astro";
 import type { MetaJson, YearData } from "../../../scripts/types";
-import "../styles/design-system.css";
+import designSystemCss from "../styles/design-system.css?inline";
 
 const dataByYear = new Map<number, YearData>();
 for (const [path, mod] of Object.entries(import.meta.glob(["../../../data/*.json", "!../../../data/meta.json"], { eager: true, import: "default" }))) {
@@ -28,6 +28,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
   <link rel="shortcut icon" href="/favicon.ico" />
+  <style is:inline set:html={designSystemCss} />
   <script is:inline>
     (function () {
       var stored = null;
