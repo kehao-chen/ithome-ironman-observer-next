@@ -199,3 +199,85 @@ export function viewsPercentiles(articles: Article[]): { pct: number; views: num
     return { pct, views: sorted[idx] };
   });
 }
+
+// ── 發文熱力圖：星期 × 小時（7 列 × 24 欄）──────────────────────────────
+// weekdayIdx 一=0…日=6（同 WEEKDAY_ORDER）；hour 0–23。
+export type HeatmapPoint = [hour: number, weekdayIdx: number, count: number];
+export function publishHeatmap(
+  articles: Article[],
+): { weekdays: string[]; hours: number[]; data: HeatmapPoint[] } {
+  const grid = new Array(7 * 24).fill(0);
+  for (const a of articles) {
+    const hour = Number(a.publishedAt.slice(11, 13));
+    if (!Number.isInteger(hour) || hour < 0 || hour > 23) continue;
+    const wd = taipeiWeekday(a.publishedAt.slice(0, 10));
+    const y = WEEKDAY_ORDER.indexOf(wd);
+    if (y < 0) continue;
+    grid[y * 24 + hour]++;
+  }
+  const data: HeatmapPoint[] = [];
+  for (let y = 0; y < 7; y++)
+    for (let x = 0; x < 24; x++) data.push([x, y, grid[y * 24 + x]]);
+  return { weekdays: [...WEEKDAY_ORDER], hours: [...Array(24).keys()], data };
+}
+
+// ── 互動轉換率排行：以系列聚合 views→likes / views→comments ──────────────
+export type EngagementRow = {
+  title: string; author: string; group: string;
+  views: number; likes: number; comments: number;
+  likeRate: number; commentRate: number;
+};
+export function engagementLeaderboard(
+  series: Series[],
+  opts: { minViews?: number; metric?: "likeRate" | "commentRate"; limit?: number } = {},
+): EngagementRow[] {
+  const minViews = opts.minViews ?? 50;
+  const metric = opts.metric ?? "likeRate";
+  const limit = opts.limit ?? 10;
+  const rows: EngagementRow[] = series
+    .filter((s) => s.articles.length > 0)
+    .map((s) => {
+      const views = s.articles.reduce((a, x) => a + x.views, 0);
+      const likes = s.articles.reduce((a, x) => a + x.likes, 0);
+      const comments = s.articles.reduce((a, x) => a + x.comments, 0);
+      return {
+        title: s.title, author: s.user.name, group: s.group,
+        views, likes, comments,
+        likeRate: views > 0 ? likes / views : 0,
+        commentRate: views > 0 ? comments / views : 0,
+      };
+    })
+    .filter((r) => r.views >= minViews)
+    .sort((a, b) => b[metric] - a[metric])
+    .slice(0, limit);
+  return rows;
+}
+
+// ── 斷更風險：報名日 → 快照日應有天數 vs 實際 dayCount 的落差 ───────────
+// signupDate/updatedAt 皆為臺北牆鐘（+08:00）；日期差以兩端 YYYY-MM-DD 的 UTC 午夜
+// 計算（環境時區無關）。expected = 報名至快照經過天數（clamped 0–30）；
+export type ScheduleRow = {
+  title: string; author: string; group: string;
+  dayCount: number; expected: number; deficit: number;
+};
+export function behindSchedule(series: Series[], updatedAt: string): ScheduleRow[] {
+  const snap = updatedAt.replace(/\//g, "-").slice(0, 10);
+  const snapMs = Date.parse(`${snap}T00:00:00Z`);
+  if (!Number.isFinite(snapMs)) return [];
+  const DAY = 86400000;
+  return series
+    .map((s) => {
+      const sup = s.signupDate.replace(/\//g, "-").slice(0, 10);
+      const supMs = Date.parse(`${sup}T00:00:00Z`);
+      const expected = Number.isFinite(supMs)
+        ? Math.max(0, Math.min(30, Math.round((snapMs - supMs) / DAY)))
+        : 0;
+      const deficit = Math.max(0, expected - s.dayCount);
+      return {
+        title: s.title, author: s.user.name, group: s.group,
+        dayCount: s.dayCount, expected, deficit,
+      };
+    })
+    .filter((r) => r.deficit > 0)
+    .sort((a, b) => b.deficit - a.deficit || a.dayCount - b.dayCount);
+}

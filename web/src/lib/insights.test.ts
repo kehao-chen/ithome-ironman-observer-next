@@ -7,6 +7,9 @@ import {
   groupStats,
   titleKeywordStats,
   titleLengthDistribution,
+  publishHeatmap,
+  engagementLeaderboard,
+  behindSchedule,
 } from "./insights";
 import type { Article, Series } from "../../../scripts/types";
 
@@ -287,5 +290,86 @@ describe("titleLengthDistribution", () => {
       { length: "35–39", count: 0 },
       { length: "40+", count: 0 },
     ]);
+  });
+});
+
+describe("publishHeatmap", () => {
+  test("空陣列 → 168 格全 0、星期 7 列、小時 24 欄", () => {
+    const h = publishHeatmap([]);
+    expect(h.weekdays).toHaveLength(7);
+    expect(h.hours).toHaveLength(24);
+    expect(h.data).toHaveLength(168);
+    expect(h.data.every(([, , c]) => c === 0)).toBe(true);
+  });
+  test("週六 00 時 + 週一 09 時各 1 篇", () => {
+    // 2026-08-01 = 週六（idx 5）；2026-08-03 = 週一（idx 0）
+    const h = publishHeatmap([
+      article({ publishedAt: "2026-08-01T00:30:00+08:00" }),
+      article({ publishedAt: "2026-08-03T09:00:00+08:00" }),
+    ]);
+    expect(h.data.find(([x, y]) => x === 0 && y === 5)![2]).toBe(1);
+    expect(h.data.find(([x, y]) => x === 9 && y === 0)![2]).toBe(1);
+    const nonzero = h.data.filter(([, , c]) => c > 0);
+    expect(nonzero).toHaveLength(2);
+  });
+  test("格式錯誤 publishedAt 跳過", () => {
+    const h = publishHeatmap([article({ publishedAt: "not-a-date" })]);
+    expect(h.data.every(([, , c]) => c === 0)).toBe(true);
+  });
+});
+
+describe("engagementLeaderboard", () => {
+  const viewArt = (views: number, likes = 0, comments = 0): Article =>
+    article({ publishedAt: "2026-08-01T00:00:00+08:00", views, likes, comments });
+  test("依 likeRate 降序、過濾低 views、limit", () => {
+    const series = [
+      makeSeries({ title: "高轉換", articles: [viewArt(100, 10)] }), // 10%
+      makeSeries({ id: 2, title: "低轉換", articles: [viewArt(200, 2)] }), // 1%
+      makeSeries({ id: 3, title: "流量低", articles: [viewArt(40, 5)] }), // 低於 minViews 50
+    ];
+    const r = engagementLeaderboard(series, { minViews: 50, limit: 10 });
+    expect(r.map((x) => x.title)).toEqual(["高轉換", "低轉換"]);
+    expect(r[0].likeRate).toBeCloseTo(0.1);
+  });
+  test("metric=commentRate 改依留言率排序", () => {
+    const series = [
+      makeSeries({ title: "多留言", articles: [viewArt(100, 0, 5)] }), // 5%
+      makeSeries({ id: 2, title: "多按讚", articles: [viewArt(100, 20, 0)] }), // like 20%, comment 0
+    ];
+    const r = engagementLeaderboard(series, { minViews: 50, metric: "commentRate" });
+    expect(r[0].title).toBe("多留言");
+  });
+  test("無文章系列排除", () => {
+    expect(engagementLeaderboard([makeSeries({ articles: [] })])).toEqual([]);
+  });
+});
+
+describe("behindSchedule", () => {
+  const SNAP = "2026-08-06 23:02:50+08:00";
+  test("落後系列依 deficit 降序、只回 deficit>0", () => {
+    const series = [
+      // 報名 08-01（經 5 天）、只發 2 篇 → deficit 3
+      makeSeries({ id: 1, title: "落後", signupDate: "2026/08/01T12:00:00+08:00", dayCount: 2 }),
+      // 報名 08-01、發 6 篇 → deficit 0（不回傳）
+      makeSeries({ id: 2, title: "達標", signupDate: "2026/08/01T12:00:00+08:00", dayCount: 6 }),
+      // 報名 08-06（經 0 天）、0 篇 → deficit 0（不回傳）
+      makeSeries({ id: 3, title: "剛報名", signupDate: "2026/08/06T08:00:00+08:00", dayCount: 0 }),
+    ];
+    const r = behindSchedule(series, SNAP);
+    expect(r).toHaveLength(1);
+    expect(r[0].title).toBe("落後");
+    expect(r[0].expected).toBe(5);
+    expect(r[0].deficit).toBe(3);
+  });
+  test("expected 上限 30（clamped）", () => {
+    const series = [
+      makeSeries({ title: "老賽", signupDate: "2025/01/01T00:00:00+08:00", dayCount: 10 }),
+    ];
+    const r = behindSchedule(series, SNAP);
+    expect(r[0].expected).toBe(30);
+    expect(r[0].deficit).toBe(20);
+  });
+  test("updatedAt 無效 → 空陣列", () => {
+    expect(behindSchedule([makeSeries({})], "")).toEqual([]);
   });
 });
