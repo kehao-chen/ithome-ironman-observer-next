@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-08-08 18:54:25+08:00",
+  "updatedAt": "2026-08-08 19:03:16+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -272,7 +272,7 @@
           "title": "Day4 所有測試都是探索性測試——包括你以為的腳本測試",
           "url": "https://ithelp.ithome.com.tw/articles/10401400",
           "publishedAt": "2026-08-04T06:23:34+08:00",
-          "views": 268,
+          "views": 269,
           "likes": 0,
           "comments": 0
         },
@@ -528,7 +528,7 @@
       "description": "這次，就透過這30天，一步一步來認識 Claude Code CLI 吧！",
       "team": null,
       "signupDate": "2026/08/01T12:18:45+08:00",
-      "lastUpdated": "2026-08-08T17:50:45+08:00",
+      "lastUpdated": "2026-08-08T19:00:45+08:00",
       "dayCount": 8,
       "articleCount": 8,
       "subscriptions": 1,
@@ -609,7 +609,106 @@
           "title": "【Day8】Claude Code CLI 的權限、安全性與 Sandbox 機制",
           "url": "https://ithelp.ithome.com.tw/articles/10402084",
           "publishedAt": "2026-08-08T12:39:56+08:00",
-          "views": 45,
+          "views": 47,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
+      "id": 9042,
+      "user": {
+        "id": 20183346,
+        "name": "geomingical",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20183346/profile"
+      },
+      "group": "佛心分享-IT 人自學之術",
+      "title": "觀察 AI，也觀察自己：30 天重新學會如何學習",
+      "description": "這是一段學習紀錄。我將以 AI Engineering 為技術骨架，從 Transformer、LLM、Chain-of-thought、Function Calling、Prompt 與 Context Engineering，逐步走到 API、MCP、Skill、GitHub 與個人學習工具實作。沿途記錄我如何用類比建立專有名詞鷹架、用大白話來解釋原理、在撞牆後補足理解，並透過 AI 搜尋、修改、驗證與反思。30 天的主角不只是 AI，更是我們如何重新培養提問、拆解、判斷與持續學習的能力。",
+      "team": null,
+      "signupDate": "2026/08/01T12:20:01+08:00",
+      "lastUpdated": "2026-08-08T18:10:47+08:00",
+      "dayCount": 8,
+      "articleCount": 8,
+      "subscriptions": 6,
+      "articles": [
+        {
+          "id": 10400761,
+          "day": 1,
+          "title": "【Day 01】AI 賦能的時代，我們究竟該學 AI，還是學會如何學習？",
+          "url": "https://ithelp.ithome.com.tw/articles/10400761",
+          "publishedAt": "2026-08-01T12:44:00+08:00",
+          "views": 228,
+          "likes": 1,
+          "comments": 0
+        },
+        {
+          "id": 10401024,
+          "day": 2,
+          "title": "【Day 02】AI 不是在讀文字：Transformer 如何一路猜出下一個 Token？",
+          "url": "https://ithelp.ithome.com.tw/articles/10401024",
+          "publishedAt": "2026-08-02T13:13:48+08:00",
+          "views": 212,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401164,
+          "day": 3,
+          "title": "【Day 03】從 GPT-1 到 GPT-3：模型只是越做越大嗎？",
+          "url": "https://ithelp.ithome.com.tw/articles/10401164",
+          "publishedAt": "2026-08-03T09:39:06+08:00",
+          "views": 187,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401420,
+          "day": 4,
+          "title": "【Day 04】AI 的內心戲：Chain-of-Thought 與 Reasoning Model 有什麼關係？",
+          "url": "https://ithelp.ithome.com.tw/articles/10401420",
+          "publishedAt": "2026-08-04T09:45:28+08:00",
+          "views": 136,
+          "likes": 1,
+          "comments": 0
+        },
+        {
+          "id": 10401587,
+          "day": 5,
+          "title": "【Day 05】我開始聽不懂了：用類比建立 AI 專有名詞的鷹架",
+          "url": "https://ithelp.ithome.com.tw/articles/10401587",
+          "publishedAt": "2026-08-05T08:30:13+08:00",
+          "views": 112,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401736,
+          "day": 6,
+          "title": "【Day 06】從會說到會做：Function Calling 如何讓 AI 開始使用工具？",
+          "url": "https://ithelp.ithome.com.tw/articles/10401736",
+          "publishedAt": "2026-08-06T10:20:10+08:00",
+          "views": 107,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401838,
+          "day": 7,
+          "title": "【Day 07】AI 都能幫我寫格式了，我還需要懂 Markdown、JSON 和 HTML 嗎？",
+          "url": "https://ithelp.ithome.com.tw/articles/10401838",
+          "publishedAt": "2026-08-07T09:02:24+08:00",
+          "views": 86,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10402101,
+          "day": 8,
+          "title": "【Day 08】Prompt Engineering I：如何用自然語言交代工作？",
+          "url": "https://ithelp.ithome.com.tw/articles/10402101",
+          "publishedAt": "2026-08-08T18:54:36+08:00",
+          "views": 3,
           "likes": 0,
           "comments": 0
         }
@@ -688,7 +787,7 @@
           "title": "Day 6 - 不能改變值的 const 跟 literal",
           "url": "https://ithelp.ithome.com.tw/articles/10401718",
           "publishedAt": "2026-08-06T09:03:50+08:00",
-          "views": 56,
+          "views": 57,
           "likes": 0,
           "comments": 0
         },
@@ -1064,7 +1163,7 @@
           "title": "Day4: 看懂 AI 寫的程式:Playwright 測試的基本骨架",
           "url": "https://ithelp.ithome.com.tw/articles/10401426",
           "publishedAt": "2026-08-04T10:05:57+08:00",
-          "views": 367,
+          "views": 368,
           "likes": 0,
           "comments": 0
         },
@@ -1074,7 +1173,7 @@
           "title": "Day5: 跟 Claude Code 對話的技巧:怎麼描述測試需求才不會雞同鴨講",
           "url": "https://ithelp.ithome.com.tw/articles/10401583",
           "publishedAt": "2026-08-05T07:32:41+08:00",
-          "views": 1041,
+          "views": 1044,
           "likes": 0,
           "comments": 0
         },
@@ -1084,7 +1183,7 @@
           "title": "Day6: Locator:告訴 Claude 你要點哪裡",
           "url": "https://ithelp.ithome.com.tw/articles/10401608",
           "publishedAt": "2026-08-06T06:16:02+08:00",
-          "views": 355,
+          "views": 357,
           "likes": 0,
           "comments": 0
         },
@@ -1183,7 +1282,7 @@
           "title": "Day 6：家用 NAS 對外服務，但路由器一個 Port 都不開",
           "url": "https://ithelp.ithome.com.tw/articles/10400861",
           "publishedAt": "2026-08-06T09:52:25+08:00",
-          "views": 106,
+          "views": 107,
           "likes": 0,
           "comments": 0
         },
@@ -1807,7 +1906,7 @@
           "title": "答案擷取、正規化與數學等價判定",
           "url": "https://ithelp.ithome.com.tw/articles/10402094",
           "publishedAt": "2026-08-08T15:48:58+08:00",
-          "views": 32,
+          "views": 33,
           "likes": 0,
           "comments": 0
         }
@@ -2044,7 +2143,7 @@
           "title": "工欲善其事，必先利其器－打造 Android studio 開發環境",
           "url": "https://ithelp.ithome.com.tw/articles/10401037",
           "publishedAt": "2026-08-02T15:09:51+08:00",
-          "views": 168,
+          "views": 169,
           "likes": 0,
           "comments": 0
         },
@@ -2074,7 +2173,7 @@
           "title": "Kotlin 集合大亂鬥：Array、List、Set、Map，一次搞懂資料怎麼存",
           "url": "https://ithelp.ithome.com.tw/articles/10401525",
           "publishedAt": "2026-08-05T08:23:48+08:00",
-          "views": 91,
+          "views": 92,
           "likes": 0,
           "comments": 0
         },
@@ -2599,7 +2698,7 @@
           "title": "Day 8：AI 與資安關連是什麼？對中小企業主的意義為何",
           "url": "https://ithelp.ithome.com.tw/articles/10402071",
           "publishedAt": "2026-08-08T11:16:10+08:00",
-          "views": 40,
+          "views": 41,
           "likes": 0,
           "comments": 0
         }
@@ -3054,7 +3153,7 @@
           "title": "Day 4 - 架構原則，如何把企業需求轉化成架構設計？",
           "url": "https://ithelp.ithome.com.tw/articles/10401312",
           "publishedAt": "2026-08-04T06:51:19+08:00",
-          "views": 116,
+          "views": 117,
           "likes": 0,
           "comments": 0
         },
@@ -3321,7 +3420,7 @@
           "title": "Day 02 - 側錄 Claude Code！",
           "url": "https://ithelp.ithome.com.tw/articles/10401028",
           "publishedAt": "2026-08-02T13:55:37+08:00",
-          "views": 930,
+          "views": 932,
           "likes": 6,
           "comments": 0
         },
@@ -3341,7 +3440,7 @@
           "title": "Day 04 - 讓模型假裝有記憶",
           "url": "https://ithelp.ithome.com.tw/articles/10401399",
           "publishedAt": "2026-08-04T04:06:57+08:00",
-          "views": 717,
+          "views": 718,
           "likes": 2,
           "comments": 0
         },
@@ -3372,95 +3471,6 @@
           "url": "https://ithelp.ithome.com.tw/articles/10401983",
           "publishedAt": "2026-08-07T23:46:17+08:00",
           "views": 66,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9042,
-      "user": {
-        "id": 20183346,
-        "name": "geomingical",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20183346/profile"
-      },
-      "group": "佛心分享-IT 人自學之術",
-      "title": "觀察 AI，也觀察自己：30 天重新學會如何學習",
-      "description": "這是一段學習紀錄。我將以 AI Engineering 為技術骨架，從 Transformer、LLM、Chain-of-thought、Function Calling、Prompt 與 Context Engineering，逐步走到 API、MCP、Skill、GitHub 與個人學習工具實作。沿途記錄我如何用類比建立專有名詞鷹架、用大白話來解釋原理、在撞牆後補足理解，並透過 AI 搜尋、修改、驗證與反思。30 天的主角不只是 AI，更是我們如何重新培養提問、拆解、判斷與持續學習的能力。",
-      "team": null,
-      "signupDate": "2026/08/01T12:20:01+08:00",
-      "lastUpdated": "2026-08-08T18:10:47+08:00",
-      "dayCount": 7,
-      "articleCount": 7,
-      "subscriptions": 6,
-      "articles": [
-        {
-          "id": 10400761,
-          "day": 1,
-          "title": "【Day 01】AI 賦能的時代，我們究竟該學 AI，還是學會如何學習？",
-          "url": "https://ithelp.ithome.com.tw/articles/10400761",
-          "publishedAt": "2026-08-01T12:44:00+08:00",
-          "views": 228,
-          "likes": 1,
-          "comments": 0
-        },
-        {
-          "id": 10401024,
-          "day": 2,
-          "title": "【Day 02】AI 不是在讀文字：Transformer 如何一路猜出下一個 Token？",
-          "url": "https://ithelp.ithome.com.tw/articles/10401024",
-          "publishedAt": "2026-08-02T13:13:48+08:00",
-          "views": 212,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401164,
-          "day": 3,
-          "title": "【Day 03】從 GPT-1 到 GPT-3：模型只是越做越大嗎？",
-          "url": "https://ithelp.ithome.com.tw/articles/10401164",
-          "publishedAt": "2026-08-03T09:39:06+08:00",
-          "views": 187,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401420,
-          "day": 4,
-          "title": "【Day 04】AI 的內心戲：Chain-of-Thought 與 Reasoning Model 有什麼關係？",
-          "url": "https://ithelp.ithome.com.tw/articles/10401420",
-          "publishedAt": "2026-08-04T09:45:28+08:00",
-          "views": 136,
-          "likes": 1,
-          "comments": 0
-        },
-        {
-          "id": 10401587,
-          "day": 5,
-          "title": "【Day 05】我開始聽不懂了：用類比建立 AI 專有名詞的鷹架",
-          "url": "https://ithelp.ithome.com.tw/articles/10401587",
-          "publishedAt": "2026-08-05T08:30:13+08:00",
-          "views": 112,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401736,
-          "day": 6,
-          "title": "【Day 06】從會說到會做：Function Calling 如何讓 AI 開始使用工具？",
-          "url": "https://ithelp.ithome.com.tw/articles/10401736",
-          "publishedAt": "2026-08-06T10:20:10+08:00",
-          "views": 107,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401838,
-          "day": 7,
-          "title": "【Day 07】AI 都能幫我寫格式了，我還需要懂 Markdown、JSON 和 HTML 嗎？",
-          "url": "https://ithelp.ithome.com.tw/articles/10401838",
-          "publishedAt": "2026-08-07T09:02:24+08:00",
-          "views": 86,
           "likes": 0,
           "comments": 0
         }
@@ -3638,7 +3648,7 @@
           "title": "Day7 - 建立第一條交換契約 Reference 規則入口",
           "url": "https://ithelp.ithome.com.tw/articles/10402099",
           "publishedAt": "2026-08-08T18:30:18+08:00",
-          "views": 4,
+          "views": 5,
           "likes": 0,
           "comments": 0
         }
@@ -3727,7 +3737,7 @@
           "title": "[Day 07] 讓 SubWise 真正「記住資料」：Google Sheets CRUD 與資料層模組化",
           "url": "https://ithelp.ithome.com.tw/articles/10402098",
           "publishedAt": "2026-08-08T18:50:27+08:00",
-          "views": 1,
+          "views": 2,
           "likes": 0,
           "comments": 0
         }
@@ -3766,7 +3776,7 @@
           "title": "Day 02：《喵語日誌》系統架構開箱：為什麼選擇 Gemini API × Firebase？",
           "url": "https://ithelp.ithome.com.tw/articles/10401315",
           "publishedAt": "2026-08-03T20:44:37+08:00",
-          "views": 114,
+          "views": 115,
           "likes": 0,
           "comments": 0
         },
@@ -3806,7 +3816,7 @@
           "title": "Day 06：【前端實作】Vite + React 骨架建置與 Gemini API 結構化串接全紀錄",
           "url": "https://ithelp.ithome.com.tw/articles/10401912",
           "publishedAt": "2026-08-07T22:22:15+08:00",
-          "views": 47,
+          "views": 48,
           "likes": 0,
           "comments": 0
         },
@@ -3816,7 +3826,7 @@
           "title": "Day 07：【週總結】第一週 AI 基礎建設小結：利用 AI 繪製《喵語日誌》三大核心畫面 Wireframe",
           "url": "https://ithelp.ithome.com.tw/articles/10402092",
           "publishedAt": "2026-08-08T16:27:12+08:00",
-          "views": 24,
+          "views": 27,
           "likes": 0,
           "comments": 0
         }
@@ -3865,7 +3875,7 @@
           "title": "Day 03｜高風險場域的共同挑戰：資訊過載、時間壓力與認知負荷",
           "url": "https://ithelp.ithome.com.tw/articles/10401375",
           "publishedAt": "2026-08-03T22:32:40+08:00",
-          "views": 205,
+          "views": 206,
           "likes": 1,
           "comments": 0
         },
@@ -4241,7 +4251,7 @@
           "title": "Day 05 如果AI Demo 成功，不代表 AI 專案成功，因為AI Engineer 的價值，不只是會使用 AI AGNET",
           "url": "https://ithelp.ithome.com.tw/articles/10401648",
           "publishedAt": "2026-08-05T19:08:25+08:00",
-          "views": 91,
+          "views": 92,
           "likes": 0,
           "comments": 0
         },
@@ -4399,7 +4409,7 @@
           "title": "第參天、大平台與LiteLLM的異同",
           "url": "https://ithelp.ithome.com.tw/articles/10401415",
           "publishedAt": "2026-08-04T09:30:27+08:00",
-          "views": 123,
+          "views": 124,
           "likes": 0,
           "comments": 0
         },
@@ -4419,7 +4429,7 @@
           "title": "Day 5｜非阻塞與事件迴圈",
           "url": "https://ithelp.ithome.com.tw/articles/10401739",
           "publishedAt": "2026-08-06T10:45:19+08:00",
-          "views": 92,
+          "views": 93,
           "likes": 0,
           "comments": 0
         },
@@ -4745,7 +4755,7 @@
           "title": "Day 2｜這些東西到底叫什麼？Component、Pattern、Layout 與 Template",
           "url": "https://ithelp.ithome.com.tw/articles/10401144",
           "publishedAt": "2026-08-03T08:03:01+08:00",
-          "views": 125,
+          "views": 127,
           "likes": 0,
           "comments": 0
         },
@@ -4983,7 +4993,7 @@
           "title": "Day 7：AMD 怎麼用 AI 超分 + 補幀(AFMF)",
           "url": "https://ithelp.ithome.com.tw/articles/10401807",
           "publishedAt": "2026-08-08T00:19:04+08:00",
-          "views": 63,
+          "views": 64,
           "likes": 0,
           "comments": 0
         }
@@ -5161,7 +5171,7 @@
           "title": "AI 黑魔法（07）：Prompt Injection 是什麼？為什麼 LLM 天生擋不住這道咒語",
           "url": "https://ithelp.ithome.com.tw/articles/10402093",
           "publishedAt": "2026-08-08T16:21:46+08:00",
-          "views": 27,
+          "views": 30,
           "likes": 0,
           "comments": 0
         }
@@ -5250,7 +5260,7 @@
           "title": "Day 7｜為什麼 Windows 語音不能只寫死 Yating？",
           "url": "https://ithelp.ithome.com.tw/articles/10401320",
           "publishedAt": "2026-08-08T00:38:06+08:00",
-          "views": 95,
+          "views": 96,
           "likes": 0,
           "comments": 0
         }
@@ -5753,7 +5763,7 @@
           "title": "Day 01｜我很會解題，卻還不會確認題目",
           "url": "https://ithelp.ithome.com.tw/articles/10401085",
           "publishedAt": "2026-08-03T01:58:23+08:00",
-          "views": 171,
+          "views": 172,
           "likes": 0,
           "comments": 0
         },
@@ -5882,7 +5892,7 @@
           "title": "把 Vue 元件變成 Astro 島：`client:*` 開關怎麼挑？",
           "url": "https://ithelp.ithome.com.tw/articles/10402095",
           "publishedAt": "2026-08-08T15:28:25+08:00",
-          "views": 28,
+          "views": 31,
           "likes": 0,
           "comments": 0
         }
@@ -5951,7 +5961,7 @@
           "title": "【Day 5】擴充 Agent 驗證、紀錄與自訂行為",
           "url": "https://ithelp.ithome.com.tw/articles/10401629",
           "publishedAt": "2026-08-07T14:40:27+08:00",
-          "views": 66,
+          "views": 67,
           "likes": 1,
           "comments": 0
         },
@@ -5961,7 +5971,7 @@
           "title": "【Day 6】Agent 的計畫如何真正影響執行？",
           "url": "https://ithelp.ithome.com.tw/articles/10401557",
           "publishedAt": "2026-08-08T17:25:53+08:00",
-          "views": 21,
+          "views": 24,
           "likes": 1,
           "comments": 0
         }
@@ -6484,7 +6494,7 @@
           "title": "Day 03｜三套五級急診檢傷制度有什麼不同？同樣五級，規則不能直接換名字",
           "url": "https://ithelp.ithome.com.tw/articles/10401623",
           "publishedAt": "2026-08-05T11:25:35+08:00",
-          "views": 125,
+          "views": 126,
           "likes": 0,
           "comments": 0
         },
@@ -6780,7 +6790,7 @@
           "title": "Day 05 - Slide-Maker簡報生成平台介紹",
           "url": "https://ithelp.ithome.com.tw/articles/10402096",
           "publishedAt": "2026-08-08T17:21:29+08:00",
-          "views": 22,
+          "views": 25,
           "likes": 0,
           "comments": 0
         }
@@ -7194,7 +7204,7 @@
           "title": "Day 5｜踩過的雷，怎麼自動變成「錯題本」",
           "url": "https://ithelp.ithome.com.tw/articles/10401729",
           "publishedAt": "2026-08-08T17:48:47+08:00",
-          "views": 16,
+          "views": 18,
           "likes": 0,
           "comments": 0
         }
@@ -7233,7 +7243,7 @@
           "title": "Day 2：失敗的討論會議——為什麼決定打造「鼠勾以」",
           "url": "https://ithelp.ithome.com.tw/articles/10401595",
           "publishedAt": "2026-08-05T09:00:19+08:00",
-          "views": 101,
+          "views": 102,
           "likes": 1,
           "comments": 0
         },
@@ -7537,7 +7547,7 @@
           "title": "Kotlin Lambda 從零開始 Day 04：inline 關鍵字 — 編譯期展開與使用限制",
           "url": "https://ithelp.ithome.com.tw/articles/10401491",
           "publishedAt": "2026-08-08T08:13:02+08:00",
-          "views": 43,
+          "views": 44,
           "likes": 0,
           "comments": 0
         }
@@ -7812,7 +7822,7 @@
           "title": "Day 02｜LED 有亮不算完成，按鈕怎樣才算真的能用？",
           "url": "https://ithelp.ithome.com.tw/articles/10401822",
           "publishedAt": "2026-08-07T04:39:06+08:00",
-          "views": 55,
+          "views": 56,
           "likes": 0,
           "comments": 0
         },
@@ -7910,7 +7920,7 @@
           "title": "[ Day 2] Wher is my DATA",
           "url": "https://ithelp.ithome.com.tw/articles/10401945",
           "publishedAt": "2026-08-07T21:32:49+08:00",
-          "views": 42,
+          "views": 43,
           "likes": 0,
           "comments": 0
         },
@@ -7920,7 +7930,7 @@
           "title": "[Day 3] I love DOCKER",
           "url": "https://ithelp.ithome.com.tw/articles/10402097",
           "publishedAt": "2026-08-08T16:45:49+08:00",
-          "views": 30,
+          "views": 31,
           "likes": 0,
           "comments": 0
         }
@@ -7998,7 +8008,7 @@
           "title": "Day 01｜為什麼我開始關注高風險場域的 AI 應用？",
           "url": "https://ithelp.ithome.com.tw/articles/10400850",
           "publishedAt": "2026-08-01T18:55:42+08:00",
-          "views": 584,
+          "views": 585,
           "likes": 1,
           "comments": 0
         },
@@ -8291,7 +8301,7 @@
           "title": "Day 1｜1,513 個 commit，0 個 CI：一條幾乎全是 AI 的產線",
           "url": "https://ithelp.ithome.com.tw/articles/10401785",
           "publishedAt": "2026-08-06T19:08:13+08:00",
-          "views": 94,
+          "views": 95,
           "likes": 0,
           "comments": 0
         },
@@ -8736,7 +8746,7 @@
       "description": "IT 人成長筆記：那些沒人教我的職涯課",
       "team": "身為一道彩虹",
       "signupDate": "2026/08/01T12:02:55+08:00",
-      "lastUpdated": "2026-08-08T17:50:34+08:00",
+      "lastUpdated": "2026-08-08T19:00:36+08:00",
       "dayCount": 0,
       "articleCount": 0,
       "subscriptions": 1,
