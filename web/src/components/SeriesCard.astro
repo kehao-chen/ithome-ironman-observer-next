@@ -1,73 +1,52 @@
 ---
 // web/src/components/SeriesCard.astro
+// 顯示決定全部委派給 cardViewModel（web/src/lib/card.ts）——與 client renderCard 共用，
+// 兩處渲染必須一致（drift 會造成 SSR/client 顯示不一）。
 import type { Series } from "../../../scripts/types";
-import { isDeletedSeries, statusChip, statusChipText, statusChipTitle, taipeiToday } from "../lib/daily-status";
+import { cardViewModel, type ViewSeries } from "../lib/card";
+
 interface Props { series: Series }
-const { series: s } = Astro.props;
-const latest = s.articles[s.articles.length - 1];
-const totalViews = s.articles.reduce((n, a) => n + a.views, 0);
-const isDeleted = isDeletedSeries(s.dayCount, s.articleCount);
-const isPending = !isDeleted && s.dayCount === 0;
-const isDone = s.dayCount >= 30;
-const badgeClass = isDeleted ? "day-badge day-badge--deleted" : isDone ? "day-badge day-badge--done" : isPending ? "day-badge day-badge--pending" : "day-badge";
-// 刪文案例保留歷史進度（他奮鬥到 DAY n）；狀態由 chip「已刪文」標示，badge 以 danger 色暗示異常。
-const badgeText = isDeleted ? `DAY ${s.dayCount}` : isPending ? "尚未開賽" : isDone ? "完賽" : `DAY ${s.dayCount}`;
-const fillClass = isDone ? "progress-fill progress-fill--done" : isPending ? "progress-fill progress-fill--pending" : "progress-fill";
-const pct = Math.min((s.dayCount / 30) * 100, 100);
-const label = `${Math.min(s.dayCount, 30)}/30`;
-const seriesUrl = `https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`;
-const profileUrl = `https://ithelp.ithome.com.tw/users/${s.user.id}`;
-const rssUrl = `https://ithelp.ithome.com.tw/rss/series/${s.id}`;
-// Clean absolute fallback (source tz, no-JS); JS swaps to browser-local + relative.
-const tsFallback = latest && latest.publishedAt ? latest.publishedAt.replace("T", " ").slice(0, 16) : "";
-// 動態狀態 chip（SSR build 時點的臺北日；client 首次 render 會用最新覆蓋）。
-const chip = statusChip(latest?.publishedAt, s.dayCount, taipeiToday(), s.articleCount);
-const chipText = statusChipText(chip);
-const chipTitle = statusChipTitle(chip);
-const chipClass = !chip ? "" : chip.kind === "today" ? "status-chip"
-  : chip.kind === "yesterday" ? "status-chip status-chip--yesterday"
-  : chip.kind === "done" ? "status-chip status-chip--done"
-  : chip.kind === "deleted" ? "status-chip status-chip--deleted"
-  : chip.kind === "long-stale" ? "status-chip status-chip--long" : "status-chip status-chip--stale";
+const { series } = Astro.props;
+const v = cardViewModel(series as ViewSeries); // SSR 用 build 時點的臺北日；client 首輪會用最新覆蓋
 ---
 
 <article class="series-card">
   <header class="card-head">
     <span class="card-head-left">
-      <span class={badgeClass}>{badgeText}</span>
-      {chip ? <span class={chipClass} title={chipTitle ?? undefined}>{chipText}</span> : null}
+      <span class={v.badgeClass}>{v.badgeText}</span>
+      {v.chipText ? <span class={v.chipClass} title={v.chipTitle ?? undefined}>{v.chipText}</span> : null}
     </span>
     <div class="card-head-right">
-      <span class="card-stat tabular-nums">{totalViews.toLocaleString()} 瀏覽</span>
-      <button class="card-action card-fav" type="button" data-fav-id={s.id} aria-pressed="false" aria-label="收藏系列" title="收藏系列">
+      <span class="card-stat tabular-nums">{v.totalViews.toLocaleString()} 瀏覽</span>
+      <button class="card-action card-fav" type="button" data-fav-id={series.id} aria-pressed="false" aria-label="收藏系列" title="收藏系列">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.4l6.1-.9z"/></svg>
       </button>
-      <button class="card-action" type="button" data-rss={rssUrl} data-title={s.title} aria-label="RSS 訂閱" title="RSS 訂閱">
+      <button class="card-action" type="button" data-rss={v.rssUrl} data-title={series.title} aria-label="RSS 訂閱" title="RSS 訂閱">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>
       </button>
     </div>
   </header>
   <div class="progress">
-    <div class="progress-track"><div class={fillClass} style={`width:${pct}%`}></div></div>
-    <span class="progress-label tabular-nums">{label}</span>
+    <div class="progress-track"><div class={v.progressFillClass} style={`width:${v.progressPct}%`}></div></div>
+    <span class="progress-label tabular-nums">{v.progressLabel}</span>
   </div>
-  <h2 class="card-title"><a href={seriesUrl} target="_blank" rel="noopener">{s.title}</a></h2>
+  <h2 class="card-title"><a href={v.seriesUrl} target="_blank" rel="noopener">{series.title}</a></h2>
   <p class="meta">
-    <a class="meta-author" href={profileUrl} target="_blank" rel="noopener">{s.user.name}</a>
-    <span class="meta-sep">·</span>{s.group}{s.team ? <><span class="meta-sep">·</span>團隊 {s.team}</> : null}
+    <a class="meta-author" href={v.profileUrl} target="_blank" rel="noopener">{series.user.name}</a>
+    <span class="meta-sep">·</span>{series.group}{series.team ? <><span class="meta-sep">·</span>團隊 {series.team}</> : null}
   </p>
-  {latest ? (
+  {v.latest ? (
     <div class="latest">
-      <a class="latest-link" href={latest.url} target="_blank" rel="noopener">
-        <span class="latest-tag">最新</span>{latest.title}
+      <a class="latest-link" href={v.latest.url} target="_blank" rel="noopener">
+        <span class="latest-tag">最新</span>{v.latest.title}
       </a>
       <span class="latest-views tabular-nums">
         <svg class="ico-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>
-        {latest.views.toLocaleString()} 當篇觀看
+        {v.latest.views.toLocaleString()} 當篇觀看
       </span>
     </div>
-  ) : <p class="latest"><span class="latest-link muted">尚未開賽</span></p>}
-  {latest && latest.publishedAt ? (
-    <p class="updated">上次發布 <time datetime={latest.publishedAt} data-ts={latest.publishedAt}>{tsFallback}</time></p>
+  ) : <p class="latest"><span class="latest-link muted">{v.emptySlotText}</span></p>}
+  {v.updatedIso ? (
+    <p class="updated">上次發布 <time datetime={v.updatedIso} data-ts={v.updatedIso}>{v.updatedIso.replace("T", " ").slice(0, 16)}</time></p>
   ) : null}
 </article>

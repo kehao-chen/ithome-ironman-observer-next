@@ -135,10 +135,14 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   window.IRONMAN_DATA = initialData;
 </script>
 <script>
-  import { isDeletedSeries, statusChip, statusChipText, statusChipTitle, taipeiDay, taipeiToday } from "../lib/daily-status";
+  import { taipeiDay, taipeiToday } from "../lib/daily-status";
   import { loadFavorites, saveFavorites, toggleFavorite, isValidFavoriteId } from "../lib/favorites";
   import { hasSearchTokens, seriesMatchesQuery } from "../lib/search";
-  import type { Series } from "../../../scripts/types";
+  import { totalViewsOf, type ViewSeries } from "../lib/card";
+  import { buildCard, buildRow } from "../lib/card-dom";
+  import type { Series, YearData } from "../../../scripts/types";
+  // ViewData: client 端資料 = YearData，但 series 可能帶 sumViews（compact 初始資料）。
+  type ViewData = YearData & { series: ViewSeries[] };
   // window.localStorage getter 本身可能 throw（受限環境）；wrapper 統一降級為 null。
   function getStorage(): Pick<Storage, "getItem" | "setItem"> | null {
     try { return window.localStorage; } catch { return null; }
@@ -150,7 +154,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   const seriesCount = document.getElementById("series-count")!;
   const shownCount = document.getElementById("shown-count")!;
   const totalCount = document.getElementById("total-count")!;
-  let current: any = null;
+  let current: ViewData | null = null;
   let currentYear: number = (window as any).IRONMAN_DATA?.year ?? 0;
   let fetchToken = 0;
   const yearSelect = document.getElementById("year-select") as HTMLSelectElement | null;
@@ -164,7 +168,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     try {
       const res = await fetch(`/data/${year}.json`);
       if (!res.ok) return;
-      const fresh = await res.json();
+      const fresh = (await res.json()) as ViewData;
       if (token !== fetchToken) return; // stale response — a newer request owns the render
       render(fresh);
     } catch { /* keep current render */ }
@@ -200,67 +204,11 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   }
 
   /* ---------- Card helpers ---------- */
-  function totalViews(s: any) { return typeof s.sumViews === "number" ? s.sumViews : s.articles.reduce((n: number, a: any) => n + a.views, 0); }
-  function latestPub(s: any) { return s.articles.length ? new Date(s.articles[s.articles.length - 1].publishedAt).getTime() : 0; }
-  function lastPubIso(s: any): string | null { return s.articles.length ? s.articles[s.articles.length - 1].publishedAt : null; }
-  function seriesUrl(s: any) { return `https://ithelp.ithome.com.tw/users/${s.user.id}/ironman/${s.id}`; }
-  function profileUrl(s: any) { return `https://ithelp.ithome.com.tw/users/${s.user.id}`; }
-  function rssUrl(s: any) { return `https://ithelp.ithome.com.tw/rss/series/${s.id}`; }
-  function chip(s: any): HTMLElement | null {
-    const c = statusChip(lastPubIso(s), s.dayCount, today, s.articleCount);
-    if (!c) return null;
-    const el = document.createElement("span");
-    el.className = c.kind === "today" ? "status-chip"
-      : c.kind === "yesterday" ? "status-chip status-chip--yesterday"
-      : c.kind === "done" ? "status-chip status-chip--done"
-      : c.kind === "deleted" ? "status-chip status-chip--deleted"
-      : c.kind === "long-stale" ? "status-chip status-chip--long" : "status-chip status-chip--stale";
-    el.textContent = statusChipText(c);
-    const t = statusChipTitle(c);
-    if (t) el.title = t;
-    return el;
-  }
-  function badgeClass(s: any) {
-    if (isDeletedSeries(s.dayCount, s.articleCount)) return "day-badge day-badge--deleted";
-    if (s.dayCount >= 30) return "day-badge day-badge--done";
-    if (s.dayCount === 0) return "day-badge day-badge--pending";
-    return "day-badge";
-  }
-  function badgeText(s: any) {
-    // 刪文案例保留歷史進度 DAY n（他奮鬥到哪天）；狀態由 chip 標示，badge 以 danger 色暗示異常。
-    if (isDeletedSeries(s.dayCount, s.articleCount)) return `DAY ${s.dayCount}`;
-    if (s.dayCount === 0) return "尚未開賽";
-    if (s.dayCount >= 30) return "完賽";
-    return `DAY ${s.dayCount}`;
-  }
-  const SVG_NS = "http://www.w3.org/2000/svg";
-  // Trusted static icons built via DOM APIs (no innerHTML sinks); attributes
-  // mirror the SSR markup in SeriesCard.astro exactly.
-  function svgEl(tag: string, attrs: Record<string, string>, children: SVGElement[] = []): SVGElement {
-    const el = document.createElementNS(SVG_NS, tag);
-    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
-    for (const c of children) el.appendChild(c);
-    return el;
-  }
-  const EYE_ICON = svgEl("svg", { class: "ico-eye", viewBox: "0 0 24 24", "aria-hidden": "true" }, [
-    svgEl("path", { d: "M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z" }),
-    svgEl("circle", { cx: "12", cy: "12", r: "3", fill: "currentColor", stroke: "none" }),
-  ]);
-  const RSS_ICON = svgEl("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, [
-    svgEl("path", { d: "M4 11a9 9 0 0 1 9 9" }),
-    svgEl("path", { d: "M4 4a16 16 0 0 1 16 16" }),
-    svgEl("circle", { cx: "5", cy: "19", r: "1.5", fill: "currentColor", stroke: "none" }),
-  ]);
-  const FAV_ICON = svgEl("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, [
-    svgEl("path", { d: "M12 3l2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.4l6.1-.9z" }),
-  ]);
-  const OPEN_ICON = svgEl("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, [
-    svgEl("path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }),
-    svgEl("polyline", { points: "15 3 21 3 21 9" }),
-    svgEl("line", { x1: "10", y1: "14", x2: "21", y2: "3" }),
-  ]);
+  function latestPub(s: ViewSeries) { return s.articles.length ? new Date(s.articles[s.articles.length - 1].publishedAt).getTime() : 0; }
+  function lastPubIso(s: ViewSeries): string | null { return s.articles.length ? s.articles[s.articles.length - 1].publishedAt : null; }
+  // 卡片 icon / DOM 建構已移至 lib/card-dom.ts（buildCard/buildRow），此處只留薄包裝。
 
-  function groupCounts(data: any): Map<string, number> {
+  function groupCounts(data: ViewData): Map<string, number> {
     const m = new Map<string, number>();
     m.set("全部", data.series.length); // matches SSR countFor("全部") semantics
     for (const s of data.series) m.set(s.group, (m.get(s.group) ?? 0) + 1);
@@ -271,9 +219,9 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   }
   function isFavView(): boolean { return currentGroup() === "fav"; }
   // 目前年度資料中已收藏且存在的系列（收藏分頁的資料子集）。
-  function favSeries(data: any): any[] { return data.series.filter((s: any) => favSet.has(s.id)); }
+  function favSeries(data: ViewData): ViewSeries[] { return data.series.filter((s) => favSet.has(s.id)); }
   // 收藏分頁的 shown/total 分母：目前年度可顯示收藏數。
-  function currentYearFavCount(data: any): number { return favSeries(data).length; }
+  function currentYearFavCount(data: ViewData): number { return favSeries(data).length; }
   // 年度切換時 resolve active：fav 恆保留；普通組別在新年度不存在 → fallback「全部」。
   function activeGroupFor(groups: string[], requested: string): string {
     if (requested === "fav") return "fav";
@@ -312,7 +260,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     }
   }
 
-  function render(data: any) {
+  function render(data: ViewData) {
     if (!data) { current = null; return; }
     current = data;
     currentYear = data.year;
@@ -350,16 +298,16 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     humanizeAll();
   }
 
-  function applyFilter(data: any, group: string, sort: string) {
-    let series: any[] = data.series;
+  function applyFilter(data: ViewData, group: string, sort: string) {
+    let series: ViewSeries[] = data.series;
     if (group === "fav") {
       series = favSeries(data); // 收藏分頁：目前年度已收藏子集
     } else if (group !== "全部") {
-      series = series.filter((s: any) => s.group === group);
+      series = series.filter((s) => s.group === group);
     }
     series = series.filter((s: Series) => seriesMatchesQuery(s, query)); // 搜尋：組別 filter 之後、排序之前（spec §3.1）
-    series = [...series].sort((a: any, b: any) => {
-      if (sort === "views") return totalViews(b) - totalViews(a);
+    series = [...series].sort((a: ViewSeries, b: ViewSeries) => {
+      if (sort === "views") return totalViewsOf(b) - totalViewsOf(a);
       if (sort === "latest") {
         const da = taipeiDay(lastPubIso(a)), db = taipeiDay(lastPubIso(b));
         if (!da && !db) return b.dayCount - a.dayCount; // 兩者皆無文章 → 進度
@@ -435,120 +383,10 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     humanizeAll();
   }
 
-  /* ---------- Grid card (matches SeriesCard.astro) ---------- */
-  function renderCard(s: any) {
-    const art = document.createElement("article");
-    art.className = "series-card";
-    const isDone = s.dayCount >= 30, isPending = s.dayCount === 0;
-    const head = document.createElement("header");
-    head.className = "card-head";
-    const day = document.createElement("span");
-    day.className = badgeClass(s); day.textContent = badgeText(s);
-    const chipEl = chip(s);
-    const headLeft = document.createElement("span");
-    headLeft.className = "card-head-left";
-    headLeft.append(day);
-    if (chipEl) headLeft.append(chipEl);
-    const right = document.createElement("div");
-    right.className = "card-head-right";
-    const stat = document.createElement("span");
-    stat.className = "card-stat tabular-nums";
-    stat.textContent = `${totalViews(s).toLocaleString()} 瀏覽`;
-    const rss = document.createElement("button");
-    rss.className = "card-action"; rss.type = "button";
-    rss.dataset.rss = rssUrl(s); rss.dataset.title = s.title;
-    rss.setAttribute("aria-label", "RSS 訂閱"); rss.title = "RSS 訂閱";
-    rss.appendChild(RSS_ICON.cloneNode(true));
-    const fav = document.createElement("button");
-    fav.className = "card-action card-fav"; fav.type = "button";
-    fav.dataset.favId = String(s.id);
-    const isFav = favSet.has(s.id);
-    fav.setAttribute("aria-pressed", String(isFav));
-    fav.setAttribute("aria-label", isFav ? "取消收藏" : "收藏系列"); fav.title = isFav ? "取消收藏" : "收藏系列";
-    fav.appendChild(FAV_ICON.cloneNode(true));
-    right.append(fav, stat, rss); head.append(headLeft, right);
+  /* ---------- Grid card / list row（DOM 建構在 lib/card-dom.ts；結構契約由 card-dom.test.ts 鎖住）---------- */
+  function renderCard(s: ViewSeries) { return buildCard(s, today, favSet.has(s.id)); }
 
-    const prog = document.createElement("div"); prog.className = "progress";
-    const track = document.createElement("div"); track.className = "progress-track";
-    const fill = document.createElement("div");
-    fill.className = isDone ? "progress-fill progress-fill--done" : isPending ? "progress-fill progress-fill--pending" : "progress-fill";
-    fill.style.width = `${Math.min((s.dayCount / 30) * 100, 100)}%`;
-    track.appendChild(fill);
-    const pl = document.createElement("span");
-    pl.className = "progress-label tabular-nums"; pl.textContent = `${Math.min(s.dayCount, 30)}/30`;
-    prog.append(track, pl);
-
-    const h = document.createElement("h2"); h.className = "card-title";
-    const a = document.createElement("a"); a.href = seriesUrl(s); a.target = "_blank"; a.rel = "noopener"; a.textContent = s.title;
-    h.appendChild(a);
-
-    const meta = document.createElement("p"); meta.className = "meta";
-    const au = document.createElement("a"); au.className = "meta-author"; au.href = profileUrl(s); au.target = "_blank"; au.rel = "noopener"; au.textContent = s.user.name;
-    meta.append(au, " · ", s.group, s.team ? ` · 團隊 ${s.team}` : "");
-
-    const latest = s.articles[s.articles.length - 1];
-    const lat = document.createElement(latest ? "div" : "p"); lat.className = "latest";
-    if (latest) {
-      const la = document.createElement("a"); la.className = "latest-link"; la.href = latest.url; la.target = "_blank"; la.rel = "noopener";
-      const tag = document.createElement("span"); tag.className = "latest-tag"; tag.textContent = "最新";
-      la.append(tag, latest.title);
-      const lv = document.createElement("span"); lv.className = "latest-views tabular-nums";
-      lv.appendChild(EYE_ICON.cloneNode(true));
-      lv.appendChild(document.createTextNode(`${latest.views.toLocaleString()} 當篇觀看`));
-      lat.append(la, lv);
-    } else {
-      const span = document.createElement("span"); span.className = "latest-link muted"; span.textContent = "尚未開賽";
-      lat.appendChild(span);
-    }
-
-    art.append(head, prog, h, meta, lat);
-    if (latest && latest.publishedAt) {
-      const upd = document.createElement("p"); upd.className = "updated"; upd.textContent = "上次發布 ";
-      const tm = document.createElement("time"); tm.dateTime = latest.publishedAt; tm.dataset.ts = latest.publishedAt;
-      tm.textContent = latest.publishedAt.replace("T", " ").slice(0, 16);
-      upd.appendChild(tm); art.appendChild(upd);
-    }
-    return art;
-  }
-
-  /* ---------- List row (compact) ---------- */
-  function renderRow(s: any) {
-    const row = document.createElement("article"); row.className = "series-row";
-    const day = document.createElement("span"); day.className = badgeClass(s); day.textContent = badgeText(s);
-    const chipEl = chip(s);
-    const left = document.createElement("div"); left.className = "row-left";
-    left.append(day);
-    if (chipEl) left.append(chipEl);
-
-    const main = document.createElement("div"); main.className = "row-main";
-    const t = document.createElement("a"); t.className = "row-title"; t.href = seriesUrl(s); t.target = "_blank"; t.rel = "noopener"; t.textContent = s.title;
-    const m = document.createElement("span"); m.className = "row-meta";
-    const au = document.createElement("a"); au.className = "meta-author"; au.href = profileUrl(s); au.target = "_blank"; au.rel = "noopener"; au.textContent = s.user.name;
-    m.append(au, " · ", s.group, s.team ? ` · 團隊 ${s.team}` : "");
-    main.append(t, m);
-
-    const views = document.createElement("span"); views.className = "row-views tabular-nums";
-    views.appendChild(EYE_ICON.cloneNode(true));
-    views.appendChild(document.createTextNode(totalViews(s).toLocaleString()));
-
-    const actions = document.createElement("div"); actions.className = "row-actions";
-    const rss = document.createElement("button"); rss.className = "card-action"; rss.type = "button";
-    rss.dataset.rss = rssUrl(s); rss.dataset.title = s.title; rss.setAttribute("aria-label", "RSS 訂閱"); rss.title = "RSS 訂閱";
-    rss.appendChild(RSS_ICON.cloneNode(true));
-    const open = document.createElement("a"); open.className = "card-action"; open.href = seriesUrl(s); open.target = "_blank"; open.rel = "noopener";
-    open.setAttribute("aria-label", "開啟系列"); open.title = "開啟系列"; open.appendChild(OPEN_ICON.cloneNode(true));
-    const fav = document.createElement("button");
-    fav.className = "card-action card-fav"; fav.type = "button";
-    fav.dataset.favId = String(s.id);
-    const isFav = favSet.has(s.id);
-    fav.setAttribute("aria-pressed", String(isFav));
-    fav.setAttribute("aria-label", isFav ? "取消收藏" : "收藏系列"); fav.title = isFav ? "取消收藏" : "收藏系列";
-    fav.appendChild(FAV_ICON.cloneNode(true));
-    actions.append(fav, rss, open);
-
-    row.append(left, main, views, actions);
-    return row;
-  }
+  function renderRow(s: ViewSeries) { return buildRow(s, today, favSet.has(s.id)); }
 
   /* ---------- Events ---------- */
   const groupFilters = document.getElementById("group-filters");
@@ -688,6 +526,6 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     const id = Number(b.dataset.favId);
     b.setAttribute("aria-pressed", String(favSet.has(id)));
   });
-  render((window as any).IRONMAN_DATA);
+  render((window as any).IRONMAN_DATA as ViewData);
   setInterval(() => { today = taipeiToday(); humanizeAll(); }, 60000);
 </script>

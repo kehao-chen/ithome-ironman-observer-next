@@ -38,7 +38,7 @@ ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispa
 - **儀表板**（`web/`，Astro）：SSG 預渲染 + client 端 60 秒刷新（於 Dashboard 元件），header 年度切換器、組別篩選 + 進度/最多觀看/今日發文排序、**「我的收藏」分頁（localStorage 書籤，系列 ID 跨年度共用）**，抓取失敗系列數以 scrapeLog notice 顯示。年度切換器（header select）以 `data/meta.json` 的 `years` 為唯一權威；空資料年度保留舊檔、但選項縮小。
 - **排程**（`worker/` + `.github/workflows/scheduled-update.yml`）：Cloudflare Worker `ironman-observer-trigger` 每 10 分鐘打 `workflow_dispatch` 觸發更新（GitHub 原生 `schedule` 在整點高峰會延遲/漏觸發，故改用 CF 網路排程）；資料有變才 commit + deploy（無變更跳過）。
 - Browser UA mandatory for scraping; RSS/series page consistency verified.
-- Known current UI issues (from handoff): all-inline styles, dark-only theme, no design system, `DAY ?` badge inconsistency, 30 zero-article series, placeholder filter style, mixed timestamp formats.
+- Known current UI issues (as of 2026-08-07): fixed since the 08-05 handoff — design system (`DESIGN.md` + `web/src/styles/design-system.css`), light/dark/auto theme, unified DAY badge, card view-model + DOM builders shared between SSR/client (`web/src/lib/card.ts` + `card-dom.ts`, structural contract tests). Remaining nits: `updatedAt` uses space-separated `+08:00` while article timestamps are T-separated ISO (display-only); ~40 pending series render a signup-date line; the site polls ithelp every 10 min (~36k req/day).
 
 ## Brand Commitments
 
@@ -49,7 +49,7 @@ ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispa
 
 ## Evidence on Hand
 
-- `data/2026.json` (current year) + `data/meta.json` (`latestYear` / `years` / `updatedAt` / `seriesCount`): live scraped data — 2026: 127 series / 17 groups (2026-08-05).
+- `data/2026.json` (current year) + `data/meta.json` (`latestYear` / `years` / `updatedAt` / `seriesCount`): live scraped data — 2026: 147 series / 17 groups (2026-08-07).
 - `docs/DEPLOYMENT-HANDOFF.md`: deployment + handoff record, known-issues list.
 - `docs/superpowers/specs/2026-08-05-ironman-observer-next-design.md`: original design spec (approved).
 - No logos/assets provided; no testimonials, benchmarks, or pricing claims exist and must not be fabricated.

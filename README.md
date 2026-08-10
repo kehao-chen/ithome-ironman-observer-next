@@ -62,7 +62,7 @@
 - **SEO：** `robots.txt` + `llms.txt`，方便爬蟲和 AI agent 讀取
 - **無障礙：** 循序標題層級、muted／badge 配色符合 WCAG AA 對比
 - **效能：** 內嵌 critical CSS、SSR 卡片分批切片、`content-visibility: auto`、分塊渲染、iThome preconnect
-- **Lighthouse：** Performance 99、Accessibility 100、Best Practices 100、SEO 100（報告在 `web/public/lighthouse-report.html`）
+- **Lighthouse：** Performance 99、Accessibility 100、Best Practices 100、SEO 100（報告在 `docs/lighthouse-report.html`）
 
 ## 架構與資料
 
