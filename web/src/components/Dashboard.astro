@@ -135,12 +135,13 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   window.IRONMAN_DATA = initialData;
 </script>
 <script>
-  import { taipeiDay, taipeiToday } from "../lib/daily-status";
+  import { taipeiToday } from "../lib/daily-status";
   import { loadFavorites, saveFavorites, toggleFavorite, isValidFavoriteId } from "../lib/favorites";
-  import { hasSearchTokens, seriesMatchesQuery } from "../lib/search";
-  import { totalViewsOf, type ViewSeries } from "../lib/card";
+  import { hasSearchTokens } from "../lib/search";
+  import type { ViewSeries } from "../lib/card";
   import { buildCard, buildRow } from "../lib/card-dom";
-  import type { Series, YearData } from "../../../scripts/types";
+  import { applySeriesFilters, activeGroupFor, currentYearFavCount, groupCounts, type SortKey } from "../lib/filter";
+  import type { YearData } from "../../../scripts/types";
   // ViewData: client 端資料 = YearData，但 series 可能帶 sumViews（compact 初始資料）。
   type ViewData = YearData & { series: ViewSeries[] };
   // window.localStorage getter 本身可能 throw（受限環境）；wrapper 統一降級為 null。
@@ -203,30 +204,11 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     });
   }
 
-  /* ---------- Card helpers ---------- */
-  function latestPub(s: ViewSeries) { return s.articles.length ? new Date(s.articles[s.articles.length - 1].publishedAt).getTime() : 0; }
-  function lastPubIso(s: ViewSeries): string | null { return s.articles.length ? s.articles[s.articles.length - 1].publishedAt : null; }
-  // 卡片 icon / DOM 建構已移至 lib/card-dom.ts（buildCard/buildRow），此處只留薄包裝。
-
-  function groupCounts(data: ViewData): Map<string, number> {
-    const m = new Map<string, number>();
-    m.set("全部", data.series.length); // matches SSR countFor("全部") semantics
-    for (const s of data.series) m.set(s.group, (m.get(s.group) ?? 0) + 1);
-    return m;
-  }
+  /* ---------- 資料層（groupCounts / activeGroupFor / currentYearFavCount / favSeries / 排序）已移至 lib/filter.ts ---------- */
   function currentGroup(): string {
     return document.querySelector(".filter-btn[data-active='true']")?.getAttribute("data-group") ?? "全部";
   }
   function isFavView(): boolean { return currentGroup() === "fav"; }
-  // 目前年度資料中已收藏且存在的系列（收藏分頁的資料子集）。
-  function favSeries(data: ViewData): ViewSeries[] { return data.series.filter((s) => favSet.has(s.id)); }
-  // 收藏分頁的 shown/total 分母：目前年度可顯示收藏數。
-  function currentYearFavCount(data: ViewData): number { return favSeries(data).length; }
-  // 年度切換時 resolve active：fav 恆保留；普通組別在新年度不存在 → fallback「全部」。
-  function activeGroupFor(groups: string[], requested: string): string {
-    if (requested === "fav") return "fav";
-    return groups.includes(requested) ? requested : "全部";
-  }
   function renderFilters(groups: string[], counts: Map<string, number>, activeGroup: string) {
     const wrap = document.getElementById("group-filters");
     if (!wrap) return;
@@ -274,7 +256,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       renderFilters(groups, groupCounts(data), active);
     }
     const favCount = document.getElementById("fav-count");
-    if (favCount) favCount.textContent = String(currentYearFavCount(data));
+    if (favCount) favCount.textContent = String(currentYearFavCount(data, favSet));
     // scrapeLog notice: fixed container, toggled by data.
     if (scrapeLog && scrapeLogCount && scrapeLogList) {
       scrapeLogCount.textContent = String(data.scrapeLog.length);
@@ -299,28 +281,10 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   }
 
   function applyFilter(data: ViewData, group: string, sort: string) {
-    let series: ViewSeries[] = data.series;
-    if (group === "fav") {
-      series = favSeries(data); // 收藏分頁：目前年度已收藏子集
-    } else if (group !== "全部") {
-      series = series.filter((s) => s.group === group);
-    }
-    series = series.filter((s: Series) => seriesMatchesQuery(s, query)); // 搜尋：組別 filter 之後、排序之前（spec §3.1）
-    series = [...series].sort((a: ViewSeries, b: ViewSeries) => {
-      if (sort === "views") return totalViewsOf(b) - totalViewsOf(a);
-      if (sort === "latest") {
-        const da = taipeiDay(lastPubIso(a)), db = taipeiDay(lastPubIso(b));
-        if (!da && !db) return b.dayCount - a.dayCount; // 兩者皆無文章 → 進度
-        if (!da) return 1;   // a 無文章 → 沉底
-        if (!db) return -1;  // b 無文章 → 沉底
-        const byDay = db.localeCompare(da); // 臺北日 desc
-        if (byDay !== 0) return byDay;
-        return latestPub(b) - latestPub(a); // 同日內按發文秒 desc
-      }
-      return b.dayCount - a.dayCount;
-    });
+    // 資料層（fav 子集 → 組別 → 搜尋 → 排序）在 lib/filter.ts，語意由 filter.test.ts 釘死；此處只留 DOM 層。
+    const series = applySeriesFilters(data, { group, sort: sort as SortKey, query, favSet });
     list.replaceChildren();
-    if (group === "fav" && currentYearFavCount(data) === 0) {
+    if (group === "fav" && currentYearFavCount(data, favSet) === 0) {
       // 收藏分頁且搜尋前收藏數為 0（不可用搜尋後的 series.length——有收藏但被搜尋排除時會誤顯示）
       const empty = document.createElement("div");
       empty.className = "fav-empty";
@@ -379,7 +343,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     }
     shownCount.textContent = String(series.length);
     // 分母語意：收藏分頁 = 目前年度可顯示收藏數；一般分頁 = 年度全部系列數。
-    totalCount.textContent = String(group === "fav" ? currentYearFavCount(data) : data.series.length);
+    totalCount.textContent = String(group === "fav" ? currentYearFavCount(data, favSet) : data.series.length);
     humanizeAll();
   }
 
@@ -411,7 +375,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
     btn.setAttribute("aria-label", nowFav ? "取消收藏" : "收藏系列"); btn.title = nowFav ? "取消收藏" : "收藏系列";
     btn.classList.remove("fav-pop"); void btn.offsetWidth; btn.classList.add("fav-pop");
     const favCount = document.getElementById("fav-count");
-    if (favCount && current) favCount.textContent = String(currentYearFavCount(current));
+    if (favCount && current) favCount.textContent = String(currentYearFavCount(current, favSet));
     if (isFavView() && current) {
       // 收藏分頁：子集變了 → 重 render（取消收藏的卡片立即移出，空狀態由 applyFilter 重建）。
       applyFilter(current, "fav", (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
