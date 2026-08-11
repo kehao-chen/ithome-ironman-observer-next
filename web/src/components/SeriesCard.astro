@@ -4,6 +4,7 @@
 // 兩處渲染必須一致（drift 會造成 SSR/client 顯示不一）。
 import type { Series } from "../../../scripts/types";
 import { cardViewModel, type ViewSeries } from "../lib/card";
+import { isoInitial } from "../lib/format";
 
 interface Props { series: Series }
 const { series } = Astro.props;
@@ -47,6 +48,6 @@ const v = cardViewModel(series as ViewSeries); // SSR 用 build 時點的臺北�
     </div>
   ) : <p class="latest"><span class="latest-link muted">{v.emptySlotText}</span></p>}
   {v.updatedIso ? (
-    <p class="updated">上次發布 <time datetime={v.updatedIso} data-ts={v.updatedIso}>{v.updatedIso.replace("T", " ").slice(0, 16)}</time></p>
+    <p class="updated">上次發布 <time datetime={v.updatedIso} data-ts={v.updatedIso}>{isoInitial(v.updatedIso)}</time></p>
   ) : null}
 </article>

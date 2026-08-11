@@ -24,7 +24,7 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 
 ## Operating Context
 
-- Scraper hits ithelp.ithome.com.tw (signup list + RSS + series pages), ~2 requests/series, ~250 requests/full sweep; **browser UA required** (403 otherwise).
+- Scraper hits ithelp.ithome.com.tw (signup list + RSS + series pages), ~2 requests/series, ~340 requests/full sweep; **browser UA required** (403 otherwise).
 - Cron: Cloudflare Worker `ironman-observer-trigger` fires `workflow_dispatch` every 10 min (144 runs/day; public-repo GitHub-hosted runner stays free). GitHub's native `schedule` trigger was dropped (delayed/dropped at the top of every hour).
 - Data changes commit + deploy automatically; site refreshes client-side every 60s.
 - UI is a single-page dashboard: year switcher (header select) + category filter (tag row) + sort (progress / most views / today's posts) + series cards. Cards show: title, author, group, latest day, views, publish time, update time.
@@ -38,7 +38,7 @@ ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispa
 - **儀表板**（`web/`，Astro）：SSG 預渲染 + client 端 60 秒刷新（於 Dashboard 元件），header 年度切換器、組別篩選 + 進度/最多觀看/今日發文排序、**「我的收藏」分頁（localStorage 書籤，系列 ID 跨年度共用）**，抓取失敗系列數以 scrapeLog notice 顯示。年度切換器（header select）以 `data/meta.json` 的 `years` 為唯一權威；空資料年度保留舊檔、但選項縮小。
 - **排程**（`worker/` + `.github/workflows/scheduled-update.yml`）：Cloudflare Worker `ironman-observer-trigger` 每 10 分鐘打 `workflow_dispatch` 觸發更新（GitHub 原生 `schedule` 在整點高峰會延遲/漏觸發，故改用 CF 網路排程）；資料有變才 commit + deploy（無變更跳過）。
 - Browser UA mandatory for scraping; RSS/series page consistency verified.
-- Known current UI issues (as of 2026-08-07): fixed since the 08-05 handoff — design system (`DESIGN.md` + `web/src/styles/design-system.css`), light/dark/auto theme, unified DAY badge, card view-model + DOM builders shared between SSR/client (`web/src/lib/card.ts` + `card-dom.ts`, structural contract tests). Remaining nits: `updatedAt` uses space-separated `+08:00` while article timestamps are T-separated ISO (display-only); ~40 pending series render a signup-date line; the site polls ithelp every 10 min (~36k req/day).
+- Known current UI issues (as of 2026-08-07, updated 2026-08-11): fixed since the 08-05 handoff — design system (`DESIGN.md` + `web/src/styles/design-system.css`), light/dark/auto theme, unified DAY badge, card view-model + DOM builders shared between SSR/client (`web/src/lib/card.ts` + `card-dom.ts`, structural contract tests), `updatedAt` 顯示格式統一（`web/src/lib/format.ts`，SSR/client 共用；絕對時間固定 Asia/Taipei）。Remaining nits: ~44 pending series render a signup-date line; the site polls ithelp every 10 min (~36k req/day).
 
 ## Brand Commitments
 
@@ -49,7 +49,7 @@ ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispa
 
 ## Evidence on Hand
 
-- `data/2026.json` (current year) + `data/meta.json` (`latestYear` / `years` / `updatedAt` / `seriesCount`): live scraped data — 2026: 147 series / 17 groups (2026-08-07).
+- `data/2026.json` (current year) + `data/meta.json` (`latestYear` / `years` / `updatedAt` / `seriesCount`): live scraped data — 2026: 170 series / 17 groups (2026-08-11).
 - `docs/DEPLOYMENT-HANDOFF.md`: deployment + handoff record, known-issues list.
 - `docs/superpowers/specs/2026-08-05-ironman-observer-next-design.md`: original design spec (approved).
 - No logos/assets provided; no testimonials, benchmarks, or pricing claims exist and must not be fabricated.
@@ -77,9 +77,9 @@ Feature ideas carried over from the removed `docs/PROJECT-INTRODUCTION.md`, plus
 ### Mid-term candidates (from v1 non-goals; re-evaluate value before building)
 
 - [x] **Search**（完成 2026-08-06）：`web/src/lib/search.ts` 純函數（`normalize` + token AND）＋toolbar `#search` input 即時過濾；命中標題/作者/組別/團隊；與組別分頁（含收藏分頁）、排序器自由組合；搜尋空狀態 `role="status"`；Escape 清空（RSS modal 優先）；跨年度 query 保留。
-- **Completion / activity badge enhancements**: currently only DAY 0 / in-progress / completed states; could add dynamic states like "posted today" or "no update for N days".
+- [x] **Completion / activity badge enhancements**（完成 2026-08-05，daily-status 功能）：`web/src/lib/daily-status.ts` 動態狀態 chip（今日發文 / 昨日發文 / 停更 N 天 / 長時間停更 / 鐵人煉成 / 已刪文），SSR 與 client 共用同一判定，天數細節放 tooltip。
 - [x] **Favorites / tracking specific series**（完成 2026-08-06）：localStorage 書籤（系列 ID 跨年度共用），卡片星號 toggle（grid/list 皆可），「我的收藏」分頁沿用排序器，空狀態引導；僅限本裝置/瀏覽器。
-- **Real-time updates**: currently periodic batch (hourly) + 60s client refresh; true near-real-time needs an external trigger (e.g., Cloudflare Worker cron) — a cost vs schedule-reliability tradeoff.
+- **Real-time updates**: 近即時已是當前架構終點——Cloudflare Worker cron 每 10 分鐘批次更新 + 60s client refresh（2026-08-06 起）。真 near-real-time 需外部推送（WebSocket/SSE）或縮短 cron 間隔，屬成本 vs 即時性取捨，超出零成本約束；暫不排程。
 
 ### Already covered, no action needed
 

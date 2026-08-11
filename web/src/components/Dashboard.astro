@@ -2,6 +2,7 @@
 // web/src/components/Dashboard.astro
 import SeriesCard from "./SeriesCard.astro";
 import type { YearData } from "../../../scripts/types";
+import { isoInitial } from "../lib/format";
 
 interface Props { data: YearData; years: number[] }
 const { data, years } = Astro.props;
@@ -19,7 +20,7 @@ const compactSeries = data.series.map((s) => {
 const compactData = { ...data, series: compactSeries };
 const groups = ["全部", ...data.groups];
 const countFor = (g: string) => g === "全部" ? data.series.length : data.series.filter((s) => s.group === g).length;
-const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slice(0, 16) : "";
+const updatedAtFallback = isoInitial(data.updatedAt);
 ---
 
 <header class="site-header container">
@@ -28,6 +29,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
       <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-next">Next</span></h1>
       <p class="brand-sub">
         最後更新 <time id="updated-at" datetime={data.updatedAt} data-ts={data.updatedAt}>{updatedAtFallback}</time>
+
         · <span id="series-count" class="tabular-nums">{data.series.length}</span> 支系列
       </p>
     </div>
@@ -138,6 +140,7 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   import { taipeiToday } from "../lib/daily-status";
   import { loadFavorites, saveFavorites, toggleFavorite, isValidFavoriteId } from "../lib/favorites";
   import { hasSearchTokens } from "../lib/search";
+  import { tzTime, isoInitial } from "../lib/format";
   import type { ViewSeries } from "../lib/card";
   import { buildCard, buildRow } from "../lib/card-dom";
   import { applySeriesFilters, activeGroupFor, currentYearFavCount, groupCounts, type SortKey } from "../lib/filter";
@@ -181,19 +184,6 @@ const updatedAtFallback = data.updatedAt ? data.updatedAt.replace("T", " ").slic
   const searchInput = document.getElementById("search") as HTMLInputElement; // 供 applyFilter 空狀態 raw query 與事件使用
 
   /* ---------- Time humanization (browser timezone) ---------- */
-  function tzTime(iso: string) {
-    const d = new Date(iso);
-    const abs = d.toLocaleString(undefined, { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false });
-    const full = d.toLocaleString(undefined, { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false, timeZoneName: "short" });
-    const diff = (Date.now() - d.getTime()) / 1000;
-    let rel: string;
-    if (diff < 60) rel = "剛剛";
-    else if (diff < 3600) rel = `${Math.floor(diff / 60)} 分鐘前`;
-    else if (diff < 86400) rel = `${Math.floor(diff / 3600)} 小時前`;
-    else if (diff < 172800) rel = "昨天";
-    else rel = abs;
-    return { abs, full, rel };
-  }
   function humanizeAll() {
     document.querySelectorAll<HTMLElement>("[data-ts]").forEach((el) => {
       const iso = el.getAttribute("data-ts");

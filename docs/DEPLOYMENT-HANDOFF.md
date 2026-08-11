@@ -9,6 +9,12 @@
 > - 卡片顯示邏輯已收斂到 `web/src/lib/card.ts`：SSR `SeriesCard.astro` 與 client `renderCard`/`renderRow` 共用同一 view-model（`cardViewModel`），降低 drift 風險。
 > - `web/public/lighthouse-report.html` 已移至 `docs/`（不再部署）。
 
+> **2026-08-11 更新（本段為最新，優先於上段）**
+> - 測試：`bun test` 現為 **219 pass**（16 files，含新增 `web/src/lib/format.test.ts` 7 個）。
+> - 資料：2026 系列數 **170** / 17 組別（報名期間持續增加中）；未開賽 44 支。
+> - 時間顯示格式已統一（原已知問題 #5 修復）：`web/src/lib/format.ts` 提供 `tzTime`/`isoInitial`，SSR（SeriesCard.astro / Dashboard.astro frontmatter）與 client（Dashboard humanizeAll / card-dom）共用；絕對時間固定 `Asia/Taipei`（不再依賴瀏覽器時區），相對時間維持「剛剛/N 分鐘前/N 小時前/昨天」。
+> - Roadmap 全數完成（含 badge enhancements / real-time 近即時已定案為架構終點）；PRODUCT.md 已同步。
+
 ## 現況速覽
 
 | 項目 | 值 |
@@ -16,7 +22,7 @@
 | 線上站 | https://ithome-ironman-observer.happyhacking.ninja/ |
 | 後備網址 | https://ironman-observer-next.pages.dev/ |
 | GitHub | https://github.com/kehao-chen/ithome-ironman-observer-next |
-| 資料 | 127 支系列 / 17 組別（2026-08-05，報名持續增加中） |
+| 資料 | 170 支系列 / 17 組別（2026-08-11，報名持續增加中） |
 | 排程 | Cloudflare Worker cron 每 10 分鐘 → `workflow_dispatch`（144 次/天；public repo 的 GitHub-hosted runner 免費且不計分鐘） |
 | 部署鏈 | 全自動，最後一次手動驗證 run 30978443677 全綠 |
 
@@ -37,7 +43,7 @@ GH Actions (.github/workflows/scheduled-update.yml)
 ```
 
 - **零成本**：Cloudflare Workers/Pages free tier + GH Actions public-repo 免費 runner + 自有網域。無後端、無 DB（JSON 即 DB；每年度一支 `data/{year}.json`，`data/meta.json` 的 `years` 是年度選項唯一權威）。
-- **每 10 分鐘全量抓取** ~250 requests（127 系列 × 2 + 分頁），約 2.5 min/run。
+- **每 10 分鐘全量抓取** ~340 requests（170 系列 × 2 + 分頁），約 2.5 min/run。
 
 ## 關鍵檔案地圖
 
@@ -80,7 +86,7 @@ GH Actions (.github/workflows/scheduled-update.yml)
 ## 驗證標準（改版後必跑）
 
 ```bash
-bun test                    # 目前 41 pass：scraper 單元測試 22 pass（含 scrape-cli 的 collectYears/buildMeta；fixture-based 不打網）+ web daily-status 19 pass
+bun test                    # 目前 219 pass：scraper 單元測試 + web lib/components 測試（含 format/daily-status/filter/search/favorites/insights/card/card-dom）
 bunx tsc --noEmit           # 全專案型別乾淨
 cd web && bun run build     # Astro build 成功，dist/ 產出
 ```
@@ -124,5 +130,5 @@ gh secret list --repo kehao-chen/ithome-ironman-observer-next
 - **原因**：更新頻率提升到每 10 分鐘後，GH `schedule` 的整點高峰延遲/漏觸發問題（官方文件確認 high-load 時可能 delay/drop）不可接受。
 - **方案**：`worker/` 新增 `ironman-observer-trigger`（Cloudflare Workers free tier，cron `*/10 * * * *`，10ms CPU 只做 HTTP dispatch，遠低於免費額度）。`scheduled()` 打 GitHub `workflow_dispatch` API 觸發 `scheduled-update` workflow。依 `run_number` 去重：同一個 run 最多 dispatch 一次，避免 cron 重疊造成並行抓取。
 - **改動**：`.github/workflows/update.yml` → `scheduled-update.yml`，移除 `schedule` 只留 `workflow_dispatch`（避免雙重觸發）。
-- **成本**：144 次/天 × ~2.5 min ≈ **6 小時/天** runner 時間，public repo 免費；Worker 請求 ~144/天遠低於 100k/day 免費額度。對 ithelp 請求量 ~250 req × 144 ≈ **3.6 萬次/天**（原 18 次/天時為 4,500 次/天）。
+- **成本**：144 次/天 × ~2.5 min ≈ **6 小時/天** runner 時間，public repo 免費；Worker 請求 ~144/天遠低於 100k/day 免費額度。對 ithelp 請求量 ~340 req × 144 ≈ **4.9 萬次/天**（原 18 次/天時為 4,500 次/天）。
 - **self-hosted runner 明確排除**：public repo 用 self-hosted 是 GitHub 官方安全警告（任何人開 PR 可在你的機器跑任意程式碼）；且排程觸發在 GitHub 端，換 runner 無法改善排程可靠性。

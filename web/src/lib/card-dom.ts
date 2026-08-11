@@ -6,6 +6,7 @@
 // 無 module-load 副作用：icons 每次呼叫新建（不依賴 document 於 import 時存在）。
 import type { CardView, ViewSeries } from "./card";
 import { cardViewModel } from "./card";
+import { isoInitial } from "./format";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -124,7 +125,7 @@ export function buildCard(s: ViewSeries, today: string, isFav: boolean): HTMLEle
   if (v.updatedIso) {
     const upd = document.createElement("p"); upd.className = "updated"; upd.textContent = "上次發布 ";
     const tm = document.createElement("time"); tm.dateTime = v.updatedIso; tm.dataset.ts = v.updatedIso;
-    tm.textContent = v.updatedIso.replace("T", " ").slice(0, 16);
+    tm.textContent = isoInitial(v.updatedIso);
     upd.appendChild(tm); art.appendChild(upd);
   }
   return art;
