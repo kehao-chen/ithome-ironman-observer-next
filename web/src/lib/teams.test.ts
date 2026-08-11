@@ -114,6 +114,10 @@ describe("aggregateTeams", () => {
     expect(top.totalViews).toBe(4263);
     expect(top.avgViews).toBe(Math.floor(4263 / 5));
     expect(top.avgProgress).toBeCloseTo(9.8, 1);
+    // postedToday = 今日發文成員數（spec §1.1）：五人成行 4 位今日發文（andy0317 昨日）、1 位昨日缺發 → 4
+    expect(top.postedToday).toBe(4);
+    expect(top.staleCount).toBe(0);
+    expect(top.alertSummary).toContain("今日缺發 1 人");
   });
 });
 

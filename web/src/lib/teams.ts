@@ -54,16 +54,18 @@ export function aggregateTeams(data: YearData, today: string): TeamRow[] {
   for (const [name, members] of byName) {
     const memberCount = members.length;
     const totalViews = members.reduce((n, m) => n + m.views, 0);
-    let postedToday = 0, staleCount = 0, pendingCount = 0;
-    // 警示分類互斥：未開賽 → 停更（≥2 天）→ 今日缺發（staleDays === 1，昨日有發今日未發）。
-    // 任一成員只落入一類（spec §1.3）。
+    let postedToday = 0, staleCount = 0, pendingCount = 0, missedToday = 0;
+    // 警示分類互斥（spec §1.3）：未開賽 → 停更（≥2 天）→ 今日缺發（staleDays === 1，昨日有發今日未發）。
+    // postedToday（spec §1.1「今日發文成員數」）= staleDays === 0 的成員；今日缺發獨立計數（missedToday）。
+    // 任一成員只落入一類。
     for (const m of members) {
       if (m.isPending) { pendingCount++; continue; }
       if (m.staleDays !== null && m.staleDays >= 2) { staleCount++; continue; }
-      if (m.staleDays === 1) postedToday++;
+      if (m.staleDays === 0) postedToday++;
+      else if (m.staleDays === 1) missedToday++;
     }
     const parts: string[] = [];
-    if (postedToday > 0) parts.push(`今日缺發 ${postedToday} 人`);
+    if (missedToday > 0) parts.push(`今日缺發 ${missedToday} 人`);
     if (staleCount > 0) parts.push(`停更 ${staleCount} 人`);
     if (pendingCount > 0) parts.push(`未開賽 ${pendingCount} 人`);
     const alertSummary = parts.length > 0 ? parts.join(" · ") : null;
