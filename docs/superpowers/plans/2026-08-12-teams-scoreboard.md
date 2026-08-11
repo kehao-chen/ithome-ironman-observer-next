@@ -316,7 +316,7 @@ git commit -m "feat: teams aggregate pure functions"
 - Create: `web/src/lib/teams-dom.test.ts`
 
 **Interfaces:**
-- Consumes: `web/src/lib/teams.ts`（`TeamRow`、`TeamMemberRow`、`TeamSortKey`）、`web/src/lib/daily-status.ts`（`statusChipText`、`statusChipTitle`）、`web/src/lib/card-dom.ts`（`buildChip`）
+- Consumes: `web/src/lib/teams.ts`（`TeamRow`、`TeamMemberRow`、`TeamSortKey`）、`web/src/lib/daily-status.ts`（`statusChipText`）、`web/src/lib/card-dom.ts`（`buildChip`）
 - Produces:
   ```ts
   export function buildTeamRow(row: TeamRow, today: string): HTMLElement;
@@ -404,8 +404,11 @@ Expected: FAIL（`Cannot find module "./teams-dom"`）。
 // web/src/lib/teams-dom.ts
 // 團隊計分板榜單列 DOM 建構（client 專用，happy-dom 可測）。
 // 顯示決定（警示摘要文字、狀態 chip）來自 teams.ts / daily-status.ts——此處只做骨架。
-import { statusChipText, statusChipTitle, type StatusChip } from "./daily-status";
-import type { TeamRow, TeamMemberRow } from "./teams";
+// 成員狀態 chip 直接複用 card-dom.ts 的 buildChip（view-model 產生 class/text/title）。
+import { statusChipText } from "./daily-status";
+import type { TeamRow } from "./teams";
+import { cardViewModel } from "./card";
+import { buildChip } from "./card-dom";
 
 // Trusted static SVG icons（同 card-dom.ts 模式：無 innerHTML、屬性 mirror）。
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -421,38 +424,23 @@ function chevronIcon(): SVGElement {
   ]);
 }
 
-// 成員狀態 chip（與主卡片同一套 StatusChip 判定，text/title 由 daily-status 決定）。
-function buildMemberChip(status: StatusChip): HTMLElement | null {
-  if (!status) return null;
-  const span = document.createElement("span");
-  span.className = "status-chip";
-  if (status.kind === "today") span.className = "status-chip";
-  else if (status.kind === "yesterday") span.className = "status-chip status-chip--yesterday";
-  else if (status.kind === "done") span.className = "status-chip status-chip--done";
-  else if (status.kind === "deleted") span.className = "status-chip status-chip--deleted";
-  else if (status.kind === "long-stale") span.className = "status-chip status-chip--long";
-  else if (status.kind === "stale") span.className = "status-chip status-chip--stale";
-  span.textContent = statusChipText(status);
-  const title = statusChipTitle(status);
-  if (title) span.title = title; // 停更 N 天 tooltip
-  return span;
-}
-
+// 成員列：作者 + 組別 + DAY n/30 + 瀏覽 + 狀態 chip（buildChip 複用 view-model 判定）。
 function buildMemberRow(m: TeamMemberRow, today: string): HTMLElement {
   const row = document.createElement("div");
   row.className = "team-member";
+  const v = cardViewModel(m.series, today);
   const name = document.createElement("a");
   name.className = "team-member-name";
-  name.href = m.series.user?.profileUrl ?? "#";
+  name.href = v.profileUrl;
   name.target = "_blank"; name.rel = "noopener";
   name.textContent = m.series.user?.name ?? "";
   const meta = document.createElement("span");
   meta.className = "team-member-meta";
-  meta.textContent = `${m.series.group ?? ""} · DAY ${m.series.dayCount ?? 0}/30`;
+  meta.textContent = `${m.series.group ?? ""} · ${v.progressLabel}`;
   const views = document.createElement("span");
   views.className = "team-member-views tabular-nums";
   views.textContent = `${m.views.toLocaleString()} 瀏覽`;
-  const chip = buildMemberChip(m.status);
+  const chip = buildChip(v);
   row.append(name, meta, views);
   if (chip) row.append(chip);
   return row;
@@ -514,6 +502,8 @@ export function buildTeamRow(row: TeamRow, today: string): HTMLElement {
   return el;
 }
 ```
+
+> 注意：`buildMemberRow` 的 `m` 參數型別是 `TeamMemberRow`——需在 import 型別時一併帶入（`import type { TeamMemberRow, TeamRow } from "./teams"`）。成員狀態 chip 由 `cardViewModel` + `buildChip` 產生（非手寫 chip class 分支）——與主卡片同一判定，且測試斷言 `statusChipText({ kind: "stale", days: 3 })` 的文字（「停更中」）出現在 member 列。
 
 - [ ] **Step 4: Run test to verify it passes**
 
