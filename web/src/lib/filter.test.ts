@@ -61,6 +61,24 @@ describe("applySeriesFilters — 組別 filter", () => {
   });
 });
 
+describe("applySeriesFilters — team: 前綴組別過濾", () => {
+  test("team:名稱 → 只列出該隊成員系列", () => {
+    const s1 = makeSeries({ id: 1, team: "五人成行，Bug 不行", title: "A" });
+    const s2 = makeSeries({ id: 2, team: "五人成行，Bug 不行", title: "B" });
+    const s3 = makeSeries({ id: 3, team: "不買股票買機票", title: "C" });
+    const data = makeData([s1, s2, s3]);
+    const out = applySeriesFilters(data, { group: "team:五人成行，Bug 不行", sort: "dayCount", query: "", favSet: NO_FAV });
+    expect(out.map((s) => s.id)).toEqual([1, 2]);
+  });
+  test("team: 與搜尋交集", () => {
+    const s1 = makeSeries({ id: 1, team: "T", title: "React 教學" });
+    const s2 = makeSeries({ id: 2, team: "T", title: "Vue 教學" });
+    const data = makeData([s1, s2]);
+    const out = applySeriesFilters(data, { group: "team:T", sort: "dayCount", query: "vue", favSet: NO_FAV });
+    expect(out.map((s) => s.id)).toEqual([2]);
+  });
+});
+
 describe("applySeriesFilters — 排序語意", () => {
   test("dayCount：desc", () => {
     const a = makeSeries({ id: 1, dayCount: 3 });
@@ -250,6 +268,18 @@ describe("helper 純函式", () => {
     expect(activeGroupFor(groups, "fav")).toBe("fav");
     expect(activeGroupFor(groups, "B")).toBe("全部");
     expect(activeGroupFor(groups, "A")).toBe("A");
+  });
+  test("activeGroupFor：認識 team: 前綴（有 teamNames 時）；不傳 teamNames → fallback 全部", () => {
+    const groups = ["全部", "Modern Web"];
+    // 存在 → 保留 requested；不存在 → fallback「全部」
+    expect(activeGroupFor(groups, "team:五人成行，Bug 不行", ["五人成行，Bug 不行"])).toBe("team:五人成行，Bug 不行");
+    expect(activeGroupFor(groups, "team:不存在的隊", ["五人成行，Bug 不行"])).toBe("全部");
+    // 不傳 teamNames（既有呼叫）→ team: 前綴視為不存在 → fallback 全部（語意不變）
+    expect(activeGroupFor(groups, "team:五人成行，Bug 不行")).toBe("全部");
+    // fav 與普通組別語意不變
+    expect(activeGroupFor(groups, "fav")).toBe("fav");
+    expect(activeGroupFor(groups, "Modern Web")).toBe("Modern Web");
+    expect(activeGroupFor(groups, "Missing")).toBe("全部");
   });
   test("currentYearFavCount / favSeries：只算目前年度已收藏子集", () => {
     const a = makeSeries({ id: 1 });

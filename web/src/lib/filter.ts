@@ -36,8 +36,13 @@ export function groupCounts(data: YearData): Map<string, number> {
 }
 
 // 年度切換時 resolve active：fav 恆保留；普通組別在新年度不存在 → fallback「全部」。
-export function activeGroupFor(groups: string[], requested: string): string {
+// team: 前綴（計分板「看該隊系列」chip）——需要 teamNames 參數檢查該隊是否仍在；不傳（既有呼叫）→ 語意不變（team: 視為不存在 → 全部）。
+export function activeGroupFor(groups: string[], requested: string, teamNames?: string[]): string {
   if (requested === "fav") return "fav";
+  if (requested.startsWith("team:")) {
+    const t = requested.slice(5);
+    return teamNames?.includes(t) ? requested : "全部";
+  }
   return groups.includes(requested) ? requested : "全部";
 }
 
@@ -111,6 +116,10 @@ export function applySeriesFilters(data: YearData, opts: SeriesFilterOptions): V
   let series: ViewSeries[] = data.series;
   if (opts.group === "fav") {
     series = favSeries(data, opts.favSet); // 收藏分頁：目前年度已收藏子集
+  } else if (opts.group.startsWith("team:")) {
+    // 團隊系列流：該隊成員子集（必須在 group 相等比對之前，否則 team: 前綴永不命中）
+    const t = opts.group.slice(5);
+    series = series.filter((s) => s.team === t);
   } else if (opts.group !== "全部") {
     series = series.filter((s) => s.group === opts.group);
   }
