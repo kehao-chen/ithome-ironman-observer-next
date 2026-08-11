@@ -75,8 +75,8 @@ describe("aggregateTeams", () => {
 
   test("聚合數值：總瀏覽 / 人均 / 平均進度 / 今日發文數 / 成員數", () => {
     const year = makeYear([
-      makeSeries({ id: 1, team: "T", dayCount: 10, articles: [makeArticle({ publishedAt: "2026-08-11T10:00:00+08:00", views: 100 })] }),
-      makeSeries({ id: 2, team: "T", dayCount: 6, articles: [makeArticle({ publishedAt: "2026-08-10T10:00:00+08:00", views: 200 })] }),
+      makeSeries({ id: 1, team: "T", dayCount: 10, articles: [makeArticle({ publishedAt: "2026-08-11T10:00:00+08:00", views: 100 })] }), // 今日 → postedToday
+      makeSeries({ id: 2, team: "T", dayCount: 6, articles: [makeArticle({ publishedAt: "2026-08-10T10:00:00+08:00", views: 200 })] }), // 昨日 → 今日缺發
     ]);
     const [row] = aggregateTeams(year, TODAY);
     expect(row.name).toBe("T");
@@ -84,7 +84,7 @@ describe("aggregateTeams", () => {
     expect(row.totalViews).toBe(300);
     expect(row.avgViews).toBe(150);
     expect(row.avgProgress).toBe(8);
-    expect(row.postedToday).toBe(1); // 只有 id 1 是今日
+    expect(row.postedToday).toBe(1); // 只有 id 1 是今日（spec §1.1「今日發文成員數」）
     expect(row.hasAlert).toBe(true); // id 2 昨日有發、今日未發 → 今日缺發
   });
 
@@ -101,10 +101,10 @@ describe("aggregateTeams", () => {
       makeSeries({ id: 1, team: "T", dayCount: 5, articles: [makeArticle({ publishedAt: "2026-08-10T10:00:00+08:00", views: 1 })] }), // staleDays 1 → 今日缺發
       makeSeries({ id: 2, team: "T", dayCount: 5, articles: [makeArticle({ publishedAt: "2026-08-08T10:00:00+08:00", views: 1 })] }), // staleDays 3 → 停更
       makeSeries({ id: 3, team: "T", dayCount: 0, articles: [] }), // 未開賽
-      makeSeries({ id: 4, team: "T", dayCount: 5, articles: [makeArticle({ publishedAt: "2026-08-11T10:00:00+08:00", views: 1 })] }), // 今日 → 無警示
+      makeSeries({ id: 4, team: "T", dayCount: 5, articles: [makeArticle({ publishedAt: "2026-08-11T10:00:00+08:00", views: 1 })] }), // 今日 → postedToday
     ]);
     const [row] = aggregateTeams(year, TODAY);
-    expect(row.postedToday).toBe(1);
+    expect(row.postedToday).toBe(1); // id 4
     expect(row.staleCount).toBe(1);
     expect(row.pendingCount).toBe(1);
     // 互斥：今日缺發 1（id 1）+ 停更 1（id 2）+ 未開賽 1（id 3）不重疊
@@ -123,7 +123,7 @@ describe("aggregateTeams", () => {
 
   test("缺陷日期不判定；已刪文不計入警示", () => {
     const year = makeYear([
-      makeSeries({ id: 1, team: "T", dayCount: 5, articles: [makeArticle({ publishedAt: "garbage", views: 1 })] }), // 缺陷 → 不算缺發
+      makeSeries({ id: 1, team: "T", dayCount: 5, articles: [makeArticle({ publishedAt: "garbage", views: 1 })] }), // 缺陷 → 不算缺發/今日
       makeSeries({ id: 2, team: "T", dayCount: 3, articleCount: 0, articles: [] }), // 已刪文（day>0 且 0 篇）→ 不算
     ]);
     const [row] = aggregateTeams(year, TODAY);
@@ -160,6 +160,10 @@ describe("aggregateTeams", () => {
     expect(top.totalViews).toBe(4263);
     expect(top.avgViews).toBe(Math.floor(4263 / 5));
     expect(top.avgProgress).toBeCloseTo(9.8, 1);
+    // postedToday = 今日發文成員數（spec §1.1）：五人成行 4 位今日發文（andy0317 昨日）、1 位昨日缺發 → 4
+    expect(top.postedToday).toBe(4);
+    expect(top.staleCount).toBe(0);
+    expect(top.alertSummary).toContain("今日缺發 1 人");
   });
 });
 
@@ -259,16 +263,18 @@ export function aggregateTeams(data: YearData, today: string): TeamRow[] {
   for (const [name, members] of byName) {
     const memberCount = members.length;
     const totalViews = members.reduce((n, m) => n + m.views, 0);
-    let postedToday = 0, staleCount = 0, pendingCount = 0;
-    // 警示分類互斥：未開賽 → 停更（≥2 天）→ 今日缺發（staleDays === 1，昨日有發今日未發）。
-    // 任一成員只落入一類（spec §1.3）。
+    let postedToday = 0, staleCount = 0, pendingCount = 0, missedToday = 0;
+    // 警示分類互斥（spec §1.3）：未開賽 → 停更（≥2 天）→ 今日缺發（staleDays === 1，昨日有發今日未發）。
+    // postedToday（spec §1.1「今日發文成員數」）= staleDays === 0 的成員；今日缺發獨立計數（missedToday）。
+    // 任一成員只落入一類。
     for (const m of members) {
       if (m.isPending) { pendingCount++; continue; }
       if (m.staleDays !== null && m.staleDays >= 2) { staleCount++; continue; }
-      if (m.staleDays === 1) postedToday++;
+      if (m.staleDays === 0) postedToday++;
+      else if (m.staleDays === 1) missedToday++;
     }
     const parts: string[] = [];
-    if (postedToday > 0) parts.push(`今日缺發 ${postedToday} 人`);
+    if (missedToday > 0) parts.push(`今日缺發 ${missedToday} 人`);
     if (staleCount > 0) parts.push(`停更 ${staleCount} 人`);
     if (pendingCount > 0) parts.push(`未開賽 ${pendingCount} 人`);
     const alertSummary = parts.length > 0 ? parts.join(" · ") : null;
