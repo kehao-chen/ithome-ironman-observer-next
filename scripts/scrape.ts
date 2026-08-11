@@ -83,7 +83,7 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
     page++;
   }
 
-  // 2. per series: RSS + series page (2 requests each)
+  // 2. per series: RSS + series page (2 requests each; series 頁分頁時逐頁抓取)
   const statsBySeries = new Map<number, SeriesStats>();
   const rssBySeries = new Map<number, RssChannel>();
   const errors: string[] = [];
@@ -94,7 +94,22 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
         fetchHtml(seriesUrl(card.userId, card.seriesId)),
       ]);
       rssBySeries.set(card.seriesId, parseRss(rssXml));
-      statsBySeries.set(card.seriesId, parseSeriesPage(pageHtml));
+      // series 頁文章清單分頁：每頁約 10 篇，30 天系列最多 3 頁。
+      // 逐頁串接 articles；dayCount/articleCount/subscriptions 只在第 1 頁取。
+      const first = parseSeriesPage(pageHtml);
+      const articles = [...first.articles];
+      let page: string | null = first.nextPage;
+      while (page) {
+        const more = parseSeriesPage(await fetchHtml(seriesUrl(card.userId, card.seriesId) + page));
+        articles.push(...more.articles);
+        page = more.nextPage;
+      }
+      statsBySeries.set(card.seriesId, {
+        dayCount: first.dayCount,
+        articleCount: first.articleCount,
+        subscriptions: first.subscriptions,
+        articles,
+      });
     } catch (e) {
       errors.push(`${card.seriesId}: ${e instanceof Error ? e.message : String(e)}`);
     }
