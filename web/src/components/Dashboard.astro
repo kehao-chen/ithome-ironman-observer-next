@@ -175,6 +175,8 @@ const teamCount = teamNames(data).length;
   import { tzTime, isoInitial } from "../lib/format";
   import type { ViewSeries } from "../lib/card";
   import { buildCard, buildRow } from "../lib/card-dom";
+  import { aggregateTeams, sortTeamRows, teamNames, type TeamSortKey } from "../lib/teams";
+  import { buildTeamRow } from "../lib/teams-dom";
   import { applySeriesFilters, activeGroupFor, currentYearFavCount, groupCounts, type SortKey } from "../lib/filter";
   import type { YearData } from "../../../scripts/types";
   // ViewData: client 端資料 = YearData，但 series 可能帶 sumViews（compact 初始資料）。
@@ -211,6 +213,12 @@ const teamCount = teamNames(data).length;
   }
 
   let viewMode: "grid" | "list" = "grid";
+  let view: "series" | "teams" = "series"; // 主視圖 / 計分板視圖
+  let teamSortKey: TeamSortKey = "totalViews"; // 計分板排序鍵（視圖內狀態，不污染主排序器）
+  const teamsBoard = document.getElementById("teams-board");
+  const teamsList = document.getElementById("teams-list");
+  const teamsEmpty = document.getElementById("teams-empty");
+  const toolbarControls = document.querySelector(".toolbar-controls");
   let today = taipeiToday(); // 跨日由 humanizeAll 週期校正
   let query = ""; // 搜尋 query（模組級 state；applyFilter 內直接讀取，年度切換保留）
   const searchInput = document.getElementById("search") as HTMLInputElement; // 供 applyFilter 空狀態 raw query 與事件使用
@@ -235,6 +243,20 @@ const teamCount = teamNames(data).length;
     const wrap = document.getElementById("group-filters");
     if (!wrap) return;
     wrap.textContent = "";
+    // 「團隊計分板」chip：SSR 已渲染（#teams-board 的入口）——此處重建以保住 data-active
+    // 狀態與計數（renderFilters 每年度重建 filter 列，若不重建，首輪 render 就會把 SSR chip 洗掉）。
+    const teamsBtn = document.createElement("button");
+    teamsBtn.className = "filter-btn";
+    teamsBtn.dataset.group = "teams";
+    teamsBtn.dataset.active = String(activeGroup === "teams");
+    const teamsLabel = document.createElement("span");
+    teamsLabel.className = "filter-label";
+    teamsLabel.textContent = "團隊計分板";
+    const teamsCnt = document.createElement("span");
+    teamsCnt.className = "filter-count tabular-nums";
+    teamsCnt.textContent = String(teamNames(current ?? initialData).length);
+    teamsBtn.append(teamsLabel, teamsCnt);
+    wrap.appendChild(teamsBtn);
     const favBtn = document.createElement("button");
     favBtn.className = "filter-btn";
     favBtn.dataset.group = "fav";
@@ -273,8 +295,9 @@ const teamCount = teamNames(data).length;
     if (lastRenderedYear !== data.year) {
       lastRenderedYear = data.year;
       const groups = ["全部", ...data.groups];
-      // 年度切換保留目前 active；普通組別在新年度不存在 → fallback「全部」（fav 恆保留）。
-      const active = activeGroupFor(groups, currentGroup());
+      // 年度切換保留目前 active；普通組別在新年度不存在 → fallback「全部」（fav 恆保留；
+      // team: 前綴由 activeGroupFor 第三參數 teamNames 檢查該隊是否仍在，無此隊 → 「全部」，spec §2.5）。
+      const active = activeGroupFor(groups, currentGroup(), teamNames(data));
       renderFilters(groups, groupCounts(data), active);
     }
     const favCount = document.getElementById("fav-count");
@@ -300,9 +323,17 @@ const teamCount = teamNames(data).length;
     const sort = (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount";
     applyFilter(data, group, sort);
     humanizeAll();
+    // 計分板視圖：年度切換/60s refresh 後重聚合（renderTeams 每次讀最新 today）。
+    if (view === "teams") renderTeams(data);
   }
 
   function applyFilter(data: ViewData, group: string, sort: string) {
+    // 計分板視圖：不渲染系列流，直接切換視圖（表頭排序為計分板自己的排序器）。
+    if (group === "teams") {
+      setTeamsView(true);
+      return;
+    }
+    setTeamsView(false);
     // 資料層（fav 子集 → 組別 → 搜尋 → 排序）在 lib/filter.ts，語意由 filter.test.ts 釘死；此處只留 DOM 層。
     const series = applySeriesFilters(data, { group, sort: sort as SortKey, query, favSet });
     list.replaceChildren();
@@ -364,8 +395,15 @@ const teamCount = teamNames(data).length;
       }
     }
     shownCount.textContent = String(series.length);
-    // 分母語意：收藏分頁 = 目前年度可顯示收藏數；一般分頁 = 年度全部系列數。
-    totalCount.textContent = String(group === "fav" ? currentYearFavCount(data, favSet) : data.series.length);
+    // 分母語意：收藏分頁 = 目前年度可顯示收藏數；team: = 該隊成員數（系列流 = 該隊系列）；
+    // 一般分頁 = 年度全部系列數。
+    totalCount.textContent = String(
+      group === "fav"
+        ? currentYearFavCount(data, favSet)
+        : group.startsWith("team:")
+          ? data.series.filter((s) => s.team === group.slice("team:".length)).length
+          : data.series.length,
+    );
     humanizeAll();
   }
 
@@ -374,7 +412,84 @@ const teamCount = teamNames(data).length;
 
   function renderRow(s: ViewSeries) { return buildRow(s, today, favSet.has(s.id)); }
 
+  /* ---------- 團隊計分板 ---------- */
+  function setTeamsView(on: boolean) {
+    view = on ? "teams" : "series";
+    list.hidden = on;
+    if (teamsBoard) teamsBoard.hidden = !on;
+    // 計分板視圖下隱藏搜尋/排序/視圖切換器（計分板有自己的表頭排序）；query 保留。
+    if (toolbarControls) toolbarControls.hidden = on;
+    const seg = document.querySelector(".header-actions .seg");
+    if (seg) (seg as HTMLElement).hidden = on;
+    if (on && current) renderTeams(current);
+  }
+
+  function renderTeams(data: ViewData) {
+    if (!teamsList) return;
+    const rows = sortTeamRows(aggregateTeams(data, today), teamSortKey);
+    teamsList.replaceChildren();
+    const frag = document.createDocumentFragment();
+    for (const r of rows) frag.appendChild(buildTeamRow(r, today));
+    teamsList.appendChild(frag);
+    if (teamsEmpty) teamsEmpty.hidden = rows.length > 0;
+    // 表頭 aria-sort 更新：目前排序鍵的欄位標 descending，其餘清除。
+    document.querySelectorAll<HTMLElement>(".th-sortable").forEach((th) => {
+      if (th.dataset.sort === teamSortKey) th.setAttribute("aria-sort", "descending");
+      else th.removeAttribute("aria-sort");
+    });
+  }
+
   /* ---------- Events ---------- */
+  // 表頭排序：點擊切換計分板排序鍵（視圖內狀態，不污染主排序器）。
+  document.querySelectorAll<HTMLElement>(".th-sortable").forEach((th) => {
+    th.addEventListener("click", () => {
+      const key = th.dataset.sort as TeamSortKey;
+      if (!key) return;
+      teamSortKey = key;
+      if (current && view === "teams") renderTeams(current);
+    });
+  });
+
+  // 展開/收合 + 看該隊系列（事件委派在 #teams-board 上）。
+  teamsBoard?.addEventListener("click", (e) => {
+    const t = e.target as HTMLElement;
+    const expand = t.closest<HTMLElement>("[data-expand]");
+    if (expand) {
+      const row = expand.closest<HTMLElement>(".team-row");
+      const body = row?.querySelector<HTMLElement>(".team-body");
+      if (body) {
+        const open = body.hidden;
+        body.hidden = !open;
+        expand.setAttribute("aria-expanded", String(open));
+        expand.setAttribute("aria-label", open ? `收合 ${row!.dataset.teamName} 成員` : `展開 ${row!.dataset.teamName} 成員`);
+      }
+      return;
+    }
+    // 用 .team-go class 選擇器（row root 也有 data-team-name，避免先命中內層按鈕）。
+    const go = t.closest<HTMLElement>(".team-go");
+    if (go) {
+      // 看該隊系列：切回主視圖 + filter 設為該隊 + 套用主排序器。
+      const group = `team:${go.dataset.teamName}`;
+      groupFilters?.querySelectorAll(".filter-btn").forEach((b) => b.setAttribute("data-active", "false"));
+      // 該隊 chip 可能不存在（計分板 chip 是 data-group="teams"）——動態建立。
+      let btn = groupFilters?.querySelector<HTMLElement>(`.filter-btn[data-group="${CSS.escape(group)}"]`);
+      if (!btn && groupFilters) {
+        btn = document.createElement("button");
+        btn.className = "filter-btn";
+        btn.dataset.group = group;
+        const label = document.createElement("span");
+        label.className = "filter-label";
+        label.textContent = go.dataset.teamName ?? "";
+        const cnt = document.createElement("span");
+        cnt.className = "filter-count tabular-nums";
+        cnt.textContent = "0";
+        btn.append(label, cnt);
+        groupFilters.appendChild(btn);
+      }
+      btn?.setAttribute("data-active", "true");
+      if (current) applyFilter(current, group, (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
+    }
+  });
   const groupFilters = document.getElementById("group-filters");
   groupFilters?.addEventListener("click", (e) => {
     const btn = (e.target as HTMLElement).closest(".filter-btn") as HTMLElement | null;
