@@ -3,6 +3,7 @@
 import SeriesCard from "./SeriesCard.astro";
 import type { YearData } from "../../../scripts/types";
 import { isoInitial } from "../lib/format";
+import { teamNames } from "../lib/teams";
 
 interface Props { data: YearData; years: number[] }
 const { data, years } = Astro.props;
@@ -30,6 +31,7 @@ const compactData = { ...data, series: compactSeries };
 const groups = ["全部", ...data.groups];
 const countFor = (g: string) => g === "全部" ? data.series.length : data.series.filter((s) => s.group === g).length;
 const updatedAtFallback = isoInitial(data.updatedAt);
+const teamCount = teamNames(data).length;
 ---
 
 <header class="site-header container">
@@ -86,6 +88,10 @@ const updatedAtFallback = isoInitial(data.updatedAt);
     </div>
     <div class="filter-row">
       <div class="filter-group" id="group-filters" role="group" aria-label="依組別篩選">
+        <button data-group="teams" class="filter-btn" data-active="false">
+          <span class="filter-label">團隊計分板</span>
+          <span class="filter-count tabular-nums">{teamCount}</span>
+        </button>
         <button data-group="fav" class="filter-btn" data-active="false">
           <span class="filter-label">我的收藏</span>
           <span class="filter-count tabular-nums" id="fav-count">0</span>
@@ -114,9 +120,25 @@ const updatedAtFallback = isoInitial(data.updatedAt);
   </div>
   <div class="series-grid" id="series-list">
     {data.series.map((s) => <SeriesCard series={s} />)}
-    <div class="fav-empty" id="fav-empty" role="status" aria-live="polite" tabindex="-1" hidden>
+      <div class="fav-empty" id="fav-empty" role="status" aria-live="polite" tabindex="-1" hidden>
       <p>尚未收藏任何系列</p>
       <p class="fav-empty-hint">點卡片右上角星號開始追蹤你關心的系列。</p>
+    </div>
+  </div>
+  <div class="teams-board" id="teams-board" hidden>
+    <div class="teams-head" role="row">
+      <span class="th th-expand" aria-hidden="true"></span>
+      <button type="button" class="th th-sortable" data-sort="totalViews" aria-sort="descending">團隊</button>
+      <span class="th">成員</span>
+      <button type="button" class="th th-sortable" data-sort="totalViews" aria-sort="descending">總瀏覽</button>
+      <button type="button" class="th th-sortable" data-sort="avgViews">人均</button>
+      <button type="button" class="th th-sortable" data-sort="avgProgress">平均進度</button>
+      <button type="button" class="th th-sortable" data-sort="postedToday">今日發文</button>
+      <span class="th">警示</span>
+    </div>
+    <div id="teams-list"></div>
+    <div class="teams-empty" id="teams-empty" role="status" aria-live="polite" hidden>
+      <p>這個年度還沒有團隊報名</p>
     </div>
   </div>
 </main>
