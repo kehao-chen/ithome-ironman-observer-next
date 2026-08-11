@@ -49,6 +49,14 @@ function latestPubMs(s: ViewSeries): number {
   return Number.isFinite(ms) ? ms : 0;
 }
 
+// 尚未開賽（無文章）系列的報名日 ms；無效/空 → 0（排序時沉底到最後）。
+function signupMs(s: ViewSeries): number {
+  const d = s.signupDate.slice(0, 10);
+  if (!/^\d{4}[-/]\d{2}[-/]\d{2}$/.test(d)) return 0;
+  const ms = Date.parse(`${d.replace(/\//g, "-")}T00:00:00Z`); // Date.parse 不吃斜線 YYYY/MM/DD
+  return Number.isFinite(ms) ? ms : 0;
+}
+
 // 依 sort 語意排序（[...series] 副本，不 mutate 輸入）。
 function sortSeries(series: ViewSeries[], sort: SortKey): ViewSeries[] {
   return [...series].sort((a, b) => {
@@ -57,7 +65,12 @@ function sortSeries(series: ViewSeries[], sort: SortKey): ViewSeries[] {
       const lastA = a.articles.length ? a.articles[a.articles.length - 1] : null;
       const lastB = b.articles.length ? b.articles[b.articles.length - 1] : null;
       const da = taipeiDay(lastA?.publishedAt), db = taipeiDay(lastB?.publishedAt);
-      if (!da && !db) return b.dayCount - a.dayCount; // 兩者皆無文章 → 進度
+      if (!da && !db) {
+        // 兩者皆無文章：dayCount > 0（停更/刪文）依進度 desc；
+        // dayCount 0（尚未開賽）依報名日近者在前（早報名優先）——讓「等開賽」的排在最後、報名最新者沉底。
+        if (a.dayCount > 0 || b.dayCount > 0) return b.dayCount - a.dayCount;
+        return signupMs(a) - signupMs(b);
+      }
       if (!da) return 1;   // a 無文章 → 沉底
       if (!db) return -1;  // b 無文章 → 沉底
       const byDay = db.localeCompare(da); // 臺北日 desc

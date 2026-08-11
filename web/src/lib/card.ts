@@ -35,7 +35,7 @@ export type CardView = {
   rssUrl: string;
   totalViews: number;      // sumViews ?? articles 求和
   latest: Article | null;  // 最後一篇文章（無文章 = null）
-  emptySlotText: string;   // 無文章時「最新」欄位的文字（尚未開賽 / 報名於… / 文章已全數刪除）
+  emptySlotText: string;   // 無文章時「最新」欄位的文字（尚未開賽 / 尚未開賽（已報名 N 天）… / 文章已全數刪除）
   updatedIso: string | null; // 上次發布時間（latest?.publishedAt）
 };
 
@@ -49,14 +49,6 @@ export function chipClassOf(chip: StatusChip): string {
     case "long-stale": return "status-chip status-chip--long";
     case "stale": return "status-chip status-chip--stale";
   }
-}
-
-// signupDate 來源格式「2026/08/01T12:07:01+08:00」（斜線日期）→ 顯示用「2026/08/01」；
-// 也接受「2026-08-01…」橫線格式（測試 fixture 用過）——兩種都保留來源分隔符。
-// 空字串／格式不符 → null（防缺陷資料）。
-export function signupDateText(signupDate: string): string | null {
-  const d = signupDate.slice(0, 10);
-  return /^\d{4}[/-]\d{2}[/-]\d{2}$/.test(d) ? d : null;
 }
 
 // 所有卡片顯示決定集中在此。today 必須由呼叫端傳入：
@@ -86,10 +78,12 @@ export function cardViewModel(s: ViewSeries, today: string = taipeiToday()): Car
   const chip = statusChip(latest?.publishedAt, s.dayCount, today, s.articleCount);
   const totalViews = totalViewsOf(s);
 
-  // 無文章時「最新」欄位的文字（C2）：尚未開賽系列顯示報名日；已刪文顯示明確狀態。
-  const signup = isPending ? signupDateText(s.signupDate) : null;
+  // 無文章時「最新」欄位的文字（C2）：尚未開賽系列顯示報名後天數；已刪文顯示明確狀態。
+  // pendingDays = 報名日 → today 的臺北曆日差（0 = 今天報名）；無效報名日 → null。
+  const pendingDays = isPending ? pendingDaysOf(s.signupDate, today) : null;
   const emptySlotText = isDeleted ? "文章已全數刪除"
-    : signup ? `報名於 ${signup}`
+    : pendingDays === 0 ? "尚未開賽（今天報名）"
+    : pendingDays ? `尚未開賽（已報名 ${pendingDays} 天）`
     : "尚未開賽";
 
   return {
@@ -109,4 +103,18 @@ export function cardViewModel(s: ViewSeries, today: string = taipeiToday()): Car
     emptySlotText,
     updatedIso: latest?.publishedAt ?? null,
   };
+}
+
+// 報名日 → today 的臺北曆日差（0 = 今天報名）；signupDate 缺陷/空 → null。
+// signupDate 來源格式「2026/08/01T12:07:01+08:00」或「2026-08-01…」——取前 10 字元，
+// 先正規化斜線為橫線再以 UTC 午夜解析（Date.parse 不吃斜線 YYYY/MM/DD；環境時區無關，
+// 與 insights.behindSchedule 同法）。
+export function pendingDaysOf(signupDate: string, today: string): number | null {
+  const d = signupDate.slice(0, 10);
+  if (!/^\d{4}[-/]\d{2}[-/]\d{2}$/.test(d)) return null;
+  const norm = d.replace(/\//g, "-");
+  const a = Date.parse(`${norm}T00:00:00Z`);
+  const b = Date.parse(`${today}T00:00:00Z`);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  return Math.max(0, Math.round((b - a) / 86_400_000));
 }

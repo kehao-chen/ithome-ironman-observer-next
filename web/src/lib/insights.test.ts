@@ -25,7 +25,7 @@ function makeSeries(partial: Partial<Series>): Series {
     id: 1,
     user: { id: 1, name: "u", profileUrl: "https://ithelp.ithome.com.tw/users/1" },
     group: "Modern Web", title: "t", description: "", team: null,
-    signupDate: "2026-01-01", lastUpdated: null,
+    signupDate: "2026-01-01T00:00:00+08:00", lastUpdated: null,
     dayCount: 5, articleCount: 5, subscriptions: 3, articles: [],
   };
   return { ...base, ...partial };

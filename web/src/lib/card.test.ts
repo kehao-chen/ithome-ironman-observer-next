@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cardViewModel, chipClassOf, signupDateText, totalViewsOf, type ViewSeries } from "./card";
+import { cardViewModel, chipClassOf, pendingDaysOf, totalViewsOf, type ViewSeries } from "./card";
 import type { Series } from "../../../scripts/types";
 
 const TODAY = "2026-08-07";
@@ -51,7 +51,7 @@ describe("cardViewModel — badge / 進度", () => {
     expect(v.progressLabel).toBe("30/30");
     expect(v.badgeText).toBe("完賽");
   });
-  test("尚未開賽：DAY 0 → badge + 報名日（C2）", () => {
+  test("尚未開賽：DAY 0 → badge + 報名後天數（C2）", () => {
     const v = cardViewModel(makeSeries({ dayCount: 0, articleCount: 0, articles: [] }), TODAY);
     expect(v.badgeText).toBe("尚未開賽");
     expect(v.badgeClass).toBe("day-badge day-badge--pending");
@@ -60,11 +60,15 @@ describe("cardViewModel — badge / 進度", () => {
     expect(v.chipText).toBe(""); // 無文章 → 無 chip
     expect(v.latest).toBeNull();
     expect(v.updatedIso).toBeNull();
-    expect(v.emptySlotText).toBe("報名於 2026/08/01");
+    expect(v.emptySlotText).toBe("尚未開賽（已報名 6 天）"); // 報名 08/01 → 08/07
   });
   test("尚未開賽但無報名日 → 尚未開賽", () => {
     const v = cardViewModel(makeSeries({ dayCount: 0, articleCount: 0, articles: [], signupDate: "" }), TODAY);
     expect(v.emptySlotText).toBe("尚未開賽");
+  });
+  test("尚未開賽但今天報名 → 尚未開賽（今天報名）", () => {
+    const v = cardViewModel(makeSeries({ dayCount: 0, articleCount: 0, articles: [], signupDate: "2026/08/07T08:00:00+08:00" }), TODAY);
+    expect(v.emptySlotText).toBe("尚未開賽（今天報名）");
   });
   test("已刪文：DAY n 保留 + 文章已全數刪除", () => {
     const v = cardViewModel(makeSeries({ dayCount: 5, articleCount: 0, articles: [] }), TODAY);
@@ -135,17 +139,20 @@ describe("cardViewModel — 資料欄位", () => {
   });
 });
 
-describe("signupDateText", () => {
-  test("標準格式 → YYYY/MM/DD", () => {
-    expect(signupDateText("2026/08/01T12:07:01+08:00")).toBe("2026/08/01");
-  });
-  test("空字串 / 缺陷格式 → null", () => {
-    expect(signupDateText("")).toBeNull();
-    expect(signupDateText("bad")).toBeNull();
-    expect(signupDateText("2026/8/1T12:00:00+08:00")).toBeNull(); // 非補零格式不在白名單
+describe("pendingDaysOf", () => {
+  const TODAY = "2026-08-07";
+  test("標準格式 → 報名日到 today 的臺北曆日差", () => {
+    expect(pendingDaysOf("2026/08/01T12:07:01+08:00", TODAY)).toBe(6);
+    expect(pendingDaysOf("2026/08/07T00:00:01+08:00", TODAY)).toBe(0); // 今天報名
+    expect(pendingDaysOf("2026/08/08T08:00:00+08:00", TODAY)).toBe(0); // 明天（clamp 0）
   });
   test("橫線格式（測試 fixture 用過）也接受", () => {
-    expect(signupDateText("2026-08-01T00:00:00+08:00")).toBe("2026-08-01");
+    expect(pendingDaysOf("2026-08-01T00:00:00+08:00", TODAY)).toBe(6);
+  });
+  test("空字串 / 缺陷格式 → null", () => {
+    expect(pendingDaysOf("", TODAY)).toBeNull();
+    expect(pendingDaysOf("bad", TODAY)).toBeNull();
+    expect(pendingDaysOf("2026/8/1T12:00:00+08:00", TODAY)).toBeNull(); // 非補零格式不在白名單
   });
 });
 

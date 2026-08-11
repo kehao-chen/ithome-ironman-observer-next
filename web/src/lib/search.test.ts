@@ -34,7 +34,7 @@ function makeSeries(partial: Partial<Series>): Series {
     title: "Vue 前端開發",
     description: "",
     team: null,
-    signupDate: "2026-01-01",
+    signupDate: "2026-01-01T00:00:00+08:00",
     lastUpdated: null,
     dayCount: 7,
     articleCount: 7,

@@ -90,13 +90,13 @@ describe("buildCard — 結構契約（mirror SeriesCard.astro）", () => {
     expect(fav.getAttribute("aria-label")).toBe("取消收藏");
   });
 
-  test("尚未開賽：報名於 + 無 chip + 0/30 + 無 updated", () => {
+  test("尚未開賽：報名後天數 + 無 chip + 0/30 + 無 updated", () => {
     const card = buildCard(makeSeries({ dayCount: 0, articleCount: 0, articles: [] }), TODAY, false);
     expect(card.querySelector(".day-badge")!.textContent).toBe("尚未開賽");
     expect(card.querySelector(".status-chip")).toBeNull();
     expect(card.querySelector(".progress-label")!.textContent).toBe("0/30");
     expect(card.querySelector<HTMLElement>(".progress-fill")!.style.width).toBe("0%");
-    expect(card.querySelector(".latest-link")!.textContent).toBe("報名於 2026/08/01");
+    expect(card.querySelector(".latest-link")!.textContent).toBe("尚未開賽（已報名 6 天）");
     expect(card.querySelector(".updated")).toBeNull();
   });
 
@@ -142,9 +142,9 @@ describe("真實資料全量 sweep（data/2026.json）", () => {
   const data = realData as unknown as YearData;
 
   test(`全部 ${data.series.length} 支系列可建卡，emptySlot 文字與 view-model 一致`, () => {
-    let signupTexts = 0;
+    let pendingTexts = 0;
     let deletedTexts = 0;
-    let expectedSignup = 0;
+    let expectedPending = 0;
     let expectedDeleted = 0;
 
     for (const s of data.series) {
@@ -160,9 +160,9 @@ describe("真實資料全量 sweep（data/2026.json）", () => {
         expect(card.querySelector(".updated time")).not.toBeNull();
       } else {
         const emptyText = card.querySelector(".latest .latest-link")!.textContent ?? "";
-        if (emptyText.startsWith("報名於")) signupTexts++;
+        if (emptyText.startsWith("尚未開賽")) pendingTexts++;
         if (emptyText === "文章已全數刪除") deletedTexts++;
-        if (v.emptySlotText.startsWith("報名於")) expectedSignup++;
+        if (v.emptySlotText.startsWith("尚未開賽")) expectedPending++;
         if (v.emptySlotText === "文章已全數刪除") expectedDeleted++;
       }
     }
@@ -170,7 +170,7 @@ describe("真實資料全量 sweep（data/2026.json）", () => {
     // builder 呈現的 emptySlot 計數 = view-model 的期望（資料與渲染一致）。
     // 注意：不做絕對數量斷言——賽事開跑後未開賽會歸零、已刪文系列也可能復原，
     // 自洽性（資料裡有 N 支就渲染出 N 支）才是這個測試要守的契約。
-    expect(signupTexts).toBe(expectedSignup);
+    expect(pendingTexts).toBe(expectedPending);
     expect(deletedTexts).toBe(expectedDeleted);
   });
 });

@@ -95,6 +95,13 @@ describe("applySeriesFilters — 排序語意", () => {
     expect(r.map((s) => s.id)).toEqual([1, 2]);
   });
 
+  test("latest：無文章（dayCount 0）→ 依報名日近者在前（早報名優先）", () => {
+    const late = makeSeries({ id: 1, dayCount: 0, articleCount: 0, articles: [], signupDate: "2026/08/05T12:00:00+08:00" });
+    const early = makeSeries({ id: 2, dayCount: 0, articleCount: 0, articles: [], signupDate: "2026/08/01T12:00:00+08:00" });
+    const r = applySeriesFilters(makeData([late, early]), { group: "全部", sort: "latest", query: "", favSet: NO_FAV });
+    expect(r.map((s) => s.id)).toEqual([2, 1]); // 早報名在前
+  });
+
   test("latest：一無一文時，有文章者恆在無文章者之前（即使進度較低）", () => {
     const hasArticle = makeSeries({ id: 1, dayCount: 1, articles: [{ id: 1, day: 1, title: "D1", url: "u", publishedAt: "2026-08-01T12:00:00+08:00", views: 1, likes: 0, comments: 0 }] });
     const noArticle = makeSeries({ id: 2, dayCount: 29, articles: [] });
