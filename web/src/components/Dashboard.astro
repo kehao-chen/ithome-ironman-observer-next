@@ -9,11 +9,20 @@ const { data, years } = Astro.props;
 const compactSeries = data.series.map((s) => {
   const latest = s.articles.length ? s.articles[s.articles.length - 1] : null;
   const sumViews = s.articles.reduce((n, a) => n + a.views, 0);
+  // 排序錨點日 = 資料快照日（與 filter.ts applySeriesFilters 的 anchorDay 同源）。
+  const anchorDay = data.updatedAt.slice(0, 10);
+  // 「當篇觀看（今日）」排序鍵：今日文章最大觀看（-1 = 無今日文章，與 filter.ts 哨兵一致）。
+  // compact 只保留最新一篇，無法由 articles 推出 → 在此由完整 articles 預計算、附加欄位傳給 client。
+  const todayMaxViews = s.articles.reduce(
+    (max, a) => (a.publishedAt.slice(0, 10) === anchorDay && a.views > max ? a.views : max),
+    -1,
+  );
   return {
     ...s,
     // 總瀏覽數獨立帶；compact 只保留最新一篇，其 views 是「該篇」觀看數，
     // 不能拿單篇求和冒充總和（否則 client 卡片的「瀏覽」與「當篇觀看」會相同）。
     sumViews,
+    todayMaxViews,
     articles: latest ? [{ title: latest.title, url: latest.url, views: latest.views, publishedAt: latest.publishedAt }] : []
   };
 });
@@ -68,7 +77,8 @@ const updatedAtFallback = isoInitial(data.updatedAt);
           <select id="sort" class="sort-select">
             <option value="dayCount">依進度</option>
             <option value="views">依觀看數</option>
-            <option value="latest">今日發文</option>
+            <option value="latest">最新發文</option>
+            <option value="todayViews">當篇觀看（今日）</option>
           </select>
           <svg class="sort-caret" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
         </div>

@@ -14,7 +14,9 @@ import {
 
 // client compact 資料在 Series 上附加 sumViews（總瀏覽，避免帶全部 articles）；
 // SSR 完整資料沒有此欄位 → 由 articles 求和。兩種輸入都支援。
-export type ViewSeries = Series & { sumViews?: number };
+// todayMaxViews：compact 資料附加的「今日（快照日）文章最大觀看」——compact 只帶最新一篇，
+// 無法由 articles 推出（同日多篇時最大 ≠ 最新）；「當篇觀看（今日）」排序鍵優先使用此欄位。
+export type ViewSeries = Series & { sumViews?: number; todayMaxViews?: number };
 
 // 總瀏覽數：sumViews ?? articles 求和（排序器與 view-model 共用）。
 export function totalViewsOf(s: ViewSeries): number {
