@@ -1,0 +1,4 @@
+# 明確讓 /_astro/* 未命中回 404，而不是被 SPA fallback 回 index.html
+# （custom domain 的 Pages 隱含 single-page-application fallback，會把
+#   無 Accept header 的 module script 請求誤導向 index.html → MIME 錯誤）
+/_astro/*  /404.html  404
