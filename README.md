@@ -4,9 +4,10 @@
 
 🔗 線上站：https://ithome-ironman-observer.happyhacking.ninja/
 
-網站有兩頁：
+網站有三頁：
 
 - **[賽事觀察台](https://ithome-ironman-observer.happyhacking.ninja/)**（首頁）：每支參賽系列一張卡片，看得到進度和人氣
+- **[團隊計分板](https://ithome-ironman-observer.happyhacking.ninja/teams/)**：把組團視為參賽單位，總瀏覽、人均、平均進度、今日發文與落後警示
 - **[Insights 分析](https://ithome-ironman-observer.happyhacking.ninja/insights/)**：整屆賽事的分析，發文時段、人氣分佈、組別、標題文字等圖表
 
 ## 專案起源
@@ -41,7 +42,7 @@
 - 組別篩選 + 我的收藏分頁（以系列 ID 為 key 跨年度共用，只存在本裝置 localStorage）
 - 排序：參賽進度、最多觀看、最新發文、當篇觀看（今日）
 - 搜尋（標題／作者／組別／團隊，token AND）
-- 團隊計分板：把組團視為參賽單位，總瀏覽/人均/平均進度/今日發文 + 落後警示（今日缺發/停更/未開賽），可展開成員並跳轉該隊系列流
+- 團隊計分板：把組團視為參賽單位，總瀏覽/人均/平均進度/今日發文 + 落後警示（今日缺發/停更/未開賽），可展開成員並跳轉該隊系列流；另有獨立分頁 `/teams/`（header 右上角入口）
 - 卡片狀態標示：DAY n／30 進度條、完賽、已刪文、尚未開賽
 - 靜態頁每 60 秒客端重讀年度 JSON；抓取錯誤顯示在 scrapeLog 狀態列
 - 深色／淺色主題（預設隨系統，可手動切換）、響應式
