@@ -35,10 +35,10 @@ export function groupCounts(data: YearData): Map<string, number> {
   return m;
 }
 
-// 年度切換時 resolve active：fav 恆保留；普通組別在新年度不存在 → fallback「全部」。
+// 年度切換時 resolve active：fav 與「teams」（計分板視圖）恆保留；普通組別在新年度不存在 → fallback「全部」。
 // team: 前綴（計分板「看該隊系列」chip）——需要 teamNames 參數檢查該隊是否仍在；不傳（既有呼叫）→ 語意不變（team: 視為不存在 → 全部）。
 export function activeGroupFor(groups: string[], requested: string, teamNames?: string[]): string {
-  if (requested === "fav") return "fav";
+  if (requested === "fav" || requested === "teams") return requested;
   if (requested.startsWith("team:")) {
     const t = requested.slice(5);
     return teamNames?.includes(t) ? requested : "全部";

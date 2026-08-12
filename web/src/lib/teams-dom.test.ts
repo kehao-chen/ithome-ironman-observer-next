@@ -135,7 +135,8 @@ describe("buildTeamRow", () => {
     // 狀態 chip 文字由 cardViewModel（同 statusChipText）決定——非手寫分支
     expect(el.textContent).toContain(statusChipText({ kind: "today" }));
     expect(el.textContent).toContain(statusChipText({ kind: "stale", days: 3 }));
-    const goBtn = el.querySelector<HTMLElement>("[data-team-name]");
+    // .team-go 才是「看該隊系列」按鈕（row root 也有 data-team-name，不能拿 root 冒充按鈕）。
+    const goBtn = el.querySelector<HTMLElement>(".team-go");
     expect(goBtn?.textContent).toContain("看該隊系列");
     expect(goBtn?.dataset.teamName).toBe("五人成行，Bug 不行");
   });

@@ -263,9 +263,11 @@ describe("helper 純函式", () => {
     expect(m.get("A")).toBe(2);
     expect(m.get("B")).toBe(1);
   });
-  test("activeGroupFor：fav 恆保留；不存在的組別 → 全部；存在 → 保留", () => {
+  test("activeGroupFor：fav 與 teams 恆保留；不存在的組別 → 全部；存在 → 保留", () => {
     const groups = ["全部", "A"];
     expect(activeGroupFor(groups, "fav")).toBe("fav");
+    // 「teams」= 計分板視圖入口 chip，年度切換時恆保留（不得 fallback 全部）
+    expect(activeGroupFor(groups, "teams")).toBe("teams");
     expect(activeGroupFor(groups, "B")).toBe("全部");
     expect(activeGroupFor(groups, "A")).toBe("A");
   });
