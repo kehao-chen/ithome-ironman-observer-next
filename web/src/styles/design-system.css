@@ -769,7 +769,7 @@ input, select, textarea { caret-color: var(--accent); }
 /* 表頭與列頭共用 Grid 定義：保證 1:1 垂直對齊 */
 /* [Rank 44px] [名稱 1.8fr] [成員 54px] [總瀏覽 84px] [人均 84px] [平均進度 140px] [今日發文 76px] [狀態 1.2fr] */
 :root {
-  --teams-grid-cols: 44px minmax(160px, 1.8fr) 54px 84px 84px 140px 76px minmax(110px, 1.2fr);
+  --teams-grid-cols: 44px minmax(170px, 1.8fr) 48px 84px 84px 154px 76px minmax(120px, 1.2fr);
 }
 
 /* 表頭（SSR 靜態輸出） */
@@ -786,10 +786,30 @@ input, select, textarea { caret-color: var(--accent); }
 }
 .th { font-weight: 600; }
 .th.th-rank { text-align: center; }
-.th.th-members,
+.th.th-name { text-align: left; }
+.th.th-members { text-align: right; }
 .th.th-views,
-.th.th-avg { text-align: right; }
-.th.th-today { text-align: center; }
+.th.th-avg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  text-align: right;
+}
+.th.th-progress {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+.th.th-today {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
 .th.th-status { text-align: right; }
 
 .th-sortable {
@@ -930,17 +950,18 @@ input, select, textarea { caret-color: var(--accent); }
   text-align: right;
 }
 
-/* 6. Progress bar column */
+/* 6. Progress bar column (進度條與數字居中群組化，與表頭「平均進度」完美對齊) */
 .team-col-progress {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
+  width: 100%;
 }
 .team-col-progress .progress-track {
-  flex: 1;
-  min-width: 50px;
-  max-width: 80px;
-  height: 5px;
+  width: 68px;
+  flex-shrink: 0;
+  height: 6px;
   background: var(--surface-muted);
   border-radius: var(--radius-pill);
   overflow: hidden;
@@ -956,10 +977,9 @@ input, select, textarea { caret-color: var(--accent); }
   font-family: var(--font-sans);
   font-size: var(--text-2xs);
   color: var(--muted);
-  min-width: 42px;
-  text-align: right;
+  min-width: 44px;
+  text-align: left;
 }
-
 /* 7. Today posts column */
 .team-col-today {
   display: flex;
