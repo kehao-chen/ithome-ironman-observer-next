@@ -79,6 +79,7 @@ Feature ideas carried over from the removed `docs/PROJECT-INTRODUCTION.md`, plus
 - [x] **Search**（完成 2026-08-06）：`web/src/lib/search.ts` 純函數（`normalize` + token AND）＋toolbar `#search` input 即時過濾；命中標題/作者/組別/團隊；與組別分頁（含收藏分頁）、排序器自由組合；搜尋空狀態 `role="status"`；Escape 清空（RSS modal 優先）；跨年度 query 保留。
 - [x] **Completion / activity badge enhancements**（完成 2026-08-05，daily-status 功能）：`web/src/lib/daily-status.ts` 動態狀態 chip（今日發文 / 昨日發文 / 停更 N 天 / 長時間停更 / 鐵人煉成 / 已刪文），SSR 與 client 共用同一判定，天數細節放 tooltip。
 - [x] **Favorites / tracking specific series**（完成 2026-08-06）：localStorage 書籤（系列 ID 跨年度共用），卡片星號 toggle（grid/list 皆可），「我的收藏」分頁沿用排序器，空狀態引導；僅限本裝置/瀏覽器。
+- [x] **Team scoreboard**（完成 2026-08-12）：`web/src/lib/teams.ts` 純函式聚合 + Dashboard 計分板視圖（總瀏覽/人均/平均進度/今日發文 + 警示：今日缺發/停更≥2 天/未開賽，與 daily-status 共用判定）。
 - **Real-time updates**: 近即時已是當前架構終點——Cloudflare Worker cron 每 10 分鐘批次更新 + 60s client refresh（2026-08-06 起）。真 near-real-time 需外部推送（WebSocket/SSE）或縮短 cron 間隔，屬成本 vs 即時性取捨，超出零成本約束；暫不排程。
 
 ### Already covered, no action needed
