@@ -264,8 +264,8 @@ export function aggregateTeams(data: YearData, today: string): TeamRow[] {
     const memberCount = members.length;
     const totalViews = members.reduce((n, m) => n + m.views, 0);
     let postedToday = 0, staleCount = 0, pendingCount = 0, missedToday = 0;
-    // 警示分類互斥（spec §1.3）：未開賽 → 停更（≥2 天）→ 今日缺發（staleDays === 1，昨日有發今日未發）。
-    // postedToday（spec §1.1「今日發文成員數」）= staleDays === 0 的成員；今日缺發獨立計數（missedToday）。
+    // 警示分類互斥（spec §1.3）：未開賽 → 停更（≥2 天）→ 今日發文（staleDays 0）→ 今日缺發（staleDays 1）。
+    // postedToday（spec §1.1「今日發文成員數」）= staleDays === 0 的成員；今日缺發獨立計數（missedToday，摘要用）。
     // 任一成員只落入一類。
     for (const m of members) {
       if (m.isPending) { pendingCount++; continue; }
@@ -281,7 +281,7 @@ export function aggregateTeams(data: YearData, today: string): TeamRow[] {
     rows.push({
       name, members, memberCount,
       totalViews,
-      avgViews: totalViews / memberCount,
+      avgViews: Math.floor(totalViews / memberCount),
       avgProgress: members.reduce((n, m) => n + Math.min(m.series.dayCount, 30), 0) / memberCount,
       postedToday, staleCount, pendingCount,
       alertSummary,
