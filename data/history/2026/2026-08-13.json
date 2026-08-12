@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-08-13 05:36:12+08:00",
+  "updatedAt": "2026-08-13 05:44:54+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -33,7 +33,7 @@
       "description": "身為公司超級工具人(MIS)多年，身兼電腦組裝、修網路、寫AI AGENT，資訊安全仍然是公司最大的議題，也是每次要花錢時第一個被砍的項目。我們常常遇到「零信任架構、零預算架構；沒事罵資訊亂花錢，有事罵資訊不做事」的窘境。原本只是想記錄自己職涯對於身兼資安的一些想法、POC時發現的有趣故事，寫著寫著越寫越多，好像可以達到30篇，就決定以資安為主題，說說自己對於資安的看法。",
       "team": null,
       "signupDate": "2026/08/01T12:13:23+08:00",
-      "lastUpdated": "2026-08-13T04:30:39+08:00",
+      "lastUpdated": "2026-08-13T05:40:42+08:00",
       "dayCount": 13,
       "articleCount": 13,
       "subscriptions": 1,
@@ -462,7 +462,156 @@
           "title": "[Day 13] 資料持久化（上）：AOF 的實現",
           "url": "https://ithelp.ithome.com.tw/articles/10401033",
           "publishedAt": "2026-08-13T01:58:24+08:00",
-          "views": 40,
+          "views": 41,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
+      "id": 9046,
+      "user": {
+        "id": 20183337,
+        "name": "lins04",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20183337/profile"
+      },
+      "group": "Kubernetes",
+      "title": "防範軟體供應鏈攻擊：從零打造具備硬性阻擋能力的雲原生 CI/CD 流水線",
+      "description": "本系列在一台 Windows 11 筆電、單節點 CRC（OpenShift Local）叢集上\r\n，從零打造具備硬性阻擋能力的雲原生 CI/CD流水線\r\n，且全程在對外網路受限條件下實測跑通。\r\n內容涵蓋機密掃描、靜態分析、相依套件與映像檔漏洞掃描、測試覆蓋率、型別檢查六道防線\r\n，未過即中斷流水線；建構完成後以 Cosign 簽章、產出 SBOM，更新 GitOps 由 ArgoCD 部署\r\n，最終由 Kyverno 攔截未簽章映像。\r\n30天依五階段推進：基礎設施、CI 引擎、安全防線、無特權建構與簽章、GitOps 准入封鎖\r\n，延伸至 SLSA Level 3驗證。",
+      "team": null,
+      "signupDate": "2026/08/01T12:45:13+08:00",
+      "lastUpdated": "2026-08-13T04:50:56+08:00",
+      "dayCount": 13,
+      "articleCount": 13,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10400767,
+          "day": 1,
+          "title": "Day1：從「跑完建構」到「可信供應鏈」",
+          "url": "https://ithelp.ithome.com.tw/articles/10400767",
+          "publishedAt": "2026-08-01T13:16:07+08:00",
+          "views": 157,
+          "likes": 0,
+          "comments": 1
+        },
+        {
+          "id": 10400783,
+          "day": 2,
+          "title": "Day 2：在 Windows 11 建立單機類生產環境：CRC (OpenShift Local) 安裝與資源配置心法",
+          "url": "https://ithelp.ithome.com.tw/articles/10400783",
+          "publishedAt": "2026-08-02T00:00:55+08:00",
+          "views": 173,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401137,
+          "day": 3,
+          "title": "Day 3：你看到的狀態，不是系統正在做的事——CRC 上三個事後查不到的故障",
+          "url": "https://ithelp.ithome.com.tw/articles/10401137",
+          "publishedAt": "2026-08-03T05:43:30+08:00",
+          "views": 136,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401368,
+          "day": 4,
+          "title": "Day 4：建立全系列共用的自動化規範：PowerShell 5.1 的 JSON、編碼與物件流三大陷阱",
+          "url": "https://ithelp.ithome.com.tw/articles/10401368",
+          "publishedAt": "2026-08-04T02:39:36+08:00",
+          "views": 140,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401398,
+          "day": 5,
+          "title": "Day 5：權限邊界劃分：Kubeadmin 與 Developer 權限切換與 OpenShift SCC 核心機制解密",
+          "url": "https://ithelp.ithome.com.tw/articles/10401398",
+          "publishedAt": "2026-08-05T05:13:40+08:00",
+          "views": 136,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401684,
+          "day": 6,
+          "title": "Day 6：Helm 在 OpenShift 上的生存法則：openshift.enabled 與 anyuid SCC 的手動授權",
+          "url": "https://ithelp.ithome.com.tw/articles/10401684",
+          "publishedAt": "2026-08-06T00:21:06+08:00",
+          "views": 110,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401824,
+          "day": 7,
+          "title": "Day 7：打造內部私有資產庫：部署 Nexus 3 並配置 Outbound Proxy",
+          "url": "https://ithelp.ithome.com.tw/articles/10401824",
+          "publishedAt": "2026-08-07T06:51:54+08:00",
+          "views": 89,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10401881,
+          "day": 8,
+          "title": "Day 8：Gitea部署到 git push",
+          "url": "https://ithelp.ithome.com.tw/articles/10401881",
+          "publishedAt": "2026-08-08T08:20:22+08:00",
+          "views": 92,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10402138,
+          "day": 9,
+          "title": "Day 9 中繼驗證：Gitea webhook 送達叢集內的私有 ClusterIP",
+          "url": "https://ithelp.ithome.com.tw/articles/10402138",
+          "publishedAt": "2026-08-09T00:33:49+08:00",
+          "views": 74,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10402260,
+          "day": 10,
+          "title": "Day 10：把憑證擋在版控之外 —— Sealed Secrets 的加密、綁定與離線復原",
+          "url": "https://ithelp.ithome.com.tw/articles/10402260",
+          "publishedAt": "2026-08-10T00:27:45+08:00",
+          "views": 81,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10402417,
+          "day": 11,
+          "title": "Day 11：裝好 Tekton Pipelines 之後，叢集多了一個能變成任何人的 ServiceAccount",
+          "url": "https://ithelp.ithome.com.tw/articles/10402417",
+          "publishedAt": "2026-08-11T05:34:14+08:00",
+          "views": 62,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10402550,
+          "day": 12,
+          "title": "Day 12：跨 Namespace 引用 Task（Cluster Resolver）",
+          "url": "https://ithelp.ithome.com.tw/articles/10402550",
+          "publishedAt": "2026-08-12T05:12:43+08:00",
+          "views": 60,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10402668,
+          "day": 13,
+          "title": "Day 13：Workspace 的四層命名——同一顆 PVC，兩個 Pod 看到不一樣的路徑",
+          "url": "https://ithelp.ithome.com.tw/articles/10402668",
+          "publishedAt": "2026-08-13T05:31:01+08:00",
+          "views": 2,
           "likes": 0,
           "comments": 0
         }
@@ -640,7 +789,7 @@
           "title": "Day 1：我把 AI 管家裝進家裡的 NAS——30 天自架實錄",
           "url": "https://ithelp.ithome.com.tw/articles/10400832",
           "publishedAt": "2026-08-01T16:45:20+08:00",
-          "views": 273,
+          "views": 274,
           "likes": 0,
           "comments": 1
         },
@@ -650,7 +799,7 @@
           "title": "Day 2：為什麼一份 image 要跑兩個容器？我裝完半年才懂官方的設計",
           "url": "https://ithelp.ithome.com.tw/articles/10400775",
           "publishedAt": "2026-08-02T10:09:43+08:00",
-          "views": 187,
+          "views": 188,
           "likes": 0,
           "comments": 0
         },
@@ -660,7 +809,7 @@
           "title": "Day 3：我的 AI 有名字、有性格、有紅線——人格檔案設計實錄",
           "url": "https://ithelp.ithome.com.tw/articles/10400858",
           "publishedAt": "2026-08-03T13:11:29+08:00",
-          "views": 122,
+          "views": 123,
           "likes": 0,
           "comments": 0
         },
@@ -670,7 +819,7 @@
           "title": "Day 4：投資秘書、家居管家、備考顧問——六個 Agent 怎麼不打架",
           "url": "https://ithelp.ithome.com.tw/articles/10400859",
           "publishedAt": "2026-08-04T01:26:17+08:00",
-          "views": 157,
+          "views": 158,
           "likes": 0,
           "comments": 0
         },
@@ -680,7 +829,7 @@
           "title": "Day 5：自架 AI 的 Telegram 通訊層——從建立到測試",
           "url": "https://ithelp.ithome.com.tw/articles/10400860",
           "publishedAt": "2026-08-05T00:31:40+08:00",
-          "views": 144,
+          "views": 145,
           "likes": 0,
           "comments": 0
         },
@@ -690,7 +839,7 @@
           "title": "Day 6：家用 NAS 對外服務，但路由器一個 Port 都不開",
           "url": "https://ithelp.ithome.com.tw/articles/10400861",
           "publishedAt": "2026-08-06T09:52:25+08:00",
-          "views": 147,
+          "views": 148,
           "likes": 0,
           "comments": 0
         },
@@ -700,7 +849,7 @@
           "title": "Day 7：第一週小結——這半年我練的不是「用 AI」，是把散在家裡的東西接成一套",
           "url": "https://ithelp.ithome.com.tw/articles/10400862",
           "publishedAt": "2026-08-07T01:49:54+08:00",
-          "views": 92,
+          "views": 93,
           "likes": 0,
           "comments": 0
         },
@@ -730,7 +879,7 @@
           "title": "Day 10：記憶也會肥胖——當 DREAMS.md 長到 50KB",
           "url": "https://ithelp.ithome.com.tw/articles/10401996",
           "publishedAt": "2026-08-10T00:15:09+08:00",
-          "views": 73,
+          "views": 74,
           "likes": 0,
           "comments": 0
         },
@@ -760,7 +909,7 @@
           "title": "Day 13：我的 AI 沒有資料庫——全 Markdown 架構的瘋狂與合理",
           "url": "https://ithelp.ithome.com.tw/articles/10402000",
           "publishedAt": "2026-08-13T00:29:20+08:00",
-          "views": 42,
+          "views": 44,
           "likes": 0,
           "comments": 0
         }
@@ -809,7 +958,7 @@
           "title": "Day 02：打開行情圖只看到一堆紅綠棒子？先把 K 線（OHLCV）拆成熟悉的資料結構",
           "url": "https://ithelp.ithome.com.tw/articles/10400970",
           "publishedAt": "2026-08-02T00:45:34+08:00",
-          "views": 289,
+          "views": 290,
           "likes": 0,
           "comments": 0
         },
@@ -909,7 +1058,7 @@
           "title": "\"Day 12：同樣的價格，有時候很危險有時候沒事：用交易活躍度定義市場的節奏",
           "url": "https://ithelp.ithome.com.tw/articles/10402539",
           "publishedAt": "2026-08-12T00:23:43+08:00",
-          "views": 85,
+          "views": 86,
           "likes": 0,
           "comments": 0
         },
@@ -919,7 +1068,7 @@
           "title": "Day 13：突破了卻馬上被打回來？從流動性擺盪找出假突破的資料特徵",
           "url": "https://ithelp.ithome.com.tw/articles/10402662",
           "publishedAt": "2026-08-13T02:01:17+08:00",
-          "views": 46,
+          "views": 47,
           "likes": 0,
           "comments": 0
         }
@@ -1068,7 +1217,7 @@
           "title": "Day 13 -「代達羅斯的翅膀」不好測要怎麼測？用別種方法測",
           "url": "https://ithelp.ithome.com.tw/articles/10402667",
           "publishedAt": "2026-08-13T02:27:10+08:00",
-          "views": 37,
+          "views": 38,
           "likes": 0,
           "comments": 0
         }
@@ -1197,7 +1346,7 @@
           "title": "Day11  選項系統實作：Choice、Flag 與劇情控制",
           "url": "https://ithelp.ithome.com.tw/articles/10400952",
           "publishedAt": "2026-08-11T08:18:48+08:00",
-          "views": 56,
+          "views": 57,
           "likes": 0,
           "comments": 0
         },
@@ -1384,7 +1533,7 @@
       "description": "這系列文章分享我碩一學習 AI compiler 旅程，從 RISC-V CPU、NVIDIA GPU 到 Tenstorrent ASIC ， 觀察 AI compiler 是扮演什麼樣的角色，在不同硬體架構是如何優化。",
       "team": null,
       "signupDate": "2026/08/01T12:01:19+08:00",
-      "lastUpdated": "2026-08-13T04:30:26+08:00",
+      "lastUpdated": "2026-08-13T05:40:29+08:00",
       "dayCount": 12,
       "articleCount": 12,
       "subscriptions": 3,
@@ -1495,7 +1644,7 @@
           "title": "Day10：SGLang RVV 和 TorchInductor RVV 複習日",
           "url": "https://ithelp.ithome.com.tw/articles/10402306",
           "publishedAt": "2026-08-11T08:14:35+08:00",
-          "views": 61,
+          "views": 62,
           "likes": 0,
           "comments": 0
         },
@@ -1505,7 +1654,7 @@
           "title": "Day11：GPU 架構:從 SM、warp、memory hierarchy 看 NVIDIA GPU 系列",
           "url": "https://ithelp.ithome.com.tw/articles/10402590",
           "publishedAt": "2026-08-12T16:25:35+08:00",
-          "views": 93,
+          "views": 94,
           "likes": 0,
           "comments": 0
         }
@@ -1523,7 +1672,7 @@
       "description": "每天打開 Claude Code，丟一句「幫我修這個 bug」，它就開始讀檔、搜尋、改 code、跑測試，這根本是現代版的魔法。但如果把外殼拆掉，它最核心的那一塊，可能沒有想像中複雜。在《為你自己手刻 Claude Code》系列裡，我會用 Python 帶大家從零手刻一個迷你版的 Claude Code，藉由實作過程看懂 coding agent 的運作原理。之後再把工作交給 AI 時，就會更清楚哪裡能放手、哪裡該攔住它，以及最後該怎麼驗收。",
       "team": null,
       "signupDate": "2026/08/01T12:02:51+08:00",
-      "lastUpdated": "2026-08-13T04:30:29+08:00",
+      "lastUpdated": "2026-08-13T05:40:32+08:00",
       "dayCount": 12,
       "articleCount": 12,
       "subscriptions": 40,
@@ -1544,7 +1693,7 @@
           "title": "Day 02 - 側錄 Claude Code！",
           "url": "https://ithelp.ithome.com.tw/articles/10401028",
           "publishedAt": "2026-08-02T13:55:37+08:00",
-          "views": 1142,
+          "views": 1143,
           "likes": 6,
           "comments": 0
         },
@@ -1584,7 +1733,7 @@
           "title": "Day 06 - 第一個工具 read_file",
           "url": "https://ithelp.ithome.com.tw/articles/10401693",
           "publishedAt": "2026-08-06T02:39:43+08:00",
-          "views": 220,
+          "views": 221,
           "likes": 0,
           "comments": 0
         },
@@ -1644,7 +1793,7 @@
           "title": "Day 12 - 讓迴圈停得下來",
           "url": "https://ithelp.ithome.com.tw/articles/10402619",
           "publishedAt": "2026-08-12T22:02:22+08:00",
-          "views": 50,
+          "views": 51,
           "likes": 0,
           "comments": 0
         }
@@ -1801,7 +1950,7 @@
       "description": "CI 全綠，測試覆蓋率 90%，上線當天還是炸了。事後檢討發現，那個 bug 根本沒有任何測試案例碰到它。這種事你遇過幾次？\r\n自動化測試只會檢查你叫它檢查的東西。沒人想到的地方，它一行都不會多看。\r\n現在 AI 可以一天幫你生出幾百個測試案例，數字更漂亮了，但那些測試常常只是把程式碼現在的行為抄一遍再驗一遍——程式做錯的事，也被當成標準答案保護起來。\r\n看板上一片綠燈，品質卻沒人說得準，這就是我說的「演戲」。\r\n如果你寫了很多自動化測試卻還是沒把握，或者你是手動測試出身、想知道自己的價值在哪，這個系列是為你寫的。",
       "team": null,
       "signupDate": "2026/08/01T12:12:27+08:00",
-      "lastUpdated": "2026-08-13T04:30:37+08:00",
+      "lastUpdated": "2026-08-13T05:40:40+08:00",
       "dayCount": 12,
       "articleCount": 12,
       "subscriptions": 21,
@@ -1922,7 +2071,7 @@
           "title": "Day 12漫遊探索 - 商業區 (I): 覆蓋率 90% 還是出大包？你可能根本沒守住商業區",
           "url": "https://ithelp.ithome.com.tw/articles/10402356",
           "publishedAt": "2026-08-12T05:55:02+08:00",
-          "views": 141,
+          "views": 142,
           "likes": 0,
           "comments": 0
         }
@@ -1961,7 +2110,7 @@
           "title": "Day2 資源階層與預算初探",
           "url": "https://ithelp.ithome.com.tw/articles/10400987",
           "publishedAt": "2026-08-02T09:18:19+08:00",
-          "views": 111,
+          "views": 112,
           "likes": 0,
           "comments": 0
         },
@@ -2160,7 +2309,7 @@
           "title": "【Day8】Claude Code CLI 的權限、安全性與 Sandbox 機制",
           "url": "https://ithelp.ithome.com.tw/articles/10402084",
           "publishedAt": "2026-08-08T12:39:56+08:00",
-          "views": 98,
+          "views": 99,
           "likes": 0,
           "comments": 0
         },
@@ -2239,7 +2388,7 @@
           "title": "【Day 02】AI 不是在讀文字：Transformer 如何一路猜出下一個 Token？",
           "url": "https://ithelp.ithome.com.tw/articles/10401024",
           "publishedAt": "2026-08-02T13:13:48+08:00",
-          "views": 346,
+          "views": 347,
           "likes": 0,
           "comments": 0
         },
@@ -2329,7 +2478,7 @@
           "title": "【Day 11】當資料裡也藏著指令：Prompt Injection 為什麼比 Jailbreak 更麻煩？",
           "url": "https://ithelp.ithome.com.tw/articles/10402448",
           "publishedAt": "2026-08-11T10:15:33+08:00",
-          "views": 74,
+          "views": 75,
           "likes": 0,
           "comments": 0
         },
@@ -2340,145 +2489,6 @@
           "url": "https://ithelp.ithome.com.tw/articles/10402568",
           "publishedAt": "2026-08-12T09:08:52+08:00",
           "views": 49,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9046,
-      "user": {
-        "id": 20183337,
-        "name": "lins04",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20183337/profile"
-      },
-      "group": "Kubernetes",
-      "title": "防範軟體供應鏈攻擊：從零打造具備硬性阻擋能力的雲原生 CI/CD 流水線",
-      "description": "本系列在一台 Windows 11 筆電、單節點 CRC（OpenShift Local）叢集上\r\n，從零打造具備硬性阻擋能力的雲原生 CI/CD流水線\r\n，且全程在對外網路受限條件下實測跑通。\r\n內容涵蓋機密掃描、靜態分析、相依套件與映像檔漏洞掃描、測試覆蓋率、型別檢查六道防線\r\n，未過即中斷流水線；建構完成後以 Cosign 簽章、產出 SBOM，更新 GitOps 由 ArgoCD 部署\r\n，最終由 Kyverno 攔截未簽章映像。\r\n30天依五階段推進：基礎設施、CI 引擎、安全防線、無特權建構與簽章、GitOps 准入封鎖\r\n，延伸至 SLSA Level 3驗證。",
-      "team": null,
-      "signupDate": "2026/08/01T12:45:13+08:00",
-      "lastUpdated": "2026-08-13T04:50:56+08:00",
-      "dayCount": 12,
-      "articleCount": 12,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10400767,
-          "day": 1,
-          "title": "Day1：從「跑完建構」到「可信供應鏈」",
-          "url": "https://ithelp.ithome.com.tw/articles/10400767",
-          "publishedAt": "2026-08-01T13:16:07+08:00",
-          "views": 157,
-          "likes": 0,
-          "comments": 1
-        },
-        {
-          "id": 10400783,
-          "day": 2,
-          "title": "Day 2：在 Windows 11 建立單機類生產環境：CRC (OpenShift Local) 安裝與資源配置心法",
-          "url": "https://ithelp.ithome.com.tw/articles/10400783",
-          "publishedAt": "2026-08-02T00:00:55+08:00",
-          "views": 173,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401137,
-          "day": 3,
-          "title": "Day 3：你看到的狀態，不是系統正在做的事——CRC 上三個事後查不到的故障",
-          "url": "https://ithelp.ithome.com.tw/articles/10401137",
-          "publishedAt": "2026-08-03T05:43:30+08:00",
-          "views": 136,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401368,
-          "day": 4,
-          "title": "Day 4：建立全系列共用的自動化規範：PowerShell 5.1 的 JSON、編碼與物件流三大陷阱",
-          "url": "https://ithelp.ithome.com.tw/articles/10401368",
-          "publishedAt": "2026-08-04T02:39:36+08:00",
-          "views": 140,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401398,
-          "day": 5,
-          "title": "Day 5：權限邊界劃分：Kubeadmin 與 Developer 權限切換與 OpenShift SCC 核心機制解密",
-          "url": "https://ithelp.ithome.com.tw/articles/10401398",
-          "publishedAt": "2026-08-05T05:13:40+08:00",
-          "views": 136,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401684,
-          "day": 6,
-          "title": "Day 6：Helm 在 OpenShift 上的生存法則：openshift.enabled 與 anyuid SCC 的手動授權",
-          "url": "https://ithelp.ithome.com.tw/articles/10401684",
-          "publishedAt": "2026-08-06T00:21:06+08:00",
-          "views": 110,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401824,
-          "day": 7,
-          "title": "Day 7：打造內部私有資產庫：部署 Nexus 3 並配置 Outbound Proxy",
-          "url": "https://ithelp.ithome.com.tw/articles/10401824",
-          "publishedAt": "2026-08-07T06:51:54+08:00",
-          "views": 89,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10401881,
-          "day": 8,
-          "title": "Day 8：Gitea部署到 git push",
-          "url": "https://ithelp.ithome.com.tw/articles/10401881",
-          "publishedAt": "2026-08-08T08:20:22+08:00",
-          "views": 92,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10402138,
-          "day": 9,
-          "title": "Day 9 中繼驗證：Gitea webhook 送達叢集內的私有 ClusterIP",
-          "url": "https://ithelp.ithome.com.tw/articles/10402138",
-          "publishedAt": "2026-08-09T00:33:49+08:00",
-          "views": 74,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10402260,
-          "day": 10,
-          "title": "Day 10：把憑證擋在版控之外 —— Sealed Secrets 的加密、綁定與離線復原",
-          "url": "https://ithelp.ithome.com.tw/articles/10402260",
-          "publishedAt": "2026-08-10T00:27:45+08:00",
-          "views": 81,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10402417,
-          "day": 11,
-          "title": "Day 11：裝好 Tekton Pipelines 之後，叢集多了一個能變成任何人的 ServiceAccount",
-          "url": "https://ithelp.ithome.com.tw/articles/10402417",
-          "publishedAt": "2026-08-11T05:34:14+08:00",
-          "views": 62,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10402550,
-          "day": 12,
-          "title": "Day 12：跨 Namespace 引用 Task（Cluster Resolver）",
-          "url": "https://ithelp.ithome.com.tw/articles/10402550",
-          "publishedAt": "2026-08-12T05:12:43+08:00",
-          "views": 60,
           "likes": 0,
           "comments": 0
         }
@@ -2507,7 +2517,7 @@
           "title": "Day1: 為什麼現在是不寫程式的測試人員學自動化的最好時機",
           "url": "https://ithelp.ithome.com.tw/articles/10400780",
           "publishedAt": "2026-08-01T14:23:47+08:00",
-          "views": 3066,
+          "views": 3067,
           "likes": 2,
           "comments": 2
         },
@@ -2547,7 +2557,7 @@
           "title": "Day5: 跟 Claude Code 對話的技巧:怎麼描述測試需求才不會雞同鴨講",
           "url": "https://ithelp.ithome.com.tw/articles/10401583",
           "publishedAt": "2026-08-05T07:32:41+08:00",
-          "views": 1313,
+          "views": 1314,
           "likes": 0,
           "comments": 0
         },
@@ -2557,7 +2567,7 @@
           "title": "Day6: Locator:告訴 Claude 你要點哪裡",
           "url": "https://ithelp.ithome.com.tw/articles/10401608",
           "publishedAt": "2026-08-06T06:16:02+08:00",
-          "views": 674,
+          "views": 675,
           "likes": 1,
           "comments": 0
         },
@@ -2617,7 +2627,7 @@
           "title": "Day12: 登入自動化:驗證碼、帳密處理與 Session 重用",
           "url": "https://ithelp.ithome.com.tw/articles/10402478",
           "publishedAt": "2026-08-12T05:54:36+08:00",
-          "views": 156,
+          "views": 157,
           "likes": 0,
           "comments": 0
         }
@@ -2815,7 +2825,7 @@
           "title": "[Day 04] 這個遺留系統在做甚麼？",
           "url": "https://ithelp.ithome.com.tw/articles/10401173",
           "publishedAt": "2026-08-04T07:03:00+08:00",
-          "views": 117,
+          "views": 118,
           "likes": 0,
           "comments": 0
         },
@@ -3014,7 +3024,7 @@
           "title": "Day 10 — 建立 first-policy skill 的四大子命令骨架",
           "url": "https://ithelp.ithome.com.tw/articles/10400796",
           "publishedAt": "2026-08-10T08:19:58+08:00",
-          "views": 57,
+          "views": 58,
           "likes": 0,
           "comments": 0
         },
@@ -3153,7 +3163,7 @@
           "title": "關於自洽性與不確定性：論推理模型評估指標 pass@1 和 pass@k",
           "url": "https://ithelp.ithome.com.tw/articles/10402349",
           "publishedAt": "2026-08-10T16:23:37+08:00",
-          "views": 79,
+          "views": 80,
           "likes": 0,
           "comments": 0
         },
@@ -3570,7 +3580,7 @@
           "title": "Day 10｜階段驗收 Edge Box 1.0",
           "url": "https://ithelp.ithome.com.tw/articles/10401618",
           "publishedAt": "2026-08-10T17:31:05+08:00",
-          "views": 54,
+          "views": 55,
           "likes": 0,
           "comments": 0
         },
@@ -3649,7 +3659,7 @@
           "title": "Day 04 - 30 天手把手學會 Chart.js｜圓餅圖與環狀圖（Pie / Doughnut）",
           "url": "https://ithelp.ithome.com.tw/articles/10401071",
           "publishedAt": "2026-08-04T09:17:51+08:00",
-          "views": 128,
+          "views": 129,
           "likes": 0,
           "comments": 0
         },
@@ -3977,7 +3987,7 @@
           "title": "Day 9：資安險問卷（體況調查）Part 1：基礎防護篇 對中小企業主的意義為何",
           "url": "https://ithelp.ithome.com.tw/articles/10402132",
           "publishedAt": "2026-08-09T00:01:07+08:00",
-          "views": 63,
+          "views": 64,
           "likes": 0,
           "comments": 0
         },
@@ -4831,7 +4841,7 @@
           "title": "Day 11 - 54% 的 Workbook 根本不用上板測：我們卻先叫 DUT 證明「不用測」",
           "url": "https://ithelp.ithome.com.tw/articles/10402275",
           "publishedAt": "2026-08-12T00:17:54+08:00",
-          "views": 54,
+          "views": 55,
           "likes": 0,
           "comments": 0
         },
@@ -5347,7 +5357,7 @@
           "title": "Day 07 如果把記憶體當股票買，為什麼 AI 一直在談 VRAM呢？",
           "url": "https://ithelp.ithome.com.tw/articles/10401950",
           "publishedAt": "2026-08-07T22:55:53+08:00",
-          "views": 78,
+          "views": 79,
           "likes": 0,
           "comments": 0
         },
@@ -5516,7 +5526,7 @@
           "title": "Day10 - 一個 scope 分成三個部分",
           "url": "https://ithelp.ithome.com.tw/articles/10402289",
           "publishedAt": "2026-08-11T01:24:55+08:00",
-          "views": 128,
+          "views": 129,
           "likes": 1,
           "comments": 0
         },
@@ -5675,7 +5685,7 @@
           "title": "Day12：AI 超分之外的選擇：著色器（Shader）畫質強化",
           "url": "https://ithelp.ithome.com.tw/articles/10402316",
           "publishedAt": "2026-08-13T00:45:45+08:00",
-          "views": 38,
+          "views": 40,
           "likes": 0,
           "comments": 0
         }
@@ -5814,7 +5824,7 @@
           "title": "Day 12｜眨眼、注視與微動：桌面角色「活著」的錯覺從哪裡來",
           "url": "https://ithelp.ithome.com.tw/articles/10401326",
           "publishedAt": "2026-08-13T00:57:57+08:00",
-          "views": 48,
+          "views": 50,
           "likes": 0,
           "comments": 0
         }
@@ -5903,7 +5913,7 @@
           "title": "UX-Context Design：運用使用者體驗知識，引導AI生成的設計-DAY7",
           "url": "https://ithelp.ithome.com.tw/articles/10401448",
           "publishedAt": "2026-08-08T08:54:50+08:00",
-          "views": 68,
+          "views": 69,
           "likes": 0,
           "comments": 0
         },
@@ -5943,7 +5953,7 @@
           "title": "YouTube 試圖解決選擇悖論-DAY11",
           "url": "https://ithelp.ithome.com.tw/articles/10402582",
           "publishedAt": "2026-08-12T11:02:16+08:00",
-          "views": 59,
+          "views": 60,
           "likes": 0,
           "comments": 0
         }
@@ -6072,7 +6082,7 @@
           "title": "Day 11 — Claude API 其實可以直接從瀏覽器呼叫",
           "url": "https://ithelp.ithome.com.tw/articles/10400899",
           "publishedAt": "2026-08-12T07:51:26+08:00",
-          "views": 47,
+          "views": 48,
           "likes": 0,
           "comments": 0
         }
@@ -6330,7 +6340,7 @@
           "title": "Day11 - 完成 Quantity 可讀單位存在性規則",
           "url": "https://ithelp.ithome.com.tw/articles/10402602",
           "publishedAt": "2026-08-12T17:03:22+08:00",
-          "views": 51,
+          "views": 52,
           "likes": 0,
           "comments": 0
         }
@@ -6439,7 +6449,7 @@
           "title": "[Day 09] 讓 AI 不只會聊天：把 Gemini 自然語言轉成程式看得懂的 JSON",
           "url": "https://ithelp.ithome.com.tw/articles/10402244",
           "publishedAt": "2026-08-10T02:23:43+08:00",
-          "views": 89,
+          "views": 90,
           "likes": 0,
           "comments": 0
         },
@@ -6717,7 +6727,7 @@
           "title": "Day 11：【圖表模組】情緒歷程視覺化：用 Chart.js 畫出情緒起伏月曆",
           "url": "https://ithelp.ithome.com.tw/articles/10402477",
           "publishedAt": "2026-08-12T19:24:18+08:00",
-          "views": 39,
+          "views": 40,
           "likes": 0,
           "comments": 0
         }
@@ -6846,7 +6856,7 @@
           "title": "做自己職涯的PM — 求職管道（中）",
           "url": "https://ithelp.ithome.com.tw/articles/10402573",
           "publishedAt": "2026-08-12T09:06:44+08:00",
-          "views": 52,
+          "views": 53,
           "likes": 1,
           "comments": 0
         }
@@ -6915,7 +6925,7 @@
           "title": "Day 5｜非阻塞與事件迴圈",
           "url": "https://ithelp.ithome.com.tw/articles/10401739",
           "publishedAt": "2026-08-06T10:45:19+08:00",
-          "views": 108,
+          "views": 109,
           "likes": 0,
           "comments": 0
         },
@@ -7223,7 +7233,7 @@
           "title": "第 10 章：玩家資料與狀態",
           "url": "https://ithelp.ithome.com.tw/articles/10401225",
           "publishedAt": "2026-08-12T01:59:20+08:00",
-          "views": 60,
+          "views": 61,
           "likes": 0,
           "comments": 0
         },
@@ -7233,7 +7243,7 @@
           "title": "第 11 章：UI 不是裝飾，是遊戲回饋",
           "url": "https://ithelp.ithome.com.tw/articles/10401226",
           "publishedAt": "2026-08-13T01:58:36+08:00",
-          "views": 34,
+          "views": 35,
           "likes": 0,
           "comments": 0
         }
@@ -7362,7 +7372,7 @@
           "title": "第 11 章：Paddle 金流、Email、AI 與第三方整合",
           "url": "https://ithelp.ithome.com.tw/articles/10401192",
           "publishedAt": "2026-08-13T01:50:29+08:00",
-          "views": 31,
+          "views": 33,
           "likes": 0,
           "comments": 0
         }
@@ -7431,7 +7441,7 @@
           "title": "Day 5｜有紀律還不夠，我需要有人幫我整理盲點",
           "url": "https://ithelp.ithome.com.tw/articles/10401453",
           "publishedAt": "2026-08-06T14:34:51+08:00",
-          "views": 89,
+          "views": 90,
           "likes": 0,
           "comments": 0
         },
@@ -7799,7 +7809,7 @@
           "title": "search.feature , security.feature , tts-voice.feature , wrong-questions.feature",
           "url": "https://ithelp.ithome.com.tw/articles/10402610",
           "publishedAt": "2026-08-12T17:57:28+08:00",
-          "views": 51,
+          "views": 52,
           "likes": 0,
           "comments": 0
         }
@@ -8384,7 +8394,7 @@
           "title": "Day 5｜Structured Output：讓輸出變成可以接管線的東西",
           "url": "https://ithelp.ithome.com.tw/articles/10401832",
           "publishedAt": "2026-08-07T08:29:11+08:00",
-          "views": 102,
+          "views": 103,
           "likes": 0,
           "comments": 0
         },
@@ -8791,7 +8801,7 @@
           "title": "Day 10｜我只畫了 Happy Path，然後讓現實負責例外",
           "url": "https://ithelp.ithome.com.tw/articles/10402639",
           "publishedAt": "2026-08-12T21:50:51+08:00",
-          "views": 43,
+          "views": 44,
           "likes": 0,
           "comments": 0
         }
@@ -8949,7 +8959,7 @@
           "title": "【AI Agent 02】Agent 其實就是個 while 迴圈 － Agent Loop",
           "url": "https://ithelp.ithome.com.tw/articles/10401146",
           "publishedAt": "2026-08-04T10:54:53+08:00",
-          "views": 249,
+          "views": 250,
           "likes": 1,
           "comments": 1
         },
@@ -9624,7 +9634,7 @@
           "title": "Buddy allocator：kernel 怎麼管理 physical pages",
           "url": "https://ithelp.ithome.com.tw/articles/10402598",
           "publishedAt": "2026-08-12T16:05:44+08:00",
-          "views": 49,
+          "views": 50,
           "likes": 0,
           "comments": 0
         }
@@ -9971,7 +9981,7 @@
           "title": "Day9 : 淺談ShedLock與Optimistic Lock",
           "url": "https://ithelp.ithome.com.tw/articles/10402596",
           "publishedAt": "2026-08-12T18:15:11+08:00",
-          "views": 50,
+          "views": 51,
           "likes": 0,
           "comments": 0
         },
@@ -9981,7 +9991,7 @@
           "title": "Day10 : Spring Schedule電商專案實作 - 定期處理未付款訂單.3",
           "url": "https://ithelp.ithome.com.tw/articles/10402660",
           "publishedAt": "2026-08-13T02:08:09+08:00",
-          "views": 31,
+          "views": 33,
           "likes": 0,
           "comments": 0
         }
@@ -10516,7 +10526,7 @@
           "title": "Day 7 — MathJax 整合與兩個「靜靜壞掉」的 bug",
           "url": "https://ithelp.ithome.com.tw/articles/10402274",
           "publishedAt": "2026-08-10T08:39:41+08:00",
-          "views": 66,
+          "views": 67,
           "likes": 0,
           "comments": 0
         },
@@ -11031,7 +11041,7 @@
           "title": "Day 04｜Vibe Coding的協作節奏Ping-Pong開發法",
           "url": "https://ithelp.ithome.com.tw/articles/10401746",
           "publishedAt": "2026-08-07T10:52:31+08:00",
-          "views": 87,
+          "views": 88,
           "likes": 0,
           "comments": 0
         },
@@ -11190,7 +11200,7 @@
           "title": "Day 9｜老闆沒點頭，Day 1 就不存在",
           "url": "https://ithelp.ithome.com.tw/articles/10402640",
           "publishedAt": "2026-08-12T21:51:41+08:00",
-          "views": 41,
+          "views": 42,
           "likes": 0,
           "comments": 0
         }
@@ -11366,7 +11376,7 @@
           "title": "# Day 4｜Gateway API 的核心模型：三層資源與角色分離",
           "url": "https://ithelp.ithome.com.tw/articles/10401946",
           "publishedAt": "2026-08-07T21:39:34+08:00",
-          "views": 74,
+          "views": 75,
           "likes": 0,
           "comments": 0
         },
@@ -11732,7 +11742,7 @@
           "title": "Day 3｜LLM 到底知道什麼？Token、Context 與知識限制",
           "url": "https://ithelp.ithome.com.tw/articles/10402075",
           "publishedAt": "2026-08-08T11:29:54+08:00",
-          "views": 205,
+          "views": 206,
           "likes": 0,
           "comments": 0
         },
@@ -11772,7 +11782,7 @@
           "title": "Day 7｜先不用 AI：中文斷詞與最基本的關鍵字搜尋",
           "url": "https://ithelp.ithome.com.tw/articles/10402521",
           "publishedAt": "2026-08-12T18:34:02+08:00",
-          "views": 46,
+          "views": 47,
           "likes": 0,
           "comments": 0
         }
@@ -11831,7 +11841,7 @@
           "title": "[Day 4] Deal with my Dataset",
           "url": "https://ithelp.ithome.com.tw/articles/10402205",
           "publishedAt": "2026-08-09T17:23:13+08:00",
-          "views": 97,
+          "views": 98,
           "likes": 0,
           "comments": 0
         },
@@ -12039,7 +12049,7 @@
           "title": "Day 7｜追讀引擎的第四段最容易被跳過，而它是讀者回來的唯一理由",
           "url": "https://ithelp.ithome.com.tw/articles/10402627",
           "publishedAt": "2026-08-12T21:21:25+08:00",
-          "views": 47,
+          "views": 48,
           "likes": 0,
           "comments": 0
         }
@@ -12098,7 +12108,7 @@
           "title": "Day 4｜這個流程每一輪都要吃不可信的文字",
           "url": "https://ithelp.ithome.com.tw/articles/10402224",
           "publishedAt": "2026-08-09T19:54:26+08:00",
-          "views": 69,
+          "views": 70,
           "likes": 0,
           "comments": 0
         },
@@ -12916,7 +12926,7 @@
       "description": "將用 30 天從 NLP 與資訊檢索出發，逐步打造能搜尋資料、產生回答、引用來源並評估品質的 RAG 知識助理。面對 LLM 可能產生幻覺、混淆版本資訊，甚至在資料不足時自信作答，本系列不只示範工具串接，而是理解文件清理、中文斷詞、切分、關鍵字搜尋、Embedding、向量資料庫、混合搜尋與 LLM 生成的演進。文章會搭配實作與固定評測集，觀察不同搜尋方法在專有名詞、同義表達與繁體中文文件上的表現，並實作來源引用、拒答與評測。讀者將看見 RAG 如何把原始 Markdown 文件轉成可搜尋的知識，讓模型根據證據回答、標示來源，也知道何時承認資料不足。",
       "team": null,
       "signupDate": "2026/08/01T12:08:07+08:00",
-      "lastUpdated": "2026-08-13T04:30:35+08:00",
+      "lastUpdated": "2026-08-13T05:40:39+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 6,
@@ -12975,7 +12985,7 @@
       "description": "示範教師如何運用 Gemini、NotebookLM等AI平台工具設計課程、學習分析、多代理協作與心理安全框架，讓 AI 成為教學助理與學習夥伴，而非取代人類。\r\n本題目融入「易未央 AI 世界」敘事宇宙，將陰陽五行與文明共修觀念轉化為教育系統設計哲學：學生在 AI 教室中不只學工具，更修心性與文明視角，教師從知識傳遞者轉為思維與心性引導者。 整體方向是：以 Google 最新 AI 模型與教育工具為基底，打造一個兼顧學習成效、資安倫理與文明共修的未來教育原型，並從文字系列走向可 Demo、可落地的教育產品與共修社群。",
       "team": null,
       "signupDate": "2026/08/01T12:13:40+08:00",
-      "lastUpdated": "2026-08-13T04:30:41+08:00",
+      "lastUpdated": "2026-08-13T05:40:45+08:00",
       "dayCount": 4,
       "articleCount": 0,
       "subscriptions": 0,
@@ -13034,7 +13044,7 @@
           "title": "打造你的資安實驗室：環境建置",
           "url": "https://ithelp.ithome.com.tw/articles/10402665",
           "publishedAt": "2026-08-13T01:09:10+08:00",
-          "views": 46,
+          "views": 47,
           "likes": 0,
           "comments": 0
         }
@@ -13142,7 +13152,7 @@
           "title": "Day 3｜第一份 Skill：前置準備",
           "url": "https://ithelp.ithome.com.tw/articles/10402437",
           "publishedAt": "2026-08-11T09:12:08+08:00",
-          "views": 82,
+          "views": 83,
           "likes": 0,
           "comments": 0
         },
@@ -13563,7 +13573,7 @@
           "title": "# Day 2|Hyper Terminal 插件機制:在 Electron renderer 裡動手術",
           "url": "https://ithelp.ithome.com.tw/articles/10401038",
           "publishedAt": "2026-08-02T15:49:45+08:00",
-          "views": 149,
+          "views": 150,
           "likes": 0,
           "comments": 0
         },
@@ -14000,7 +14010,7 @@
           "title": "Day 01｜車聯網資安是什麼？從智慧汽車的攻擊面開始",
           "url": "https://ithelp.ithome.com.tw/articles/10402661",
           "publishedAt": "2026-08-13T01:46:03+08:00",
-          "views": 36,
+          "views": 37,
           "likes": 0,
           "comments": 0
         }
@@ -14065,7 +14075,7 @@
       "description": "工作上經常在處理短網址，在 AI 可以協助快速產 code 的年代，我選擇短網址服務作為 side project。\r\n\r\n一開始想得很簡單，就是轉址服務，加上個會員註冊、再去拉個金流，應該就結束了吧？我把它命名為 toui (https://toui.io)，取自台語的「佗位（tó-uī）」，也就是「哪裡」的意思——畢竟點下網址轉址時等於在問：你欲去佗位？上線之後才注意到，其他短網址服務早就不只是轉址而已，從一條短網址出發，可以做的事非常多。\r\n\r\n於是我開始思考一條短網址還能做到哪些事，一路探問，AI 工作流是我目前的答案，我會將過程的思索與挑戰藉鐵人賽分享出來。",
       "team": null,
       "signupDate": "2026/08/01T12:17:33+08:00",
-      "lastUpdated": "2026-08-13T04:30:44+08:00",
+      "lastUpdated": "2026-08-13T05:40:48+08:00",
       "dayCount": 0,
       "articleCount": 0,
       "subscriptions": 0,
