@@ -266,7 +266,9 @@ const teamCount = teamNames(data).length;
     // 狀態與計數（renderFilters 每年度重建 filter 列，若不重建，首輪 render 就會把 SSR chip 洗掉）。
     wrap.appendChild(buildFilterChip("teams", "團隊計分板", teamNames(data).length, activeGroup === "teams"));
     const favBtn = buildFilterChip("fav", "我的收藏", 0, activeGroup === "fav");
-    favBtn.id = "fav-count";
+    // id 放內層 count span（與 SSR markup 一致）：render()/toggle 用 textContent 更新數字時
+    // 不會把 label/星號清掉。
+    favBtn.querySelector<HTMLElement>(".filter-count")!.id = "fav-count";
     wrap.appendChild(favBtn);
     for (const g of groups) {
       wrap.appendChild(buildFilterChip(g, g, counts.get(g) ?? 0, g === activeGroup));
