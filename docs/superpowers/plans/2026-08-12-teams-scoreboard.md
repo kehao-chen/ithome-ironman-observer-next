@@ -957,6 +957,10 @@ git commit -m "feat: teams board view toggle and interactions"
 .team-stat .tabular-nums { font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text); }
 .team-stat-label { font-family: var(--font-sans); font-size: var(--text-2xs); color: var(--muted); }
 .team-alert {
+  /* 列頭是 3 欄 grid（toggle/name/stats），.team-alert 是第 4 個 child——必須顯式放置，
+     否則 grid-auto-flow: row 會把它丟到第二行、溢出第一欄 28px track（review 實渲染證實）。 */
+  grid-column: 2 / -1;
+  justify-self: end;
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   color: var(--badge-warning-text);
@@ -1020,8 +1024,8 @@ git commit -m "feat: teams board view toggle and interactions"
   .teams-head { display: none; } /* 行動版隱藏表頭（欄位仍顯示在列上） */
   .team-row-head {
     grid-template-columns: 26px minmax(0, 1fr) auto;
-    flex-wrap: wrap;
   }
+  .team-alert { grid-column: 1 / -1; justify-self: start; } /* 行動版警示摘要換到新行（整列寬） */
   .team-stats { justify-content: flex-start; }
 }
 ```
