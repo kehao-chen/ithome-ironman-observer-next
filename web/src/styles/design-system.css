@@ -799,7 +799,9 @@ input, select, textarea { caret-color: var(--accent); }
 }
 .team-row-head {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1.4fr) auto;
+  /* 4 欄（toggle/name/stats/alert）：DOM 有 4 個 child，3 欄放不下——auto-flow 會把
+     .team-alert 丟到第二行 28px 欄（review 實渲染證實）。加第 4 欄讓 alert 落在同行最右。 */
+  grid-template-columns: 28px minmax(0, 1.4fr) auto auto;
   gap: var(--space-2);
   align-items: center;
   padding: var(--space-2) var(--space-3);
@@ -828,6 +830,10 @@ input, select, textarea { caret-color: var(--accent); }
 .team-stat .tabular-nums { font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text); }
 .team-stat-label { font-family: var(--font-sans); font-size: var(--text-2xs); color: var(--muted); }
 .team-alert {
+  /* 列頭是 4 欄 grid（toggle/name/stats/alert），.team-alert 是第 4 個 child——顯式放置到
+     最後一欄（grid-column: -1），與 stats 同行、靠右。 */
+  grid-column: -1;
+  justify-self: end;
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   color: var(--badge-warning-text);
@@ -891,8 +897,8 @@ input, select, textarea { caret-color: var(--accent); }
   .teams-head { display: none; } /* 行動版隱藏表頭（欄位仍顯示在列上） */
   .team-row-head {
     grid-template-columns: 26px minmax(0, 1fr) auto;
-    flex-wrap: wrap;
   }
+  .team-alert { grid-column: 1 / -1; justify-self: start; } /* 行動版警示摘要換到新行（整列寬） */
   .team-stats { justify-content: flex-start; }
 }
 
