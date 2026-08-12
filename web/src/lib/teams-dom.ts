@@ -180,9 +180,9 @@ export function buildTeamRow(row: TeamRow, today: string, rank: number = 1): HTM
   bodyTitle.className = "team-body-title";
   bodyTitle.textContent = `成員清單 (${row.memberCount} 位)`;
 
-  const go = document.createElement("button");
-  go.type = "button";
+  const go = document.createElement("a");
   go.className = "team-go";
+  go.href = `/?team=${encodeURIComponent(row.name)}`;
   go.dataset.teamName = row.name;
   go.textContent = "看該隊系列 →";
 

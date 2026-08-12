@@ -1,0 +1,211 @@
+---
+// web/src/components/Teams.astro — 團隊計分板分頁元件
+import type { YearData } from "../../../scripts/types";
+import { isoInitial } from "../lib/format";
+import { aggregateTeams } from "../lib/teams";
+
+interface Props {
+  data: YearData;
+  years: number[];
+  latestYear?: number;
+}
+const { data, years } = Astro.props;
+
+const teams = aggregateTeams(data, data.updatedAt.slice(0, 10));
+const teamCount = teams.length;
+const updatedAtFallback = isoInitial(data.updatedAt);
+---
+
+<header class="site-header container">
+  <div class="header-row">
+    <div class="brand">
+      <h1 class="brand-title"><span class="brand-mark" aria-hidden="true"></span>鐵人觀察家 <span class="brand-next">Next</span></h1>
+      <p class="brand-sub">
+        團隊計分板 · 最後更新 <time id="updated-at" datetime={data.updatedAt} data-ts={data.updatedAt}>{updatedAtFallback}</time>
+      </p>
+    </div>
+    <div class="header-actions">
+      <select id="team-year-select" class="sort-select" aria-label="切換年度">
+        {years.length > 0 && years.map((y) => <option value={y} selected={y === data.year}>{y} 年</option>)}
+      </select>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="切換明暗主題" title="切換明暗主題（自動 / 明 / 暗）">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <a class="icon-btn" href="/" aria-label="即時看板（系列列表）" title="即時看板（系列列表）">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><polyline points="9,21 9,13 15,13 15,21"/></svg>
+      </a>
+      <a class="icon-btn is-active" href="/teams/" aria-label="團隊計分板" title="團隊計分板">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <a class="icon-btn" href="/insights/" aria-label="Insights 分析" title="Insights 分析">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-5 3 3 5-7"/></svg>
+      </a>
+      <a class="icon-btn" href="https://github.com/kehao-chen/ithome-ironman-observer-next" target="_blank" rel="noopener" aria-label="GitHub 專案" title="GitHub 專案">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12 11.5 11.5 0 0 0 8.36 23c.57.1.78-.25.78-.55v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.41-1.27.74-1.56-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.25 5.68.42.36.79 1.08.79 2.18v3.23c0 .3.21.66.79.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z" fill="currentColor" stroke="none"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="container" style="padding-block:var(--space-4);">
+  <div class="status-bar" role="status">
+    <span><span class="dot" aria-hidden="true"></span>資料已更新</span>
+    <span>共 <strong id="team-total-count" class="tabular-nums">{teamCount}</strong> 支參賽團隊</span>
+  </div>
+
+  <div class="teams-board" id="teams-board">
+    <div class="teams-head" role="row">
+      <span class="th th-rank">#</span>
+      <span class="th th-name">團隊名稱</span>
+      <span class="th th-members">成員</span>
+      <button type="button" class="th th-sortable th-views" data-sort="totalViews" aria-sort="descending">總瀏覽</button>
+      <button type="button" class="th th-sortable th-avg" data-sort="avgViews">人均</button>
+      <button type="button" class="th th-sortable th-progress" data-sort="avgProgress">平均進度</button>
+      <button type="button" class="th th-sortable th-today" data-sort="postedToday">今日發文</button>
+      <span class="th th-status">狀態</span>
+    </div>
+    <div id="teams-list"></div>
+    <div class="teams-empty" id="teams-empty" role="status" aria-live="polite" hidden={teamCount > 0}>
+      <p>這個年度還沒有團隊報名</p>
+    </div>
+  </div>
+</main>
+
+<script is:inline define:vars={{ initialData: data }}>
+  window.TEAMS_DATA = initialData;
+</script>
+
+<script>
+  import { tzTime } from "../lib/format";
+  import { taipeiToday } from "../lib/daily-status";
+  import { aggregateTeams, sortTeamRows, type TeamSortKey } from "../lib/teams";
+  import { buildTeamRow } from "../lib/teams-dom";
+  import type { YearData } from "../../../scripts/types";
+
+  const teamsBoard = document.getElementById("teams-board")!;
+  const teamsList = document.getElementById("teams-list")!;
+  const teamsEmpty = document.getElementById("teams-empty")!;
+  const teamTotalCount = document.getElementById("team-total-count")!;
+  const updatedAt = document.getElementById("updated-at")!;
+  const yearSelect = document.getElementById("team-year-select") as HTMLSelectElement | null;
+
+  let current: YearData = (window as any).TEAMS_DATA;
+  let today = taipeiToday();
+  let teamSortKey: TeamSortKey = "totalViews";
+  const expandedTeams = new Set<string>();
+
+  function humanizeAll() {
+    document.querySelectorAll<HTMLElement>("[data-ts]").forEach((el) => {
+      const iso = el.getAttribute("data-ts");
+      if (!iso) return;
+      const t = tzTime(iso);
+      el.textContent = el.id === "updated-at" ? t.abs : t.rel;
+      el.setAttribute("title", t.full);
+    });
+  }
+
+  function render(data: YearData) {
+    if (!data) return;
+    current = data;
+    if (yearSelect) yearSelect.value = String(data.year);
+
+    updatedAt.setAttribute("datetime", data.updatedAt);
+    updatedAt.setAttribute("data-ts", data.updatedAt);
+
+    const rows = sortTeamRows(aggregateTeams(data, today), teamSortKey);
+    teamTotalCount.textContent = String(rows.length);
+    teamsEmpty.hidden = rows.length > 0;
+
+    teamsList.replaceChildren();
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < rows.length; i++) {
+      frag.appendChild(buildTeamRow(rows[i], today, i + 1));
+    }
+    teamsList.appendChild(frag);
+
+    // 恢復展開狀態
+    for (const name of expandedTeams) {
+      const body = teamsList.querySelector<HTMLElement>(`.team-row[data-team-name="${CSS.escape(name)}"] .team-body`);
+      const expand = teamsList.querySelector<HTMLElement>(`.team-row[data-team-name="${CSS.escape(name)}"] [data-expand]`);
+      if (body && expand) {
+        body.hidden = false;
+        expand.setAttribute("aria-expanded", "true");
+        expand.setAttribute("aria-label", `收合 ${name} 成員名單`);
+      }
+    }
+
+    // 更新表頭 aria-sort
+    document.querySelectorAll<HTMLElement>(".th-sortable").forEach((th) => {
+      if (th.dataset.sort === teamSortKey) th.setAttribute("aria-sort", "descending");
+      else th.removeAttribute("aria-sort");
+    });
+
+    humanizeAll();
+  }
+
+  /* 表頭排序 */
+  document.querySelectorAll<HTMLElement>(".th-sortable").forEach((th) => {
+    th.addEventListener("click", () => {
+      const key = th.dataset.sort as TeamSortKey;
+      if (!key) return;
+      teamSortKey = key;
+      if (current) render(current);
+    });
+  });
+
+  /* 展開 / 收合 + 跳轉系列卡片 */
+  teamsBoard?.addEventListener("click", (e) => {
+    const t = e.target as HTMLElement;
+    const expand = t.closest<HTMLElement>("[data-expand]");
+    if (expand) {
+      const row = expand.closest<HTMLElement>(".team-row");
+      const body = row?.querySelector<HTMLElement>(".team-body");
+      const teamName = row?.dataset.teamName;
+      if (body && teamName) {
+        const open = body.hidden;
+        body.hidden = !open;
+        expand.setAttribute("aria-expanded", String(open));
+        expand.setAttribute("aria-label", open ? `收合 ${teamName} 成員名單` : `展開 ${teamName} 成員名單`);
+        if (open) expandedTeams.add(teamName);
+        else expandedTeams.delete(teamName);
+      }
+    }
+  });
+
+  teamsBoard?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      const t = e.target as HTMLElement;
+      if (t.matches("[data-expand]")) {
+        e.preventDefault();
+        t.click();
+      }
+    }
+  });
+
+  async function loadYear(year: number) {
+    try {
+      const res = await fetch(`/data/${year}.json`);
+      if (!res.ok) return;
+      const fresh = (await res.json()) as YearData;
+      render(fresh);
+    } catch {}
+  }
+
+  yearSelect?.addEventListener("change", () => {
+    const y = Number(yearSelect.value);
+    if (Number.isInteger(y)) loadYear(y);
+  });
+
+  /* Theme toggle */
+  const themeToggle = document.getElementById("theme-toggle");
+  const rootEl = document.documentElement;
+  function currentTheme(): string { try { return localStorage.getItem("theme") ?? "auto"; } catch { return "auto"; } }
+  themeToggle?.addEventListener("click", () => {
+    const next = currentTheme() === "auto" ? "light" : currentTheme() === "light" ? "dark" : "auto";
+    try { if (next === "auto") localStorage.removeItem("theme"); else localStorage.setItem("theme", next); } catch {}
+    if (next === "auto") rootEl.removeAttribute("data-theme"); else rootEl.setAttribute("data-theme", next);
+  });
+
+  render(current);
+  setInterval(() => { today = taipeiToday(); humanizeAll(); }, 60_000);
+</script>

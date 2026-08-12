@@ -369,7 +369,11 @@ input, select, textarea { caret-color: var(--accent); }
   padding: 0;
 }
 .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
-
+.icon-btn.is-active {
+  border-color: var(--accent);
+  background: var(--accent-weak);
+  color: var(--accent);
+}
 /* Segmented control (view switcher) */
 .seg { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
 .seg-btn {

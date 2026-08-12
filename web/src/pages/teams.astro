@@ -1,0 +1,50 @@
+---
+// web/src/pages/teams.astro — 團隊計分板分頁（SSG 最新年度 + client 年切換）。
+import Teams from "../components/Teams.astro";
+import type { MetaJson, YearData } from "../../../scripts/types";
+import designSystemCss from "../styles/design-system.css?inline";
+
+const dataByYear = new Map<number, YearData>();
+for (const [path, mod] of Object.entries(import.meta.glob(["../../../data/*.json", "!../../../data/meta.json"], { eager: true, import: "default" }))) {
+  const m = path.match(/(\d{4})\.json$/);
+  if (m) dataByYear.set(Number(m[1]), mod as YearData);
+}
+const meta = (await import("../../../data/meta.json").then((m) => m.default)) as MetaJson;
+const years = meta.years.filter((y) => dataByYear.has(y)).sort((a, b) => b - a);
+const latestYear =
+  years[0] ??
+  [...dataByYear.keys()].sort((a, b) => b - a)[0] ??
+  0;
+const emptyData: YearData = { year: 0, updatedAt: "", groups: [], series: [], scrapeLog: [] };
+const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYear.get(latestYear)! : emptyData;
+---
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>鐵人觀察家 Next — 團隊計分板</title>
+  <meta name="description" content={`${latestYear || ""} iThome 鐵人賽團隊計分板：追蹤各團隊的總瀏覽、人均、進度與每日發文動態`} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://ithelp.ithome.com.tw" />
+  <link rel="dns-prefetch" href="https://ithelp.ithome.com.tw" />
+  <style is:inline set:html={designSystemCss} />
+  <script is:inline>
+    (function () {
+      var stored = null;
+      try { stored = localStorage.getItem("theme"); } catch (e) {}
+      var root = document.documentElement;
+      if (stored === "light" || stored === "dark") {
+        root.setAttribute("data-theme", stored);
+      } else {
+        root.removeAttribute("data-theme");
+      }
+    })();
+  </script>
+</head>
+<body>
+  <Teams data={data} years={years} latestYear={latestYear} />
+</body>
+</html>
