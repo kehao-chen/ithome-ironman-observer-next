@@ -769,14 +769,14 @@ input, select, textarea { caret-color: var(--accent); }
 /* 表頭與列頭共用 Grid 定義：保證 1:1 垂直對齊 */
 /* [Rank 44px] [名稱 1.8fr] [成員 54px] [總瀏覽 84px] [人均 84px] [平均進度 140px] [今日發文 76px] [狀態 1.2fr] */
 :root {
-  --teams-grid-cols: 40px minmax(180px, 1.8fr) 48px 84px 84px 160px 76px minmax(120px, 1.2fr);
+  --teams-grid-cols: 40px minmax(140px, 1.2fr) 48px 80px 80px 145px 76px minmax(260px, 2.4fr);
 }
 
 /* 表頭（SSR 靜態輸出） */
 .teams-head {
   display: grid;
   grid-template-columns: var(--teams-grid-cols);
-  gap: var(--space-3);
+  gap: var(--space-4);
   align-items: center;
   padding: var(--space-2) var(--space-4);
   border-bottom: 1px solid var(--border);
@@ -838,10 +838,9 @@ input, select, textarea { caret-color: var(--accent); }
 .team-row-head {
   display: grid;
   grid-template-columns: var(--teams-grid-cols);
-  gap: var(--space-3);
+  gap: var(--space-4);
   align-items: center;
   padding: var(--space-3) var(--space-4);
-  cursor: pointer;
   user-select: none;
   transition: background 0.12s ease;
 }
