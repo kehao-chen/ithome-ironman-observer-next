@@ -751,6 +751,151 @@ input, select, textarea { caret-color: var(--accent); }
 }
 .fav-empty[hidden] { display: none; }
 
+/* ---------- 團隊計分板 ---------- */
+.teams-board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.teams-board[hidden] { display: none; }
+
+/* 表頭（SSR 靜態輸出） */
+.teams-head {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1.4fr) 64px 96px 96px 96px 96px minmax(120px, 1fr);
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  color: var(--muted);
+}
+.th { font-weight: 600; }
+.th-sortable {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+}
+.th-sortable:hover { color: var(--text); text-decoration: none; }
+.th-sortable[aria-sort] { color: var(--accent); }
+.th-sortable[aria-sort]::after { content: " ↓"; } /* 目前排序鍵指示 */
+
+/* 榜單列 */
+.team-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.team-row--alert {
+  border-inline-start: 3px solid var(--warning);
+  background: color-mix(in srgb, var(--warning-weak) 30%, var(--surface));
+}
+.team-row-head {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1.4fr) auto;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+}
+.team-expand {
+  appearance: none;
+  width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.team-expand:hover { color: var(--accent); background: var(--accent-weak); }
+.team-expand svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; transition: transform 0.15s ease; }
+.team-expand[aria-expanded="true"] svg { transform: rotate(90deg); }
+.team-name { font-weight: 600; color: var(--text); }
+.team-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+.team-stat { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.team-stat .tabular-nums { font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text); }
+.team-stat-label { font-family: var(--font-sans); font-size: var(--text-2xs); color: var(--muted); }
+.team-alert {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--badge-warning-text);
+  background: var(--warning-weak);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+/* 展開成員區 */
+.team-body {
+  border-top: 1px solid var(--border);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.team-body[hidden] { display: none; }
+.team-member {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+.team-member:hover { background: color-mix(in srgb, var(--accent) 4%, var(--surface)); }
+.team-member-name { color: var(--text); font-weight: 500; min-width: 0; }
+.team-member-name:hover { color: var(--accent); text-decoration: none; }
+.team-member-meta { font-family: var(--font-sans); font-size: var(--text-2xs); color: var(--muted); }
+.team-member-views { font-family: var(--font-sans); font-size: var(--text-xs); color: var(--muted); margin-inline-start: auto; }
+.team-go {
+  appearance: none;
+  align-self: flex-start;
+  margin-top: var(--space-2);
+  background: none;
+  border: none;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--accent);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.team-go:hover { background: var(--accent-weak); text-decoration: none; }
+
+/* 空狀態 */
+.teams-empty {
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.teams-empty[hidden] { display: none; }
+
+/* 計分板視圖下隱藏主視圖控制 */
+.toolbar-controls[hidden],
+.header-actions .seg[hidden] { display: none; }
+
+/* 行動版：表頭與列頭改為捲動式（窄屏欄位塞不下） */
+@media (max-width: 900px) {
+  .teams-head { display: none; } /* 行動版隱藏表頭（欄位仍顯示在列上） */
+  .team-row-head {
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    flex-wrap: wrap;
+  }
+  .team-stats { justify-content: flex-start; }
+}
+
 /* ---------- RSS modal ---------- */
 .modal { display: none; }
 .modal.open { display: block; }
