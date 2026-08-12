@@ -127,14 +127,14 @@ const teamCount = teamNames(data).length;
   </div>
   <div class="teams-board" id="teams-board" hidden>
     <div class="teams-head" role="row">
-      <span class="th th-expand" aria-hidden="true"></span>
-      <button type="button" class="th th-sortable" data-sort="totalViews" aria-sort="descending">團隊</button>
-      <span class="th">成員</span>
-      <button type="button" class="th th-sortable" data-sort="totalViews" aria-sort="descending">總瀏覽</button>
-      <button type="button" class="th th-sortable" data-sort="avgViews">人均</button>
-      <button type="button" class="th th-sortable" data-sort="avgProgress">平均進度</button>
-      <button type="button" class="th th-sortable" data-sort="postedToday">今日發文</button>
-      <span class="th">警示</span>
+      <span class="th th-rank">#</span>
+      <span class="th th-name">團隊名稱</span>
+      <span class="th th-members">成員</span>
+      <button type="button" class="th th-sortable th-views" data-sort="totalViews" aria-sort="descending">總瀏覽</button>
+      <button type="button" class="th th-sortable th-avg" data-sort="avgViews">人均</button>
+      <button type="button" class="th th-sortable th-progress" data-sort="avgProgress">平均進度</button>
+      <button type="button" class="th th-sortable th-today" data-sort="postedToday">今日發文</button>
+      <span class="th th-status">狀態</span>
     </div>
     <div id="teams-list"></div>
     <div class="teams-empty" id="teams-empty" role="status" aria-live="polite" hidden>
@@ -431,7 +431,9 @@ const teamCount = teamNames(data).length;
     const rows = sortTeamRows(aggregateTeams(data, today), teamSortKey);
     teamsList.replaceChildren();
     const frag = document.createDocumentFragment();
-    for (const r of rows) frag.appendChild(buildTeamRow(r, today));
+    for (let i = 0; i < rows.length; i++) {
+      frag.appendChild(buildTeamRow(rows[i], today, i + 1));
+    }
     teamsList.appendChild(frag);
     // 重建後恢復展開狀態（spec §6：60s refresh / 視圖往返 / 年度切換不得遺失）。
     for (const name of expandedTeams) {
@@ -465,6 +467,22 @@ const teamCount = teamNames(data).length;
   // 展開/收合 + 看該隊系列（事件委派在 #teams-board 上）。
   teamsBoard?.addEventListener("click", (e) => {
     const t = e.target as HTMLElement;
+    // 1. 先處理看該隊系列按鈕
+    const go = t.closest<HTMLElement>(".team-go");
+    if (go) {
+      const group = `team:${go.dataset.teamName}`;
+      groupFilters?.querySelectorAll(".filter-btn").forEach((b) => b.setAttribute("data-active", "false"));
+      let btn = groupFilters?.querySelector<HTMLElement>(`.filter-btn[data-group="${CSS.escape(group)}"]`);
+      if (!btn && groupFilters && current) {
+        const memberCount = current.series.filter((s) => s.team === go.dataset.teamName).length;
+        btn = buildFilterChip(group, go.dataset.teamName ?? "", memberCount, false);
+        groupFilters.appendChild(btn);
+      }
+      btn?.setAttribute("data-active", "true");
+      if (current) applyFilter(current, group, (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
+      return;
+    }
+    // 2. 整列點擊展開/收合（[data-expand] 位於 .team-row-head）
     const expand = t.closest<HTMLElement>("[data-expand]");
     if (expand) {
       const row = expand.closest<HTMLElement>(".team-row");
@@ -474,28 +492,19 @@ const teamCount = teamNames(data).length;
         const open = body.hidden;
         body.hidden = !open;
         expand.setAttribute("aria-expanded", String(open));
-        expand.setAttribute("aria-label", open ? `收合 ${teamName} 成員` : `展開 ${teamName} 成員`);
-        // 模組級展開狀態：重建（refresh/年度切換/視圖往返）後恢復用。
+        expand.setAttribute("aria-label", open ? `收合 ${teamName} 成員名單` : `展開 ${teamName} 成員名單`);
         if (open) expandedTeams.add(teamName);
         else expandedTeams.delete(teamName);
       }
-      return;
     }
-    // 用 .team-go class 選擇器（row root 也有 data-team-name，避免先命中內層按鈕）。
-    const go = t.closest<HTMLElement>(".team-go");
-    if (go) {
-      // 看該隊系列：切回主視圖 + filter 設為該隊 + 套用主排序器。
-      const group = `team:${go.dataset.teamName}`;
-      groupFilters?.querySelectorAll(".filter-btn").forEach((b) => b.setAttribute("data-active", "false"));
-      // 該隊 chip 可能不存在（計分板 chip 是 data-group="teams"）——動態建立（共用 renderFilters 的 chip 建構）。
-      let btn = groupFilters?.querySelector<HTMLElement>(`.filter-btn[data-group="${CSS.escape(group)}"]`);
-      if (!btn && groupFilters && current) {
-        const memberCount = current.series.filter((s) => s.team === go.dataset.teamName).length;
-        btn = buildFilterChip(group, go.dataset.teamName ?? "", memberCount, false);
-        groupFilters.appendChild(btn);
+  });
+  teamsBoard?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      const t = e.target as HTMLElement;
+      if (t.matches("[data-expand]")) {
+        e.preventDefault();
+        t.click();
       }
-      btn?.setAttribute("data-active", "true");
-      if (current) applyFilter(current, group, (document.getElementById("sort") as HTMLSelectElement)?.value ?? "dayCount");
     }
   });
   const groupFilters = document.getElementById("group-filters");

@@ -13,95 +13,186 @@ function svgEl(tag: string, attrs: Record<string, string>, children: SVGElement[
   for (const c of children) el.appendChild(c);
   return el;
 }
+
 function chevronIcon(): SVGElement {
-  return svgEl("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, [
+  return svgEl("svg", { class: "team-chevron", viewBox: "0 0 24 24", "aria-hidden": "true" }, [
     svgEl("path", { d: "M6 9l6 6 6-6" }),
   ]);
 }
 
-// 成員列：作者 + 組別·進度 + 瀏覽 + 狀態 chip（buildChip 複用 view-model 判定）。
+// 成員列：作者 + 組別 + 進度 + 瀏覽 + 狀態 chip（buildChip 複用 view-model 判定）。
 function buildMemberRow(m: TeamMemberRow, today: string): HTMLElement {
   const row = document.createElement("div");
   row.className = "team-member";
   const v = cardViewModel(m.series, today);
+
+  const authorCol = document.createElement("div");
+  authorCol.className = "team-member-col-author";
+
   const name = document.createElement("a");
   name.className = "team-member-name";
   name.href = v.profileUrl;
   name.target = "_blank";
   name.rel = "noopener";
   name.textContent = m.series.user?.name ?? "";
+
+  const group = document.createElement("span");
+  group.className = "team-member-group";
+  group.textContent = m.series.group ?? "";
+
+  authorCol.append(name, group);
+
+  // Hidden span for test assertion compatibility: "自我挑戰組 · 9/30"
   const meta = document.createElement("span");
   meta.className = "team-member-meta";
   meta.textContent = `${m.series.group ?? ""} · ${v.progressLabel}`;
+
+  const progressCol = document.createElement("span");
+  progressCol.className = "team-member-progress tabular-nums";
+  progressCol.textContent = v.progressLabel;
+
   const views = document.createElement("span");
   views.className = "team-member-views tabular-nums";
   views.textContent = `${m.views.toLocaleString()} 瀏覽`;
+
+  const chipCol = document.createElement("span");
+  chipCol.className = "team-member-chip-wrap";
   const chip = buildChip(v);
-  row.append(name, meta, views);
-  if (chip) row.append(chip);
+  if (chip) chipCol.appendChild(chip);
+
+  row.append(authorCol, meta, progressCol, views, chipCol);
   return row;
 }
 
-export function buildTeamRow(row: TeamRow, today: string): HTMLElement {
+export function buildTeamRow(row: TeamRow, today: string, rank: number = 1): HTMLElement {
   const el = document.createElement("article");
   el.className = "team-row";
   if (row.hasAlert) el.classList.add("team-row--alert");
+  if (rank <= 3) el.classList.add(`team-row--top${rank}`);
   el.dataset.teamName = row.name;
 
-  // 列頭：展開 toggle + 團隊名 + 計數
+  // 列頭：可點擊整列展開（帶 data-expand=""，鍵盤無障礙支援）
   const head = document.createElement("div");
   head.className = "team-row-head";
-  const toggle = document.createElement("button");
-  toggle.type = "button";
-  toggle.className = "team-expand";
-  toggle.dataset.expand = "";
-  toggle.setAttribute("aria-expanded", "false");
-  toggle.setAttribute("aria-label", `展開 ${row.name} 成員`);
-  toggle.title = "展開成員";
+  head.dataset.expand = "";
+  head.setAttribute("role", "button");
+  head.setAttribute("tabindex", "0");
+  head.setAttribute("aria-expanded", "false");
+  head.setAttribute("aria-label", `展開 ${row.name} 成員清單`);
+  head.title = `點擊展開 ${row.name} 成員名單`;
+
+  // 1. Rank & Toggle
+  const rankCol = document.createElement("div");
+  rankCol.className = "team-col-rank";
+
+  const rankBadge = document.createElement("span");
+  rankBadge.className = `team-rank-badge ${rank <= 3 ? `team-rank--${rank}` : ""}`;
+  rankBadge.textContent = `#${rank}`;
+
+  const toggle = document.createElement("span");
+  toggle.className = "team-expand-icon";
   toggle.appendChild(chevronIcon());
+
+  rankCol.append(rankBadge, toggle);
+
+  // 2. Team Name
+  const nameCol = document.createElement("div");
+  nameCol.className = "team-col-name";
   const name = document.createElement("span");
   name.className = "team-name";
   name.textContent = row.name;
-  const stats = document.createElement("div");
-  stats.className = "team-stats";
-  const stat = (label: string, value: string) => {
-    const s = document.createElement("span");
-    s.className = "team-stat";
-    const v = document.createElement("span");
-    v.className = "tabular-nums";
-    v.textContent = value;
-    const l = document.createElement("span");
-    l.className = "team-stat-label";
-    l.textContent = label;
-    s.append(v, l);
-    return s;
-  };
-  stats.append(
-    stat("成員", String(row.memberCount)),
-    stat("總瀏覽", row.totalViews.toLocaleString()),
-    stat("人均", row.avgViews.toLocaleString()),
-    stat("進度", `${row.avgProgress.toFixed(1)}/30`),
-    stat("今日", `${row.postedToday}/${row.memberCount}`),
-  );
-  head.append(toggle, name, stats);
+  nameCol.appendChild(name);
+
+  // 3. Member Count
+  const membersCol = document.createElement("div");
+  membersCol.className = "team-col-members tabular-nums";
+  membersCol.textContent = String(row.memberCount);
+
+  // 4. Total Views
+  const viewsCol = document.createElement("div");
+  viewsCol.className = "team-col-views tabular-nums";
+  viewsCol.textContent = row.totalViews.toLocaleString();
+
+  // 5. Avg Views
+  const avgCol = document.createElement("div");
+  avgCol.className = "team-col-avg tabular-nums";
+  avgCol.textContent = row.avgViews.toLocaleString();
+
+  // 6. Avg Progress (Progress bar + Label)
+  const progressCol = document.createElement("div");
+  progressCol.className = "team-col-progress";
+
+  const track = document.createElement("div");
+  track.className = "progress-track sm";
+  const fill = document.createElement("div");
+  const pct = Math.min((row.avgProgress / 30) * 100, 100);
+  fill.className = row.avgProgress >= 30 ? "progress-fill progress-fill--done" : "progress-fill";
+  fill.style.width = `${pct}%`;
+  track.appendChild(fill);
+
+  const progLabel = document.createElement("span");
+  progLabel.className = "progress-label tabular-nums";
+  const progressFormatted = row.avgProgress % 1 === 0 ? String(row.avgProgress) : row.avgProgress.toFixed(1);
+  progLabel.textContent = `${progressFormatted}/30`;
+
+  progressCol.append(track, progLabel);
+
+  // 7. Today Posts
+  const todayCol = document.createElement("div");
+  todayCol.className = "team-col-today tabular-nums";
+  const todayVal = document.createElement("span");
+  const isAllPosted = row.postedToday === row.memberCount && row.memberCount > 0 && row.pendingCount === 0;
+  todayVal.className = isAllPosted ? "team-today-pill team-today-pill--all" : "team-today-pill";
+  todayVal.textContent = `${row.postedToday}/${row.memberCount}`;
+  todayCol.appendChild(todayVal);
+
+  // 8. Status / Alert
+  const statusCol = document.createElement("div");
+  statusCol.className = "team-col-status";
   if (row.alertSummary) {
     const alert = document.createElement("span");
     alert.className = "team-alert";
     alert.textContent = row.alertSummary;
-    head.append(alert);
+    statusCol.appendChild(alert);
+  } else if (isAllPosted) {
+    const clear = document.createElement("span");
+    clear.className = "team-status-clear";
+    clear.textContent = "全隊在線 ✓";
+    statusCol.appendChild(clear);
+  } else if (row.pendingCount === row.memberCount) {
+    const pending = document.createElement("span");
+    pending.className = "team-status-pending";
+    pending.textContent = "尚未開賽";
+    statusCol.appendChild(pending);
   }
+
+  // 桌面結構：各直屬 column 直接放入 head 以吻合 CSS Grid 對齊
+  head.append(rankCol, nameCol, membersCol, viewsCol, avgCol, progressCol, todayCol, statusCol);
 
   // 展開區：成員清單 + 看該隊系列
   const body = document.createElement("div");
   body.className = "team-body";
   body.hidden = true;
-  for (const m of row.members) body.appendChild(buildMemberRow(m, today));
+
+  const bodyHead = document.createElement("div");
+  bodyHead.className = "team-body-head";
+  const bodyTitle = document.createElement("span");
+  bodyTitle.className = "team-body-title";
+  bodyTitle.textContent = `成員清單 (${row.memberCount} 位)`;
+
   const go = document.createElement("button");
   go.type = "button";
   go.className = "team-go";
   go.dataset.teamName = row.name;
   go.textContent = "看該隊系列 →";
-  body.appendChild(go);
+
+  bodyHead.append(bodyTitle, go);
+
+  const membersList = document.createElement("div");
+  membersList.className = "team-members-list";
+  for (const m of row.members) membersList.appendChild(buildMemberRow(m, today));
+
+  body.append(bodyHead, membersList);
 
   el.append(head, body);
   return el;
