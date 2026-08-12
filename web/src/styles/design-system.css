@@ -407,6 +407,9 @@ input, select, textarea { caret-color: var(--accent); }
 /* 相鄰列邊框重疊 1px（取代舊的 border-top: 0）：每列保留四面完整邊框，
    hover / focus-within 時強調色才畫得出頂邊，否則非首列會缺上邊條紋。 */
 .series-grid.view-list .series-row + .series-row { margin-top: -1px; }
+/* [hidden] 覆寫：author 的 display:grid / .view-list 的 display:block 會蓋過 UA 的
+   [hidden] { display:none }——計分板視圖下系列流必須真正隱藏（放最後以勝過同級 specificity）。 */
+.series-grid[hidden] { display: none; }
 
 /* ---------- Series card (grid) ---------- */
 .series-card {

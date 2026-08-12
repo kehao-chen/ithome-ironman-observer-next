@@ -110,7 +110,7 @@ const teamCount = teamNames(data).length;
 <main class="container" style="padding-block:var(--space-4);">
   <div class="status-bar" role="status">
     <span><span class="dot" aria-hidden="true"></span>資料已更新</span>
-    <span>已顯示 <strong id="shown-count" class="tabular-nums">{data.series.length}</strong> / <strong id="total-count" class="tabular-nums">{data.series.length}</strong> 支系列</span>
+    <span>已顯示 <strong id="shown-count" class="tabular-nums">{data.series.length}</strong> / <strong id="total-count" class="tabular-nums">{data.series.length}</strong> <span id="shown-unit">支系列</span></span>
     <details class="scrape-log" id="scrape-log" hidden={data.scrapeLog.length === 0}>
       <summary>⚠ <span id="scrape-log-count" class="tabular-nums">{data.scrapeLog.length}</span> 支系列本次抓取失敗</summary>
       <ul id="scrape-log-list">
@@ -192,6 +192,7 @@ const teamCount = teamNames(data).length;
   const seriesCount = document.getElementById("series-count")!;
   const shownCount = document.getElementById("shown-count")!;
   const totalCount = document.getElementById("total-count")!;
+  const shownUnit = document.getElementById("shown-unit"); // 狀態列單位（支系列 / 計分板視圖改支團隊）
   let current: ViewData | null = null;
   let currentYear: number = (window as any).IRONMAN_DATA?.year ?? 0;
   let fetchToken = 0;
@@ -329,7 +330,12 @@ const teamCount = teamNames(data).length;
 
   function applyFilter(data: ViewData, group: string, sort: string) {
     // 計分板視圖：不渲染系列流，直接切換視圖（表頭排序為計分板自己的排序器）。
+    // 狀態列改顯示團隊數（spec §5.4 step 2）；回系列視圖時下方非 teams 分支重設計數。
     if (group === "teams") {
+      const rows = aggregateTeams(data, today);
+      shownCount.textContent = String(rows.length);
+      totalCount.textContent = String(rows.length);
+      if (shownUnit) shownUnit.textContent = "支團隊";
       setTeamsView(true);
       return;
     }
@@ -404,6 +410,7 @@ const teamCount = teamNames(data).length;
           ? data.series.filter((s) => s.team === group.slice("team:".length)).length
           : data.series.length,
     );
+    if (shownUnit) shownUnit.textContent = "支系列"; // 離開計分板視圖 → 恢復系列單位
     humanizeAll();
   }
 
