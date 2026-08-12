@@ -769,17 +769,18 @@ input, select, textarea { caret-color: var(--accent); }
 /* 表頭與列頭共用 Grid 定義：保證 1:1 垂直對齊 */
 /* [Rank 44px] [名稱 1.8fr] [成員 54px] [總瀏覽 84px] [人均 84px] [平均進度 140px] [今日發文 76px] [狀態 1.2fr] */
 :root {
-  --teams-grid-cols: 44px minmax(170px, 1.8fr) 48px 84px 84px 154px 76px minmax(120px, 1.2fr);
+  --teams-grid-cols: 40px minmax(180px, 1.8fr) 48px 84px 84px 160px 76px minmax(120px, 1.2fr);
 }
 
 /* 表頭（SSR 靜態輸出） */
 .teams-head {
   display: grid;
   grid-template-columns: var(--teams-grid-cols);
-  gap: var(--space-2);
+  gap: var(--space-3);
   align-items: center;
   padding: var(--space-2) var(--space-4);
   border-bottom: 1px solid var(--border);
+  border-inline: 1px solid transparent;
   font-family: var(--font-sans);
   font-size: var(--text-2xs);
   color: var(--muted);
@@ -789,19 +790,13 @@ input, select, textarea { caret-color: var(--accent); }
 .th.th-name { text-align: left; }
 .th.th-members { text-align: right; }
 .th.th-views,
-.th.th-avg {
+.th.th-avg,
+.th.th-progress {
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
   width: 100%;
   text-align: right;
-}
-.th.th-progress {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  text-align: center;
 }
 .th.th-today {
   display: inline-flex;
@@ -839,14 +834,15 @@ input, select, textarea { caret-color: var(--accent); }
   border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }
 .team-row--alert {
-  border-inline-start: 3px solid var(--warning);
+  border-color: color-mix(in srgb, var(--warning) 40%, var(--border));
+  box-shadow: inset 3px 0 0 var(--warning);
 }
 
 /* 列頭（可點擊整列展開） */
 .team-row-head {
   display: grid;
   grid-template-columns: var(--teams-grid-cols);
-  gap: var(--space-2);
+  gap: var(--space-3);
   align-items: center;
   padding: var(--space-3) var(--space-4);
   cursor: pointer;
@@ -950,12 +946,12 @@ input, select, textarea { caret-color: var(--accent); }
   text-align: right;
 }
 
-/* 6. Progress bar column (進度條與數字居中群組化，與表頭「平均進度」完美對齊) */
+/* 6. Progress bar column (進度條與數字右對齊，與表頭「平均進度」精確對齊) */
 .team-col-progress {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
+  justify-content: flex-end;
+  gap: 10px;
   width: 100%;
 }
 .team-col-progress .progress-track {
@@ -977,10 +973,9 @@ input, select, textarea { caret-color: var(--accent); }
   font-family: var(--font-sans);
   font-size: var(--text-2xs);
   color: var(--muted);
-  min-width: 44px;
-  text-align: left;
+  min-width: 46px;
+  text-align: right;
 }
-/* 7. Today posts column */
 .team-col-today {
   display: flex;
   align-items: center;
