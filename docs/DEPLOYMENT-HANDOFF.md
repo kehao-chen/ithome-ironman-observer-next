@@ -5,7 +5,7 @@
 > **2026-08-07 更新（後續 session 以本段為準）**
 > - 測試：`bun test` 由 41 pass 增至 **185 pass**（新增 view-model / 結構契約測試 29 個：`card.ts` 18 + `card-dom.ts` 11）。
 > - 資料：2026 系列數 127 → **147**（報名期間持續增加）。
-> - 已知問題 #1（全 inline style / dark-only / 無設計系統）、#2（DAY badge 不一致）、#4（placeholder filter style）**已修復**；#3（未開賽卡片空洞）已改善——顯示「報名於 YYYY/MM/DD」，已刪文系列顯示「文章已全數刪除」。
+> - 已知問題 #1（全 inline style / dark-only / 無設計系統）、#2（DAY badge 不一致）、#4（placeholder filter style）**已修復**；#3（未開賽卡片空洞）已改善：顯示「報名於 YYYY/MM/DD」，已刪文系列顯示「文章已全數刪除」。
 > - 卡片顯示邏輯已收斂到 `web/src/lib/card.ts`：SSR `SeriesCard.astro` 與 client `renderCard`/`renderRow` 共用同一 view-model（`cardViewModel`），降低 drift 風險。
 > - `web/public/lighthouse-report.html` 已移至 `docs/`（不再部署）。
 
@@ -53,7 +53,7 @@ GH Actions (.github/workflows/scheduled-update.yml)
 | `scripts/parse-signup.ts` | signup 列表 HTML → SignupCard（含 `decodeHtmlEntities`，資料必須存純文字） |
 | `scripts/parse-rss.ts` | RSS → RssChannel；`parseRfc822` 保留來源 offset 牆鐘（曾修過 UTC 誤標 bug） |
 | `scripts/parse-series.ts` | series 頁 → SeriesStats（瀏覽/Like/留言/訂閱） |
-| `scripts/html-entities.ts` | 共享 entity 解碼（&amp; 等）——**必須在 parse 時解，否則 Astro/client 雙重跳脫顯示 &amp;amp;** |
+| `scripts/html-entities.ts` | 共享 entity 解碼（&amp; 等）：**必須在 parse 時解，否則 Astro/client 雙重跳脫顯示 &amp;amp;** |
 | `scripts/types.ts` | 全專案共享型別（scraper + Astro 共用） |
 | `web/scripts/copy-data.mjs` | build 前置：清空 `web/public/data/` 所有 `^\d{4}\.json$` → 複製全部 `data/^\d{4}\.json$`；**meta.json 不複製**（client 不需要） |
 | `web/src/pages/index.astro` | 頁面：glob `data/*.json`（4 碼年份 key）+ dynamic import meta；`years = meta.years ∩ 實際存在檔案`；`<title>` 隨年度動態 |

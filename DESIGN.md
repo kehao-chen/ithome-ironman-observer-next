@@ -1,6 +1,6 @@
 ---
 name: 鐵人觀察家 2026
-description: 2026 iThome 鐵人賽每日觀察儀表板 — 賽事觀察板
+description: 2026 iThome 鐵人賽每日觀察儀表板：賽事觀察板
 colors:
   bg: "#0f1115"
   surface: "#181b22"
@@ -83,9 +83,9 @@ components:
 
 ## Overview
 
-**Creative North Star: "賽事觀察板" (Competition Board)**
+**Creative North Star: 「賽事觀察板」（Competition Board）**
 
-把儀表板當作一場 30 天寫作馬拉松的計分板。每個參賽系列是一筆賽事紀錄：`DAY n/30` 進度條是「跑完多少」，總瀏覽是「分數」，最新文章是「今天交了什麼」。每個元素都要一眼看懂——這是一台給技術讀者掃讀的工具，不是被裝飾的藝術品。
+把儀表板當作一場 30 天寫作馬拉松的計分板。每個參賽系列是一筆賽事紀錄：`DAY n/30` 進度條是「跑完多少」，總瀏覽是「分數」，最新文章是「今天交了什麼」。每個元素都要一眼看懂：這是一台給技術讀者掃讀的工具，不是被裝飾的藝術品。
 
 **Key Characteristics:**
 - Dark 預設 + light；auto（`prefers-color-scheme`）+ manual toggle（localStorage 持久化）
