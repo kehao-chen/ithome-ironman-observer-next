@@ -833,9 +833,6 @@ input, select, textarea { caret-color: var(--accent); }
 .team-row:hover {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
 }
-.team-row--alert {
-  box-shadow: inset 3px 0 0 var(--warning);
-}
 
 /* 列頭（可點擊整列展開） */
 .team-row-head {
