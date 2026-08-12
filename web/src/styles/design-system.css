@@ -831,10 +831,9 @@ input, select, textarea { caret-color: var(--accent); }
   overflow: hidden;
 }
 .team-row:hover {
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
 }
 .team-row--alert {
-  border-color: color-mix(in srgb, var(--warning) 40%, var(--border));
   box-shadow: inset 3px 0 0 var(--warning);
 }
 
