@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-08-17 03:57:10+08:00",
+  "updatedAt": "2026-08-17 04:08:37+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -44,7 +44,7 @@
           "title": "《企業端點完美防禦》01-起源",
           "url": "https://ithelp.ithome.com.tw/articles/10400759",
           "publishedAt": "2026-08-01T12:15:21+08:00",
-          "views": 382,
+          "views": 383,
           "likes": 1,
           "comments": 0
         },
@@ -582,7 +582,7 @@
           "title": "Day 17 -「普羅克瑞提斯之床」我明明寫過這個測試啊？",
           "url": "https://ithelp.ithome.com.tw/articles/10403341",
           "publishedAt": "2026-08-17T00:03:59+08:00",
-          "views": 29,
+          "views": 30,
           "likes": 0,
           "comments": 0
         }
@@ -771,7 +771,196 @@
           "title": "Day 17. AI 時代的測試策略：為高速變更建立安全網",
           "url": "https://ithelp.ithome.com.tw/articles/10403363",
           "publishedAt": "2026-08-17T00:50:48+08:00",
-          "views": 26,
+          "views": 27,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
+      "id": 9059,
+      "user": {
+        "id": 20183394,
+        "name": "碼力獅 Malilion",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20183394/profile"
+      },
+      "group": "Modern Web",
+      "title": "《九重燼》Vue3 + PixiJS + Ink.js 視覺小說遊戲開發全紀錄",
+      "description": "以 Ink.js 為敘事核心、Vue3 為介面框架、PixiJS 負責場景渲染，打造一款中國宮廷歷史題材的互動視覺小說遊戲「九重燼」。系列文章將記錄從敘事引擎橋接、對話系統設計、轉場動畫、到小遊戲標籤系統整合的完整開發過程，並分享效能優化與跨模組協作的實戰心得。",
+      "team": null,
+      "signupDate": "2026/08/01T15:59:40+08:00",
+      "lastUpdated": "2026-08-17T03:41:54+08:00",
+      "dayCount": 17,
+      "articleCount": 17,
+      "subscriptions": 2,
+      "articles": [
+        {
+          "id": 10400819,
+          "day": 1,
+          "title": "Day1  為什麼我要做《九重燼》?一人遊戲開發的起點",
+          "url": "https://ithelp.ithome.com.tw/articles/10400819",
+          "publishedAt": "2026-08-01T16:15:44+08:00",
+          "views": 246,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400937,
+          "day": 2,
+          "title": "Day2  如何從一個靈感變成完整世界觀",
+          "url": "https://ithelp.ithome.com.tw/articles/10400937",
+          "publishedAt": "2026-08-02T16:58:27+08:00",
+          "views": 196,
+          "likes": 2,
+          "comments": 1
+        },
+        {
+          "id": 10400939,
+          "day": 3,
+          "title": "Day3  角色設計:如何打造有血有肉的人物",
+          "url": "https://ithelp.ithome.com.tw/articles/10400939",
+          "publishedAt": "2026-08-03T08:48:22+08:00",
+          "views": 162,
+          "likes": 1,
+          "comments": 0
+        },
+        {
+          "id": 10400944,
+          "day": 4,
+          "title": "Day4  如何設計玩家選擇與劇情分支",
+          "url": "https://ithelp.ithome.com.tw/articles/10400944",
+          "publishedAt": "2026-08-04T01:05:56+08:00",
+          "views": 142,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400945,
+          "day": 5,
+          "title": "Day5  建立完整遊戲企劃文件（PRD）",
+          "url": "https://ithelp.ithome.com.tw/articles/10400945",
+          "publishedAt": "2026-08-05T02:54:23+08:00",
+          "views": 215,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400946,
+          "day": 6,
+          "title": "Day6  建立遊戲開發文件與專案管理流程",
+          "url": "https://ithelp.ithome.com.tw/articles/10400946",
+          "publishedAt": "2026-08-06T07:07:23+08:00",
+          "views": 122,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400947,
+          "day": 7,
+          "title": "Day7  技術選型與專案架構：為什麼選 Vue3、PixiJS、Ink.js？",
+          "url": "https://ithelp.ithome.com.tw/articles/10400947",
+          "publishedAt": "2026-08-07T08:09:11+08:00",
+          "views": 121,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400948,
+          "day": 8,
+          "title": "Day8  遊戲架構設計：Scene、State、UI 如何分層？",
+          "url": "https://ithelp.ithome.com.tw/articles/10400948",
+          "publishedAt": "2026-08-08T04:12:04+08:00",
+          "views": 101,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400949,
+          "day": 9,
+          "title": "Day9  Ink.js 劇本整合：如何讓 Vue3 與 Ink.js 溝通？",
+          "url": "https://ithelp.ithome.com.tw/articles/10400949",
+          "publishedAt": "2026-08-09T06:56:25+08:00",
+          "views": 88,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400951,
+          "day": 10,
+          "title": "Day10  建立 Dialogue System：打造可重複使用的對話系統",
+          "url": "https://ithelp.ithome.com.tw/articles/10400951",
+          "publishedAt": "2026-08-10T06:54:55+08:00",
+          "views": 96,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400952,
+          "day": 11,
+          "title": "Day11  選項系統實作：Choice、Flag 與劇情控制",
+          "url": "https://ithelp.ithome.com.tw/articles/10400952",
+          "publishedAt": "2026-08-11T08:18:48+08:00",
+          "views": 82,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400953,
+          "day": 12,
+          "title": "Day12  存檔與讀檔機制：LocalStorage 還是 IndexedDB？",
+          "url": "https://ithelp.ithome.com.tw/articles/10400953",
+          "publishedAt": "2026-08-12T06:36:41+08:00",
+          "views": 86,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400954,
+          "day": 13,
+          "title": "Day13  遊戲 UI 設計：打造沉浸式文字冒險介面",
+          "url": "https://ithelp.ithome.com.tw/articles/10400954",
+          "publishedAt": "2026-08-13T05:01:55+08:00",
+          "views": 85,
+          "likes": 1,
+          "comments": 0
+        },
+        {
+          "id": 10400955,
+          "day": 14,
+          "title": "Day14  完成第一個可以玩的 Demo！",
+          "url": "https://ithelp.ithome.com.tw/articles/10400955",
+          "publishedAt": "2026-08-14T07:41:06+08:00",
+          "views": 65,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400956,
+          "day": 15,
+          "title": "Day15  PixiJS 進階：Sprite、Container 與圖層管理策略",
+          "url": "https://ithelp.ithome.com.tw/articles/10400956",
+          "publishedAt": "2026-08-15T00:43:44+08:00",
+          "views": 56,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400957,
+          "day": 16,
+          "title": "Day16  Vue3 響應式狀態與 Ink.js State 同步機制",
+          "url": "https://ithelp.ithome.com.tw/articles/10400957",
+          "publishedAt": "2026-08-16T17:37:34+08:00",
+          "views": 45,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10400958,
+          "day": 17,
+          "title": "Day17  動畫系統實作：轉場、淡入淡出",
+          "url": "https://ithelp.ithome.com.tw/articles/10400958",
+          "publishedAt": "2026-08-17T03:58:29+08:00",
+          "views": 2,
           "likes": 0,
           "comments": 0
         }
@@ -1149,7 +1338,7 @@
           "title": "Day 17｜Confidential Computing：機密運算場景下的 AI 工作負載保護",
           "url": "https://ithelp.ithome.com.tw/articles/10403367",
           "publishedAt": "2026-08-17T01:32:58+08:00",
-          "views": 18,
+          "views": 19,
           "likes": 0,
           "comments": 0
         }
@@ -1178,7 +1367,7 @@
           "title": "UX 那些事-DAY1",
           "url": "https://ithelp.ithome.com.tw/articles/10400889",
           "publishedAt": "2026-08-02T00:00:47+08:00",
-          "views": 241,
+          "views": 242,
           "likes": 0,
           "comments": 0
         },
@@ -1308,7 +1497,7 @@
           "title": "AI 工具這麼多，到底哪個值得留下？用 PROVE Framework 幫自己做選擇-DAY14",
           "url": "https://ithelp.ithome.com.tw/articles/10402703",
           "publishedAt": "2026-08-15T10:55:14+08:00",
-          "views": 61,
+          "views": 62,
           "likes": 0,
           "comments": 0
         },
@@ -1328,7 +1517,7 @@
           "title": "UX 做了研究，為什麼最後還是進不了 Roadmap？-DAY16",
           "url": "https://ithelp.ithome.com.tw/articles/10402716",
           "publishedAt": "2026-08-17T00:21:36+08:00",
-          "views": 30,
+          "views": 31,
           "likes": 0,
           "comments": 0
         }
@@ -1357,7 +1546,7 @@
           "title": "Day0：開始與終結的序章—在 AI compiler 工程師的路上",
           "url": "https://ithelp.ithome.com.tw/articles/10400764",
           "publishedAt": "2026-08-01T14:03:04+08:00",
-          "views": 554,
+          "views": 555,
           "likes": 1,
           "comments": 0
         },
@@ -1536,7 +1725,7 @@
           "title": "【基礎】 1. SQL Server 安裝前規劃",
           "url": "https://ithelp.ithome.com.tw/articles/10400755",
           "publishedAt": "2026-08-01T12:10:09+08:00",
-          "views": 409,
+          "views": 410,
           "likes": 0,
           "comments": 0
         },
@@ -1805,7 +1994,7 @@
           "title": "Day 10 RD 有程式碼證明自己做了什麼，那 QA 要拿什麼證明？",
           "url": "https://ithelp.ithome.com.tw/articles/10402209",
           "publishedAt": "2026-08-10T06:22:46+08:00",
-          "views": 740,
+          "views": 741,
           "likes": 1,
           "comments": 0
         },
@@ -1815,7 +2004,7 @@
           "title": "Day 11 Low-Tech Testing Dashboard：不用 Jira，也能讓主管看懂品質風險",
           "url": "https://ithelp.ithome.com.tw/articles/10402357",
           "publishedAt": "2026-08-11T06:09:36+08:00",
-          "views": 551,
+          "views": 555,
           "likes": 1,
           "comments": 0
         },
@@ -2461,7 +2650,7 @@
           "title": "Day 4：建立全系列共用的自動化規範：PowerShell 5.1 的 JSON、編碼與物件流三大陷阱",
           "url": "https://ithelp.ithome.com.tw/articles/10401368",
           "publishedAt": "2026-08-04T02:39:36+08:00",
-          "views": 161,
+          "views": 162,
           "likes": 0,
           "comments": 0
         },
@@ -2630,7 +2819,7 @@
           "title": "Day3: 綠燈之後:弄壞它、讀懂它",
           "url": "https://ithelp.ithome.com.tw/articles/10401145",
           "publishedAt": "2026-08-03T09:03:58+08:00",
-          "views": 437,
+          "views": 438,
           "likes": 0,
           "comments": 0
         },
@@ -3157,7 +3346,7 @@
           "title": "[Day 01] 甚麼是遺留系統？為甚麼需要重構？",
           "url": "https://ithelp.ithome.com.tw/articles/10400782",
           "publishedAt": "2026-08-01T22:35:17+08:00",
-          "views": 348,
+          "views": 349,
           "likes": 0,
           "comments": 0
         },
@@ -3625,7 +3814,7 @@
           "title": "Prompt 與 output contract—論輸入和輸出之格式的重要",
           "url": "https://ithelp.ithome.com.tw/articles/10402605",
           "publishedAt": "2026-08-12T17:17:14+08:00",
-          "views": 98,
+          "views": 99,
           "likes": 0,
           "comments": 0
         },
@@ -3666,185 +3855,6 @@
           "url": "https://ithelp.ithome.com.tw/articles/10403326",
           "publishedAt": "2026-08-16T22:42:00+08:00",
           "views": 37,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9059,
-      "user": {
-        "id": 20183394,
-        "name": "碼力獅 Malilion",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20183394/profile"
-      },
-      "group": "Modern Web",
-      "title": "《九重燼》Vue3 + PixiJS + Ink.js 視覺小說遊戲開發全紀錄",
-      "description": "以 Ink.js 為敘事核心、Vue3 為介面框架、PixiJS 負責場景渲染，打造一款中國宮廷歷史題材的互動視覺小說遊戲「九重燼」。系列文章將記錄從敘事引擎橋接、對話系統設計、轉場動畫、到小遊戲標籤系統整合的完整開發過程，並分享效能優化與跨模組協作的實戰心得。",
-      "team": null,
-      "signupDate": "2026/08/01T15:59:40+08:00",
-      "lastUpdated": "2026-08-17T03:41:54+08:00",
-      "dayCount": 16,
-      "articleCount": 16,
-      "subscriptions": 2,
-      "articles": [
-        {
-          "id": 10400819,
-          "day": 1,
-          "title": "Day1  為什麼我要做《九重燼》?一人遊戲開發的起點",
-          "url": "https://ithelp.ithome.com.tw/articles/10400819",
-          "publishedAt": "2026-08-01T16:15:44+08:00",
-          "views": 246,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400937,
-          "day": 2,
-          "title": "Day2  如何從一個靈感變成完整世界觀",
-          "url": "https://ithelp.ithome.com.tw/articles/10400937",
-          "publishedAt": "2026-08-02T16:58:27+08:00",
-          "views": 196,
-          "likes": 2,
-          "comments": 1
-        },
-        {
-          "id": 10400939,
-          "day": 3,
-          "title": "Day3  角色設計:如何打造有血有肉的人物",
-          "url": "https://ithelp.ithome.com.tw/articles/10400939",
-          "publishedAt": "2026-08-03T08:48:22+08:00",
-          "views": 162,
-          "likes": 1,
-          "comments": 0
-        },
-        {
-          "id": 10400944,
-          "day": 4,
-          "title": "Day4  如何設計玩家選擇與劇情分支",
-          "url": "https://ithelp.ithome.com.tw/articles/10400944",
-          "publishedAt": "2026-08-04T01:05:56+08:00",
-          "views": 142,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400945,
-          "day": 5,
-          "title": "Day5  建立完整遊戲企劃文件（PRD）",
-          "url": "https://ithelp.ithome.com.tw/articles/10400945",
-          "publishedAt": "2026-08-05T02:54:23+08:00",
-          "views": 215,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400946,
-          "day": 6,
-          "title": "Day6  建立遊戲開發文件與專案管理流程",
-          "url": "https://ithelp.ithome.com.tw/articles/10400946",
-          "publishedAt": "2026-08-06T07:07:23+08:00",
-          "views": 122,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400947,
-          "day": 7,
-          "title": "Day7  技術選型與專案架構：為什麼選 Vue3、PixiJS、Ink.js？",
-          "url": "https://ithelp.ithome.com.tw/articles/10400947",
-          "publishedAt": "2026-08-07T08:09:11+08:00",
-          "views": 121,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400948,
-          "day": 8,
-          "title": "Day8  遊戲架構設計：Scene、State、UI 如何分層？",
-          "url": "https://ithelp.ithome.com.tw/articles/10400948",
-          "publishedAt": "2026-08-08T04:12:04+08:00",
-          "views": 101,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400949,
-          "day": 9,
-          "title": "Day9  Ink.js 劇本整合：如何讓 Vue3 與 Ink.js 溝通？",
-          "url": "https://ithelp.ithome.com.tw/articles/10400949",
-          "publishedAt": "2026-08-09T06:56:25+08:00",
-          "views": 88,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400951,
-          "day": 10,
-          "title": "Day10  建立 Dialogue System：打造可重複使用的對話系統",
-          "url": "https://ithelp.ithome.com.tw/articles/10400951",
-          "publishedAt": "2026-08-10T06:54:55+08:00",
-          "views": 96,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400952,
-          "day": 11,
-          "title": "Day11  選項系統實作：Choice、Flag 與劇情控制",
-          "url": "https://ithelp.ithome.com.tw/articles/10400952",
-          "publishedAt": "2026-08-11T08:18:48+08:00",
-          "views": 82,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400953,
-          "day": 12,
-          "title": "Day12  存檔與讀檔機制：LocalStorage 還是 IndexedDB？",
-          "url": "https://ithelp.ithome.com.tw/articles/10400953",
-          "publishedAt": "2026-08-12T06:36:41+08:00",
-          "views": 86,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400954,
-          "day": 13,
-          "title": "Day13  遊戲 UI 設計：打造沉浸式文字冒險介面",
-          "url": "https://ithelp.ithome.com.tw/articles/10400954",
-          "publishedAt": "2026-08-13T05:01:55+08:00",
-          "views": 85,
-          "likes": 1,
-          "comments": 0
-        },
-        {
-          "id": 10400955,
-          "day": 14,
-          "title": "Day14  完成第一個可以玩的 Demo！",
-          "url": "https://ithelp.ithome.com.tw/articles/10400955",
-          "publishedAt": "2026-08-14T07:41:06+08:00",
-          "views": 65,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400956,
-          "day": 15,
-          "title": "Day15  PixiJS 進階：Sprite、Container 與圖層管理策略",
-          "url": "https://ithelp.ithome.com.tw/articles/10400956",
-          "publishedAt": "2026-08-15T00:43:44+08:00",
-          "views": 56,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10400957,
-          "day": 16,
-          "title": "Day16  Vue3 響應式狀態與 Ink.js State 同步機制",
-          "url": "https://ithelp.ithome.com.tw/articles/10400957",
-          "publishedAt": "2026-08-16T17:37:34+08:00",
-          "views": 45,
           "likes": 0,
           "comments": 0
         }
@@ -4560,7 +4570,7 @@
           "title": "Day 16 - 30 天手把手學會 Chart.js｜串接後端 API（RESTful）",
           "url": "https://ithelp.ithome.com.tw/articles/10401433",
           "publishedAt": "2026-08-16T09:34:17+08:00",
-          "views": 55,
+          "views": 56,
           "likes": 1,
           "comments": 0
         }
@@ -5236,7 +5246,7 @@
           "title": "Day12-Claude Cowork",
           "url": "https://ithelp.ithome.com.tw/articles/10402594",
           "publishedAt": "2026-08-12T13:34:59+08:00",
-          "views": 126,
+          "views": 127,
           "likes": 0,
           "comments": 0
         },
@@ -5484,7 +5494,7 @@
           "title": "Day 01｜為什麼我開始關注高風險場域的 AI 應用？",
           "url": "https://ithelp.ithome.com.tw/articles/10400887",
           "publishedAt": "2026-08-01T21:57:48+08:00",
-          "views": 352,
+          "views": 353,
           "likes": 1,
           "comments": 0
         },
@@ -5624,7 +5634,7 @@
           "title": "Day 15｜醫療領域 AI 應用，最重要的是責任歸屬：六個可落地的設計啟示",
           "url": "https://ithelp.ithome.com.tw/articles/10403143",
           "publishedAt": "2026-08-15T16:46:37+08:00",
-          "views": 95,
+          "views": 97,
           "likes": 0,
           "comments": 0
         },
@@ -6708,7 +6718,7 @@
           "title": "Day16 - 呈現臨床資料（一）",
           "url": "https://ithelp.ithome.com.tw/articles/10403370",
           "publishedAt": "2026-08-17T02:01:12+08:00",
-          "views": 19,
+          "views": 20,
           "likes": 0,
           "comments": 0
         }
@@ -6887,7 +6897,7 @@
           "title": "Day16：補幀與超分有哪些缺點？",
           "url": "https://ithelp.ithome.com.tw/articles/10402321",
           "publishedAt": "2026-08-17T00:24:24+08:00",
-          "views": 31,
+          "views": 32,
           "likes": 0,
           "comments": 0
         }
@@ -7145,7 +7155,7 @@
           "title": "Day 06 - 第一個工具 read_file",
           "url": "https://ithelp.ithome.com.tw/articles/10401693",
           "publishedAt": "2026-08-06T02:39:43+08:00",
-          "views": 243,
+          "views": 244,
           "likes": 0,
           "comments": 0
         },
@@ -7284,7 +7294,7 @@
           "title": "Day 03 — Runbook 是什麼？為什麼很多企業都有，但很少人整理",
           "url": "https://ithelp.ithome.com.tw/articles/10400855",
           "publishedAt": "2026-08-04T07:40:05+08:00",
-          "views": 187,
+          "views": 188,
           "likes": 1,
           "comments": 0
         },
@@ -8070,7 +8080,7 @@
           "title": "Day 14｜工作流程優先度，為什麼不能等同醫療嚴重程度？",
           "url": "https://ithelp.ithome.com.tw/articles/10403171",
           "publishedAt": "2026-08-15T21:29:09+08:00",
-          "views": 41,
+          "views": 42,
           "likes": 0,
           "comments": 0
         },
@@ -8189,7 +8199,7 @@
           "title": "Day 09：【UI/UX 優化】打造溫暖風格的色彩計畫與動態對話氣泡",
           "url": "https://ithelp.ithome.com.tw/articles/10402206",
           "publishedAt": "2026-08-10T08:01:39+08:00",
-          "views": 73,
+          "views": 74,
           "likes": 0,
           "comments": 0
         },
@@ -8547,7 +8557,7 @@
           "title": "做自己職涯的PM — 求職管道（中）",
           "url": "https://ithelp.ithome.com.tw/articles/10402573",
           "publishedAt": "2026-08-12T09:06:44+08:00",
-          "views": 132,
+          "views": 133,
           "likes": 2,
           "comments": 0
         },
@@ -8726,7 +8736,7 @@
           "title": "Day XII｜「不要動我的寶貝！！」－換模組不用換程式",
           "url": "https://ithelp.ithome.com.tw/articles/10402685",
           "publishedAt": "2026-08-13T09:33:24+08:00",
-          "views": 63,
+          "views": 64,
           "likes": 0,
           "comments": 0
         },
@@ -8925,7 +8935,7 @@
           "title": "第 15 章：安全與治理",
           "url": "https://ithelp.ithome.com.tw/articles/10401196",
           "publishedAt": "2026-08-17T01:11:35+08:00",
-          "views": 28,
+          "views": 29,
           "likes": 0,
           "comments": 0
         }
@@ -9979,7 +9989,7 @@
           "title": "Day 09｜PV 與 PVC — Kubernetes 如何讓「無狀態 Pod」支援「有狀態資料」",
           "url": "https://ithelp.ithome.com.tw/articles/10402447",
           "publishedAt": "2026-08-11T10:43:15+08:00",
-          "views": 175,
+          "views": 176,
           "likes": 0,
           "comments": 0
         },
@@ -10039,7 +10049,7 @@
           "title": "Day 15｜topologySpreadConstraints — 更優雅的 Pod 分散機制",
           "url": "https://ithelp.ithome.com.tw/articles/10403364",
           "publishedAt": "2026-08-17T01:15:37+08:00",
-          "views": 29,
+          "views": 30,
           "likes": 0,
           "comments": 0
         }
@@ -10068,7 +10078,7 @@
           "title": "Day1 前言與核心服務概覽",
           "url": "https://ithelp.ithome.com.tw/articles/10400774",
           "publishedAt": "2026-08-01T14:03:57+08:00",
-          "views": 273,
+          "views": 274,
           "likes": 0,
           "comments": 0
         },
@@ -11430,7 +11440,7 @@
           "title": "【Day 08】知識管線自動化：Google Drive 檔案同步與 /learn 指令排程注入 (drive_sync.py)",
           "url": "https://ithelp.ithome.com.tw/articles/10402303",
           "publishedAt": "2026-08-10T11:22:31+08:00",
-          "views": 97,
+          "views": 98,
           "likes": 0,
           "comments": 0
         },
@@ -11718,7 +11728,7 @@
           "title": "Day 5 | 與Claude討論「產值評估模型」的設計與方法論",
           "url": "https://ithelp.ithome.com.tw/articles/10401855",
           "publishedAt": "2026-08-07T14:07:24+08:00",
-          "views": 97,
+          "views": 98,
           "likes": 0,
           "comments": 0
         },
@@ -11967,7 +11977,7 @@
           "title": "Day14. 工程師的第六感",
           "url": "https://ithelp.ithome.com.tw/articles/10401569",
           "publishedAt": "2026-08-17T00:16:07+08:00",
-          "views": 27,
+          "views": 28,
           "likes": 0,
           "comments": 0
         }
@@ -13167,7 +13177,7 @@
           "title": "Kotlin Lambda 從零開始 Day 12：associate / associateBy / associateWith — 轉成 Map",
           "url": "https://ithelp.ithome.com.tw/articles/10401499",
           "publishedAt": "2026-08-16T08:19:23+08:00",
-          "views": 39,
+          "views": 40,
           "likes": 0,
           "comments": 0
         }
@@ -13663,7 +13673,7 @@
           "title": "【Day 04 】APR Flow 核心概念：其本質就是一場「蘿蔔蹲」",
           "url": "https://ithelp.ithome.com.tw/articles/10402063",
           "publishedAt": "2026-08-08T10:45:50+08:00",
-          "views": 104,
+          "views": 105,
           "likes": 0,
           "comments": 0
         },
@@ -13743,7 +13753,7 @@
           "title": "【DAY 12】 Flow Control 實戰技巧：幾種 APR 最常碰到的控制與狀況處理",
           "url": "https://ithelp.ithome.com.tw/articles/10403296",
           "publishedAt": "2026-08-16T20:44:07+08:00",
-          "views": 34,
+          "views": 35,
           "likes": 0,
           "comments": 0
         }
@@ -14408,7 +14418,7 @@
           "title": "Day 11｜vue-router 基礎回顧：history mode、路由守衛",
           "url": "https://ithelp.ithome.com.tw/articles/10403200",
           "publishedAt": "2026-08-16T09:24:07+08:00",
-          "views": 42,
+          "views": 43,
           "likes": 0,
           "comments": 0
         }
@@ -14824,7 +14834,7 @@
           "title": "Day 1｜我不是來寫小說的，我是來解一致性問題的",
           "url": "https://ithelp.ithome.com.tw/articles/10401784",
           "publishedAt": "2026-08-06T19:07:53+08:00",
-          "views": 132,
+          "views": 133,
           "likes": 1,
           "comments": 1
         },
@@ -15340,7 +15350,7 @@
           "title": "Day1：失敗現場，一個查得動 Prometheus 的 agent，卻拿不到 60 分",
           "url": "https://ithelp.ithome.com.tw/articles/10402034",
           "publishedAt": "2026-08-08T02:16:19+08:00",
-          "views": 193,
+          "views": 194,
           "likes": 0,
           "comments": 0
         },
@@ -15390,7 +15400,7 @@
           "title": "【Day6】命名漂移：用 Rego policy 把它攔下來",
           "url": "https://ithelp.ithome.com.tw/articles/10402519",
           "publishedAt": "2026-08-13T00:01:12+08:00",
-          "views": 79,
+          "views": 80,
           "likes": 1,
           "comments": 0
         },
@@ -15926,7 +15936,7 @@
           "title": "Day 10｜工單超過 2KB，他會讀完所有檔案然後不給結論",
           "url": "https://ithelp.ithome.com.tw/articles/10403252",
           "publishedAt": "2026-08-16T13:45:10+08:00",
-          "views": 52,
+          "views": 53,
           "likes": 0,
           "comments": 0
         }
@@ -16570,7 +16580,7 @@
           "title": "Day 06：ML 生命週期與「筆記本到產品的鴻溝」",
           "url": "https://ithelp.ithome.com.tw/articles/10402778",
           "publishedAt": "2026-08-14T00:21:37+08:00",
-          "views": 83,
+          "views": 84,
           "likes": 0,
           "comments": 0
         },
@@ -16689,7 +16699,7 @@
           "title": "Day 07｜Microsoft Foundry 的 AI Agent 攻防實戰：搜尋第一名的政策，不一定有資格當政策",
           "url": "https://ithelp.ithome.com.tw/articles/10403208",
           "publishedAt": "2026-08-16T01:30:28+08:00",
-          "views": 64,
+          "views": 65,
           "likes": 0,
           "comments": 0
         },
@@ -16699,7 +16709,7 @@
           "title": "Day 08｜Microsoft Foundry 的 AI Agent 攻防實戰：攻擊換了外套，門禁不能跟著失憶",
           "url": "https://ithelp.ithome.com.tw/articles/10403368",
           "publishedAt": "2026-08-17T01:40:23+08:00",
-          "views": 21,
+          "views": 22,
           "likes": 0,
           "comments": 0
         }
@@ -16915,7 +16925,7 @@
           "title": "Prompt Injection 原理拆解",
           "url": "https://ithelp.ithome.com.tw/articles/10403360",
           "publishedAt": "2026-08-17T00:38:42+08:00",
-          "views": 33,
+          "views": 35,
           "likes": 0,
           "comments": 0
         }
@@ -17627,7 +17637,7 @@
           "title": "[3分鐘 AI Agent導論] Day6 -- What is AI Agent?",
           "url": "https://ithelp.ithome.com.tw/articles/10403336",
           "publishedAt": "2026-08-16T23:34:37+08:00",
-          "views": 8,
+          "views": 10,
           "likes": 0,
           "comments": 0
         }
@@ -17785,7 +17795,7 @@
           "title": "D06 把路由器做成一台VM",
           "url": "https://ithelp.ithome.com.tw/articles/10403134",
           "publishedAt": "2026-08-17T00:38:10+08:00",
-          "views": 31,
+          "views": 32,
           "likes": 0,
           "comments": 0
         }
@@ -18031,7 +18041,7 @@
           "title": "Day 1 - 用 Codex 從零做 LINE Bot：不只寫出 Message action，還把 webhook 和部署一路打通",
           "url": "https://ithelp.ithome.com.tw/articles/10402599",
           "publishedAt": "2026-08-12T16:27:40+08:00",
-          "views": 264,
+          "views": 265,
           "likes": 8,
           "comments": 0
         },
@@ -18120,7 +18130,7 @@
           "title": "Day 03｜CAN Bus 入門：汽車 ECU 到底怎麼聊天？",
           "url": "https://ithelp.ithome.com.tw/articles/10403035",
           "publishedAt": "2026-08-15T01:00:17+08:00",
-          "views": 70,
+          "views": 71,
           "likes": 0,
           "comments": 0
         },
@@ -18140,7 +18150,7 @@
           "title": "Day 05｜CAN Arbitration：為什麼 ID 越小優先權越高？",
           "url": "https://ithelp.ithome.com.tw/articles/10403366",
           "publishedAt": "2026-08-17T01:00:10+08:00",
-          "views": 27,
+          "views": 28,
           "likes": 0,
           "comments": 0
         }
@@ -18462,7 +18472,7 @@
           "title": "Day 1｜為什麼 2026 年是地端 AI 部署元年：系列規劃與硬體總覽",
           "url": "https://ithelp.ithome.com.tw/articles/10402894",
           "publishedAt": "2026-08-14T13:07:31+08:00",
-          "views": 611,
+          "views": 614,
           "likes": 0,
           "comments": 1
         },
@@ -18472,7 +18482,7 @@
           "title": "Day 2｜DGX Spark GB10 深度解析：128GB 統一記憶體到底解決了什麼問題",
           "url": "https://ithelp.ithome.com.tw/articles/10403125",
           "publishedAt": "2026-08-15T14:37:51+08:00",
-          "views": 455,
+          "views": 456,
           "likes": 0,
           "comments": 0
         },
@@ -18482,7 +18492,7 @@
           "title": "Day 3|網路與儲存規劃:10GbE 骨幹、雙 Spark 直連與 NFS 集中模型庫",
           "url": "https://ithelp.ithome.com.tw/articles/10403133",
           "publishedAt": "2026-08-16T22:46:56+08:00",
-          "views": 156,
+          "views": 160,
           "likes": 0,
           "comments": 0
         }
@@ -18776,7 +18786,7 @@
           "title": "我們以前學的，真的只是寫程式嗎？",
           "url": "https://ithelp.ithome.com.tw/articles/10403324",
           "publishedAt": "2026-08-17T00:41:52+08:00",
-          "views": 30,
+          "views": 31,
           "likes": 0,
           "comments": 0
         }
@@ -18952,7 +18962,7 @@
           "title": "From Theory to Practice: Real-World Lessons in Post-Quantum Cryptography Migration",
           "url": "https://ithelp.ithome.com.tw/articles/10401941",
           "publishedAt": "2026-08-07T20:25:53+08:00",
-          "views": 122,
+          "views": 123,
           "likes": 0,
           "comments": 0
         }
@@ -19165,7 +19175,7 @@
       "description": "Claude 有好幾種介面入口，包含 claude.ai、Claude Desktop、Claude Code。在同個模型的情況下，卻能夠以不同方式去使用。\r\n想利用這 30 天，去確認與了解這三個介面該怎麼分工？Claude 現在能執行需求到什麼程度的完整性？\r\n利用我橫跨航太工程、心理學、腦科學的背景，並在處理影像、統計、生理訊號的經驗，嘗試套用同樣任務工作規範給 Claude AI，確認在不同任務上的情境（預計透過 Html 簡易模擬、Python MVP 架構、藍牙串接、個人網頁、股票評分應用程式與自動化部署）個別會遇到什麼困境。",
       "team": null,
       "signupDate": "2026/08/15T22:35:51+08:00",
-      "lastUpdated": "2026-08-17T03:06:52+08:00",
+      "lastUpdated": "2026-08-17T04:08:25+08:00",
       "dayCount": 2,
       "articleCount": 2,
       "subscriptions": 0,
@@ -19186,7 +19196,7 @@
           "title": "Day 02｜三個介面，一套記憶？先搞清楚它到底記得住什麼",
           "url": "https://ithelp.ithome.com.tw/articles/10403332",
           "publishedAt": "2026-08-16T22:31:43+08:00",
-          "views": 46,
+          "views": 47,
           "likes": 0,
           "comments": 0
         }
@@ -19254,7 +19264,7 @@
           "title": "ChatGPT 陪我從 0 打造 LINE Bot-Day1",
           "url": "https://ithelp.ithome.com.tw/articles/10400754",
           "publishedAt": "2026-08-01T12:07:08+08:00",
-          "views": 351,
+          "views": 352,
           "likes": 1,
           "comments": 0
         }
@@ -19283,7 +19293,7 @@
           "title": "DAY1：認識 ChatGPT 與 Codex：AI 開發新搭檔",
           "url": "https://ithelp.ithome.com.tw/articles/10401084",
           "publishedAt": "2026-08-02T22:51:37+08:00",
-          "views": 203,
+          "views": 204,
           "likes": 0,
           "comments": 2
         }
@@ -19312,7 +19322,7 @@
           "title": "# Day 1 — 開場：我為什麼要花 30 天搞懂 Karpenter",
           "url": "https://ithelp.ithome.com.tw/articles/10400854",
           "publishedAt": "2026-08-01T20:14:22+08:00",
-          "views": 286,
+          "views": 287,
           "likes": 0,
           "comments": 0
         }
@@ -19330,7 +19340,7 @@
       "description": "以資料中心 spine‑leaf 架構與 ToR/交換機設定為主題，透過實作題目測試 VXLAN/EVPN、BGP 與 Fabric 配置方式。",
       "team": null,
       "signupDate": "2026/08/06T14:37:36+08:00",
-      "lastUpdated": "2026-08-17T03:05:26+08:00",
+      "lastUpdated": "2026-08-17T04:06:42+08:00",
       "dayCount": 1,
       "articleCount": 1,
       "subscriptions": 0,
@@ -19428,7 +19438,7 @@
           "title": "Day 1｜資料工程不只是 ETL：SQL 背後發生了什麼？",
           "url": "https://ithelp.ithome.com.tw/articles/10403371",
           "publishedAt": "2026-08-17T02:39:45+08:00",
-          "views": 23,
+          "views": 26,
           "likes": 0,
           "comments": 1
         }
@@ -19486,7 +19496,7 @@
           "title": "不偷不搶不賭不嫖，依然不是我們要找的人",
           "url": "https://ithelp.ithome.com.tw/articles/10402842",
           "publishedAt": "2026-08-17T01:44:16+08:00",
-          "views": 24,
+          "views": 25,
           "likes": 0,
           "comments": 1
         }
@@ -19515,7 +19525,7 @@
           "title": "# Day 1｜前端三大框架怎麼選",
           "url": "https://ithelp.ithome.com.tw/articles/10402964",
           "publishedAt": "2026-08-14T18:14:15+08:00",
-          "views": 111,
+          "views": 112,
           "likes": 0,
           "comments": 0
         }
@@ -19660,7 +19670,7 @@
           "title": "Day 1｜得獎之後——我聞到退潮的味道",
           "url": "https://ithelp.ithome.com.tw/articles/10403338",
           "publishedAt": "2026-08-16T22:58:40+08:00",
-          "views": 38,
+          "views": 39,
           "likes": 0,
           "comments": 1
         }
