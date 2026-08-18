@@ -54,7 +54,60 @@ describe("parseSeriesPage", () => {
     expect(s.articleCount).toBe(11);
     expect(s.nextPage).toBeNull();
     expect(s.articles.map((a) => a.day)).toEqual([11]);
-    expect(s.articles[0].title).toBe("Day10：SGLang RVV Attention 後端怎麼接進來");
+    expect(s.articles[0].title).toBe("Day11：SGLang RVV Attention 後端怎麼接進來");
+  });
+
+  test("徽章凍結：標題 Day N 優先於凍結的徽章（帶刺哥 p2 實測）", () => {
+    // iThome 把 p2 整頁徽章塞成「當下參賽天數 12」：DAY 11 + DAY 12×9，
+    // 但標題是 Day 11..Day 20。2026-08-18 帶刺哥 series 9128 實測。
+    const html = `
+<div class="board leftside profile-main">
+  ${Array.from({ length: 10 }, (_, i) => {
+    const day = 11 + i;
+    const badge = i === 0 ? 11 : 12;
+    return `<div class="qa-list profile-list ir-profile-list"><div class="profile-list__condition">
+      <div class="ir-qa-list__status"><span class="ir-qa-list__days ir-qa-list__days--profile ir-qa-list__days--fail">DAY ${badge}</span></div>
+      <h3 class="qa-list__title"><a href="https://ithelp.ithome.com.tw/articles/${10403000 + day}" class="qa-list__title-link">Day ${day}｜標題 ${day}</a></h3>
+      <div class="qa-list__info"><a title="2026-08-${String(day).padStart(2, "0")} 12:00:00" class="qa-list__info-time"></a></div>
+    </div></div>`;
+  }).join("\n")}
+  <div class="profile-pagination"><ul class="pager"><li class="disabled"><span>下一頁</span></li></ul></div>
+</div>`;
+    const s = parseSeriesPage(html);
+    expect(s.articles.map((a) => a.day)).toEqual([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+  });
+
+  test("徽章凍結：無標題 Day 前綴時頁內連續性修正（fishbob 實測）", () => {
+    // 徽章 1,1,2,3,4,5,6 對應標題 D01..D07（無「Day N」前綴）：
+    // 第一筆用徽章 1，後續徽章 <= 上一篇 → 續接。2026-08-18 fishbob series 9176 實測。
+    const titles = ["D01 一個沒有維運團隊的我", "D02 AI 的記憶會過期", "D03 網域 DNS", "Day 04 裝完系統", "D05 我的機台", "D06 把路由器做成一台VM", "D07 建立範本"];
+    const badges = [1, 1, 2, 3, 4, 5, 6];
+    const html = `
+<div class="board leftside profile-main">
+  ${titles.map((t, i) => `<div class="qa-list profile-list ir-profile-list"><div class="profile-list__condition">
+      <div class="ir-qa-list__status"><span class="ir-qa-list__days ir-qa-list__days--profile">DAY ${badges[i]} </span></div>
+      <h3 class="qa-list__title"><a href="https://ithelp.ithome.com.tw/articles/${10401879 + i}" class="qa-list__title-link">${t}</a></h3>
+      <div class="qa-list__info"><a title="2026-08-0${i + 1} 12:00:00" class="qa-list__info-time"></a></div>
+    </div></div>`).join("\n")}
+  <div class="profile-pagination"><ul class="pager"><li class="disabled"><span>下一頁</span></li></ul></div>
+</div>`;
+    const s = parseSeriesPage(html);
+    expect(s.articles.map((a) => a.day)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+  });
+
+  test("徽章無數字（只有 DAY 文字）不產生 NaN", () => {
+    // fishbob 某些頁面徽章 span 內只有「DAY」沒有數字 → 回退標題 Day 前綴。
+    const html = `
+<div class="board leftside profile-main">
+  <div class="qa-list profile-list ir-profile-list"><div class="profile-list__condition">
+    <div class="ir-qa-list__status"><span class="ir-qa-list__days ir-qa-list__days--profile">DAY</span></div>
+    <h3 class="qa-list__title"><a href="https://ithelp.ithome.com.tw/articles/10404001" class="qa-list__title-link">Day 7｜無數徽章測試</a></h3>
+    <div class="qa-list__info"><a title="2026-08-07 12:00:00" class="qa-list__info-time"></a></div>
+  </div></div>
+  <div class="profile-pagination"><ul class="pager"><li class="disabled"><span>下一頁</span></li></ul></div>
+</div>`;
+    const s = parseSeriesPage(html);
+    expect(s.articles[0].day).toBe(7);
   });
 });
 
@@ -105,7 +158,7 @@ function page2Html(): string {
       <a class="qa-condition"><span class="qa-condition__count">0</span><span class="qa-condition__text">瀏覽</span></a>
       <div class="profile-list__content">
         <div class="ir-qa-list__status"><span class="ir-qa-list__days ir-qa-list__days--profile">DAY 11 </span></div>
-        <h3 class="qa-list__title"><a href="https://ithelp.ithome.com.tw/articles/10402381" class="qa-list__title-link">Day10：SGLang RVV Attention 後端怎麼接進來</a></h3>
+        <h3 class="qa-list__title"><a href="https://ithelp.ithome.com.tw/articles/10402381" class="qa-list__title-link">Day11：SGLang RVV Attention 後端怎麼接進來</a></h3>
         <div class="qa-list__info"><a title="2026-08-11 07:41:43" class="qa-list__info-time">2026-08-11</a></div>
       </div>
     </div>

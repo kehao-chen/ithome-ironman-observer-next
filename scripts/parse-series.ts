@@ -44,9 +44,27 @@ export function parseSeriesPage(html: string): SeriesPage {
     const views = Number(stats.find((x) => x[2] === "瀏覽")?.[1] ?? 0);
     const likes = Number(stats.find((x) => x[2] === "Like")?.[1] ?? 0);
     const comments = Number(stats.find((x) => x[2] === "留言")?.[1] ?? 0);
-    const day = Number(b.match(/ir-qa-list__days[^>]*>\s*DAY\s*(\d+)/)?.[1]
-      ?? Number(b.match(/DAY\s*(\d+)/)?.[1]
-        ?? Number(title.match(/Day (\d+)/)?.[1] ?? 0)));
+    // day 來源優先序：標題「Day N」前綴（作者自己寫的，最準）→ DAY 徽章 →
+    // 通用 DAY 文字。2026-08-18 實測：iThome 分頁第 2 頁起的徽章會凍結在
+    // 當下參賽天數（帶刺哥 30 篇全標 DAY 12、shaoyukao 18 篇第 17/18 篇標 DAY 16），
+    // 標題才是真正的第幾篇。徽章只在標題無 Day 前綴時當 fallback。
+    // 注意：某些頁面徽章 span 內只有「DAY」沒有數字（fishbob 實測）——此時
+    // regex1 拿不到數字、regex2 吃到「DAY 04」標題 → 數字型別是 number 但值可能
+    // NaN（`Number(undefined ?? Number(...))`），必須先驗 NaN 再回退。
+    const titleDay = Number(title.match(/Day\s*(\d+)/)?.[1]);
+    let day: number = titleDay;
+    if (!day) {
+      const badge = b.match(/ir-qa-list__days[^>]*>\s*DAY\s*(\d+)/)?.[1]
+        ?? b.match(/DAY\s*(\d+)/)?.[1];
+      day = badge ? Number(badge) : 0;
+    }
+    // 頁內連續性修正：同一頁內徽章重複（iThome 把整頁塞成同一個「當下天數」，
+    // 例如 fishbob 7 篇標 1,1,2,3,4,5,6、twbrian 6 篇標 1..5,5），且標題無 Day 前綴時
+    // 用「上一篇 + 1」續接。每頁第一篇不修正（延續上一頁）。
+    if (!titleDay && articles.length > 0) {
+      const prev = articles[articles.length - 1].day;
+      if (day <= prev) day = prev + 1;
+    }
     articles.push({
       id, day, title, url: `https://ithelp.ithome.com.tw/articles/${id}`,
       publishedAt: publishedAt.replace(" ", "T") + "+08:00",
