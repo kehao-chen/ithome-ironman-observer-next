@@ -9,9 +9,13 @@
 > - 卡片顯示邏輯已收斂到 `web/src/lib/card.ts`：SSR `SeriesCard.astro` 與 client `renderCard`/`renderRow` 共用同一 view-model（`cardViewModel`），降低 drift 風險。
 > - `web/public/lighthouse-report.html` 已移至 `docs/`（不再部署）。
 
-> **2026-08-11 更新（本段為最新，優先於上段）**
-> - 測試：`bun test` 現為 **219 pass**（16 files，含新增 `web/src/lib/format.test.ts` 7 個）。
-> - 資料：2026 系列數 **170** / 17 組別（報名期間持續增加中）；未開賽 44 支。
+> **2026-08-18 更新（本段為最新，優先於上段）**
+> - 測試：`bun test` 現為 **250 pass**（18 files，0 fail；root 已補 `happy-dom` devDep，DOM 契約測試可直接跑）。
+> - 資料：2026 系列數 **241** / 17 組別（報名期間持續增加中）；有文章 177 支、未開賽 64 支（2026-08-18 快照）。
+> - **設計系統已落地**（原已知問題 #1 確認修復，文件過時已更新）：`web/src/styles/design-system.css`（1313 行）三頁面統一 inline 引入，token 由 `.impeccable/design.json` 定義；Dashboard/SeriesCard/Teams 無殘留硬編碼 inline style（僅剩 `var(--space-4)` 等 token 用法）；card/teams 結構契約測試鎖 DOM 骨架。
+> - **DAY 資料正確性修復**（scraper）：
+>   - `parse-series.ts`：day 優先序改為標題 `Day N` 前綴 → DAY 徽章（iThome 分頁第 2 頁起徽章凍結在當下參賽天數：帶刺哥 30 篇全標 DAY 12、shaoyukao 第 17/18 篇標 DAY 16、fishbob 1,1,2,3,4,5,6）；徽章無數字不產生 NaN；同頁徽章重複且無標題前綴時續接（+1）。救回 10 支系列。
+>   - `scrape.ts`：`dayCount` 語意改為「標頭 vs 實際去重 DAY 數取較大」（常態 = 上游「參賽天數」；標頭凍結/矛盾時以 `min(去重 day 數, 文章數)` 覆蓋；已刪文系列維持標頭值）。alanliang/jackietung/c8763yee 標題無 Day 前綴 + 上游徽章壞（無法用 parser 救）的系列，dayCount 現在反映實際文章數。
 > - 時間顯示格式已統一（原已知問題 #5 修復）：`web/src/lib/format.ts` 提供 `tzTime`/`isoInitial`，SSR（SeriesCard.astro / Dashboard.astro frontmatter）與 client（Dashboard humanizeAll / card-dom）共用；絕對時間固定 `Asia/Taipei`（不再依賴瀏覽器時區），相對時間維持「剛剛/N 分鐘前/N 小時前/昨天」。
 > - Roadmap 全數完成（含 badge enhancements / real-time 近即時已定案為架構終點）；PRODUCT.md 已同步。
 
@@ -22,7 +26,7 @@
 | 線上站 | https://ithome-ironman-observer.happyhacking.ninja/ |
 | 後備網址 | https://ironman-observer-next.pages.dev/ |
 | GitHub | https://github.com/kehao-chen/ithome-ironman-observer-next |
-| 資料 | 170 支系列 / 17 組別（2026-08-11，報名持續增加中） |
+| 資料 | 241 支系列 / 17 組別（2026-08-18，報名持續增加中） |
 | 排程 | Cloudflare Worker cron 每 10 分鐘 → `workflow_dispatch`（144 次/天；public repo 的 GitHub-hosted runner 免費且不計分鐘） |
 | 部署鏈 | 全自動，最後一次手動驗證 run 30978443677 全綠 |
 
@@ -63,16 +67,14 @@ GH Actions (.github/workflows/scheduled-update.yml)
 | `.github/workflows/scheduled-update.yml` | workflow（僅 `workflow_dispatch`；原 `schedule` 已移除，由 Worker 觸發）；secrets: `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` |
 | `worker/` | Cloudflare Worker `ironman-observer-trigger`（cron `*/10 * * * *`）：`scheduled()` 打 `workflow_dispatch`，依 `run_number` 去重避免重疊；`GET /` 健康檢查、`POST /dispatch` 手動觸發；secrets: `GITHUB_TOKEN`（Actions:write PAT）、`GITHUB_REPO` |
 
-## 已知問題 / UI/UX 改版候選（新 session 討論起點）
+## 已知問題 / 改版候選（2026-08-18 更新）
 
-1. **整體視覺**：全 inline style、暗色主題、無設計系統。使用者已表達「UI/UX 整體蠻糟」。
-2. **DAY badge 不一致**：static `SeriesCard.astro` 對 `尚未開賽`（dayCount 0）顯示 `DAY ?`，client `renderCard` 顯示 `尚未開賽`。改版時統一（client 渲染會蓋過 static，所以實際使用者看到的是 client 版）。
-3. **`尚未開賽` 30 系列**：顯示上只有 badge 差異，卡片其餘欄位（無文章）較空。
-4. **filter 按鈕的 placeholder style**：2026-08-05 UI 改版 plan 遺留 `style="..."`（字面值），一直沒補。改版時自然處理。
-5. **更新時間格式**：`updatedAt` 是 `"YYYY-MM-DD HH:mm:ss+08:00"`（空格分隔、無毫秒），`lastUpdated`/`publishedAt` 是 `T` 分隔 ISO。兩者格式不統一（display-only，`<time datetime>` 兩種都吃）。
-6. **排序語意**：「最新發布」目前是 `articles` 最後一筆的 `publishedAt`（= 最新 Day）；「最多觀看」是該系列全部文章 views 總和。若有更好的定義（如當日新增文章數）可在改版討論。
-7. **群組「ChatGPT & Codex」**：entity 已解碼為正確 `&`，確認 UI 顯示正常即可。
-8. **零文章系列 30 支**：`articleCount === 0`（尚未開賽），篩選/排序時會混在最後。
+> 原 8 項已全數解決或收斂：設計系統落地（#1）、DAY badge 統一（#2）、未開賽卡片改善（#3）、filter placeholder（#4）、時間格式統一（#5）、排序語意維持（#6，見下）、ChatGPT & Codex entity（#7）、零文章系列沉底（#8，見下）。
+
+1. **排序語意**（原 #6，維持現行定義）：「最新發布」= `articles` 最後一筆的 `publishedAt`（= 最新 Day）；「最多觀看」= 該系列全部文章 views 總和。若想改定義（如當日新增文章數）可再討論，非 bug。
+2. **零文章系列沉底**（原 #8）：`articleCount === 0`（尚未開賽）篩選/排序時混在最後，有意為之。
+3. **上游 day 資料無法完全修復**：alanliang（26 篇標頭 16）、jackietung（11 篇標頭 10）、c8763yee（11 篇標頭 10）標題無 `Day N` 前綴且 iThome 徽章本身壞 → parser 無法還原每篇的 day；`dayCount` 已改為反映實際文章數（min(去重 day, 文章數)），但單篇 day 欄位仍與真實第幾篇有偏差。
+4. **已刪文系列 3 支**（dayCount>0 且 0 篇）：芥龍（day 13）、stca（day 8）、因田木（day 4）——卡片顯示「文章已全數刪除」，維持判別式 `dayCount > 0 && articleCount === 0`。
 
 ### 多年度（2026-08-06 新增，Task 1–6 實作）
 
@@ -86,7 +88,7 @@ GH Actions (.github/workflows/scheduled-update.yml)
 ## 驗證標準（改版後必跑）
 
 ```bash
-bun test                    # 目前 219 pass：scraper 單元測試 + web lib/components 測試（含 format/daily-status/filter/search/favorites/insights/card/card-dom）
+bun test                    # 目前 250 pass：scraper 單元測試 + web lib/components 測試（含 format/daily-status/filter/search/favorites/insights/card/card-dom/teams）
 bunx tsc --noEmit           # 全專案型別乾淨
 cd web && bun run build     # Astro build 成功，dist/ 產出
 ```

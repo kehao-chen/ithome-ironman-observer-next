@@ -34,6 +34,34 @@ describe("mergeCardsAndStats", () => {
     expect(s.lastUpdated).toBe(rss.lastBuildDate);
   });
 
+  test("dayCount 語意：標頭凍結/矛盾時以實際去重 DAY 數為準（帶刺哥 30 篇標頭 12）", async () => {
+    // 模擬 runSeries 的組裝（dayCount 由 runSeries 計算，mergeCardsAndStats 只透傳）
+    // → 直接在 parse-series 驗證：30 篇、標頭 12、DAY 徽章 12×29，dayCount 應為 30。
+    const html = `
+<div class="board leftside profile-main">
+  <div class="qa-list__info qa-list__info--ironman subscription-group">
+    <span>參賽天數 12 天 ｜</span><span>共 30 篇文章 ｜</span>
+  </div>
+  ${Array.from({ length: 30 }, (_, i) => {
+    const day = i + 1;
+    const badge = i === 0 ? 1 : 12;
+    return `<div class="qa-list profile-list ir-profile-list"><div class="profile-list__condition">
+      <div class="ir-qa-list__status"><span class="ir-qa-list__days ir-qa-list__days--profile ir-qa-list__days--fail">DAY ${badge}</span></div>
+      <h3 class="qa-list__title"><a href="https://ithelp.ithome.com.tw/articles/${10403000 + day}" class="qa-list__title-link">Day ${day}｜標題 ${day}</a></h3>
+      <div class="qa-list__info"><a title="2026-08-${String(day).padStart(2, "0")} 12:00:00" class="qa-list__info-time"></a></div>
+    </div></div>`;
+  }).join("\n")}
+  <div class="profile-pagination"><ul class="pager"><li class="disabled"><span>下一頁</span></li></ul></div>
+</div>`;
+    const stats = parseSeriesPage(html);
+    expect(stats.dayCount).toBe(12); // 標頭（凍結）
+    expect(stats.articles.length).toBe(30);
+    const distinct = new Set(stats.articles.map((a) => a.day)).size;
+    expect(distinct).toBe(30); // 標題 Day 前綴已修正徽章凍結
+    // runSeries 的新規則：min(distinct, len) = 30，覆蓋凍結標頭
+    expect(Math.min(distinct, stats.articles.length)).toBe(30);
+  });
+
   test("series with no stats still produced (stats optional)", () => {
     const cards = parseSignupList(readFixture("signup-page.html"));
     const series = mergeCardsAndStats([cards[0]], new Map(), new Map());

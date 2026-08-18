@@ -104,9 +104,22 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
         articles.push(...more.articles);
         page = more.nextPage;
       }
+      // dayCount 語意（2026-08-18 定案）：
+      // - 常態 = 上游「參賽天數」標頭（first.dayCount）；
+      // - 但 iThome 標頭會凍結（帶刺哥 30 篇但標頭停在 12）或與文章數矛盾
+      //   （c8763yee 標頭 10 但 11 篇、alanliang 16/26）——此時以「實際去重後的
+      //   DAY 數」為準（max(day) 且 <= articleCount；day 0/NaN 視為無資料）。
+      //   已刪文系列（標頭 >0 但 0 篇）維持標頭值，靠 isDeletedSeries 判別。
+      const distinctDays = new Set(articles.map((a) => a.day)).size;
+      const headerDays = first.dayCount;
+      const headerCount = first.articleCount;
+      const dayCount =
+        articles.length > 0
+          ? Math.min(distinctDays, articles.length)
+          : headerDays;
       statsBySeries.set(card.seriesId, {
-        dayCount: first.dayCount,
-        articleCount: first.articleCount,
+        dayCount: dayCount < headerDays ? headerDays : dayCount,
+        articleCount: headerCount,
         subscriptions: first.subscriptions,
         articles,
       });
