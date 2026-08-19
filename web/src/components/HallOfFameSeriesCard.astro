@@ -1,0 +1,56 @@
+---
+// web/src/components/HallOfFameSeriesCard.astro — 名人堂 read-only 系列卡（SSR 層）。
+// 顯示決定全部委派給 cardViewModel（web/src/lib/card.ts）——與 client 的 buildReadOnlyCard
+// （hall-of-fame-dom.ts）共用同一 view-model，兩層結構由 hall-of-fame-dom.test.ts 鎖定對齊。
+// read-only：無收藏按鈕、無 RSS 按鈕（名人堂無 Dashboard 的 fav/RSS infrastructure，dead controls 禁止）。
+import type { Series } from "../../../scripts/types";
+import { cardViewModel, type ViewSeries } from "../lib/card";
+import { isoInitial } from "../lib/format";
+import { safeHref } from "../lib/hall-of-fame";
+
+interface Props { series: Series; today?: string }
+const { series } = Astro.props;
+const v = cardViewModel(series as ViewSeries, Astro.props.today);
+const seriesHref = safeHref(v.seriesUrl);
+const profileHref = safeHref(v.profileUrl);
+const latestHref = v.latest ? safeHref(v.latest.url) : null;
+---
+
+<article class="series-card">
+  <header class="card-head">
+    <span class="card-head-left">
+      <span class={v.badgeClass}>{v.badgeText}</span>
+      {v.chipText ? <span class={v.chipClass} title={v.chipTitle ?? undefined}>{v.chipText}</span> : null}
+    </span>
+    <div class="card-head-right">
+      <span class="card-stat tabular-nums">{v.totalViews.toLocaleString()} 瀏覽</span>
+    </div>
+  </header>
+  <div class="progress">
+    <div class="progress-track"><div class={v.progressFillClass} style={`width:${v.progressPct}%`}></div></div>
+    <span class="progress-label tabular-nums">{v.progressLabel}</span>
+  </div>
+  <h2 class="card-title">
+    {seriesHref ? <a href={seriesHref} target="_blank" rel="noopener">{series.title}</a> : <span class="card-title-plain">{series.title}</span>}
+  </h2>
+  <p class="meta">
+    {profileHref ? <a class="meta-author" href={profileHref} target="_blank" rel="noopener">{series.user.name}</a> : <span class="meta-author">{series.user.name}</span>}
+    <span class="meta-sep">·</span>{series.group}{series.team ? <><span class="meta-sep">·</span>團隊 {series.team}</> : null}
+  </p>
+  {v.latest ? (
+    <div class="latest">
+      {latestHref ? (
+        <a class="latest-link" href={latestHref} target="_blank" rel="noopener">
+          <span class="latest-tag">最新</span>{v.latest.title}
+        </a>
+      ) : <span class="latest-link muted">{v.latest.title}</span>}
+      <span class="latest-views tabular-nums">
+        <svg class="ico-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>
+        {v.latest.views.toLocaleString()} 當篇觀看
+      </span>
+    </div>
+  ) : <p class="latest"><span class="latest-link muted">{v.emptySlotText}</span></p>}
+  {v.updatedIso ? (
+    <p class="updated">上次發布 <time datetime={v.updatedIso} data-ts={v.updatedIso}>{isoInitial(v.updatedIso)}</time></p>
+  ) : null}
+</article>
