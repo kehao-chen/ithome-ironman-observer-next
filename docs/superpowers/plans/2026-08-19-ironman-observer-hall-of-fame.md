@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - 所有使用者/名人資料一律 `textContent` 渲染，**禁 `innerHTML`**（XSS 契約）。
-- 外連 URL 一律過 `isSafeUrl`（§hall-of-fame.ts：`trim` 檢查 + `^https?:\/\//i` + `new URL().protocol`）；`HTTPS://` 接受（scheme 大小寫合法語意）；拒絕 `javascript:`/`data:`/protocol-relative/省略斜線/相對路徑/空值/前後空白。
+- 外連 URL 一律過 `safeHref`（`hall-of-fame.ts`：`isSafeUrl` + 回傳 URL/null）：合法 → `<a href>`；不合法 → **純文字 span（無 href）**。`HTTPS://` 接受（scheme 大小寫合法語意）；拒絕 `javascript:`/`data:`/protocol-relative/省略斜線/相對路徑/空值/前後空白。套用於：credentials URL、profile 連結、`cardViewModel` 的 `seriesUrl`/`latest.url`。
 - profile URL 統一為完整絕對 URL `https://ithelp.ithome.com.tw/users/{id}`（`cardViewModel.profileUrl` 已是此格式；`user.profileUrl` 不直接作 href）。
 - 系列卡 read-only：**無收藏按鈕、無 RSS 按鈕**（dead controls 禁止）。
 - 系列列表跟隨年度切換（client 年度切換 fetch 完整 `data/{year}.json`，**不 re-compact**——比照 Dashboard `loadYear`）。
@@ -39,6 +39,7 @@
   - `function loadFamousAuthors(): FamousEntry[]` —— 讀 JSON，object key 轉 `number` 進 `entry.id`
   - `function matchFamousAuthors(entries: FamousEntry[], data: YearData & { series: ViewSeries[] }): FamousRow[]` —— `entry.id ∈ series.user.id` join；無系列排除；依 `totalViews` desc 排序
   - `function isSafeUrl(url: string): boolean` —— 嚴格格式檢查 + parser protocol 驗證
+  - `function safeHref(url: string): string | null` —— `isSafeUrl(url) ? url : null`（renderer 共用：不合法 → 不產生 href，改純文字）
 
 - [ ] **Step 1: 建立名人清單 JSON**
 
@@ -66,7 +67,7 @@
 
 ```ts
 import { describe, expect, test } from "bun:test";
-import { loadFamousAuthors, matchFamousAuthors, isSafeUrl } from "./hall-of-fame";
+import { loadFamousAuthors, matchFamousAuthors, isSafeUrl, safeHref } from "./hall-of-fame";
 import type { Series, YearData } from "../../../scripts/types";
 import realData from "../../../data/2026.json";
 
@@ -186,6 +187,11 @@ describe("isSafeUrl", () => {
     expect(isSafeUrl("")).toBe(false);
     expect(isSafeUrl("  https://x  ")).toBe(false);
   });
+  test("safeHref：合法回傳原 URL，不合法回傳 null", () => {
+    expect(safeHref("https://example.com")).toBe("https://example.com");
+    expect(safeHref("javascript:alert(1)")).toBeNull();
+    expect(safeHref("")).toBeNull();
+  });
 });
 ```
 
@@ -233,6 +239,11 @@ export function isSafeUrl(url: string): boolean {
   } catch {
     return false;   // 拒絕 protocol-relative（無 base 即 throw）與 malformed
   }
+}
+
+// renderer 共用：不合法 URL → null（不產生 href，改純文字）。
+export function safeHref(url: string): string | null {
+  return isSafeUrl(url) ? url : null;
 }
 
 // 讀 JSON 名單，object key（string）轉 number 進 entry.id。
@@ -357,6 +368,23 @@ describe("buildReadOnlyCard", () => {
     expect(upd).not.toBeNull();
     expect(upd!.getAttribute("datetime")).toBe("2026-08-19T10:00:00+08:00");
   });
+
+  test("不安全 URL → 不產生 href（純文字）", () => {
+    const s = {
+      ...sampleSeries(),
+      user: { id: 20065770, name: "高見龍", profileUrl: "javascript:alert(1)" },
+    };
+    const el = buildReadOnlyCard(s, "2026-08-19");
+    // 無任何 a[href] 是 javascript: 或空 href
+    el.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((a) => {
+      expect(a.href.startsWith("javascript:")).toBe(false);
+      expect(a.getAttribute("href")).not.toBe("");
+    });
+    // meta-author 改純文字 span（非 a）
+    const au = el.querySelector(".meta-author")!;
+    expect(au.tagName).not.toBe("A");
+    expect(au.textContent).toBe("高見龍");
+  });
 });
 ```
 
@@ -378,6 +406,7 @@ import type { ViewSeries } from "./card";
 import { cardViewModel } from "./card";
 import { buildChip } from "./card-dom";
 import { isoInitial } from "./format";
+import { safeHref } from "./hall-of-fame";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -429,22 +458,42 @@ export function buildReadOnlyCard(s: ViewSeries, today: string): HTMLElement {
   prog.append(track, pl);
 
   const h = document.createElement("h2"); h.className = "card-title";
-  const a = document.createElement("a"); a.href = v.seriesUrl; a.target = "_blank"; a.rel = "noopener"; a.textContent = s.title;
-  h.appendChild(a);
+  const href = safeHref(v.seriesUrl);
+  if (href) {
+    const a = document.createElement("a"); a.href = href; a.target = "_blank"; a.rel = "noopener"; a.textContent = s.title;
+    h.appendChild(a);
+  } else {
+    const span = document.createElement("span"); span.className = "card-title-plain"; span.textContent = s.title;
+    h.appendChild(span);
+  }
 
   const meta = document.createElement("p"); meta.className = "meta";
-  const au = document.createElement("a"); au.className = "meta-author"; au.href = v.profileUrl; au.target = "_blank"; au.rel = "noopener"; au.textContent = s.user.name;
-  meta.append(au, " · ", s.group, s.team ? ` · 團隊 ${s.team}` : "");
+  const auHref = safeHref(v.profileUrl);
+  if (auHref) {
+    const au = document.createElement("a"); au.className = "meta-author"; au.href = auHref; au.target = "_blank"; au.rel = "noopener"; au.textContent = s.user.name;
+    meta.appendChild(au);
+  } else {
+    const span = document.createElement("span"); span.className = "meta-author"; span.textContent = s.user.name;
+    meta.appendChild(span);
+  }
+  meta.append(" · ", s.group, s.team ? ` · 團隊 ${s.team}` : "");
 
   const lat = document.createElement(v.latest ? "div" : "p"); lat.className = "latest";
   if (v.latest) {
-    const la = document.createElement("a"); la.className = "latest-link"; la.href = v.latest.url; la.target = "_blank"; la.rel = "noopener";
-    const tag = document.createElement("span"); tag.className = "latest-tag"; tag.textContent = "最新";
-    la.append(tag, v.latest.title);
+    const laHref = safeHref(v.latest.url);
+    if (laHref) {
+      const la = document.createElement("a"); la.className = "latest-link"; la.href = laHref; la.target = "_blank"; la.rel = "noopener";
+      const tag = document.createElement("span"); tag.className = "latest-tag"; tag.textContent = "最新";
+      la.append(tag, v.latest.title);
+      lat.appendChild(la);
+    } else {
+      const span = document.createElement("span"); span.className = "latest-link muted"; span.textContent = v.latest.title;
+      lat.appendChild(span);
+    }
     const lv = document.createElement("span"); lv.className = "latest-views tabular-nums";
     lv.appendChild(eyeIcon());
     lv.appendChild(document.createTextNode(`${v.latest.views.toLocaleString()} 當篇觀看`));
-    lat.append(la, lv);
+    lat.append(lv);
   } else {
     const span = document.createElement("span"); span.className = "latest-link muted"; span.textContent = v.emptySlotText;
     lat.appendChild(span);
@@ -497,10 +546,14 @@ git commit -m "feat: 名人堂 client read-only 卡片 renderer + DOM 契約測�
 import type { Series } from "../../../scripts/types";
 import { cardViewModel, type ViewSeries } from "../lib/card";
 import { isoInitial } from "../lib/format";
+import { safeHref } from "../lib/hall-of-fame";
 
 interface Props { series: Series; today?: string }
 const { series } = Astro.props;
 const v = cardViewModel(series as ViewSeries, Astro.props.today);
+const seriesHref = safeHref(v.seriesUrl);
+const profileHref = safeHref(v.profileUrl);
+const latestHref = v.latest ? safeHref(v.latest.url) : null;
 ---
 
 <article class="series-card">
@@ -517,16 +570,20 @@ const v = cardViewModel(series as ViewSeries, Astro.props.today);
     <div class="progress-track"><div class={v.progressFillClass} style={`width:${v.progressPct}%`}></div></div>
     <span class="progress-label tabular-nums">{v.progressLabel}</span>
   </div>
-  <h2 class="card-title"><a href={v.seriesUrl} target="_blank" rel="noopener">{series.title}</a></h2>
+  <h2 class="card-title">
+    {seriesHref ? <a href={seriesHref} target="_blank" rel="noopener">{series.title}</a> : <span class="card-title-plain">{series.title}</span>}
+  </h2>
   <p class="meta">
-    <a class="meta-author" href={v.profileUrl} target="_blank" rel="noopener">{series.user.name}</a>
+    {profileHref ? <a class="meta-author" href={profileHref} target="_blank" rel="noopener">{series.user.name}</a> : <span class="meta-author">{series.user.name}</span>}
     <span class="meta-sep">·</span>{series.group}{series.team ? <><span class="meta-sep">·</span>團隊 {series.team}</> : null}
   </p>
   {v.latest ? (
     <div class="latest">
-      <a class="latest-link" href={v.latest.url} target="_blank" rel="noopener">
-        <span class="latest-tag">最新</span>{v.latest.title}
-      </a>
+      {latestHref ? (
+        <a class="latest-link" href={latestHref} target="_blank" rel="noopener">
+          <span class="latest-tag">最新</span>{v.latest.title}
+        </a>
+      ) : <span class="latest-link muted">{v.latest.title}</span>}
       <span class="latest-views tabular-nums">
         <svg class="ico-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>
         {v.latest.views.toLocaleString()} 當篇觀看
@@ -543,7 +600,7 @@ const v = cardViewModel(series as ViewSeries, Astro.props.today);
 
 - [ ] **Step 2: SSR/client 對齊驗證（改由 build 輸出驗證，非單元測試）**
 
-Astro 5 無公開 `render()` API（`astro` package 不 export component render 工具），元件輸出不適合在 Bun test 直接呼叫。SSR/client 對齊改由 **Task 4 Step 7 的 build 輸出檢查**承擔：`dist/hall-of-fame/index.html` 不含 `card-fav`/`data-rss`、含 `card-stat`/`hof-card`、含「高見龍」。兩層共用同一 `cardViewModel`（顯示決定單一來源），結構差異由 view-model 契約保證；`HallOfFameSeriesCard.astro` 的 markup 明確 mirror `SeriesCard.astro`（僅 `card-head-right` 少 fav/RSS）。
+Astro 5 無公開 `render()` API（`astro` package 不 export component render 工具），元件輸出不適合在 Bun test 直接呼叫。SSR/client 對齊改由 **Task 4 Step 7 的 build 輸出結構 checks** 承擔（`series-card`/`card-head`/`card-head-left`/`card-head-right`/`card-stat`/`progress`/`progress-track`/`progress-label`/`card-title`/`meta`/`meta-author`/`latest`/`latest-tag`/`latest-views` 皆存在、無 `card-fav`/`data-rss`、無不安全 href）。兩層共用同一 `cardViewModel`（顯示決定單一來源），`HallOfFameSeriesCard.astro` 的 markup 明確 mirror `buildReadOnlyCard`（僅 `card-head-right` 少 fav/RSS）。
 
 > 若未來要程式化對齊測試，可將 `HallOfFameSeriesCard` 的 markup 抽成純函式（回傳 HTML string）供 SSR 與測試共用——本 plan 不引入（YAGNI）。
 
@@ -635,13 +692,14 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
 import type { YearData } from "../../../scripts/types";
 import { matchFamousAuthors, loadFamousAuthors } from "../lib/hall-of-fame";
 import { isoInitial } from "../lib/format";
+import { taipeiToday } from "../lib/daily-status";
 import HallOfFameSeriesCard from "./HallOfFameSeriesCard.astro";
 
 interface Props { data: YearData; years: number[]; latestYear: number }
 const { data, years, latestYear } = Astro.props;
 
-// SSR 用 build 時點臺北日（與 cardViewModel(s, today) 同模式；client 首輪以 runtime today 覆蓋）。
-const today = new Date().toISOString().slice(0, 10);
+// SSR 用 build 時點臺北日（taipeiToday——與 client 同基準；禁止 UTC 日期）。
+const today = taipeiToday();
 const entries = loadFamousAuthors();
 const rows = matchFamousAuthors(entries, data);
 const updatedAtFallback = isoInitial(data.updatedAt);
@@ -701,9 +759,10 @@ const updatedAtFallback = isoInitial(data.updatedAt);
         </header>
         <p class="hof-bio">{row.entry.bio}</p>
         <ul class="hof-credentials">
-          {row.entry.credentials.map((c) => (
-            <li><a href={c.url} target="_blank" rel="noopener">{c.label}</a></li>
-          ))}
+          {row.entry.credentials.map((c) => {
+            const href = isSafeUrl(c.url) ? c.url : null;
+            return <li>{href ? <a href={href} target="_blank" rel="noopener">{c.label}</a> : <span class="hof-cred-plain">{c.label}</span>}</li>;
+          })}
         </ul>
         <h3 class="hof-series-title">{data.year} 系列</h3>
         <div class="hof-series">
@@ -718,13 +777,13 @@ const updatedAtFallback = isoInitial(data.updatedAt);
   </div>
 </main>
 
-<script is:inline define:vars={{ initialData: data, initialRows: rows }}>
+<script is:inline define:vars={{ initialData: data }}>
   window.HOF_DATA = initialData;
 </script>
 
 <script>
   import { taipeiToday } from "../lib/daily-status";
-  import { matchFamousAuthors, loadFamousAuthors } from "../lib/hall-of-fame";
+  import { matchFamousAuthors, loadFamousAuthors, isSafeUrl } from "../lib/hall-of-fame";
   import { buildReadOnlyCard } from "../lib/hall-of-fame-dom";
   import type { YearData } from "../../../scripts/types";
 
@@ -757,12 +816,20 @@ const updatedAtFallback = isoInitial(data.updatedAt);
       head.className = "hof-card-head";
       const name = document.createElement("h2");
       name.className = "hof-name";
-      const nameLink = document.createElement("a");
-      nameLink.className = "meta-author";
-      nameLink.href = `https://ithelp.ithome.com.tw/users/${row.entry.id}`;
-      nameLink.target = "_blank"; nameLink.rel = "noopener";
-      nameLink.textContent = row.entry.name;
-      name.appendChild(nameLink);
+      const profileHref = `https://ithelp.ithome.com.tw/users/${row.entry.id}`;
+      if (isSafeUrl(profileHref)) {
+        const nameLink = document.createElement("a");
+        nameLink.className = "meta-author";
+        nameLink.href = profileHref;
+        nameLink.target = "_blank"; nameLink.rel = "noopener";
+        nameLink.textContent = row.entry.name;
+        name.appendChild(nameLink);
+      } else {
+        const span = document.createElement("span");
+        span.className = "meta-author";
+        span.textContent = row.entry.name;
+        name.appendChild(span);
+      }
       const cats = document.createElement("span");
       cats.className = "hof-categories";
       for (const c of row.entry.categories) {
@@ -780,10 +847,17 @@ const updatedAtFallback = isoInitial(data.updatedAt);
       creds.className = "hof-credentials";
       for (const c of row.entry.credentials) {
         const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = c.url; a.target = "_blank"; a.rel = "noopener";
-        a.textContent = c.label;
-        li.appendChild(a);
+        if (isSafeUrl(c.url)) {
+          const a = document.createElement("a");
+          a.href = c.url; a.target = "_blank"; a.rel = "noopener";
+          a.textContent = c.label;
+          li.appendChild(a);
+        } else {
+          const span = document.createElement("span");
+          span.className = "hof-cred-plain";
+          span.textContent = c.label;
+          li.appendChild(span);
+        }
         creds.appendChild(li);
       }
 
@@ -829,7 +903,7 @@ const updatedAtFallback = isoInitial(data.updatedAt);
 </script>
 ```
 
-> 注意：`initialRows` 未使用（client 一律重跑 `matchFamousAuthors` + `buildReadOnlyCard`——SSR 用 `HallOfFameSeriesCard.astro`、client 用 `buildReadOnlyCard`，兩層同 view-model）。`define:vars` 只傳 `initialData`。若 Astro 對 `define:vars` 傳非 serializable 物件報錯，僅傳 `initialData` 即可。
+> 注意：client 一律重跑 `matchFamousAuthors` + `buildReadOnlyCard`——SSR 用 `HallOfFameSeriesCard.astro`、client 用 `buildReadOnlyCard`，兩層同 view-model。`define:vars` 只傳 `initialData`（`rows` 不序列化——client 自行重算）。
 
 - [ ] **Step 3: 加名人堂 icon 到三頁 header**
 
@@ -885,10 +959,38 @@ Expected: 全綠（既有 250 + 新增 ~14）
 Run: `cd web && bun run build`
 Expected: 成功，`dist/hall-of-fame/index.html` 產出
 
-- [ ] **Step 7: Build 輸出驗證（SSR 對齊）**
+- [ ] **Step 7: Build 輸出驗證（SSR 結構 smoke checks）**
 
-Run: `grep -c "card-fav\|data-rss" dist/hall-of-fame/index.html && grep -c "card-stat\|hof-card" dist/hall-of-fame/index.html`
-Expected: 第一個輸出 `0`（無 fav/RSS controls）、第二個 `>0`（名人卡存在）；再確認 `grep -o "高見龍" dist/hall-of-fame/index.html | head -1` 非空。
+Run（依序）:
+```bash
+# 1. read-only controls 不存在（fav / RSS）
+grep -c "card-fav\|data-rss" dist/hall-of-fame/index.html
+# 期望: 0
+
+# 2. 名人卡與 read-only 系列卡主要結構存在（class / 欄位）
+grep -c "hof-card\|hof-name\|hof-bio\|hof-credentials\|hof-cat-chip\|hof-series" dist/hall-of-fame/index.html
+# 期望: >0
+
+# 3. 系列卡完整結構（SSR HallOfFameSeriesCard 輸出對齊 buildReadOnlyCard 的 class 契約）
+for cls in series-card card-head card-head-left card-head-right card-stat progress progress-track progress-label card-title meta meta-author latest latest-tag latest-views; do
+  grep -q "class=\"$cls" dist/hall-of-fame/index.html || echo "MISSING: $cls"
+done
+# 期望: 無 MISSING 輸出
+
+# 4. 高見龍存在（名人卡 SSR 輸出）
+grep -o "高見龍" dist/hall-of-fame/index.html | head -1
+# 期望: 高見龍
+
+# 5. 無不安全 href（javascript: / data: / // / 前後空白）
+grep -E 'href="(javascript:|data:|//| *https)' dist/hall-of-fame/index.html && echo "UNSAFE HREF FOUND" || echo "OK: 無不安全 href"
+# 期望: "OK: 無不安全 href"
+
+# 6. profile 連結為完整絕對 URL
+grep -o "https://ithelp.ithome.com.tw/users/20065770" dist/hall-of-fame/index.html | head -1
+# 期望: https://ithelp.ithome.com.tw/users/20065770
+```
+
+> 這些 checks 鎖定 SSR 輸出**具備** read-only 卡完整結構、**無** fav/RSS、**無**不安全 href——與 client `buildReadOnlyCard` 共用同一 `cardViewModel`，兩層顯示決定單一來源（結構差異由 view-model 契約保證）。
 
 - [ ] **Step 8: Commit**
 
