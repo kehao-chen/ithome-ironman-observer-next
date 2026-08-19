@@ -70,11 +70,17 @@ describe("matchFamousAuthors", () => {
   test("totalViews 依 totalViewsOf 語意；排序 desc", () => {
     const data: YearData = { year: 2026, updatedAt: "2026-08-19T12:00:00+08:00", groups: [], series: [
       series({ id: 1, user: { id: 20065770, name: "高見龍", profileUrl: "x" }, articles: [{ id: 1, day: 1, title: "a", url: "u", publishedAt: "2026-08-01T00:00:00+08:00", views: 100, likes: 0, comments: 0 }] }),
-      series({ id: 2, user: { id: 20065770, name: "高見龍", profileUrl: "x" }, articles: [{ id: 2, day: 1, title: "b", url: "u", publishedAt: "2026-08-01T00:00:00+08:00", views: 200, likes: 0, comments: 0 }] }),
+      series({ id: 2, user: { id: 999, name: "無名", profileUrl: "x" }, articles: [{ id: 2, day: 1, title: "b", url: "u", publishedAt: "2026-08-01T00:00:00+08:00", views: 200, likes: 0, comments: 0 }] }),
     ], scrapeLog: [] };
-    const rows = matchFamousAuthors(entries, data);
-    expect(rows).toHaveLength(1);
-    expect(rows[0].totalViews).toBe(300);
+    const rows = matchFamousAuthors(
+      [...entries, { id: 999, name: "無名", bio: "", credentials: [], categories: [] }],
+      data,
+    );
+    expect(rows).toHaveLength(2);
+    expect(rows[0].entry.id).toBe(999); // totalViews 200（高者）→ desc 在前；升序會 fail
+    expect(rows[0].totalViews).toBe(200);
+    expect(rows[1].entry.id).toBe(20065770);
+    expect(rows[1].totalViews).toBe(100);
   });
 
   test("compact（sumViews）與 full（articles 求和）totalViews 一致", () => {
@@ -82,7 +88,7 @@ describe("matchFamousAuthors", () => {
       series({ id: 1, user: { id: 20065770, name: "高見龍", profileUrl: "x" }, articles: [{ id: 1, day: 1, title: "a", url: "u", publishedAt: "2026-08-01T00:00:00+08:00", views: 150, likes: 0, comments: 0 }] }),
     ], scrapeLog: [] };
     const compact: YearData = { year: 2026, updatedAt: "2026-08-19T12:00:00+08:00", groups: [], series: [
-      { ...full.series[0], sumViews: 150, articles: [{ id: 1, day: 1, title: "a", url: "u", publishedAt: "2026-08-01T00:00:00+08:00", views: 150, likes: 0, comments: 0 }] },
+      { ...full.series[0], sumViews: 150, articles: [{ id: 1, day: 1, title: "a", url: "u", publishedAt: "2026-08-01T00:00:00+08:00", views: 150, likes: 0, comments: 0 }] } as Series & { sumViews?: number },
     ], scrapeLog: [] };
     expect(matchFamousAuthors(entries, full)[0].totalViews).toBe(150);
     expect(matchFamousAuthors(entries, compact)[0].totalViews).toBe(150);
