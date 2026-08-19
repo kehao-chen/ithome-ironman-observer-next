@@ -115,7 +115,10 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 
 - 名人名：大字標題 + 該作者 ithelp profile 連結（**統一用 `cardViewModel.profileUrl` 產生的絕對 URL `https://ithelp.ithome.com.tw/users/{id}`**，§3——與系列卡 profile 連結同格式，`user.profileUrl` 不直接作 href）。
 - 類別 chips：`categories` 對應標籤（speaker→「講師」、community→「社群」、oss→「開源」、book→「書籍」），被動顯示（非 filter）。
-- **系列列表（read-only card）**：該名人在目前年度的系列卡片，**共用 `cardViewModel`（`card.ts`）產生全部顯示決定**（title / DAY badge / 瀏覽 / 狀態 chip / 發文時間 / 最新文章 / profile 連結），**欄位與主卡片契約一致**；但**不復用 `buildCard`/`buildRow`**（它們固定產出收藏星號與 RSS 按鈕，事件處理在 Dashboard 的 client state / RSS modal——名人堂無此 infrastructure，直接復用 = dead controls）。改用新增的 **`buildReadOnlyCard`（`card-dom.ts` 或新 `hall-of-fame-dom.ts`）**：同一 view-model 驅動、同一卡片欄位骨架，但**移除收藏按鈕與 RSS 按鈕**（保留 stat「N 瀏覽」與 profile 連結）。此為單一 renderer，SSR 與 client 共用，非「第二套渲染」——顯示決定仍 100% 來自 `cardViewModel`。
+- **系列列表（read-only card）**：該名人在目前年度的系列卡片，**共用 `cardViewModel`（`card.ts`）產生全部顯示決定**（title / DAY badge / 瀏覽 / 狀態 chip / 發文時間 / 最新文章 / profile 連結），**欄位與主卡片契約一致**；但**不復用 `buildCard`/`buildRow`**（它們固定產出收藏星號與 RSS 按鈕，事件處理在 Dashboard 的 client state / RSS modal——名人堂無此 infrastructure，直接復用 = dead controls）。**雙層 renderer 契約**（SSR 與 client 各自輸出、結構對齊，顯示決定 100% 來自同一 `cardViewModel`）：
+  - **SSR 層**：新增 **`HallOfFameSeriesCard.astro`**——Astro markup 產生 read-only 卡片（badge / chip / progress / title / meta / latest / updated / stat「N 瀏覽」/ profile 連結，**無 fav / RSS 按鈕**）。Astro frontmatter 是 Node build context，無 `document`，不能用 DOM builder。
+  - **Client 層**：新增 **`buildReadOnlyCard`（`hall-of-fame-dom.ts`）**——DOM API 產生與 SSR **同結構**的 read-only 卡片（`card-dom.ts` 的 `buildCard` 骨架、同 view-model、移除 fav/RSS）。client 年度切換重 render 用。
+  - 兩層以結構契約鎖定對齊（仿 `SeriesCard.astro` ↔ `card-dom.ts` 既有 mirror 契約），非第二套渲染——顯示決定單一來源 `cardViewModel`。
 - 年度切換：**跟隨年度**（與 dashboard 一致的 year switcher）。名人身份跨年度一致；系列列表依目前年度 join（§2.3 隱藏規則）。
 
 ### 2.3 空狀態
@@ -126,8 +129,8 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 
 ### 2.4 SSR 初始畫面與 client render 責任
 
-- **SSR 初始輸出完整卡片**（首載即見，無 JS 也可見）：frontmatter 以 build 時點資料跑 `matchFamousAuthors` + `buildReadOnlyCard`，輸出名人卡 + 系列卡完整 DOM（含 `today` 以 build 時點計算）。
-- **client 接管**：掛載後以 runtime `today` 重跑同一 renderer 重新 render（修正 build→load 期間的跨日 / views 變化），並綁年度切換。client 與 SSR 用**同一 `buildReadOnlyCard` renderer**，無第二套 DOM 骨架。
+- **SSR 初始輸出完整卡片**（首載即見，無 JS 也可見）：frontmatter 以 build 時點資料跑 `matchFamousAuthors`，用 **`HallOfFameSeriesCard.astro`**（Astro markup，Node build context 可執行）輸出名人卡 + 系列卡完整 HTML（含 `today` 以 build 時點計算）。**不能用 `buildReadOnlyCard` 做 SSR**——它是 DOM builder（`document.createElement`），只能在 browser 執行。
+- **client 接管**：掛載後以 runtime `today` 重跑同一 view-model（`cardViewModel`），用 **`buildReadOnlyCard`**（DOM builder）重新 render（修正 build→load 期間的跨日 / views 變化），並綁年度切換。client 與 SSR 各自輸出**同結構**的 read-only 卡片（由結構契約鎖定 §5.2），無第二套顯示決定——兩層皆由 `cardViewModel` 驅動。
 - **today / humanize 差異**：SSR 用 `taipeiToday()`（build 時點）、client 用 runtime `taipeiToday()`——與 Dashboard 同模式（`cardViewModel(s, today)` 接受 today 參數，SSR/client 各自傳入）。跨日由 client 首次 render 自動校正。
 
 ## 3. XSS 與安全
@@ -144,9 +147,9 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
     } catch { return false; }                                          // 拒絕 protocol-relative（無 base 即 throw）與 malformed
   }
   ```
-  - 通過：`https://` / `http://`
-  - 拒絕：`javascript:` / `data:` / `vbscript:`、**protocol-relative**（`//evil.example`）、**大小寫變體**（`HTTPS://example.com` 被 `^https?:\/\//i` 接受但 `new URL` 正規化後 protocol 仍合法——**決策：大小寫 scheme 接受**，`/i` 旗標讓 `HTTPS://` 通過，因 URL 語意合法；spec 原列「拒絕大小寫變體」與嚴格檢查衝突，改為接受）、**省略斜線**（`https:example.com` 不符 `^https?:\/\/`）、相對路徑、空值、前後空白
-  - 註：`HTTPS://example.com` 在 strict regex（`/i`）下**通過**（scheme 大小寫是合法 URL 語意）；spec 前版列為拒絕與 parser 行為衝突，本版裁決接受（§7 決策記錄更新）。<sup>若要求連大小寫也拒絕，需加 `url.startsWith(url.slice(0, 8))` 大小寫檢查——本 spec 不採。</sup>
+  - 通過：`https://` / `http://`（scheme 大小寫接受，`HTTPS://` 合法）
+  - 拒絕：`javascript:` / `data:` / `vbscript:`、**protocol-relative**（`//evil.example`）、**省略斜線**（`https:example.com` 不符 `^https?:\/\/`）、相對路徑、空值、前後空白
+  - 註：`HTTPS://example.com` 在 strict regex（`/i`）下**通過**（scheme 大小寫是合法 URL 語意；spec 前版列為拒絕與 parser 行為衝突，本版裁決接受——§7 決策記錄更新）。<sup>若要求連大小寫也拒絕，需加 `url.startsWith(url.slice(0, 8))` 大小寫檢查——本 spec 不採。</sup>
   - **不含 scheme 的相對路徑（如 `/users/20065770/profile`）判定為不安全**——名人 profile 一律用完整 `https://ithelp.ithome.com.tw` 絕對 URL 建構（`cardViewModel` 的 `profileUrl` 同樣以絕對 URL 輸出，兩處格式統一為 `/users/{id}` 絕對路徑）。
 - **格式統一**：`cardViewModel.profileUrl`（`/users/{id}`）與 `Series.user.profileUrl`（`/users/{id}/profile`）兩格式並存——**統一為**：名人標題 profile 連結與系列卡 profile 連結都使用 `cardViewModel` 產生的 `/users/{id}` 絕對 URL（`https://ithelp.ithome.com.tw/users/{id}`），`user.profileUrl` 不再直接用作 href（僅作 fallback 資料保留）。避免同頁兩種 URL 格式。
 - JSON 是 repo 內受信任資料（非外部輸入），但防禦性檢查照做（避免未來引入未驗證來源）。
@@ -158,7 +161,8 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 | `web/src/data/famous-authors.json` | **新增**：名人清單（初始 3-5 位，key = user.id）。**位置 rationale**：名人堂名單是前端專用、非 scraper 產出的 metadata，因此放 `web/src/data/`（Astro static import 進 bundle），**不進入頂層 `data/` 年度資料與 scraper pipeline**（頂層 `data/` 是 scraper 產物，`web/public/data/` 是 build 複製的 runtime 資料——此清單兩者皆非） |
 | `web/src/lib/hall-of-fame.ts` | **新增**：`loadFamousAuthors`（JSON key → `entry.id`）/ `matchFamousAuthors`（`entry.id` join）/ `isSafeUrl` / 型別（純函式） |
 | `web/src/lib/hall-of-fame.test.ts` | **新增**：單元測試（join / 無系列隱藏 / URL 白名單 / 排序 / JSON 完整性） |
-| `web/src/lib/card-dom.ts`（或 `hall-of-fame-dom.ts`） | **新增** `buildReadOnlyCard`：同 `buildCard` 骨架、`cardViewModel` 驅動，**移除 fav + RSS 按鈕**（保留 stat / profile 連結） |
+| `web/src/components/HallOfFameSeriesCard.astro` | **新增**（SSR 層）：Astro markup read-only 系列卡——`cardViewModel` 驅動、無 fav/RSS 按鈕（§2.2 雙層契約） |
+| `web/src/lib/hall-of-fame-dom.ts` | **新增**（client 層）：`buildReadOnlyCard`——DOM builder，同 `buildCard` 骨架、`cardViewModel` 驅動、移除 fav + RSS（保留 stat / profile 連結）；與 `HallOfFameSeriesCard.astro` 結構對齊 |
 | `web/src/pages/hall-of-fame.astro` | **新增**：頁面（SSR 完整輸出 + client 年度切換重 render，§2.4） |
 | `web/src/components/HallOfFame.astro` | **新增**：名人卡區塊元件（仿 Teams.astro / Insights.astro 模式） |
 | `web/src/components/Dashboard.astro` | header-actions 加「名人堂」icon-btn |
@@ -181,9 +185,10 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 - JSON 完整性：**id 必須存在於 `data/2026.json`**（防幽靈 id）；**name 不符 → 測試輸出明確 warning**（console.warn + 列出不符者）但**不 fail**（合法改名不該斷 join——review 建議採納，與 §1.1「防改名漂移」改為「偵測改名、提示人工確認」）。<sup>註：若維持「改名必同步 JSON」為 intentional invariant，則此測試應 fail——本 spec 採「warning 不 fail」。</sup>
 - 真實資料 sweep（`data/2026.json`）：每個收錄 id 都存在且至少 1 個系列。
 
-### 5.2 DOM 契約（read-only card）
+### 5.2 結構契約（read-only card，雙層）
 
-- `buildReadOnlyCard` 結構：卡片骨架與 `buildCard` 一致（badge / chip / progress / title / meta / latest / updated），**且不含 fav 按鈕與 RSS 按鈕**（`querySelector('.card-fav, [data-rss]')` 為 null）；stat「N 瀏覽」保留；profile 連結 href 為絕對 `https://ithelp.ithome.com.tw/users/{id}`。
+- **Client DOM 契約**（`hall-of-fame-dom.test.ts`，happy-dom）：`buildReadOnlyCard` 骨架與 `buildCard` 一致（badge / chip / progress / title / meta / latest / updated / stat），**且不含 fav 按鈕與 RSS 按鈕**（`querySelector('.card-fav, [data-rss]')` 為 null）；profile 連結 href 為絕對 `https://ithelp.ithome.com.tw/users/{id}`。
+- **SSR/client 對齊契約**（Astro output 測試或渲染對比）：`HallOfFameSeriesCard.astro` 輸出的 HTML 結構（class / 欄位順序 / 無 fav-RSS）與 `buildReadOnlyCard` 一致——仿 `SeriesCard.astro` ↔ `card-dom.ts` 既有 mirror 契約，防兩層 drift。
 
 ### 5.3 Build / 型別
 
@@ -193,7 +198,7 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 ### 5.4 手動 headless browser
 
 1. 載入 `/hall-of-fame/`：名人卡出現（高見龍必含）、bio / 類別 chips / 來源連結正確。
-2. 來源連結可點擊且為 `https://`（無 `javascript:` / `//` / 大小寫變體）。
+2. 來源連結可點擊且為 `http(s)`；無 `javascript:`、`data:`、protocol-relative、省略斜線、相對路徑或前後空白 URL；scheme 大小寫可接受（`HTTPS://` 合法）。
 3. **系列卡無收藏 / RSS 按鈕**（dead controls 不存在）；欄位與 dashboard 一致（title / DAY badge / 瀏覽 / 狀態 chip / 發文時間 / profile 連結）。
 4. 年度切換：重 join、無系列名人隱藏、空年度顯示空狀態。
 5. 無 console error、無 XSS（檢查 DOM 無 `innerHTML` 注入痕跡）。
@@ -218,10 +223,11 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 - **不做 60s refresh**：名單小、系列 views 靜態度較高，refresh 複雜度 > 價值；手動刷新即可。
 - **read-only 卡片**（spec review 修正）：名人堂系列卡不復用 `buildCard`（會帶無事件的收藏/RSS 按鈕 = dead controls），改用 `buildReadOnlyCard`——同一 `cardViewModel` 驅動、移除 fav/RSS 按鈕。顯示決定仍 100% 來自 view-model，非第二套渲染。
 - **`entry.id` 為 join 鍵**（spec review 修正）：`loadFamousAuthors` 把 JSON object key 轉 `number` 存入 `entry.id`——JSON key 不遺失，`matchFamousAuthors` 可 join。
-- **URL 解析後驗證**（spec review 修正）：`isSafeUrl` 檢查 `new URL().protocol`，非 `startsWith`——拒絕 case 變體 / protocol-relative / 省略斜線；profile URL 統一為 `cardViewModel` 產生的絕對 URL（消除 `/users/{id}` vs `/users/{id}/profile` 並存）。
+- **URL 解析後驗證**（spec review 修正）：`isSafeUrl` 檢查 `new URL().protocol`——拒絕不安全 scheme、protocol-relative、省略斜線、相對路徑與前後空白；**scheme 大小寫接受**（`HTTPS://` 合法，見 round-2 裁決）；profile URL 統一為 `cardViewModel` 產生的絕對 URL（消除 `/users/{id}` vs `/users/{id}/profile` 並存）。
 - **name 不符 = warning 非失敗**（spec review 修正）：合法改名不該斷 join；測試輸出 warning 提示人工確認。
-- **SSR 完整輸出 + client 同一 renderer 重 render**（spec review 補）：首載即見、無第二套 DOM 骨架、跨日由 client 首次 render 校正。
+- **SSR 完整輸出 + client 同一 view-model 重 render**（spec review 補）：首載即見、無第二套 DOM 骨架；SSR 用 `HallOfFameSeriesCard.astro`、client 用 `buildReadOnlyCard`，兩層同 `cardViewModel` 驅動（round-3 雙層契約）。跨日由 client 首次 render 校正。
 - **Header 含首頁 icon**（round-2 review 修正）：Dashboard 無 home icon（本身是首頁）；Teams/Insights/HallOfFame 保留 `[home][teams][名人堂][insights][github]`——不裁決移除既有首頁 icon，實作者不需推斷。
 - **`matchFamousAuthors` 輸入**（round-2 review 修正）：`YearData & { series: ViewSeries[] }` 單一契約——完整 SSR Series 與 client compact ViewSeries 皆可輸入；prose 與簽名一致。
 - **client 年度切換不 re-compact**（round-2 review 修正）：Dashboard `loadYear` fetch 完整 YearData 不 re-compact（僅 SSR 初始 compact）；名人堂比照，不新增 client compact pipeline。
 - **URL 驗證採嚴格前置檢查**（round-2 review 修正）：實測 `new URL("HTTPS://x").protocol === "https:"`（parser 正規化），單靠 parser 無法拒絕大小寫/省略斜線/空白。`isSafeUrl` = `trim` 檢查 + `^https?:\/\//i` 前置 regex + parser protocol 驗證。**`HTTPS://` 接受**（scheme 大小寫為合法語意；原列拒絕與 parser 衝突，本版裁決接受）；`https:example.com`、前後空白、`//evil`、`javascript:` 拒絕。
+- **雙層 renderer 契約**（round-3 review 修正）：`card-dom.ts` 的 DOM builder 只能在 browser 執行，不能做 SSR（Astro frontmatter 是 Node context 無 `document`）。SSR 用 `HallOfFameSeriesCard.astro`（Astro markup），client 用 `buildReadOnlyCard`（DOM builder）——兩層同 `cardViewModel` 驅動、結構以契約鎖定對齊，非同一 renderer。
