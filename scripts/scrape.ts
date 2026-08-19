@@ -5,6 +5,7 @@ import { fetchHtml } from "./fetch-html";
 import { parseSignupList, signupListUrl } from "./parse-signup";
 import { parseRss, rssUrl } from "./parse-rss";
 import { parseSeriesPage, seriesUrl } from "./parse-series";
+import { parseArticleDay } from "./parse-article";
 import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel, MetaJson } from "./types";
 
 export function mergeCardsAndStats(
@@ -32,6 +33,26 @@ export function mergeCardsAndStats(
   });
   series.sort((a, b) => b.dayCount - a.dayCount || a.signupDate.localeCompare(b.signupDate));
   return series;
+}
+// 系列當前官方參賽天數（＝連續發文天數）。權威值 = 最新一篇文章頁的
+// ir-article__days 徽章（該篇發佈時的官方 streak；大量補發不會增加——
+// 帶刺哥 9128 補滿 30 篇後徽章/標頭仍凍結在 12，只有標題自填 Day 30）。
+// 與系列頁標頭取 max：兩者皆官方值，任一方落後時互補（標頭快取舊值 →
+// 徽章治癒；徽章抓到的非最新篇 → 標頭保底）。徽章缺席（無文章、文章頁
+// 抓取或解析失敗）→ 只用標頭；fetchArticle 可注入（測試接縫）。
+export async function officialDayCount(
+  headerDays: number,
+  latestArticleUrl: string | undefined,
+  fetchArticle: (url: string) => Promise<string> = fetchHtml,
+): Promise<number> {
+  if (!latestArticleUrl) return headerDays;
+  let badge: number | null = null;
+  try {
+    badge = parseArticleDay(await fetchArticle(latestArticleUrl));
+  } catch {
+    // 文章頁失敗不讓整個系列失敗——退回標頭
+  }
+  return Math.max(headerDays, badge ?? 0);
 }
 
 // Emit the real Taipei wall clock (UTC+8, no DST) as ISO +08:00.
@@ -104,22 +125,13 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
         articles.push(...more.articles);
         page = more.nextPage;
       }
-      // dayCount 語意（2026-08-18 定案）：
-      // - 常態 = 上游「參賽天數」標頭（first.dayCount）；
-      // - 但 iThome 標頭會凍結（帶刺哥 30 篇但標頭停在 12）或與文章數矛盾
-      //   （c8763yee 標頭 10 但 11 篇、alanliang 16/26）——此時以「實際去重後的
-      //   DAY 數」為準（max(day) 且 <= articleCount；day 0/NaN 視為無資料）。
-      //   已刪文系列（標頭 >0 但 0 篇）維持標頭值，靠 isDeletedSeries 判別。
-      const distinctDays = new Set(articles.map((a) => a.day)).size;
-      const headerDays = first.dayCount;
-      const headerCount = first.articleCount;
-      const dayCount =
-        articles.length > 0
-          ? Math.min(distinctDays, articles.length)
-          : headerDays;
+      // dayCount = 官方參賽天數（2026-08-19 修正，語意見 officialDayCount）。
+      // 舊規則 max(標頭, 去重標題 Day) 已移除：標題是作者自填、會超前 streak，
+      // 把「12 天內補滿 30 篇」誤判成完賽（2026-08-18 的「標頭凍結」是誤診，
+      // 標頭 12 本來就是官方值）。
       statsBySeries.set(card.seriesId, {
-        dayCount: dayCount < headerDays ? headerDays : dayCount,
-        articleCount: headerCount,
+        dayCount: await officialDayCount(first.dayCount, articles[articles.length - 1]?.url),
+        articleCount: first.articleCount,
         subscriptions: first.subscriptions,
         articles,
       });

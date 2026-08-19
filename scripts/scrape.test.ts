@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { YearData } from "./types";
-import { mergeCardsAndStats, taipeiTimestamp, historyDate, writeHistorySnapshots } from "./scrape";
+import { mergeCardsAndStats, taipeiTimestamp, historyDate, writeHistorySnapshots, officialDayCount } from "./scrape";
 import { parseSignupList } from "./parse-signup";
 import { parseSeriesPage } from "./parse-series";
 import { parseRss } from "./parse-rss";
@@ -34,9 +34,10 @@ describe("mergeCardsAndStats", () => {
     expect(s.lastUpdated).toBe(rss.lastBuildDate);
   });
 
-  test("dayCount 語意：標頭凍結/矛盾時以實際去重 DAY 數為準（帶刺哥 30 篇標頭 12）", async () => {
-    // 模擬 runSeries 的組裝（dayCount 由 runSeries 計算，mergeCardsAndStats 只透傳）
-    // → 直接在 parse-series 驗證：30 篇、標頭 12、DAY 徽章 12×29，dayCount 應為 30。
+  test("dayCount 語意（2026-08-19）：大量補發 → 官方 streak，非完賽（帶刺哥 30 篇/標頭 12/徽章 12）", async () => {
+    // 大量補發的典型形貌：30 篇（標題 Day 1..30）、標頭參賽天數 12。
+    // 標題是作者自填、會超前 streak；清單徽章在分頁後凍結 —— 兩者都不得
+    // 拿來推 dayCount（舊規則 max(標頭, 去重 Day)=30 就是這樣誤判完賽）。
     const html = `
 <div class="board leftside profile-main">
   <div class="qa-list__info qa-list__info--ironman subscription-group">
@@ -54,12 +55,26 @@ describe("mergeCardsAndStats", () => {
   <div class="profile-pagination"><ul class="pager"><li class="disabled"><span>下一頁</span></li></ul></div>
 </div>`;
     const stats = parseSeriesPage(html);
-    expect(stats.dayCount).toBe(12); // 標頭（凍結）
+    expect(stats.dayCount).toBe(12); // 標頭（官方 streak）
     expect(stats.articles.length).toBe(30);
-    const distinct = new Set(stats.articles.map((a) => a.day)).size;
-    expect(distinct).toBe(30); // 標題 Day 前綴已修正徽章凍結
-    // runSeries 的新規則：min(distinct, len) = 30，覆蓋凍結標頭
-    expect(Math.min(distinct, stats.articles.length)).toBe(30);
+    // runScrape：抓最新一篇（清單最後）文章頁 → 真實 fixture 徽章 12。
+    const fetchArticle = async (url: string) => {
+      expect(url).toBe(stats.articles[29].url);
+      return readFixture("article-page.html"); // 帶刺哥第 30 篇真實頁面
+    };
+    await expect(
+      officialDayCount(stats.dayCount, stats.articles[29].url, fetchArticle),
+    ).resolves.toBe(12); // 不是 30 —— 未完賽
+  });
+
+  test("officialDayCount：徽章治癒落後標頭／失敗退回標頭／無文章用標頭", async () => {
+    const badge = (n: number) => async () =>
+      `<span class="ir-article__days-num">${n}</span>`;
+    expect(await officialDayCount(10, "u", badge(11))).toBe(11); // 標頭落後 → 徽章
+    expect(await officialDayCount(20, "u", badge(17))).toBe(20); // 徽章非最新篇 → 標頭保底
+    expect(await officialDayCount(12, "u", async () => "<html>404</html>")).toBe(12); // 解析失敗
+    await expect(officialDayCount(7, "u", async () => { throw new Error("network"); })).resolves.toBe(7); // 抓取失敗
+    expect(await officialDayCount(5, undefined, async () => { throw new Error("不應抓"); })).toBe(5); // 無文章
   });
 
   test("series with no stats still produced (stats optional)", () => {

@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+
+<title>Day 30｜AI 會跑不等於能交付！用 Delivery Contract 把 30 天工作流收成可回讀的工程閉環 - iT 邦幫忙::一起幫忙解決難題，拯救 IT 人的一天</title>
+
+<meta name="description"
+    content="30 天最後一關，不是按下「發布」 想像一個 AI 協作專案走到最後一天。 需求已經整理成可驗收條件。 Codex 已經依照 Plan 修改程式。 測試與 type check 都是綠色。 Deck、..." />
+<meta name="keywords" content="iT邦幫忙,iThome">
+<meta name="author" content="iThome">
+<meta property="og:site_name" content="iT 邦幫忙::一起幫忙解決難題，拯救 IT 人的一天" />
+<meta property="og:url" content="https://ithelp.ithome.com.tw/articles/10403456" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Day 30｜AI 會跑不等於能交付！用 Delivery Contract 把 30 天工作流收成可回讀的工程閉環 - iT 邦幫忙::一起幫忙解決難題，拯救 IT 人的一天" />
+<meta property="og:image" content="https://ithelp.ithome.com.tw/storage/image/fbpic.jpg" />
+<meta property="og:description"
+    content="30 天最後一關，不是按下「發布」 想像一個 AI 協作專案走到最後一天。 需求已經整理成可驗收條件。 Codex 已經依照 Plan 修改程式。 測試與 type check 都是綠色。 Deck、..." />
+<meta property="fb:app_id" content="137875859607921" />
+
+<link rel="apple-touch-icon" sizes="57x57" href="https://ithelp.ithome.com.tw/storage/favicons/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="https://ithelp.ithome.com.tw/storage/favicons/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="https://ithelp.ithome.com.tw/storage/favicons/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="https://ithelp.ithome.com.tw/storage/favicons/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="https://ithelp.ithome.com.tw/storage/favicons/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="https://ithelp.ithome.com.tw/storage/favicons/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="https://ithelp.ithome.com.tw/storage/favicons/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="https://ithelp.ithome.com.tw/storage/favicons/apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://ithelp.ithome.com.tw/storage/favicons/apple-touch-icon-180x180.png">
+<link rel="icon" type="image/png" href="https://ithelp.ithome.com.tw/storage/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://ithelp.ithome.com.tw/storage/favicons/android-chrome-192x192.png"
+    sizes="192x192">
+<link rel="icon" type="image/png" href="https://ithelp.ithome.com.tw/storage/favicons/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="https://ithelp.ithome.com.tw/storage/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="https://ithelp.ithome.com.tw/storage/favicons/manifest.json">
+<link rel="mask-icon" href="https://ithelp.ithome.com.tw/storage/favicons/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-TileImage" content="https://ithelp.ithome.com.tw/storage/favicons/mstile-144x144.png">
+<meta name="theme-color" content="#ffffff">
+
+<link rel="stylesheet" href="https://ithelp.ithome.com.tw/css/bootstrap.min.css">
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<link rel="stylesheet" href="https://ithelp.ithome.com.tw/css/sweetalert.css">
+<link rel="stylesheet" href="https://ithelp.ithome.com.tw/lib/select2/css/select2.min.css">
+<link rel="stylesheet" href="https://ithelp.ithome.com.tw/css/google.css">
+<link rel="stylesheet" href="https://ithelp.ithome.com.tw/css/style.css?202008271142">
+<!-- highlight -->
+<link rel="stylesheet" href="https://ithelp.ithome.com.tw/css/railscasts.css">
+<!-- end -->
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+<!--messenger css-->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6182VBHV8Y"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-6182VBHV8Y');
+</script>
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        <style>
+    /* 影片區塊 */
+    #itplus_video {
+        display: inline-block;
+        margin-bottom: 2px;
+        margin-right: 5px;
+        width: 100px;
+        vertical-align: top;
+    }
+    /* 影片標題 */
+    #itplus_title {
+        display: inline-block;
+        font-size: 14px; color: #303233;
+        margin-bottom: 2px;
+        width: 160px;
+    }
+    /* 影片標題文字刪減 */
+    .truncate {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2; /* 控制显示的行数 */
+    }
+    /* 影片類型 */
+    #channelVendor {
+        color: #888888;
+        display: inline-block;
+        font-size: 12px;
+        margin-top: 10px;
+        width:160px;
+        overflow-wrap: break-word;
+    }
+    /* 影片長度 */
+    #duration {
+        color: #888888;
+        display: inline-block;
+        font-size: 12px;
+    }
+    /* 水平線 */
+    #itplus_hr {
+        color: #ddd;
+        margin-top:10px ;
+        margin-bottom:10px ;
+    }
+    /* live-icon 直播中 & 圖示 區塊 */
+    .live-icon {
+        align-items: center;
+        color: #ef4949;
+        display: inline-flex;
+
+        font-size: 12px;
+        width: 80px;
+        vertical-align: middle;
+    }
+</style>
+    <style>
+    /* 一般網頁樣式 */
+    /* 直播研討會 上方標題 圖片+文字 區塊 */
+    #itplusPopulaRecommendations {
+        display: flex;
+        margin-top: 30px;
+    }
+    /* 直播研討會 內容 白色區塊 */
+    #itplusPopulaRecommendationsContent {
+        background-color: white;
+        display: flex;
+        margin-top: 10px;
+        padding: 6px;
+        height: auto;
+    }
+    /* 直播研討會 內容 白色區塊 單獨影片*/
+    #videoAndIntroduce {
+        padding: 8px;
+        position: relative;
+        width: 180px;
+        margin: 5px;
+        margin-left: 10px;
+    }
+    /* 直播研討會 內容 影片圖片*/
+    #videoAndIntroduce img{
+        height: 100px;
+        width: 180px;
+    }
+    /* 直播研討會 內容 文字 */
+    #itplusPopulaRecommendations div {
+        font-size: 24px;
+    }
+    /* 直播研討會 內容 標題 */
+    #videoTitle {
+        display: -webkit-box;
+        font-size: 16px;
+        overflow: hidden; /* 隐藏超出容器的内容 */
+        padding-top: 5px;
+        text-overflow: ellipsis; /* 超出部分用省略号表示 */
+        width: 178px; /* 容器宽度 */
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3; /* 限制显示的行数 */
+    }
+    #channelVendorBottom {
+        color: #888888;
+        display: inline-block;
+        font-size: 14px;
+        margin-top: 10px;
+        width:160px;
+        overflow-wrap: break-word;
+        margin-bottom: 50px;
+    }
+    /* 直播研討會 內容 標題 */
+    #videoTitle:hover {
+        color:#337ab7;
+    }
+    /* 直播研討會 內容 類別 */
+    #videoType {
+        font-size: 14px;
+        color: #888888;
+        display: inline-block;
+    }
+    /* 直播研討會 內容 時間 */
+    #duration {
+        display: inline-block;
+        font-size: 12px;
+        color: #888888;
+    }
+    /* 直播研討會 內容 圖片+直播中 區塊 */
+    #liveIcon {
+        font-size: 12pt;
+        color: #ef4949;
+        display: flex;
+        align-items: center;
+    }
+    /* 直播研討會 內容 立即報名 */
+    #singUpBtn {
+        border-radius: 3px;
+        border: 2px solid;
+        bottom: 0;
+        color: #FCA419;
+        display: block;
+        font-size:14px;
+        padding: 5px;
+        position: absolute;
+        width: 100%;
+    }
+    .live-icon {
+        align-items: center;
+        color: #ef4949;
+        display: inline-flex;
+        font-size: 12px;
+        width: 80px;
+        vertical-align: middle;
+    }
+
+    /* 移動設備樣式 */
+    @media (max-width: 667px) {
+        /* 移動設備特定的樣式 */
+        .scrollable {
+            overflow-x: auto; /* 僅在內容超出容器時顯示水平捲軸 */
+        }
+    }
+
+    /* 平板設備樣式 */
+    @media (min-width: 768px) {
+        /* 平板設備特定的樣式 */
+        .scrollable {
+            overflow-x: auto; /* 僅在內容超出容器時顯示水平捲軸 */
+        }
+    }
+</style>
+</head>
+
+<body>
+    <div class="header">
+    <div class="a970" align="center">
+        <script src="https://itadapi.ithome.com.tw/media/serve?type=B5&channel=ithome_index&encoding=Utf8"></script>
+    </div>
+    <div class="header__inner clearfix">
+        <h1 class="header__logo pull-left"><a href="/"><img src="https://ithelp.ithome.com.tw/storage/image/logo.svg" alt="iT邦幫忙" class="img-responsive"></a></h1>
+        <div class="header__promote">
+            <div class="a12word pull-right">
+                <div class="a12word__box">
+                    <script type="text/javascript" src="https://itadapi.ithome.com.tw/media/serve?type=T2&channel=ithome_forum&encoding=Utf8"> </script>
+                </div>
+                <div class="a12word__box">
+                    <script type="text/javascript" src="https://itadapi.ithome.com.tw/media/serve?type=T3&channel=ithome_forum&encoding=Utf8"> </script>
+                </div>
+                <div class="a12word__box">
+                    <script type="text/javascript" src="https://itadapi.ithome.com.tw/media/serve?type=T4&channel=ithome_forum&encoding=Utf8"> </script>
+                </div>
+            </div>
+
+            <div class="a970 pull-right">
+                <script src="https://itadapi.ithome.com.tw/media/serve?type=B1&channel=ithome_forum&encoding=Utf8"></script>
+            </div>
+        </div>
+    </div>
+
+    <nav class="menu">
+        <div class="menu__bg">
+            <div class="menu__container clearfix">
+                
+                <h1 class="menu__logo">
+                    <a href="/" class="menu__logo-link"><img src="https://ithelp.ithome.com.tw/storage/image/nav_logo.svg"  alt="iT邦幫忙"></a>
+                </h1>
+
+                                                                                                                
+                
+                <ul class="list-unstyled menu__left">
+                    <li class="menu__item">
+                        <a href="https://ithelp.ithome.com.tw/articles?tab=tech" class="menu__item-link  menu__item-link--active ">技術文章</a>
+                    </li>
+                    <li class="menu__item">
+                        <a href="https://ithelp.ithome.com.tw/questions" class="menu__item-link  menu__item-link--pl">技術問答</a>
+                    </li>
+                    <li class="menu__item">
+                        <a href="https://ithelp.ithome.com.tw/articles?tab=project" class="menu__item-link  hidden-xs" >My Project</a>
+                    </li>
+                    
+                    <li class="menu__item">
+                        <a href="https://ithelp.ithome.com.tw/articles?tab=job" class="menu__item-link  hidden-xs" >iT 徵才</a>
+                    </li>
+                    
+                    
+                    
+                    <li class="menu__item">
+                        <a href="https://ithelp.ithome.com.tw/talks" class="menu__item-link  hidden-xs" >聊天室</a>
+                    </li>
+                    <li class="menu__item menu__item--ironman">
+                        <a href="/2026ironman/" target="_blank" class="menu__item-link hidden-xs" >2026 鐵人賽</a>
+                    </li>
+                </ul>
+                
+
+                                    
+                    <ul class="list-unstyled menu__right">
+                        <li class="menu__item">
+                            <div id="searchDropdown" class="menu__search-btn">
+                                <span class="menu__search-toggle"></span>
+                            </div>
+                        </li>
+                        <li class="menu__item">
+                            <a href="https://ithelp.ithome.com.tw/users/login" class="menu__item-link">登入/註冊</a>
+                        </li>
+                    </ul>
+                            </div>
+        </div>
+
+        
+        <div class="menu__dropform">
+            <div class="menu__container">
+                <form action="https://ithelp.ithome.com.tw/search" role="search" method="GET" class="clearfix">
+                    <input type="hidden" name="_token" value="6jWsiii9uHkqk99YnNvWUY5CAiezONT6oprIrXjO">                    <div class="pull-left">
+                        <input name="search" type="text" class="menu__search-input" placeholder="搜尋主題、問題或人">
+
+                        <input type="radio" class="radio-input" name="tab" value="article" id="searchArticle" checked/>
+                        <label for="searchArticle" class="radio-label">文章</label>
+
+                        <input type="radio" class="radio-input" name="tab" value="question" id="searchQA"/>
+                        <label for="searchQA" class="radio-label">問答</label>
+
+                        <input type="radio" class="radio-input" name="tab" value="tag" id="searchTag"/>
+                        <label for="searchTag" class="radio-label">Tag</label>
+
+                        <input type="radio" class="radio-input" name="tab" value="user" id="searchID"/>
+                        <label for="searchID" class="radio-label">邦友</label>
+
+                        <input type="radio" class="radio-input" name="tab" value="ironman" id="searchIronman"/>
+                        <label for="searchIronman" class="radio-label">鐵人賽</label>
+                    </div>
+                    <button type="submit" class="btn menu__dropform-btn">搜尋</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <div class="menu__mask"></div>
+</div>
+
+
+    
+            
+        <div class="container index-top">
+        <div class="row">
+            <div class="col-md-12 clearfix">
+                
+    <div class="leftside">
+        
+
+                
+        
+        
+        
+        
+        
+        
+        
+        
+                <div class="ir-article-icon-18th clearfix">
+            <a href="https://ithelp.ithome.com.tw/2026ironman" target="_blank" class="ir-article-icon-18th__frame">
+                <p class="ir-article-icon-18th__text"> 2026 iThome 鐵人賽</p>
+            </a>
+        </div>
+        
+        <div class="qa-panel clearfix">
+            
+            
+                                                <div class="ir-article__days ">
+                        <div class="ir-article__days-word">DAY <span class="ir-article__days-num">
+                                                              12
+                                                      </span></div>
+                    </div>
+                            
+            <div class="qa-panel__side">
+                
+                <div class="qa-side">
+                    <div class="likeGroup">
+        <div class="likeGroup__arrow like_btn"
+                 data-type="article"
+                 data-id="10403456"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="Like"
+                 >
+                <i class="fa fa-thumbs-up"></i>
+        </div>
+        <div class="likeGroup__num">0</div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <div class="collection qa-collection"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="加入收藏清單">
+        <a href="https://ithelp.ithome.com.tw/users/login" class="btn collection__btn collection_btn">
+            <i class="fa fa-star-o"></i>
+        </a>
+    </div>
+                </div>
+                
+            </div>
+            <div class="qa-panel__content">
+                <div class="qa-header">
+                    
+                    
+                                                                    <a href="https://ithelp.ithome.com.tw/2026ironman/chatgpt-and-codex" class="group__badge group__badge--chatgpt-and-codex">
+                                                        ChatGPT &amp; Codex
+                        </a>
+                                        <h3 class="ir-article__topic"><a href="https://ithelp.ithome.com.tw/users/20183428/ironman/9128">不只會寫 Code：用 ChatGPT × Codex 打造企業級 AI 開發工作流</a>系列 第
+                    <span class="ir-article__topic-count">30</span> 篇
+                    </h3>
+
+                    <h2 class="qa-header__title ir-article__title">
+                                                Day 30｜AI 會跑不等於能交付！用 Delivery Contract 把 30 天工作流收成可回讀的工程閉環
+                    </h2>
+
+                    <div class="qa-header__tagGroup">
+                                                    <a href="https://ithelp.ithome.com.tw/tags/articles/18th%E9%90%B5%E4%BA%BA%E8%B3%BD"
+                               class="tag qa-header__tagList">18th鐵人賽</a>
+                                            </div>
+
+
+                    <div class="ir-article-info">
+                        
+                                                    <a href="https://ithelp.ithome.com.tw/users/20183428/ironman" class="ir-article-info__avatar">
+                                <img src="https://member.ithome.com.tw/avatars/219036?s=ithelp" class="img-circle"/>
+
+                            </a>
+                                                
+                        <div class="ir-article-info__content">
+                                                            <div><a href="https://ithelp.ithome.com.tw/users/20183428/ironman" class="ir-article-info__name">
+                                    帶刺哥
+                                </a></div>
+                            
+                            <!-- <div class="ir-article-info__view">83 瀏覽</div> -->
+
+                                                                                            <div><a href="https://ithelp.ithome.com.tw/2026ironman/signup/team/419" class="ir-article-info__team"><span class="team-badge">團隊</span>這不薄冰哥嗎</a></div>
+                            
+                            <div><a title="2026-08-17 12:26:34" class="qa-header__info-time ir-article-info__time">2026-08-17 12:26:34</a></div> <div class="ir-article-info__view">83 瀏覽</div>
+                        </div>
+                    </div>
+                    <!-- fb 按讚 按鈕 start -->
+                
+                 <!-- fb 按讚 按鈕 end -->
+
+        
+        <!-- <div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.6";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
+	<div class="fb-like" data-href="https://ithelp.ithome.com.tw/articles/10403456" data-width="36px" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false"></div> -->
+    <ul class="soc" style="display:flex;justify-content:flex-end">
+		<li><p>分享至&ensp;</p></li>
+	    <li><a class="soc-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://ithelp.ithome.com.tw/articles/10403456" target="_blank" id="fbShareBtn"></a></li>
+	    <li>
+			<a href="https://twitter.com/intent/tweet?text=https://ithelp.ithome.com.tw/articles/10403456" target="_blank">
+				<img id="twitterShareBtnImage" src="https://ithelp.ithome.com.tw/images/x/x.png" alt="xImage">
+			</a>
+		</li>
+		<span>&nbsp;</span>
+	    
+	</ul>
+
+                </div>
+                
+                <div class="qa-markdown">
+                    <div class="markdown">
+                        <div class="markdown__style">
+                                                            <h2>30 天最後一關，不是按下「發布」</h2>
+<p>想像一個 AI 協作專案走到最後一天。</p>
+<ul>
+<li>需求已經整理成可驗收條件。</li>
+<li>Codex 已經依照 Plan 修改程式。</li>
+<li>測試與 type check 都是綠色。</li>
+<li>Deck、影片、字幕也都產生了。</li>
+<li>Reviewer 說看起來沒問題。</li>
+</ul>
+<p>這時候有人問：「那可以交付了嗎？」</p>
+<p>如果答案只是一串聊天紀錄、幾個 <code>true</code>，或一個叫做 <code>final</code> 的資料夾，這份答案其實還不夠。因為我們還不知道：這些證據是不是屬於同一輪 run、必要檔案是不是都在、QA 是真的執行過還是被標成通過，以及下一個人收到的是「可以接手」還是「已經公開」。</p>
+<p>這就是 Day 30 要補上的最後一段：<strong>AI 會跑不等於能交付；交付必須有一份可以被下一個人回讀的契約。</strong></p>
+<h2>本日主張：<code>delivery_ready</code> 不等於 <code>published</code></h2>
+<p>Delivery Contract Gate 是一個唯讀的交付 readiness check。它不會：</p>
+<ul>
+<li>發布 iThome 文章。</li>
+<li>上傳 YouTube 影片或字幕。</li>
+<li>修改 production 設定。</li>
+<li>替人類 owner 做最後的公開決策。</li>
+<li>把本機檔案複製到外部服務。</li>
+</ul>
+<p>它只讀取兩份資料：</p>
+<ol>
+<li>
+<code>intent</code>：這次交付預先宣告的身份、stage 順序、必要交付物與責任邊界。</li>
+<li>
+<code>observation</code>：實際完成的 stage、artifact inventory、QA 與 handoff 證據。</li>
+</ol>
+<p>全部對得上時，輸出：</p>
+<pre><code class="language-json">{
+  &quot;allowed&quot;: true,
+  &quot;state&quot;: &quot;delivery_ready&quot;,
+  &quot;reasons&quot;: []
+}
+</code></pre>
+<p>這個結果的意思是：「這一包可以交給下一個責任邊界」。它不是「文章已公開」，也不是「影片已上傳」。外部發布仍要由 release lane 依自己的授權與公開回讀流程處理。</p>
+<h2>六段工作流要留下同一條證據鏈</h2>
+<p>Day 1 建立的基本方向，可以整理成六段：</p>
+<pre><code class="language-text">context → plan → execute → verify → review → deliver
+</code></pre>
+<p>每一段都有自己的工作，但不能各自帶著不同身份往前走。</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>它回答什麼</th>
+<th>成功狀態</th>
+<th>不代表什麼</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>context</code></td>
+<td>我們理解的是哪一份需求與背景？</td>
+<td><code>context_bound</code></td>
+<td>不代表已經修改程式</td>
+</tr>
+<tr>
+<td><code>plan</code></td>
+<td>要做什麼、不能做什麼？</td>
+<td><code>plan_approved</code></td>
+<td>不代表測試已通過</td>
+</tr>
+<tr>
+<td><code>execute</code></td>
+<td>實際改了哪些範圍？</td>
+<td><code>executed_scoped</code></td>
+<td>不代表可以交付</td>
+</tr>
+<tr>
+<td><code>verify</code></td>
+<td>測試與 QA 是否真的通過？</td>
+<td><code>verified</code></td>
+<td>不代表 reviewer 已接受</td>
+</tr>
+<tr>
+<td><code>review</code></td>
+<td>是否有人用正確範圍檢查？</td>
+<td><code>review_complete</code></td>
+<td>不代表已公開</td>
+</tr>
+<tr>
+<td><code>deliver</code></td>
+<td>交付物與責任是否綁定？</td>
+<td><code>deliverable_bound</code></td>
+<td>不代表外部服務已變更</td>
+</tr>
+</tbody>
+</table>
+<p>只要 stage 順序錯了，或其中一段的 <code>evidence_digest</code> 不同，就不能把六個綠燈拼成一個成功結論。</p>
+<h2>先固定 Delivery Contract Identity</h2>
+<p>本日範例要求 <code>intent</code> 與 <code>observation</code> 完全一致的欄位包括：</p>
+<ul>
+<li>
+<code>series_id</code>：哪一個系列或產品。</li>
+<li>
+<code>day</code>：哪一天的交付。</li>
+<li>
+<code>contract_id</code>：哪一份交付契約。</li>
+<li>
+<code>run_id</code>：哪一次執行產生這批結果。</li>
+<li>
+<code>source_digest</code>：哪一份文章、需求或原始碼。</li>
+<li>
+<code>evidence_digest</code>：哪一份證據集合。</li>
+<li>
+<code>policy_version</code>：依哪一版交付規則判斷。</li>
+<li>
+<code>owner</code>：誰負責這一包交付。</li>
+<li>
+<code>target</code>：要交給哪一個責任邊界。</li>
+</ul>
+<pre><code class="language-mermaid">flowchart LR
+    I[Delivery Intent\ncontract + scope] --&gt; C[Context]
+    C --&gt; P[Plan]
+    P --&gt; E[Execute]
+    E --&gt; V[Verify]
+    V --&gt; R[Review]
+    R --&gt; D[Deliver]
+    D --&gt; G{Identity + evidence\n全部一致?}
+    G --&gt;|是| READY[delivery_ready\n交給 release lane]
+    G --&gt;|否| BLOCK[blocked_delivery\n固定 reason code]
+</code></pre>
+<blockquote>
+<p>圖 1｜Delivery Contract Gate 先固定同一份 contract identity，再依序串起 Context、Plan、Execute、Verify、Review 與 Deliver；它只交接，不執行外部發布。</p>
+</blockquote>
+<p>任何一欄不同，都要先回報 <code>blocked_identity</code>。不要因為 verify 的測試很漂亮，就拿另一輪 run 的 article 或 deck 來補齊交付物。</p>
+<h2>有檔案不等於有交付證據</h2>
+<p>交付 inventory 不能只列檔名。至少還要知道：</p>
+<ol>
+<li>檔案是否真的存在且 bytes 大於 0。</li>
+<li>它是否屬於這一次的 <code>evidence_digest</code>。</li>
+<li>它的狀態是不是 <code>verified</code>，而不是 <code>generated</code> 或 <code>candidate</code>。</li>
+<li>QA 是否有自己的 evidence，而不是只複製一個總結果。</li>
+<li>路徑是否可攜，不把本機絕對路徑送進公開來源。</li>
+</ol>
+<p>以本系列 Day 30 為例，必要交付物可以是：</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>最小證據</th>
+<th>常見誤判</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>article</td>
+<td>canonical Markdown 非空、source digest 對得上</td>
+<td>有檔案就當成內容完成</td>
+</tr>
+<tr>
+<td>example</td>
+<td>fixture CLI 與完整 tests 實際通過</td>
+<td>只看程式碼沒有執行</td>
+</tr>
+<tr>
+<td>deck</td>
+<td>官方 checker 無 errors／warnings</td>
+<td>手寫 HTML 冒充官方 scaffold</td>
+</tr>
+<tr>
+<td>video</td>
+<td>FFprobe、full decode、volume 通過</td>
+<td>只有檔名叫 <code>final.mp4</code></td>
+</tr>
+<tr>
+<td>subtitles</td>
+<td>UTF-8、單 cue 單行、時間在界線內</td>
+<td>產生了 SRT 就當成可用</td>
+</tr>
+<tr>
+<td>media QA</td>
+<td>contact sheet、full frame、獨立 visual review</td>
+<td><code>inspected=true</code> 沒有證據檔</td>
+</tr>
+</tbody>
+</table>
+<p>因此 Gate 不接受只有 <code>path</code> 的 inventory。每個 required artifact 都要帶狀態、digest、bytes 與可回讀的相對路徑。</p>
+<h2>Verify 與 Review 是兩種不同證據</h2>
+<p><code>verify</code> 通常由工具完成：測試、syntax check、官方 deck checker、FFprobe、decode、SRT parser。它回答的是「這些可機器驗證的條件是否通過」。</p>
+<p><code>review</code> 則是另一個責任：有人實際查看 evidence，確認畫面沒有裁切、中文沒有變成方塊、字幕沒有蓋住資訊、文章與影片講的是同一件事。它回答的是「這批結果是否值得交接」。</p>
+<p>兩者不能互相代替：</p>
+<ul>
+<li>測試全綠，不代表畫面沒有被裁切。</li>
+<li>視覺看起來舒服，不代表 video 有音訊或字幕時間有效。</li>
+<li>reviewer 說 OK，不代表他檢查的是這一次 run。</li>
+</ul>
+<p>這也是為什麼本機 producer 要先產生 <code>PENDING_VISUAL_REVIEW</code>，完成獨立檢查後才轉成 <code>PASS</code>。</p>
+<h2>Release boundary：不要把本機 Ready 偷換成 Published</h2>
+<p>Day 30 的 Producer 只負責產出與驗證本機 artifacts。當 Gate 回傳 <code>delivery_ready</code> 時，正確的交接語意是：</p>
+<pre><code class="language-text">本機證據完整 → 交給 release lane → 做外部授權檢查 → 發布 → 公開回讀
+</code></pre>
+<p>不正確的語意是：</p>
+<pre><code class="language-text">有 MP4 + 有 article.md → 已經發布
+</code></pre>
+<p>在 observation 裡，external boundary 應該明確寫成 <code>release_lane</code>。如果有人把它改成 <code>published</code>，卻沒有外部 URL 與公開 read-back evidence，Gate 必須阻擋並回報 <code>external_boundary_mismatch</code> 或 <code>publication_evidence_missing</code>。</p>
+<p>這個界線不只是流程文件。它防止自動化在最後一步把「檔案已產生」誤報成「世界已改變」。</p>
+<h2>固定 Reason Code，讓失敗可以修正</h2>
+<table>
+<thead>
+<tr>
+<th>情況</th>
+<th>Reason code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>intent 與 observation identity 不一致</td>
+<td><code>identity_mismatch:&lt;field&gt;</code></td>
+</tr>
+<tr>
+<td>缺少必要 stage</td>
+<td><code>stage_missing:&lt;stage&gt;</code></td>
+</tr>
+<tr>
+<td>出現未知 stage</td>
+<td><code>stage_unknown:&lt;stage&gt;</code></td>
+</tr>
+<tr>
+<td>stage 順序錯誤</td>
+<td><code>stage_order_invalid</code></td>
+</tr>
+<tr>
+<td>stage state 不符</td>
+<td><code>stage_state_invalid:&lt;stage&gt;</code></td>
+</tr>
+<tr>
+<td>stage digest 不一致</td>
+<td><code>stage_digest_mismatch:&lt;stage&gt;</code></td>
+</tr>
+<tr>
+<td>缺少 audit event</td>
+<td><code>audit_event_missing:&lt;stage&gt;</code></td>
+</tr>
+<tr>
+<td>缺少交付物</td>
+<td><code>deliverable_missing:&lt;name&gt;</code></td>
+</tr>
+<tr>
+<td>交付物尚未驗證</td>
+<td><code>deliverable_not_verified:&lt;name&gt;</code></td>
+</tr>
+<tr>
+<td>交付物 digest 或 bytes 不正確</td>
+<td><code>deliverable_digest_mismatch:&lt;name&gt;</code>、<code>deliverable_empty:&lt;name&gt;</code></td>
+</tr>
+<tr>
+<td>使用本機絕對路徑</td>
+<td><code>deliverable_path_absolute:&lt;name&gt;</code></td>
+</tr>
+<tr>
+<td>外部責任邊界不一致</td>
+<td><code>external_boundary_mismatch</code></td>
+</tr>
+<tr>
+<td>handoff 不完整</td>
+<td><code>handoff_incomplete</code></td>
+</tr>
+<tr>
+<td>同一份契約已執行</td>
+<td><code>duplicate_delivery</code></td>
+</tr>
+</tbody>
+</table>
+<p>Reason code 的價值是讓下一個人知道要補哪一段，而不是只收到一個沒有上下文的 <code>false</code>。</p>
+<h2>搭配 GitHub 實作範例</h2>
+<p>本日的 runnable example 放在 <a href="./example-delivery-contract-gate/"><code>example-delivery-contract-gate/</code></a>。它使用 Python 標準函式庫，讀入 <code>intent.json</code> 與 <code>observation.json</code>，只回報交付 readiness，不連線、不發布、不修改輸入。</p>
+<p>先執行成功案例：</p>
+<pre><code class="language-bash">cd example-delivery-contract-gate
+python3 delivery_contract_gate.py fixtures/intent.json fixtures/observation.json
+</code></pre>
+<p>預期輸出：</p>
+<pre><code class="language-json">{
+  &quot;allowed&quot;: true,
+  &quot;state&quot;: &quot;delivery_ready&quot;,
+  &quot;reasons&quot;: []
+}
+</code></pre>
+<p>接著執行完整測試與語法檢查：</p>
+<pre><code class="language-bash">python3 -m unittest -v
+python3 -m py_compile delivery_contract_gate.py test_delivery_contract.py
+</code></pre>
+<p>測試會涵蓋 identity drift、stage 缺漏與亂序、digest drift、artifact inventory、絕對路徑、release boundary、handoff、duplicate contract，以及 deterministic retry。</p>
+<h2>用 Given／When／Then 定義完成條件</h2>
+<h3>1. 同一份 contract 的六段證據完整</h3>
+<pre><code class="language-text">Given intent 與 observation 的 identity 完全一致
+And context、plan、execute、verify、review、deliver 依序完成
+And 每個 stage 有相同 evidence digest 與 audit event
+And 所有必要 artifacts 都是 verified 且 bytes 大於 0
+And external boundary 仍是 release_lane
+When 執行 Delivery Contract Gate
+Then allowed=true
+And state=delivery_ready
+And reasons=[]
+</code></pre>
+<h3>2. 另一輪 run 的 evidence 不能拼進來</h3>
+<pre><code class="language-text">Given observed.run_id 與 intent.run_id 不同
+When 執行 Delivery Contract Gate
+Then state=blocked_identity
+And reasons 包含 identity_mismatch:run_id
+And 不繼續用其他綠燈抵銷 identity 漂移
+</code></pre>
+<h3>3. 產生檔案不等於通過 QA</h3>
+<pre><code class="language-text">Given video artifact 的 status 是 generated
+Or media_qa artifact 的 bytes 是 0
+When 執行 Delivery Contract Gate
+Then allowed=false
+And 回報 deliverable_not_verified 或 deliverable_empty
+</code></pre>
+<h3>4. 本機 ready 不能冒充 public</h3>
+<pre><code class="language-text">Given observation.external_boundary 不是 release_lane
+And 沒有外部 read-back evidence
+When 執行 Delivery Contract Gate
+Then allowed=false
+And 回報 external_boundary_mismatch
+</code></pre>
+<h3>5. 重試必須保持 deterministic</h3>
+<pre><code class="language-text">Given 相同的 intent 與 observation
+When 連續執行兩次
+Then 兩次輸出完全一致
+And intent 與 observation 都沒有被修改
+</code></pre>
+<h2>三個角色的責任邊界</h2>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>負責什麼</th>
+<th>不應該假設的事</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Producer</td>
+<td>產出 source、example、deck、media 與 local QA</td>
+<td>不宣稱外部已發布</td>
+</tr>
+<tr>
+<td>Reviewer</td>
+<td>回讀 QA evidence、確認內容與畫面可交接</td>
+<td>不偷偷改 scope 或放寬 Gate</td>
+</tr>
+<tr>
+<td>Release owner</td>
+<td>檢查授權、執行外部發布並做 public read-back</td>
+<td>不把 <code>delivery_ready</code> 當成 <code>published</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant P as Producer
+    participant G as Delivery Gate
+    participant V as Reviewer
+    participant R as Release owner
+    P-&gt;&gt;G: source + stages + artifacts + QA
+    G--&gt;&gt;V: delivery_ready 或 reason code
+    V-&gt;&gt;V: 回讀 contact sheet、full frame、manifest
+    V--&gt;&gt;R: 可交接的 contract evidence
+    R-&gt;&gt;R: 授權檢查與 idempotency check
+    R--&gt;&gt;P: public read-back 結果
+</code></pre>
+<blockquote>
+<p>圖 2｜Producer 只產出本機證據，Gate 只驗證契約，Reviewer 回讀 evidence，Release owner 才負責外部變更與公開回讀。</p>
+</blockquote>
+<h2>把 30 天收成一個可回讀的習慣</h2>
+<p>這 30 天不是在累積更多工具，而是在縮小「AI 可以自行猜測」的空間：</p>
+<ul>
+<li>Day 1–9：建立 Context、Plan、Execute、Verify、Review、Deliver 的基本責任鏈。</li>
+<li>Day 10–17：把 freshness、change、evidence、traceability、reproducibility 與 artifact promotion 寫成 Gate。</li>
+<li>Day 18–23：把 deployment、stability、SLO、approval、rollback、recovery 接到運維邊界。</li>
+<li>Day 24–29：處理 incident closeout、evidence lifecycle、progressive rollout 與 promotion decision。</li>
+<li>Day 30：把整條流程收成 Delivery Contract，讓交付物、QA、責任與外部發布邊界可以被回讀。</li>
+</ul>
+<p>最後一個 Gate 的目的，不是再加一層 bureaucracy，而是讓「完成」有一個可驗收的意思。</p>
+<h2>本日結語</h2>
+<p>請記住三句話：</p>
+<ol>
+<li>
+<code>delivery_ready</code> 只代表本機證據完整、可以交接，不代表已公開。</li>
+<li>測試、視覺 review、artifact inventory 與 handoff 必須屬於同一份 contract identity。</li>
+<li>任何外部結果都要靠自己的授權與公開 read-back 證明，不能從檔案存在推導出來。</li>
+</ol>
+<p>AI 真的能幫忙，不是因為它把每一步都自動按下去，而是因為每一步都留下下一個人能理解、能驗證、也能安全接手的證據。這就是從需求到交付的工程閉環。</p>
+<h2>GitHub 專案</h2>
+<p>本日的 companion code、fixtures、測試與 Mermaid 原始檔都保留在系列專案的 <code>day30/</code>：</p>
+<ul>
+<li>
+<a href="./article.md"><code>day30/article.md</code></a>：本文 Markdown 來源。</li>
+<li>
+<a href="./example-delivery-contract-gate/"><code>day30/example-delivery-contract-gate/</code></a>：唯讀 Delivery Contract Gate、fixtures 與測試。</li>
+<li>
+<a href="./diagrams/delivery_contract_flow.mmd"><code>day30/diagrams/delivery_contract_flow.mmd</code></a>：六段交付流程圖。</li>
+<li>
+<a href="./diagrams/delivery_contract_states.mmd"><code>day30/diagrams/delivery_contract_states.mmd</code></a>：交付狀態圖。</li>
+</ul>
+ <br/>
+                                                    </div>
+                    </div>
+                </div>
+
+                
+                <div class="qa-action">
+    <ul class="list-inline qa-action__list">
+        <li>
+            <a href="#reply" class="qa-action__link qa-action__link--reply">
+                <i class="fa fa-comment fa-fw qa-action__icon"></i>留言            </a>
+        </li>
+        <li>
+            <a href="https://ithelp.ithome.com.tw/users/login" class="qa-action__trace">
+		<i class="fa fa-heart-o fa-fw qa-action__icon"></i>追蹤
+	</a>
+        </li>
+        <li class="pull-right">
+            <a href="https://ithelp.ithome.com.tw/users/login" class="qa-action__link qa-action__link-report report_btn">
+				<i class="fa fa-flag fa-fw qa-action__icon"></i>檢舉
+		</a>
+        </li>
+            </ul>
+</div>
+
+            </div>
+
+
+        </div>
+
+        
+        <div class="article-series">
+
+            
+                        <div class="clearfix article-series-page">
+                <div class="article-series-page__line"></div>
+                <div class="article-series-page__wrapper">
+                                            <a href="https://ithelp.ithome.com.tw/articles/10403455" class="article-series-page__link">
+                            <div class="article-series-page__arrow article-series-page__arrow--left"><i class="fa fa-fw fa-angle-left" aria-hidden="true"></i></div>
+                            <div class="article-series-page__content">
+                                <div class="article-series-page__text">上一篇</div>
+                                <div class="article-series-page__title">Day 29｜放量不是看到綠燈就全開！用 Rollout Promotion Gate 把觀察窗、分段決策與責任交接綁在一起</div>
+                            </div>
+                        </a>
+                                    </div>
+                <div class="article-series-page__wrapper text-right">
+                                    </div>
+            </div>
+                        
+            <div class="article-series-catalog">
+                <div class="article-series-catalog__badge">
+                    系列文
+                </div>
+                <div class="article-series-catalog__topic">
+                    <a href="https://ithelp.ithome.com.tw/users/20183428/ironman/9128" class="article-series-catalog__topic-link">不只會寫 Code：用 ChatGPT × Codex 打造企業級 AI 開發工作流</a>
+                     共 <span class="article-series-catalog__num">30</span> 篇
+                </div>
+                <div class="clearfix">
+                    <div>
+                        <div class="article-series-catalog__title">目錄</div>
+
+                        <div class="pull-right subscription-group">
+                            <a href="https://ithelp.ithome.com.tw/rss/series/9128" class="rss-icon" target="_blank">
+                                <i class="fa fa-rss fa-fw" aria-hidden="true"></i>RSS系列文
+                            </a>
+                                                            <a href="https://ithelp.ithome.com.tw/users/login" class="article-series-catalog__subscription subscription-btn">
+                                    <i class="fa fa-bookmark-o fa-fw" aria-hidden="true"></i>訂閱系列文
+                                </a>
+                            
+                            <div class="article-series-catalog__subscription-num">
+                                <span class="subscription-amount">3</span> 人訂閱
+                            </div>
+                        </div>
+                    </div>
+                    <ol class="article-series-catalog__lists">
+                                                <li class="article-series-catalog__list">
+                            <div class="article-series-catalog__list-num">26</div>
+                            <a href="https://ithelp.ithome.com.tw/articles/10403452" class="article-series-catalog__link">Day 26｜證據留住了，誰都能讀嗎？用 Evidence Access Gate 守住最小權限與稽核範圍</a>
+                        </li>
+                                                <li class="article-series-catalog__list">
+                            <div class="article-series-catalog__list-num">27</div>
+                            <a href="https://ithelp.ithome.com.tw/articles/10403453" class="article-series-catalog__link">Day 27｜Evidence 都通過了，整條 Incident Pipeline 真的接得起來嗎？用 Lifecycle Gate 串起 Closeout、Retention 與 Access</a>
+                        </li>
+                                                <li class="article-series-catalog__list">
+                            <div class="article-series-catalog__list-num">28</div>
+                            <a href="https://ithelp.ithome.com.tw/articles/10403454" class="article-series-catalog__link">Day 28｜rollout 不是一次推完就好！用 Progressive Rollout Gate 把 canary、flag、rollback 與健康檢查綁成可觀察流程</a>
+                        </li>
+                                                <li class="article-series-catalog__list">
+                            <div class="article-series-catalog__list-num">29</div>
+                            <a href="https://ithelp.ithome.com.tw/articles/10403455" class="article-series-catalog__link">Day 29｜放量不是看到綠燈就全開！用 Rollout Promotion Gate 把觀察窗、分段決策與責任交接綁在一起</a>
+                        </li>
+                                                <li class="article-series-catalog__list">
+                            <div class="article-series-catalog__list-num">30</div>
+                            <a href="https://ithelp.ithome.com.tw/articles/10403456" class="article-series-catalog__link">Day 30｜AI 會跑不等於能交付！用 Delivery Contract 把 30 天工作流收成可回讀的工程閉環</a>
+                        </li>
+                                            </ol>
+                   
+
+                    <a href="https://ithelp.ithome.com.tw/users/20183428/ironman/9128"><i class="fa fa-fw fa-chevron-circle-right" aria-hidden="true"></i>完整目錄</a>
+                </div>
+            </div>
+        </div>
+        
+
+        
+        
+            
+        
+                
+        <div class="a810" align="center" style="margin-top: 2rem">
+    <script src="https://itadapi.ithome.com.tw/media/serve?type=B9&channel=ithome_forum&encoding=Utf8"></script>
+</div>        
+
+        
+        <div id="itplusPopulaRecommendations">
+    <img src="https://ithelp.ithome.com.tw/images/itplus/itplus_logo_black_word.svg" alt="圖片" width="80">
+    <div>&nbsp;&nbsp;<b>熱門推薦</b></div>
+</div>
+<div class="scrollable" id="itplusPopulaRecommendationsContent">
+    <div id="videoAndIntroduce" v-for="item in items">
+        <img :src="item.coverImage" alt="圖片">
+        <div id="videoTitle">
+            <a 
+                :href="item.link">
+                {{ item.subject }}
+            </a>
+        </div>
+        <div id="channelVendorBottom">
+            {{ item.channelVendor }}
+            <span v-show="item.channelVendor.length > 0"> | </span>
+            <span v-show="(item.showWebinarstarted)">{{ item.webinarstarted }}</span>
+            <span v-show="(item.showWebinarstarted) && ((item.liveStatus == '直播中'))"> | </span>
+            
+            <div id="duration" v-if="!((item.type == 'webinar') && (item.liveStatus == '直播中')) && (item.canRegister !== 1)">{{ formatDate(item.duration) }}</div>
+            <!-- live icon svg-->
+            <div class="live-icon" v-if="(item.type == 'webinar') && (item.liveStatus == '直播中')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path fill="#ef4949" d="M5.99 4.929a.75.75 0 0 1 0 1.06a8.5 8.5 0 0 0 0 12.021a.75.75 0 0 1-1.061 1.06c-3.905-3.905-3.905-10.236 0-14.141a.75.75 0 0 1 1.06 0m13.081 0c3.905 3.905 3.905 10.237 0 14.142a.75.75 0 0 1-1.06-1.06a8.5 8.5 0 0 0 0-12.022a.75.75 0 1 1 1.06-1.06M8.818 7.757a.75.75 0 0 1 0 1.06a4.5 4.5 0 0 0 0 6.365a.75.75 0 0 1-1.06 1.06a6 6 0 0 1 0-8.485a.75.75 0 0 1 1.06 0m7.425 0a6 6 0 0 1 0 8.485a.75.75 0 1 1-1.061-1.06a4.5 4.5 0 0 0 0-6.364a.75.75 0 0 1 1.06-1.06M12 10.5a1.5 1.5 0 1 1 0 3a1.5 1.5 0 0 1 0-3"/></svg>
+                <span>直播中</span>
+            </div>
+        </div>
+        <a :href="item.link" v-if="item.canRegister === 1">
+            <button id="singUpBtn">立即報名</button>
+        </a>
+    </div>
+</div>
+        
+
+        
+                
+        
+        <div id="reply">
+                            <div class="reply-status">
+                                            <h4 class="text-center">尚未有邦友留言</h4>
+                                        <a href="https://ithelp.ithome.com.tw/users/login" class="btn btn-main">立即登入留言</a>
+                </div>
+                    </div>
+        
+
+    </div>
+    <div class="rightside">
+        <div class="sidebox">
+        <a href="https://ithelp.ithome.com.tw/2026ironman?sc=iThelpR" target="_blank" class="ir-sidebox__header ir-sidebox__header--ironman">
+            <img src="https://ithelp.ithome.com.tw/storage/image/ironman18thsidebar.png" alt="" class="ir-sidebox__header-img">iThome鐵人賽
+            <i class="fa fa-chevron-circle-right" aria-hidden="true"></i>
+        </a>
+        <div class="ir-sidebox__body clearfix">
+            
+            
+            
+
+            <div class="ir-sidebox__countdown ir-sidebox__countdown--bottom">
+                參賽組數
+                <div class="ir-sidebox__countdown-num">247<span class="ir-sidebox__countdown-unit"> 組</span></div>
+
+            </div>
+            <div class="ir-sidebox__countdown ir-sidebox__countdown--space ir-sidebox__countdown--bottom">
+                團體組數
+                <div class="ir-sidebox__countdown-num">9<span class="ir-sidebox__countdown-unit"> 組</span></div>
+                
+            </div>
+            <div class="ir-sidebox__countdown">
+                累計文章數
+                <div class="ir-sidebox__countdown-num">2036<span class="ir-sidebox__countdown-unit"> 篇</span></div>
+
+            </div>
+            <div class="ir-sidebox__countdown ir-sidebox__countdown--space">
+                                    最後報名日
+                    <div class="ir-sidebox__countdown-time">
+                        <div class="ir-sidebox__countdown-num">
+                            9/15
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    
+
+
+
+
+
+<div class="sidebox">
+    <div class="sidebox__header clearfix">
+        <img src="https://ithelp.ithome.com.tw/images/itplus/itplus_logo_white_word.svg" alt="iT+看影片追技術" width="50">
+        看影片追技術
+        <a href="https://itplus.ithome.com.tw/vodList?utm_source=iThelp&utm_medium=sidebar&utm_campaign=iThelpesidebar" class="sidebox__moreLink">看更多<i class="fa fa-caret-right fa-fw"></i></a>
+    </div>
+    <div class="sidebox__body" id="it_plus_video">
+        <template v-for="item in items" :key="item.id">
+            <div id="itplus_video">
+                <a :href="itplusUrl(item)">
+                    <img :src="item.coverImage" alt="圖片" width="100" height="60">
+                </a>
+            </div>
+            <div id="itplus_title">
+                <a
+                    :href="item.link"
+                    class="truncate">
+                    {{ item.subject }}
+                </a>
+
+                <div id="channelVendor">
+                    {{ item.channelVendor }}
+                    <span v-show="item.channelVendor.length > 0"> | </span>
+                    
+                    <div id="duration" v-if="!((item.type == 'webinar') && (item.liveStatus == '直播中'))">{{ formatDate(item.duration) }}</div>
+                    <!-- live icon svg-->
+                    <div class="live-icon" v-if="(item.type == 'webinar') && (item.liveStatus == '直播中')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path fill="#ef4949" d="M5.99 4.929a.75.75 0 0 1 0 1.06a8.5 8.5 0 0 0 0 12.021a.75.75 0 0 1-1.061 1.06c-3.905-3.905-3.905-10.236 0-14.141a.75.75 0 0 1 1.06 0m13.081 0c3.905 3.905 3.905 10.237 0 14.142a.75.75 0 0 1-1.06-1.06a8.5 8.5 0 0 0 0-12.022a.75.75 0 1 1 1.06-1.06M8.818 7.757a.75.75 0 0 1 0 1.06a4.5 4.5 0 0 0 0 6.365a.75.75 0 0 1-1.06 1.06a6 6 0 0 1 0-8.485a.75.75 0 0 1 1.06 0m7.425 0a6 6 0 0 1 0 8.485a.75.75 0 1 1-1.061-1.06a4.5 4.5 0 0 0 0-6.364a.75.75 0 0 1 1.06-1.06M12 10.5a1.5 1.5 0 1 1 0 3a1.5 1.5 0 0 1 0-3"/></svg>
+                        <span><b>直播中</b></span>
+                    </div>
+                </div>
+            </div>
+            <div v-show="$index !== items.length - 1">
+                <hr id="itplus_hr">
+            </div>
+        </template>
+    </div>
+</div>
+
+<div class="sidebox">
+    <div class="sidebox__header clearfix">
+        熱門tag
+        
+        
+    </div>
+    <div class="sidebox__body">
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/15th%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                15th鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/16th%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                16th鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/13th%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                13th鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/14th%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                14th鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/17th%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                17th鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/12th%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                12th鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/11th%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                11th鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/2019%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                2019鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/javascript" class="tag sidebox__tagList">
+                javascript
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/2018%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                2018鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/python" class="tag sidebox__tagList">
+                python
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/2017%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                2017鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/windows" class="tag sidebox__tagList">
+                windows
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/php" class="tag sidebox__tagList">
+                php
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/18th%E9%90%B5%E4%BA%BA%E8%B3%BD" class="tag sidebox__tagList">
+                18th鐵人賽
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/c%23" class="tag sidebox__tagList">
+                c#
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/linux" class="tag sidebox__tagList">
+                linux
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/windows%20server" class="tag sidebox__tagList">
+                windows server
+            </a>
+                    <a href="https://ithelp.ithome.com.tw/tags/questions/css" class="tag sidebox__tagList">
+                css
+            </a>
+            </div>
+</div>
+
+<div class="sidebox">
+    <script src="https://itadapi.ithome.com.tw/media/serve?type=B8&channel=ithome_forum&encoding=Utf8"></script>
+</div>
+
+
+<div class="sidebox">
+    <div class="sidebox__header">
+        熱門問題
+    </div>
+    <div class="sidebox__body">
+        <ul class="list-unstyled sidebox__list">
+                            <li class="sidebox__item">
+                    <a href="https://ithelp.ithome.com.tw/questions/10220133" class="sidebox__itemLink">
+                        請問TIPTOP T100 Oracle DB正式區複製到測試區
+                    </a>
+                </li>
+                            <li class="sidebox__item">
+                    <a href="https://ithelp.ithome.com.tw/questions/10220134" class="sidebox__itemLink">
+                        鼎新Workflow ERP AiGP 用筆電開啟速度超慢，有妙方嗎?
+                    </a>
+                </li>
+                            <li class="sidebox__item">
+                    <a href="https://ithelp.ithome.com.tw/questions/10220135" class="sidebox__itemLink">
+                        新人IT可以做甚麼
+                    </a>
+                </li>
+                    </ul>
+    </div>
+</div>
+
+<div class="sidebox">
+	<script src="https://itadapi.ithome.com.tw/media/serve?type=B2&channel=ithome_forum&encoding=Utf8"></script>
+	<div class="a19word">
+		<script type="text/javascript" src="https://itadapi.ithome.com.tw/media/serve?type=T1&channel=ithome_forum&encoding=Utf8"> </script>
+	</div>
+</div>
+
+<div class="sidebox">
+    <div class="sidebox__header">
+        熱門回答
+    </div>
+    <div class="sidebox__body">
+        <ul class="list-unstyled sidebox__list">
+                            <li class="sidebox__item">
+                    <a href="https://ithelp.ithome.com.tw/questions/10220133" class="sidebox__itemLink">
+                        請問TIPTOP T100 Oracle DB正式區複製到測試區
+                    </a>
+                </li>
+                    </ul>
+    </div>
+</div>
+
+<div class="sidebox">
+    <div class="sidebox__header">
+        熱門文章
+    </div>
+    <div class="sidebox__body">
+        <ul class="list-unstyled sidebox__list">
+                            <li class="sidebox__item">
+                    <a href="https://ithelp.ithome.com.tw/articles/10403125" class="sidebox__itemLink">
+                        Day 2｜DGX Spark GB10 深度解析：128GB 統一記憶體到底解決了什麼問題
+                    </a>
+                </li>
+                            <li class="sidebox__item">
+                    <a href="https://ithelp.ithome.com.tw/articles/10403133" class="sidebox__itemLink">
+                        Day 3｜網路與儲存規劃：10GbE 骨幹、雙 Spark 直連與 NFS 集中模型庫
+                    </a>
+                </li>
+                            <li class="sidebox__item">
+                    <a href="https://ithelp.ithome.com.tw/articles/10402894" class="sidebox__itemLink">
+                        Day 1｜為什麼 2026 年是地端 AI 部署元年：系列規劃與硬體總覽
+                    </a>
+                </li>
+                            <li class="sidebox__item">
+                    <a href="https://ithelp.ithome.com.tw/articles/10402606" class="sidebox__itemLink">
+                        [技術] 我做了一個能讀真實 PLC 的 LLM Agent——關於工業協議 Tool Calling,沒人告訴你的那些事
+                    </a>
+                </li>
+                            <li class="sidebox__item">
+                    <a href="https://ithelp.ithome.com.tw/articles/10403351" class="sidebox__itemLink">
+                        Day 1 | AI Infra 到底是什麼？
+                    </a>
+                </li>
+                    </ul>
+    </div>
+</div>
+
+<div class="sidebox">
+    <script src="https://itadapi.ithome.com.tw/media/serve?type=B3&channel=ithome_forum&encoding=Utf8"></script>
+</div>
+
+
+<div class="sidebox">
+	<div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.5";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
+
+	<div class="fb-page" data-href="https://www.facebook.com/ithelpfans/" data-width="300" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/ithelpfans/"><a href="https://www.facebook.com/ithelpfans/">IT邦幫忙</a></blockquote></div></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    </div>
+            </div>
+        </div>
+    </div>
+
+        <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="a970">
+                    <script src="https://itadapi.ithome.com.tw/media/serve?type=B1&channel=ithome_forum&encoding=Utf8"></script>
+                </div>
+                <ul class="list-inline footer__menu">
+                    <li class="footer__item">電週文化事業版權所有、轉載必究 | Copyright © <a href="https://www.ithome.com.tw/" target="_blank" class="footer__link">iThome</a></li>
+                    <li><a href="https://www.ithome.com.tw/aboutus/" target="_blank" class="footer__link">刊登廣告</a></li>
+                    <li><a href="https://www.ithome.com.tw/aboutus/" target="_blank" class="footer__link">授權服務</a></li>
+                    <li><a href="mailto:ithelp@mail.ithome.com.tw" class="footer__link">服務信箱</a></li>
+                    <li><a href="https://www.ithome.com.tw/terms" target="_blank" class="footer__link">隱私權聲明與會員使用條款</a></li>
+                    <li><a href="https://ithelp.ithome.com.tw/guide" class="footer__link">iT邦幫忙使用說明</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+<script src="https://ithelp.ithome.com.tw/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.4.2/js/messenger.min.js"></script>
+<script>
+    Messenger.options = {
+        extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left',
+        theme: 'block'
+    };
+
+    function getCookie(name) {
+        var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+
+        if (arr = document.cookie.match(reg))
+            return unescape(arr[2]);
+        else
+            return null;
+    }
+
+    window.Notification.TOKEN = getCookie("_token");
+</script>
+<script>
+    $(function(){
+        $.ajaxPrefilter(function(options, originalOptions, jqXHR){
+            if (options.type.toLowerCase() !== "get" && !options.beforeSend) {
+                options.beforeSend = function(xhr) {
+                    xhr.setRequestHeader('X-CSRF-TOKEN', '6jWsiii9uHkqk99YnNvWUY5CAiezONT6oprIrXjO');
+                }
+            }
+        });
+    });
+</script>
+<script src="https://ithelp.ithome.com.tw/js/lib/vue.min.js"></script>
+<script src="https://ithelp.ithome.com.tw/js/lib/sweetalert.min.js"></script>
+<script src="https://ithelp.ithome.com.tw/js/event.js?20180530"></script>
+<script src="https://ithelp.ithome.com.tw/lib/select2/js/select2.full.min.js"></script>
+
+<script src="https://ithelp.ithome.com.tw/js/ImgPreview.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    var self = this;
+    const itPlusVideo = new Vue({
+        el: '#it_plus_video',
+        data: {
+            items: [],
+        },
+        created() {
+            this.fetchData();
+        },
+        methods: {
+            fetchData() {
+                axios.get('/api/itplus/sidebar')
+                        .then(response => {
+                            this.items = response.data.data;
+                        })
+                        .catch(error => {
+                            console.error("error!", error);
+                        });
+//                const cacheKey = 'cachedData';
+//                const cachedDataString = localStorage.getItem(cacheKey);
+//                const cachedData = JSON.parse(cachedDataString);
+//
+//                // 檢查緩存數據是否存在並且未過期
+//                if (cachedData && Date.now() - cachedData.timestamp < 5 * 60 * 1000) {
+//                    // 使用緩存數據
+//                    this.items = cachedData.data;
+//                } else {
+//                    // 獲取最新數據
+//                    axios.get('/api/itplus/sidebar')
+//                            .then(response => {
+//                                console.log(response.data.cache);
+//                                this.items = response.data.data;
+//
+//                                // 將獲取到的數據存儲在本地存儲中
+//                                const newData = { data: response.data.data, timestamp: Date.now() };
+//                                localStorage.setItem(cacheKey, JSON.stringify(newData));
+//                            })
+//                            .catch(error => {
+//                                console.error("error!", error);
+//                            });
+//                }
+            },
+            formatDate(time) {
+                const parts = time.split(':');	//	移除":"符號
+                const hours = parseInt(parts[0]);
+                const minutes = parseInt(parts[1]);
+
+                const totalMinutes = hours * 60 + minutes;
+
+                return totalMinutes + " 分";
+            },
+        }
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    var self = this;
+    const itplusPopulaRecommendationsContent = new Vue({
+        el: '#itplusPopulaRecommendationsContent',
+        data: {
+            items: []
+        },
+        created() {
+            this.fetchData();
+        },
+        methods: {
+            fetchData() {
+                axios.get('/api/itplus/bottom')
+                        .then(response => {
+                            this.items = response.data.data;
+                            console.log(response.data.data);
+                        })
+                        .catch(error => {
+                            console.error("error!", error);
+                        });
+            },
+            formatDate(time) {
+                const parts = time.split(':');	//	移除":"符號
+                const hours = parseInt(parts[0]);
+                const minutes = parseInt(parts[1]);
+
+                const totalMinutes = hours * 60 + minutes;
+
+                return totalMinutes + " 分";
+            },
+        }
+    });
+</script>
+
+<div class="modal fade" id="AtUser" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title text-center">標記使用者</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="invite_person" class="control-label">輸入對方的帳號或暱稱</label>
+                    <input type="text" class="form-control modal-input" id="invite_person" v-model="result_text" debounce="500">
+                    <div id="editor_tagged_ids"></div>
+                </div>
+                <ul class="list-unstyled invitation">
+                    <li style="text-align: center">
+                        <template v-if="!!result_text && !result_list.length && is_loading">
+                            Loading
+                        </template>
+                        <template v-if="!!result_text && !result_list.length && !is_loading">
+                            找不到結果。
+                        </template>
+                    </li>
+                    <li class="invitation-list" v-for="result in result_list">
+                        <img v-if="result && result.center_id" :src="'https://member.ithome.com.tw/avatars/' + result.center_id + '?s=ithelp'" style="float: left; margin-left: 10px; width: 48px; height: 48px;">
+                        <div class="invitation-list__content clearfix">
+                            <a class="btn btn-main invitation-list__btn" @click="AtUserByID(result.label, result.id)">標記</a>
+                            <div><a href="#" class="invitation-list__name">{{ result.label }}</a></div>
+                            <div><a href="#" class="invitation-list__account">{{ result.account }}</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <a type="button" class="btn btn-main" data-dismiss="modal">關閉</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script>hljs.highlightAll()</script>
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2d62fefdf81ddc1',t:'MTc4NzExMTM1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+</html>

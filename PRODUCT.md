@@ -39,7 +39,7 @@ ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispa
 - **排程**（`worker/` + `.github/workflows/scheduled-update.yml`）：Cloudflare Worker `ironman-observer-trigger` 每 10 分鐘打 `workflow_dispatch` 觸發更新（GitHub 原生 `schedule` 在整點高峰會延遲/漏觸發，故改用 CF 網路排程）；資料有變才 commit + deploy（無變更跳過）。
 - Browser UA mandatory for scraping; RSS/series page consistency verified.
 - Known current UI issues: **design system landed** (`DESIGN.md` + `.impeccable/design.json` tokens + `web/src/styles/design-system.css`, inline on all three pages) — light/dark/auto theme, unified DAY badge, card view-model + DOM builders shared between SSR/client (`web/src/lib/card.ts` + `card-dom.ts`, structural contract tests), `updatedAt` 顯示格式統一（`web/src/lib/format.ts`，SSR/client 共用；絕對時間固定 Asia/Taipei），未開賽系列顯示「尚未開賽（已報名 N 天）」（報名日→臺北曆日差）。Remaining nits: the site polls ithelp every 10 min (~36k req/day).
-- Data-correctness fixes (2026-08-18): iThome DAY badges freeze on paginated pages → `parse-series.ts` prefers title `Day N` prefix, falls back to badge; dayCount semantics = max(header, distinct days) in `scrape.ts` (heals frozen/mismatched headers like 帶刺哥 30 articles/dayCount 12). 3 series (alanliang/jackietung/c8763yee) have titles without Day prefix + broken upstream badges — unresolvable per-article day; dayCount reflects actual article count.
+- Data-correctness fixes (2026-08-19): dayCount = 官方「參賽天數」（連續發文 streak），`scrape.ts` 取 `max(系列頁標頭, 最新文章頁 ir-article__days 徽章)`——大量補發不增加 streak（帶刺哥 9128 斷賽後 08-17 一口氣補 18 篇到 30 篇，標頭/徽章凍結在 12 → 12/30 非完賽；2026-08-18 的 `max(標頭, 去重標題 Day)` 把這類系列誤判成完賽，實為「標頭凍結」誤診，已移除）。單篇 `day` 仍以標題 `Day N` 前綴為優先（清單徽章分頁後凍結）；標題無前綴的系列（alanliang/jackietung/c8763yee）單篇 day 不可還原，僅供排序。
 
 ## Brand Commitments
 
@@ -81,7 +81,7 @@ Feature ideas carried over from the removed `docs/PROJECT-INTRODUCTION.md`, plus
 - [x] **Completion / activity badge enhancements**（完成 2026-08-05，daily-status 功能）：`web/src/lib/daily-status.ts` 動態狀態 chip（今日發文 / 昨日發文 / 停更 N 天 / 長時間停更 / 鐵人煉成 / 已刪文），SSR 與 client 共用同一判定，天數細節放 tooltip。
 - [x] **Favorites / tracking specific series**（完成 2026-08-06）：localStorage 書籤（系列 ID 跨年度共用），卡片星號 toggle（grid/list 皆可），「我的收藏」分頁沿用排序器，空狀態引導；僅限本裝置/瀏覽器。
 - [x] **Team scoreboard**（完成 2026-08-12）：`web/src/lib/teams.ts` 純函式聚合 + Dashboard 計分板視圖（總瀏覽/人均/平均進度/今日發文 + 警示：今日缺發/停更≥2 天/未開賽，與 daily-status 共用判定）。
-- [x] **DAY 資料正確性**（完成 2026-08-18）：`parse-series.ts` 的 day 以標題 `Day N` 前綴為優先（iThome 分頁徽章凍結：帶刺哥 30 篇全標 DAY 12 等 10 支系列失真）；`scrape.ts` 的 `dayCount` 語意 = 標頭 vs 實際去重 DAY 數取較大（凍結/矛盾時自癒；已刪文維持標頭）。剩 3 支系列（alanliang/jackietung/c8763yee）標題無前綴 + 上游徽章壞，單篇 day 無法還原，dayCount 反映實際文章數。
+- [x] **DAY 資料正確性**（完成 2026-08-18，修正 2026-08-19）：`parse-series.ts` 的 day 以標題 `Day N` 前綴為優先（iThome 清單徽章分頁後凍結）；`scrape.ts` 的 `dayCount` = 官方參賽天數：`max(標頭, 最新文章頁 ir-article__days 徽章)`（`parse-article.ts`，權威值；徽章失敗退回標頭、已刪文維持標頭）。大量補發（帶刺哥 30 篇/streak 12）不再誤判完賽；徽章同時治癒標頭落後的案例。標題無前綴的 3 支系列單篇 day 不可還原（僅排序用）。
 - **Real-time updates**: 近即時已是當前架構終點：Cloudflare Worker cron 每 10 分鐘批次更新 + 60s client refresh（2026-08-06 起）。真 near-real-time 需外部推送（WebSocket/SSE）或縮短 cron 間隔，屬成本 vs 即時性取捨，超出零成本約束；暫不排程。
 
 ### Already covered, no action needed
