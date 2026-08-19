@@ -82,6 +82,7 @@ Feature ideas carried over from the removed `docs/PROJECT-INTRODUCTION.md`, plus
 - [x] **Favorites / tracking specific series**（完成 2026-08-06）：localStorage 書籤（系列 ID 跨年度共用），卡片星號 toggle（grid/list 皆可），「我的收藏」分頁沿用排序器，空狀態引導；僅限本裝置/瀏覽器。
 - [x] **Team scoreboard**（完成 2026-08-12）：`web/src/lib/teams.ts` 純函式聚合 + Dashboard 計分板視圖（總瀏覽/人均/平均進度/今日發文 + 警示：今日缺發/停更≥2 天/未開賽，與 daily-status 共用判定）。
 - [x] **DAY 資料正確性**（完成 2026-08-18，修正 2026-08-19）：`parse-series.ts` 的 day 以標題 `Day N` 前綴為優先（iThome 清單徽章分頁後凍結）；`scrape.ts` 的 `dayCount` = 官方參賽天數：`max(標頭, 最新文章頁 ir-article__days 徽章)`（`parse-article.ts`，權威值；徽章失敗退回標頭、已刪文維持標頭）。大量補發（帶刺哥 30 篇/streak 12）不再誤判完賽；徽章同時治癒標頭落後的案例。標題無前綴的 3 支系列單篇 day 不可還原（僅排序用）。
+- [x] **Hall of Fame / 名人堂**（完成 2026-08-19）：`web/src/data/famous-authors.json`（key = ithelp user.id）+ `web/src/lib/hall-of-fame.ts` 純函式 join；獨立頁面 `/hall-of-fame/`（SSR + client 年切換）；read-only 系列卡（SSR `HallOfFameSeriesCard.astro` ↔ client `buildReadOnlyCard`，共用 `cardViewModel`）；收錄標準：研討會講師/社群核心/開源作者/書籍作者，每條附可驗證來源連結；無系列年度隱藏。
 - **Real-time updates**: 近即時已是當前架構終點：Cloudflare Worker cron 每 10 分鐘批次更新 + 60s client refresh（2026-08-06 起）。真 near-real-time 需外部推送（WebSocket/SSE）或縮短 cron 間隔，屬成本 vs 即時性取捨，超出零成本約束；暫不排程。
 
 ### Already covered, no action needed
