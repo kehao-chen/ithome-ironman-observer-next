@@ -103,12 +103,10 @@ const rows = matchFamousAuthors(entries, data);
   const themeToggle = document.getElementById("theme-toggle");
   const rootEl = document.documentElement;
 
-  let current: YearData = (window as any).HOF_DATA;
   let today = taipeiToday();
 
   function render(data: YearData) {
     if (!data) return;
-    current = data;
     if (yearSelect) yearSelect.value = String(data.year);
     const rows = matchFamousAuthors(loadFamousAuthors(), data);
     hofTotalCount.textContent = String(rows.length);
@@ -208,5 +206,5 @@ const rows = matchFamousAuthors(entries, data);
     if (next === "auto") rootEl.removeAttribute("data-theme"); else rootEl.setAttribute("data-theme", next);
   });
 
-  render(current);
+  render((window as any).HOF_DATA);
 </script>

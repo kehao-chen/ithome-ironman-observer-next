@@ -4,10 +4,11 @@
 
 🔗 線上站：https://ithome-ironman-observer.happyhacking.ninja/
 
-網站有三頁：
+網站有四頁：
 
 - **[賽事觀察台](https://ithome-ironman-observer.happyhacking.ninja/)**（首頁）：每支參賽系列一張卡片，看得到進度和人氣
 - **[團隊計分板](https://ithome-ironman-observer.happyhacking.ninja/teams/)**：把組團視為參賽單位，總瀏覽、人均、平均進度、今日發文與落後警示
+- **[名人堂](https://ithome-ironman-observer.happyhacking.ninja/hall-of-fame/)**：表列具公眾知名度的參賽作者（如高見龍），附一句話介紹、可驗證來源連結與其系列文章
 - **[Insights 分析](https://ithome-ironman-observer.happyhacking.ninja/insights/)**：整屆賽事的分析，發文時段、人氣分佈、組別、標題文字等圖表
 
 ## 專案起源
