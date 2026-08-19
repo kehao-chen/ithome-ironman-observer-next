@@ -150,8 +150,8 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
   - 通過：`https://` / `http://`（scheme 大小寫接受，`HTTPS://` 合法）
   - 拒絕：`javascript:` / `data:` / `vbscript:`、**protocol-relative**（`//evil.example`）、**省略斜線**（`https:example.com` 不符 `^https?:\/\/`）、相對路徑、空值、前後空白
   - 註：`HTTPS://example.com` 在 strict regex（`/i`）下**通過**（scheme 大小寫是合法 URL 語意；spec 前版列為拒絕與 parser 行為衝突，本版裁決接受——§7 決策記錄更新）。<sup>若要求連大小寫也拒絕，需加 `url.startsWith(url.slice(0, 8))` 大小寫檢查——本 spec 不採。</sup>
-  - **不含 scheme 的相對路徑（如 `/users/20065770/profile`）判定為不安全**——名人 profile 一律用完整 `https://ithelp.ithome.com.tw` 絕對 URL 建構（`cardViewModel` 的 `profileUrl` 同樣以絕對 URL 輸出，兩處格式統一為 `/users/{id}` 絕對路徑）。
-- **格式統一**：`cardViewModel.profileUrl`（`/users/{id}`）與 `Series.user.profileUrl`（`/users/{id}/profile`）兩格式並存——**統一為**：名人標題 profile 連結與系列卡 profile 連結都使用 `cardViewModel` 產生的 `/users/{id}` 絕對 URL（`https://ithelp.ithome.com.tw/users/{id}`），`user.profileUrl` 不再直接用作 href（僅作 fallback 資料保留）。避免同頁兩種 URL 格式。
+  - **不含 scheme 的相對路徑（如 `/users/20065770/profile`）判定為不安全**——名人 profile 一律用完整 `https://ithelp.ithome.com.tw` 絕對 URL 建構（`cardViewModel` 的 `profileUrl` 同樣以絕對 URL 輸出，兩處格式統一為完整絕對 URL `https://ithelp.ithome.com.tw/users/{id}`）。
+- **格式統一**：`cardViewModel.profileUrl`（`/users/{id}`）與 `Series.user.profileUrl`（`/users/{id}/profile`）兩格式並存——**統一為**：名人標題 profile 連結與系列卡 profile 連結都使用 `cardViewModel` 產生的完整絕對 URL `https://ithelp.ithome.com.tw/users/{id}`，`user.profileUrl` 不再直接用作 href（僅作 fallback 資料保留）。避免同頁兩種 URL 格式。
 - JSON 是 repo 內受信任資料（非外部輸入），但防禦性檢查照做（避免未來引入未驗證來源）。
 
 ## 4. 檔案變更清單
