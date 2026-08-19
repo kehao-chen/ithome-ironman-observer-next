@@ -75,15 +75,15 @@ type FamousRow = {
 export function loadFamousAuthors(): FamousEntry[];   // 讀 JSON，key 轉 number 放入 id
 export function matchFamousAuthors(
   entries: FamousEntry[],
-  data: YearData,
+  data: YearData & { series: ViewSeries[] },  // 年度資料容器；完整 SSR Series 或 client compact ViewSeries 皆可
 ): FamousRow[];  // entry.id ∈ series.user.id → 收集該年度系列；無系列 → 排除
 export function isSafeUrl(url: string): boolean;       // 見 §3
 ```
 
 - **`id` 是 join 唯一鍵**：`loadFamousAuthors` 把 JSON object key 轉 `number` 放入 `entry.id`——JSON key 不遺失，`matchFamousAuthors` 以 `series.user.id === entry.id` join。
-- `matchFamousAuthors` 輸入名人清單 + `YearData`，輸出「有系列」的名人列（§2.3：無系列即隱藏，不顯示空卡）。
+- `matchFamousAuthors` 輸入名人清單 + **含 `ViewSeries[]` 的年度資料容器**（`YearData & { series: ViewSeries[] }`）——完整 SSR Series（無 `sumViews`）與 client compact ViewSeries（帶 `sumViews`）皆可輸入，`totalViewsOf` 語意一致。
 - `user.name` 不符（改名）時以 id 為準，記錄 warning（defensive，非失敗——§5.1C）。
-- **資料流程（compact/full 一致）**：`matchFamousAuthors` 接受 `ViewSeries[]`（`sumViews`/`todayMaxViews` 可選）。名人堂 client 年度切換沿用 Dashboard 的 compact transformation（`sumViews` + 最新文章 + `todayMaxViews`），與主卡片 views 語意一致；SSR 初始年度輸出完整 Series（無 sumViews → `totalViewsOf` 退回 articles 求和）。兩種輸入結果一致。
+- **資料流程（compact/full 一致）**：SSR 初始資料沿用 Dashboard 的 compact transformation（`web/src/components/Dashboard.astro` line 9-29：`sumViews` + 最新文章 + `todayMaxViews`）；**client 年度切換直接使用 fetch 到的完整 YearData**（Dashboard `loadYear` 行為：不 re-compact），`totalViewsOf` 由 `sumViews`（compact）或完整 articles 求和（full）兩者一致。名人堂 client 年度切換比照此模式，**不新增 client compact pipeline**。
 - 排序：輸出依 `totalViews` desc（名單小，不需排序器；固定總瀏覽排序即可）。
 - 純函式、無 DOM、無副作用——單元測試對象（模式同 `teams.ts` / `filter.ts`）。
 
@@ -92,7 +92,10 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 ### 2.1 入口
 
 - 新頁面 `web/src/pages/hall-of-fame.astro`（仿 `teams.astro` / `insights.astro` 模式：SSG frontmatter 載入資料 + 元件）。
-- Header 導覽：三頁（`Dashboard.astro` / `Teams.astro` / `Insights.astro`）共用 `header-actions` 的 icon-btn 列（teams / insights / github，目前頁 `is-active`）。名人堂加一支 icon-btn（trophy/star icon，`aria-label="名人堂"`）插在 teams 與 insights 之間，三頁 header 同步加；名人堂頁自身 `is-active`。
+- Header 導覽：repo 無共用 header component——markup 分散在 3 個既有元件 + 新 HallOfFame。既有 icon 順序：**Dashboard**（本身是首頁，無 home icon）`[teams][insights][github]`；**Teams / Insights** 為 `[home][teams][insights][github]`（`href="/"` 即時看板）。名人堂 icon（trophy/star，`aria-label="名人堂"`）插在 teams 與 insights 之間，四頁順序統一為：
+  - **Dashboard**：`[teams][名人堂][insights][github]`
+  - **Teams / Insights / HallOfFame**：`[home][teams][名人堂][insights][github]`
+  - 目前頁 `is-active`（HallOfFame 自身 `is-active`）；首頁 icon 在非首頁頁面保留（既有行為，不移除）。
 
 ### 2.2 頁面內容
 
@@ -130,10 +133,21 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 ## 3. XSS 與安全
 
 - 沿用既有契約：**所有使用者/名人資料一律 `textContent` 渲染，禁 `innerHTML`**。
-- **URL 驗證（`isSafeUrl`，SSR 與 client 共用）**：所有外連（`credentials[].url`、名人 profile 連結、`cardViewModel` 產生的 `profileUrl`/`seriesUrl`/`latest.url`/`rssUrl`）一律**解析後檢查 protocol**，非 `startsWith` 字串比對：
-  - 通過：`https:` / `http:`
-  - 拒絕：`javascript:` / `data:` / `vbscript:`、**protocol-relative**（`//evil.example`）、**case 變體**（`HTTPS://` / `Javascript:`）、**省略斜線**（`https:example.com`）、相對路徑、空值、空白前後綴
-  - 實作：`new URL(url)` try/catch，檢查 `parsed.protocol ∈ {"https:","http:"}`（URL parser 天然正規化大小寫與 protocol-relative）。**不含 scheme 的相對路徑（如 `/users/20065770/profile`）在此判定為不安全**——名人 profile 一律用完整 `https://ithelp.ithome.com.tw` 絕對 URL 建構（`cardViewModel` 的 `profileUrl` 同樣以絕對 URL 輸出，兩處格式統一為 `/users/{id}` 絕對路徑）。
+- **URL 驗證（`isSafeUrl`，SSR 與 client 共用）**：所有外連（`credentials[].url`、名人 profile 連結、`cardViewModel` 產生的 `profileUrl`/`seriesUrl`/`latest.url`/`rssUrl`）一律**嚴格格式檢查 + 解析後 protocol 驗證**。實測 `new URL()` 會正規化大寫 scheme、省略斜線、前後空白（`new URL("HTTPS://x").protocol === "https:"`），**不能單靠 parser 拒絕這些案例**——採嚴格前置檢查：
+  ```ts
+  export function isSafeUrl(url: string): boolean {
+    if (typeof url !== "string" || url.trim() !== url) return false;   // 拒絕前後空白
+    if (!/^https?:\/\//i.test(url)) return false;                       // 必須 https:// 或 http:// 開頭（正規化大小寫）
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === "https:" || parsed.protocol === "http:";
+    } catch { return false; }                                          // 拒絕 protocol-relative（無 base 即 throw）與 malformed
+  }
+  ```
+  - 通過：`https://` / `http://`
+  - 拒絕：`javascript:` / `data:` / `vbscript:`、**protocol-relative**（`//evil.example`）、**大小寫變體**（`HTTPS://example.com` 被 `^https?:\/\//i` 接受但 `new URL` 正規化後 protocol 仍合法——**決策：大小寫 scheme 接受**，`/i` 旗標讓 `HTTPS://` 通過，因 URL 語意合法；spec 原列「拒絕大小寫變體」與嚴格檢查衝突，改為接受）、**省略斜線**（`https:example.com` 不符 `^https?:\/\/`）、相對路徑、空值、前後空白
+  - 註：`HTTPS://example.com` 在 strict regex（`/i`）下**通過**（scheme 大小寫是合法 URL 語意）；spec 前版列為拒絕與 parser 行為衝突，本版裁決接受（§7 決策記錄更新）。<sup>若要求連大小寫也拒絕，需加 `url.startsWith(url.slice(0, 8))` 大小寫檢查——本 spec 不採。</sup>
+  - **不含 scheme 的相對路徑（如 `/users/20065770/profile`）判定為不安全**——名人 profile 一律用完整 `https://ithelp.ithome.com.tw` 絕對 URL 建構（`cardViewModel` 的 `profileUrl` 同樣以絕對 URL 輸出，兩處格式統一為 `/users/{id}` 絕對路徑）。
 - **格式統一**：`cardViewModel.profileUrl`（`/users/{id}`）與 `Series.user.profileUrl`（`/users/{id}/profile`）兩格式並存——**統一為**：名人標題 profile 連結與系列卡 profile 連結都使用 `cardViewModel` 產生的 `/users/{id}` 絕對 URL（`https://ithelp.ithome.com.tw/users/{id}`），`user.profileUrl` 不再直接用作 href（僅作 fallback 資料保留）。避免同頁兩種 URL 格式。
 - JSON 是 repo 內受信任資料（非外部輸入），但防禦性檢查照做（避免未來引入未驗證來源）。
 
@@ -153,7 +167,7 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 | `web/src/styles/design-system.css` | 加名人卡 / 類別 chip / 來源連結列 / read-only 卡片樣式（沿用 token） |
 | `README.md` / `PRODUCT.md` | **實作後**同步：Features / roadmap 加名人堂 |
 
-> **Header 導覽**：repo 無共用 header component——markup 分散在 3 個既有元件（Dashboard / Teams / Insights）+ 新 HallOfFame。四頁 icon 順序統一為：`[teams] [名人堂(新)] [insights] [github]`；目前頁 `is-active`（HallOfFame 自身 `is-active`）。icon：trophy/star SVG，`aria-label="名人堂"`、`title="名人堂"`。
+> **Header 導覽**：repo 無共用 header component——markup 分散在 3 個既有元件（Dashboard / Teams / Insights）+ 新 HallOfFame。四頁 icon 順序：**Dashboard**（無 home icon，本身是首頁）`[teams] [名人堂(新)] [insights] [github]`；**Teams / Insights / HallOfFame** `[home] [teams] [名人堂(新)] [insights] [github]`；目前頁 `is-active`（HallOfFame 自身 `is-active`）。icon：trophy/star SVG，`aria-label="名人堂"`、`title="名人堂"`。首頁 icon 在非首頁頁面保留（既有行為）。
 
 不改：`scripts/`（scraper 零變動）、`data/` shape、`daily-status.ts`、`card.ts`（`cardViewModel` 既有）、`.github/workflows/`、Insights / Teams 邏輯、RSS modal、收藏。
 
@@ -163,7 +177,7 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 
 - `matchFamousAuthors`：`entry.id` 正確 join（高見龍 20065770 → 其系列）；無系列名人 → 排除；系列排序依 `totalViews` desc；compact（`sumViews`）與 full（articles 求和）輸入 `totalViews` 一致。
 - `loadFamousAuthors`：JSON key 正確轉 `number` 進 `entry.id`；每條 entry 有 name / bio / credentials（≥1 條、每條有 label + 合法 url）/ categories（合法值）。
-- `isSafeUrl` 邊界：`https://` / `http://` 通過；**`HTTPS://` / `Javascript:` / `//evil.example` / `https:example.com` / `data:` / `javascript:` / 相對路徑 / 空值 / 前後空白** 全拒絕（驗證「解析後 protocol」，非 startsWith）。
+- `isSafeUrl` 邊界：`https://` / `http://` 通過；**`HTTPS://` 通過**（scheme 大小寫合法語意，§3 裁決）；**`Javascript:alert(1)` / `//evil.example` / `https:example.com` / `data:` / `javascript:` / 相對路徑 / 空值 / 前後空白** 全拒絕（驗證「strict 前置檢查 + 解析後 protocol」，非單靠 parser）。
 - JSON 完整性：**id 必須存在於 `data/2026.json`**（防幽靈 id）；**name 不符 → 測試輸出明確 warning**（console.warn + 列出不符者）但**不 fail**（合法改名不該斷 join——review 建議採納，與 §1.1「防改名漂移」改為「偵測改名、提示人工確認」）。<sup>註：若維持「改名必同步 JSON」為 intentional invariant，則此測試應 fail——本 spec 採「warning 不 fail」。</sup>
 - 真實資料 sweep（`data/2026.json`）：每個收錄 id 都存在且至少 1 個系列。
 
@@ -207,3 +221,7 @@ export function isSafeUrl(url: string): boolean;       // 見 §3
 - **URL 解析後驗證**（spec review 修正）：`isSafeUrl` 檢查 `new URL().protocol`，非 `startsWith`——拒絕 case 變體 / protocol-relative / 省略斜線；profile URL 統一為 `cardViewModel` 產生的絕對 URL（消除 `/users/{id}` vs `/users/{id}/profile` 並存）。
 - **name 不符 = warning 非失敗**（spec review 修正）：合法改名不該斷 join；測試輸出 warning 提示人工確認。
 - **SSR 完整輸出 + client 同一 renderer 重 render**（spec review 補）：首載即見、無第二套 DOM 骨架、跨日由 client 首次 render 校正。
+- **Header 含首頁 icon**（round-2 review 修正）：Dashboard 無 home icon（本身是首頁）；Teams/Insights/HallOfFame 保留 `[home][teams][名人堂][insights][github]`——不裁決移除既有首頁 icon，實作者不需推斷。
+- **`matchFamousAuthors` 輸入**（round-2 review 修正）：`YearData & { series: ViewSeries[] }` 單一契約——完整 SSR Series 與 client compact ViewSeries 皆可輸入；prose 與簽名一致。
+- **client 年度切換不 re-compact**（round-2 review 修正）：Dashboard `loadYear` fetch 完整 YearData 不 re-compact（僅 SSR 初始 compact）；名人堂比照，不新增 client compact pipeline。
+- **URL 驗證採嚴格前置檢查**（round-2 review 修正）：實測 `new URL("HTTPS://x").protocol === "https:"`（parser 正規化），單靠 parser 無法拒絕大小寫/省略斜線/空白。`isSafeUrl` = `trim` 檢查 + `^https?:\/\//i` 前置 regex + parser protocol 驗證。**`HTTPS://` 接受**（scheme 大小寫為合法語意；原列拒絕與 parser 衝突，本版裁決接受）；`https:example.com`、前後空白、`//evil`、`javascript:` 拒絕。
