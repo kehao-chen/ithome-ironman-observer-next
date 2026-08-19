@@ -1,17 +1,18 @@
 ---
 // web/src/components/HallOfFame.astro — 名人堂頁面元件（SSR 完整輸出 + client 年度切換重 render）。
 import type { YearData } from "../../../scripts/types";
-import { matchFamousAuthors, loadFamousAuthors, isSafeUrl } from "../lib/hall-of-fame";
+import { matchFamousAuthors, loadFamousAuthors, famousProfileViewModel } from "../lib/hall-of-fame";
 import { taipeiToday } from "../lib/daily-status";
 import HallOfFameSeriesCard from "./HallOfFameSeriesCard.astro";
 
-interface Props { data: YearData; years: number[]; latestYear: number }
+interface Props { data: YearData; years: number[] }
 const { data, years } = Astro.props;
 
 // SSR 用 build 時點臺北日（taipeiToday——與 client 同基準；禁止 UTC 日期）。
 const today = taipeiToday();
 const entries = loadFamousAuthors();
 const rows = matchFamousAuthors(entries, data);
+const vms = rows.map((r) => ({ ...r, vm: famousProfileViewModel(r) }));
 ---
 
 <header class="site-header container">
@@ -46,43 +47,69 @@ const rows = matchFamousAuthors(entries, data);
   </div>
 </header>
 
-<main class="container hof-main" style="padding-block:var(--space-4);">
+<main class="container hof-main" id="hof-top">
   <div class="status-bar" role="status">
     <span><span class="dot" aria-hidden="true"></span>資料已更新</span>
-    <span>共 <strong id="hof-total-count" class="tabular-nums">{rows.length}</strong> 位名人參賽</span>
+    <span>名人堂收錄 {entries.length} 位 · {data.year} 年共有 <strong id="hof-total-count" class="tabular-nums">{rows.length}</strong> 位參賽</span>
   </div>
 
+  <nav class="hof-nav" id="hof-nav" aria-label="名人快速導覽" hidden={vms.length === 0}>
+    {vms.map(({ vm }) => (
+      <a class="hof-nav-item" href={`#${vm.anchorId}`}>
+        <span>{vm.name}</span>
+        <span class="hof-nav-count tabular-nums" aria-label={`${vm.seriesCount} 個系列`}>{vm.seriesCount}</span>
+      </a>
+    ))}
+  </nav>
+
   <div id="hof-list">
-    {rows.map((row) => (
-      <section class="hof-card" data-famous-id={row.entry.id}>
+    {vms.map(({ series, vm }) => (
+      <section class="hof-card" id={vm.anchorId} data-famous-id={vm.id}>
         <header class="hof-card-head">
-          <h2 class="hof-name">
-            <a class="meta-author" href={`https://ithelp.ithome.com.tw/users/${row.entry.id}`} target="_blank" rel="noopener">{row.entry.name}</a>
-          </h2>
-          <span class="hof-categories">
-            {row.entry.categories.map((c) => {
-              const label = c === "speaker" ? "講師" : c === "community" ? "社群" : c === "oss" ? "開源" : "書籍";
-              return <span class="hof-cat-chip">{label}</span>;
-            })}
-          </span>
+          <div class="hof-avatar" aria-hidden="true">{vm.avatarChar}</div>
+          <div class="hof-head-main">
+            <div class="hof-name-row">
+              <h2 class="hof-name">
+                <a class="meta-author" href={vm.profileUrl} target="_blank" rel="noopener">{vm.name}</a>
+              </h2>
+              <span class="hof-categories">
+                {vm.categories.map((c) => (
+                  <span class="hof-cat-chip">{c.label}</span>
+                ))}
+              </span>
+            </div>
+            <span class="hof-stats tabular-nums">{vm.statsText}</span>
+          </div>
         </header>
-        <p class="hof-bio">{row.entry.bio}</p>
+        <p class="hof-bio">{vm.bio}</p>
         <ul class="hof-credentials">
-          {row.entry.credentials.map((c) => {
-            const href = isSafeUrl(c.url) ? c.url : null;
-            return <li>{href ? <a href={href} target="_blank" rel="noopener">{c.label}</a> : <span class="hof-cred-plain">{c.label}</span>}</li>;
-          })}
+          {vm.credentials.map((c) => (
+            <li>
+              {c.url ? (
+                <a class="hof-cred-btn" href={c.url} target="_blank" rel="noopener">
+                  <span>{c.label}</span>
+                  <svg class="hof-cred-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              ) : (
+                <span class="hof-cred-plain">{c.label}</span>
+              )}
+            </li>
+          ))}
         </ul>
         <h3 class="hof-series-title">{data.year} 系列</h3>
         <div class="hof-series">
-          {row.series.map((s) => <HallOfFameSeriesCard series={s} today={today} />)}
+          {series.map((s) => <HallOfFameSeriesCard series={s} today={today} />)}
         </div>
+        <footer class="hof-card-foot">
+          <a class="hof-back-top" href="#hof-top">↑ 回到頂部</a>
+        </footer>
       </section>
     ))}
   </div>
 
   <div class="hof-empty" id="hof-empty" role="status" aria-live="polite" hidden={rows.length > 0}>
-    <p>這個年度沒有名人參賽</p>
+    <p id="hof-empty-msg">這個年度沒有名人參賽</p>
+    <button type="button" id="hof-retry" class="hof-retry-btn" hidden>重試載入</button>
   </div>
 </main>
 
@@ -92,111 +119,80 @@ const rows = matchFamousAuthors(entries, data);
 
 <script>
   import { taipeiToday } from "../lib/daily-status";
-  import { matchFamousAuthors, loadFamousAuthors, isSafeUrl } from "../lib/hall-of-fame";
-  import { buildReadOnlyCard } from "../lib/hall-of-fame-dom";
+  import { matchFamousAuthors, loadFamousAuthors, famousProfileViewModel } from "../lib/hall-of-fame";
+  import { buildProfileSection, buildQuickNav } from "../lib/hall-of-fame-dom";
   import type { YearData } from "../../../scripts/types";
 
-  const hofList = document.getElementById("hof-list")!;
-  const hofEmpty = document.getElementById("hof-empty")!;
-  const hofTotalCount = document.getElementById("hof-total-count")!;
+  const hofList = document.getElementById("hof-list");
+  const hofEmpty = document.getElementById("hof-empty");
+  const hofEmptyMsg = document.getElementById("hof-empty-msg");
+  const hofRetry = document.getElementById("hof-retry") as HTMLButtonElement | null;
+  const hofTotalCount = document.getElementById("hof-total-count");
   const yearSelect = document.getElementById("hof-year-select") as HTMLSelectElement | null;
   const themeToggle = document.getElementById("theme-toggle");
   const rootEl = document.documentElement;
 
-  let today = taipeiToday();
+  const entries = loadFamousAuthors();
+  const today = taipeiToday();
+  let currentYear = Number(yearSelect?.value || (window as any).HOF_DATA?.year || 2026);
 
-  function render(data: YearData) {
-    if (!data) return;
-    if (yearSelect) yearSelect.value = String(data.year);
-    const rows = matchFamousAuthors(loadFamousAuthors(), data);
-    hofTotalCount.textContent = String(rows.length);
-    hofEmpty.hidden = rows.length > 0;
+  function render(data: any) {
+    if (!hofList || !hofEmpty) return;
+    if (yearSelect && data?.year) yearSelect.value = String(data.year);
+    const rows = matchFamousAuthors(entries, data);
+    if (hofTotalCount) hofTotalCount.textContent = String(rows.length);
 
+    // Quick nav
+    const vms = rows.map((r) => famousProfileViewModel(r));
+    const navEl = document.getElementById("hof-nav");
+    if (navEl) {
+      const newNav = buildQuickNav(vms);
+      navEl.replaceWith(newNav);
+    }
+
+    // Cards
     hofList.replaceChildren();
     const frag = document.createDocumentFragment();
     for (const row of rows) {
-      const section = document.createElement("section");
-      section.className = "hof-card";
-      section.dataset.famousId = String(row.entry.id);
-
-      const head = document.createElement("header");
-      head.className = "hof-card-head";
-      const name = document.createElement("h2");
-      name.className = "hof-name";
-      const profileHref = `https://ithelp.ithome.com.tw/users/${row.entry.id}`;
-      if (isSafeUrl(profileHref)) {
-        const nameLink = document.createElement("a");
-        nameLink.className = "meta-author";
-        nameLink.href = profileHref;
-        nameLink.target = "_blank"; nameLink.rel = "noopener";
-        nameLink.textContent = row.entry.name;
-        name.appendChild(nameLink);
-      } else {
-        const span = document.createElement("span");
-        span.className = "meta-author";
-        span.textContent = row.entry.name;
-        name.appendChild(span);
-      }
-      const cats = document.createElement("span");
-      cats.className = "hof-categories";
-      for (const c of row.entry.categories) {
-        const chip = document.createElement("span");
-        chip.className = "hof-cat-chip";
-        chip.textContent = c === "speaker" ? "講師" : c === "community" ? "社群" : c === "oss" ? "開源" : "書籍";
-        cats.appendChild(chip);
-      }
-      head.append(name, cats);
-
-      const bio = document.createElement("p");
-      bio.className = "hof-bio"; bio.textContent = row.entry.bio;
-
-      const creds = document.createElement("ul");
-      creds.className = "hof-credentials";
-      for (const c of row.entry.credentials) {
-        const li = document.createElement("li");
-        if (isSafeUrl(c.url)) {
-          const a = document.createElement("a");
-          a.href = c.url; a.target = "_blank"; a.rel = "noopener";
-          a.textContent = c.label;
-          li.appendChild(a);
-        } else {
-          const span = document.createElement("span");
-          span.className = "hof-cred-plain";
-          span.textContent = c.label;
-          li.appendChild(span);
-        }
-        creds.appendChild(li);
-      }
-
-      const seriesTitle = document.createElement("h3");
-      seriesTitle.className = "hof-series-title";
-      seriesTitle.textContent = `${data.year} 系列`;
-
-      const seriesList = document.createElement("div");
-      seriesList.className = "hof-series";
-      for (const s of row.series) {
-        seriesList.appendChild(buildReadOnlyCard(s, today));
-      }
-
-      section.append(head, bio, creds, seriesTitle, seriesList);
-      frag.appendChild(section);
+      frag.appendChild(buildProfileSection(row, today, data.year));
     }
     hofList.appendChild(frag);
+
+    hofEmpty.hidden = rows.length > 0;
+    if (hofEmptyMsg && rows.length === 0) {
+      hofEmptyMsg.textContent = "這個年度沒有名人參賽";
+    }
+    if (hofRetry) hofRetry.hidden = true;
   }
 
   async function loadYear(year: number) {
+    currentYear = year;
     try {
+      if (hofRetry) hofRetry.hidden = true;
+      if (hofEmpty) hofEmpty.hidden = false;
+      if (hofEmptyMsg) hofEmptyMsg.textContent = "載入中...";
       const res = await fetch(`/data/${year}.json`);
-      if (!res.ok) return;
-      const fresh = (await res.json()) as YearData;
-      render(fresh);
-    } catch {}
+      if (!res.ok) throw new Error("fetch failed");
+      const data = (await res.json()) as YearData;
+      render(data);
+    } catch (err) {
+      console.error(err);
+      if (hofEmpty) hofEmpty.hidden = false;
+      if (hofEmptyMsg) hofEmptyMsg.textContent = "載入年度資料失敗，請重新整理或點擊重試。";
+      if (hofRetry) hofRetry.hidden = false;
+    }
   }
 
   yearSelect?.addEventListener("change", () => {
     const y = Number(yearSelect.value);
     if (Number.isInteger(y)) loadYear(y);
   });
+
+  if (hofRetry) {
+    hofRetry.addEventListener("click", () => {
+      loadYear(currentYear);
+    });
+  }
 
   /* Theme toggle */
   function currentTheme(): string { try { return localStorage.getItem("theme") ?? "auto"; } catch { return "auto"; } }
@@ -206,5 +202,7 @@ const rows = matchFamousAuthors(entries, data);
     if (next === "auto") rootEl.removeAttribute("data-theme"); else rootEl.setAttribute("data-theme", next);
   });
 
-  render((window as any).HOF_DATA);
+  if ((window as any).HOF_DATA) {
+    render((window as any).HOF_DATA);
+  }
 </script>

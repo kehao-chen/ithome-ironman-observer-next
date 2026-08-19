@@ -21,6 +21,60 @@ export type FamousRow = {
   totalViews: number;
 };
 
+export function getAvatarChar(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) return "?";
+  const first = [...trimmed][0] ?? "?";
+  return /[a-z]/i.test(first) ? first.toUpperCase() : first;
+}
+
+export type FamousProfileViewModel = {
+  id: number;
+  anchorId: string;
+  name: string;
+  avatarChar: string;
+  profileUrl: string;
+  bio: string;
+  categories: { id: FamousCategory; label: string }[];
+  credentials: { label: string; url: string | null }[];
+  statsText: string;
+  seriesCount: number;
+};
+
+const CATEGORY_LABELS: Record<FamousCategory, string> = {
+  speaker: "講師",
+  community: "社群",
+  oss: "開源",
+  book: "書籍",
+};
+
+export function famousProfileViewModel(row: FamousRow): FamousProfileViewModel {
+  const name = row.entry.name.trim();
+  const avatarChar = getAvatarChar(name);
+  const profileUrl = `https://ithelp.ithome.com.tw/users/${row.entry.id}`;
+  const seriesCount = row.series.length;
+  const statsText = `${row.totalViews.toLocaleString()} 總瀏覽 · ${seriesCount} 系列`;
+
+  return {
+    id: row.entry.id,
+    anchorId: `hof-person-${row.entry.id}`,
+    name,
+    avatarChar,
+    profileUrl,
+    bio: row.entry.bio,
+    categories: row.entry.categories.map((c) => ({
+      id: c,
+      label: CATEGORY_LABELS[c] ?? c,
+    })),
+    credentials: row.entry.credentials.map((c) => ({
+      label: c.label,
+      url: safeHref(c.url),
+    })),
+    statsText,
+    seriesCount,
+  };
+}
+
 // URL 驗證：strict 前置檢查 + 解析後 protocol 驗證。
 // new URL() 會正規化大寫 scheme / 省略斜線 / 前後空白，單靠 parser 無法拒絕這些案例。
 export function isSafeUrl(url: string): boolean {

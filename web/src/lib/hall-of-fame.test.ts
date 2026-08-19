@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { loadFamousAuthors, matchFamousAuthors, isSafeUrl, safeHref } from "./hall-of-fame";
+import { loadFamousAuthors, matchFamousAuthors, isSafeUrl, safeHref, getAvatarChar, famousProfileViewModel, type FamousRow } from "./hall-of-fame";
 import type { Series, YearData } from "../../../scripts/types";
 import realData from "../../../data/2026.json";
 
@@ -44,6 +44,33 @@ describe("loadFamousAuthors", () => {
     const kao = entries.find((e) => e.id === 20065770);
     expect(kao).toBeDefined();
     expect(kao!.name).toBe("高見龍");
+  });
+
+  test("exact-set：完整 8 位名人資料格式與 ID 集合驗證", () => {
+    const expectedIds = new Set([
+      20065770, 20040221, 20083608, 20109516,
+      20161809, 20120030, 20133765, 20104930,
+    ]);
+    const authors = loadFamousAuthors();
+    expect(authors.length).toBe(8);
+    expect(new Set(authors.map((a) => a.id))).toEqual(expectedIds);
+
+    for (const author of authors) {
+      expect(typeof author.name).toBe("string");
+      expect(author.name.trim().length).toBeGreaterThan(0);
+      expect(typeof author.bio).toBe("string");
+      expect(author.bio.trim().length).toBeGreaterThan(0);
+      expect(Array.isArray(author.categories)).toBe(true);
+      expect(author.categories.length).toBeGreaterThan(0);
+      expect(Array.isArray(author.credentials)).toBe(true);
+      expect(author.credentials.length).toBeGreaterThan(0);
+
+      for (const cred of author.credentials) {
+        expect(typeof cred.label).toBe("string");
+        expect(cred.label.trim().length).toBeGreaterThan(0);
+        expect(isSafeUrl(cred.url)).toBe(true);
+      }
+    }
   });
 });
 
@@ -129,5 +156,77 @@ describe("isSafeUrl", () => {
     expect(safeHref("https://example.com")).toBe("https://example.com");
     expect(safeHref("javascript:alert(1)")).toBeNull();
     expect(safeHref("")).toBeNull();
+  });
+});
+
+describe("getAvatarChar", () => {
+  test("處理英文（轉大寫）、中文、前後空白與空字串 fallback", () => {
+    expect(getAvatarChar(" Oberon Lai ")).toBe("O");
+    expect(getAvatarChar("chia7712")).toBe("C");
+    expect(getAvatarChar("大魔術熊貓工程師")).toBe("大");
+    expect(getAvatarChar("   ")).toBe("?");
+    expect(getAvatarChar("")).toBe("?");
+  });
+});
+
+describe("famousProfileViewModel", () => {
+  test("轉換 FamousRow 為 FamousProfileViewModel，包含 anchorId, avatarChar, statsText, seriesCount, profileUrl, categories 與 safe credential URLs", () => {
+    const row: FamousRow = {
+      entry: {
+        id: 20065770,
+        name: "高見龍",
+        bio: "五倍紅寶石創辦人",
+        credentials: [
+          { label: "COSCUP 講師", url: "https://coscup.org/" },
+          { label: "危險連結", url: "javascript:alert(1)" }
+        ],
+        categories: ["speaker", "community"]
+      },
+      series: [series({ id: 1, user: { id: 20065770, name: "高見龍", profileUrl: "" } })],
+      totalViews: 38400
+    };
+    const vm = famousProfileViewModel(row);
+    expect(vm.id).toBe(20065770);
+    expect(vm.anchorId).toBe("hof-person-20065770");
+    expect(vm.name).toBe("高見龍");
+    expect(vm.avatarChar).toBe("高");
+    expect(vm.profileUrl).toBe("https://ithelp.ithome.com.tw/users/20065770");
+    expect(vm.bio).toBe("五倍紅寶石創辦人");
+    expect(vm.statsText).toBe("38,400 總瀏覽 · 1 系列");
+    expect(vm.seriesCount).toBe(1);
+    expect(vm.categories).toEqual([
+      { id: "speaker", label: "講師" },
+      { id: "community", label: "社群" }
+    ]);
+    expect(vm.credentials[0]).toEqual({ label: "COSCUP 講師", url: "https://coscup.org/" });
+    expect(vm.credentials[1]).toEqual({ label: "危險連結", url: null });
+  });
+
+  test("完整類別對應：speaker->講師, community->社群, oss->開源, book->書籍", () => {
+    const row: FamousRow = {
+      entry: {
+        id: 20161809,
+        name: " kojenchieh ",
+        bio: "敏捷三叔公",
+        credentials: [],
+        categories: ["speaker", "community", "oss", "book"]
+      },
+      series: [
+        series({ id: 1, user: { id: 20161809, name: "kojenchieh", profileUrl: "" } }),
+        series({ id: 2, user: { id: 20161809, name: "kojenchieh", profileUrl: "" } }),
+      ],
+      totalViews: 1234567
+    };
+    const vm = famousProfileViewModel(row);
+    expect(vm.avatarChar).toBe("K");
+    expect(vm.name).toBe("kojenchieh");
+    expect(vm.statsText).toBe("1,234,567 總瀏覽 · 2 系列");
+    expect(vm.seriesCount).toBe(2);
+    expect(vm.categories).toEqual([
+      { id: "speaker", label: "講師" },
+      { id: "community", label: "社群" },
+      { id: "oss", label: "開源" },
+      { id: "book", label: "書籍" }
+    ]);
   });
 });

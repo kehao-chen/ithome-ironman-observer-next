@@ -1,12 +1,14 @@
-// web/src/lib/hall-of-fame-dom.ts — 名人堂 read-only 系列卡 DOM 建構（client 專用，happy-dom 可測）。
-// 顯示決定一律來自 cardViewModel（card.ts），與 SSR 的 HallOfFameSeriesCard.astro 共用同一 view-model；
+// web/src/lib/hall-of-fame-dom.ts — 名人堂 DOM 建構與結構契約（client 專用，happy-dom 可測）。
+// 顯示決定一律來自 cardViewModel（card.ts）與 famousProfileViewModel（hall-of-fame.ts），
+// 與 SSR 的 HallOfFame.astro / HallOfFameSeriesCard.astro 共用同一 view-model；
 // 結構（class / 欄位順序 / 無 fav-RSS controls）由 hall-of-fame-dom.test.ts 鎖成契約，防兩層 drift。
 // 無 module-load 副作用：呼叫時才需要 document（與 card-dom.ts 同模式）。
 import type { ViewSeries } from "./card";
 import { cardViewModel } from "./card";
 import { buildChip } from "./card-dom";
 import { isoInitial } from "./format";
-import { safeHref } from "./hall-of-fame";
+import { safeHref, famousProfileViewModel } from "./hall-of-fame";
+import type { FamousRow, FamousProfileViewModel } from "./hall-of-fame";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -107,4 +109,201 @@ export function buildReadOnlyCard(s: ViewSeries, today: string): HTMLElement {
     upd.appendChild(tm); art.appendChild(upd);
   }
   return art;
+}
+
+export type ProfileStructureSignature = {
+  anchorId: string;
+  classes: string[];
+  textFields: string[];
+  linkHrefs: string[];
+  credentialCount: number;
+  seriesCount: number;
+  backTopHref: string | null;
+  hasDeadControls: boolean;
+};
+
+export function extractProfileSignature(root: Element): ProfileStructureSignature {
+  const anchorId = root.id || "";
+  const classes = Array.from(root.classList).sort();
+  const textFields = [
+    root.querySelector(".hof-avatar")?.textContent?.trim() || "",
+    root.querySelector(".hof-name")?.textContent?.trim() || "",
+    root.querySelector(".hof-bio")?.textContent?.trim() || "",
+    root.querySelector(".hof-stats")?.textContent?.trim() || ""
+  ].filter(Boolean);
+
+  const linkHrefs = Array.from(root.querySelectorAll("a"))
+    .map((a) => a.getAttribute("href") || "")
+    .filter((href) => href && href !== "#hof-top");
+
+  const credentialCount = root.querySelectorAll(".hof-credentials li").length;
+  const seriesCount = root.querySelectorAll(".hof-series .series-card").length;
+  const backTop = root.querySelector(".hof-back-top");
+  const backTopHref = backTop ? backTop.getAttribute("href") : null;
+  const hasDeadControls = root.querySelectorAll(".card-fav, [data-rss]").length > 0;
+
+  return {
+    anchorId,
+    classes,
+    textFields,
+    linkHrefs,
+    credentialCount,
+    seriesCount,
+    backTopHref,
+    hasDeadControls
+  };
+}
+
+export function buildQuickNav(vms: FamousProfileViewModel[]): HTMLElement {
+  const nav = document.createElement("nav");
+  nav.className = "hof-nav";
+  nav.id = "hof-nav";
+  nav.setAttribute("aria-label", "名人快速導覽");
+  if (vms.length === 0) nav.hidden = true;
+
+  for (const vm of vms) {
+    const a = document.createElement("a");
+    a.className = "hof-nav-item";
+    a.href = `#${vm.anchorId}`;
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = vm.name;
+    a.appendChild(nameSpan);
+
+    const countSpan = document.createElement("span");
+    countSpan.className = "hof-nav-count tabular-nums";
+    countSpan.setAttribute("aria-label", `${vm.seriesCount} 個系列`);
+    countSpan.textContent = String(vm.seriesCount);
+    a.appendChild(countSpan);
+
+    nav.appendChild(a);
+  }
+  return nav;
+}
+
+export function buildProfileSection(row: FamousRow, today: string, year: number): HTMLElement {
+  const vm = famousProfileViewModel(row);
+  const section = document.createElement("section");
+  section.className = "hof-card";
+  section.id = vm.anchorId;
+  section.dataset.famousId = String(vm.id);
+
+  // Header
+  const head = document.createElement("header");
+  head.className = "hof-card-head";
+
+  const avatar = document.createElement("div");
+  avatar.className = "hof-avatar";
+  avatar.setAttribute("aria-hidden", "true");
+  avatar.textContent = vm.avatarChar;
+  head.appendChild(avatar);
+
+  const headMain = document.createElement("div");
+  headMain.className = "hof-head-main";
+
+  const nameRow = document.createElement("div");
+  nameRow.className = "hof-name-row";
+
+  const nameH2 = document.createElement("h2");
+  nameH2.className = "hof-name";
+  const nameLink = document.createElement("a");
+  nameLink.className = "meta-author";
+  nameLink.href = vm.profileUrl;
+  nameLink.target = "_blank";
+  nameLink.rel = "noopener";
+  nameLink.textContent = vm.name;
+  nameH2.appendChild(nameLink);
+  nameRow.appendChild(nameH2);
+
+  const catSpan = document.createElement("span");
+  catSpan.className = "hof-categories";
+  for (const cat of vm.categories) {
+    const chip = document.createElement("span");
+    chip.className = "hof-cat-chip";
+    chip.textContent = cat.label;
+    catSpan.appendChild(chip);
+  }
+  nameRow.appendChild(catSpan);
+  headMain.appendChild(nameRow);
+
+  const stats = document.createElement("span");
+  stats.className = "hof-stats tabular-nums";
+  stats.textContent = vm.statsText;
+  headMain.appendChild(stats);
+
+  head.appendChild(headMain);
+  section.appendChild(head);
+
+  // Bio
+  const bio = document.createElement("p");
+  bio.className = "hof-bio";
+  bio.textContent = vm.bio;
+  section.appendChild(bio);
+
+  // Credentials
+  const credsList = document.createElement("ul");
+  credsList.className = "hof-credentials";
+  for (const cred of vm.credentials) {
+    const li = document.createElement("li");
+    if (cred.url) {
+      const a = document.createElement("a");
+      a.className = "hof-cred-btn";
+      a.href = cred.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+
+      const labelSpan = document.createElement("span");
+      labelSpan.textContent = cred.label;
+      a.appendChild(labelSpan);
+
+      // SVG Icon
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("class", "hof-cred-icon");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("aria-hidden", "true");
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3");
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "currentColor");
+      path.setAttribute("stroke-width", "2");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(path);
+      a.appendChild(svg);
+
+      li.appendChild(a);
+    } else {
+      const span = document.createElement("span");
+      span.className = "hof-cred-plain";
+      span.textContent = cred.label;
+      li.appendChild(span);
+    }
+    credsList.appendChild(li);
+  }
+  section.appendChild(credsList);
+
+  // Series title & container
+  const seriesTitle = document.createElement("h3");
+  seriesTitle.className = "hof-series-title";
+  seriesTitle.textContent = `${year} 系列`;
+  section.appendChild(seriesTitle);
+
+  const seriesContainer = document.createElement("div");
+  seriesContainer.className = "hof-series";
+  for (const s of row.series) {
+    seriesContainer.appendChild(buildReadOnlyCard(s, today));
+  }
+  section.appendChild(seriesContainer);
+
+  // Footer back-to-top
+  const foot = document.createElement("footer");
+  foot.className = "hof-card-foot";
+  const backTop = document.createElement("a");
+  backTop.className = "hof-back-top";
+  backTop.href = "#hof-top";
+  backTop.textContent = "↑ 回到頂部";
+  foot.appendChild(backTop);
+  section.appendChild(foot);
+
+  return section;
 }
