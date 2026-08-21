@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-08-22 05:50:01+08:00",
+  "updatedAt": "2026-08-22 05:59:20+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -493,7 +493,7 @@
           "title": "Day 22：先把畫面骨架搭起來",
           "url": "https://ithelp.ithome.com.tw/articles/10404357",
           "publishedAt": "2026-08-22T01:29:48+08:00",
-          "views": 44,
+          "views": 46,
           "likes": 0,
           "comments": 0
         }
@@ -511,7 +511,7 @@
       "description": "半年前，我在家裡的 NAS 上架起一套 AI Agent 系統。它每天清晨整理美股收盤、早上把投資晨報送到我手機、白天照看家裡的溫濕度，夜裡再把當天發生的事消化成長期記憶。\r\n\r\n這 30 天，我把它從頭拆給你看：容器怎麼切、Agent 的人格檔案怎麼寫、記憶怎麼分層與遺忘、排程怎麼編排，以及成本與品質怎麼治理。\r\n\r\n但這不是教學文，比較像一本除錯日記。有一半的篇幅在講我做錯了什麼——那些監控全綠、系統卻正在安靜出錯的時刻，才是自架最真實的部分。\r\n\r\n我也會誠實交代這套系統的邊界：它遠沒有想像中聰明，而那正是它能長期跑下去的原因。每篇結尾附一排關鍵字，讓想動手的人可以直接接上。",
       "team": null,
       "signupDate": "2026/08/01T13:25:59+08:00",
-      "lastUpdated": "2026-08-22T04:50:50+08:00",
+      "lastUpdated": "2026-08-22T05:50:57+08:00",
       "dayCount": 22,
       "articleCount": 22,
       "subscriptions": 8,
@@ -732,7 +732,7 @@
           "title": "Day 22：睡一覺醒來，我的 AI 刷了 $40 美金",
           "url": "https://ithelp.ithome.com.tw/articles/10403301",
           "publishedAt": "2026-08-22T00:45:19+08:00",
-          "views": 35,
+          "views": 36,
           "likes": 0,
           "comments": 0
         }
@@ -1459,7 +1459,7 @@
           "title": "Day 22. 可觀測性（Observability）：在頻繁變更中掌握系統現狀",
           "url": "https://ithelp.ithome.com.tw/articles/10404356",
           "publishedAt": "2026-08-22T01:11:15+08:00",
-          "views": 46,
+          "views": 48,
           "likes": 0,
           "comments": 0
         }
@@ -1688,7 +1688,7 @@
           "title": "Day 20：【真相】Promise：給未來的一個承諾，解決你的回呼地獄",
           "url": "https://ithelp.ithome.com.tw/articles/10404251",
           "publishedAt": "2026-08-21T17:43:12+08:00",
-          "views": 73,
+          "views": 75,
           "likes": 0,
           "comments": 0
         },
@@ -1698,7 +1698,7 @@
           "title": "Day 21：Async / Await：用最直覺的寫法處理「還沒回來的資料」",
           "url": "https://ithelp.ithome.com.tw/articles/10404347",
           "publishedAt": "2026-08-22T00:23:20+08:00",
-          "views": 41,
+          "views": 42,
           "likes": 0,
           "comments": 0
         }
@@ -1937,7 +1937,7 @@
           "title": "Day 22：Audit Log——一筆終端事件、四條 exit path，還有兩條刻意不發",
           "url": "https://ithelp.ithome.com.tw/articles/10404339",
           "publishedAt": "2026-08-22T00:14:24+08:00",
-          "views": 34,
+          "views": 36,
           "likes": 0,
           "comments": 0
         }
@@ -2405,7 +2405,7 @@
           "title": "Day 21｜黑名單拿掉一個字，測試通過，誤擋還在",
           "url": "https://ithelp.ithome.com.tw/articles/10404089",
           "publishedAt": "2026-08-21T18:57:46+08:00",
-          "views": 59,
+          "views": 60,
           "likes": 0,
           "comments": 0
         },
@@ -2415,7 +2415,7 @@
           "title": "Day 22｜CI 紅燈代表什麼？先分清失敗、跳過與已知缺口",
           "url": "https://ithelp.ithome.com.tw/articles/10404353",
           "publishedAt": "2026-08-22T01:34:48+08:00",
-          "views": 48,
+          "views": 51,
           "likes": 0,
           "comments": 0
         }
@@ -2654,7 +2654,7 @@
           "title": "Day 22｜Binary Authorization 與 AI 模型供應鏈完整性",
           "url": "https://ithelp.ithome.com.tw/articles/10404369",
           "publishedAt": "2026-08-22T03:53:02+08:00",
-          "views": 24,
+          "views": 25,
           "likes": 0,
           "comments": 0
         }
@@ -3130,7 +3130,7 @@
       "description": "CI 全綠，測試覆蓋率 90%，上線當天還是炸了。事後檢討發現，那個 bug 根本沒有任何測試案例碰到它。這種事你遇過幾次？\r\n自動化測試只會檢查你叫它檢查的東西。沒人想到的地方，它一行都不會多看。\r\n現在 AI 可以一天幫你生出幾百個測試案例，數字更漂亮了，但那些測試常常只是把程式碼現在的行為抄一遍再驗一遍——程式做錯的事，也被當成標準答案保護起來。\r\n看板上一片綠燈，品質卻沒人說得準，這就是我說的「演戲」。\r\n如果你寫了很多自動化測試卻還是沒把握，或者你是手動測試出身、想知道自己的價值在哪，這個系列是為你寫的。",
       "team": null,
       "signupDate": "2026/08/01T12:12:27+08:00",
-      "lastUpdated": "2026-08-22T04:50:41+08:00",
+      "lastUpdated": "2026-08-22T05:50:54+08:00",
       "dayCount": 21,
       "articleCount": 21,
       "subscriptions": 26,
@@ -4275,7 +4275,7 @@
       "description": "回歸測試一輪一輪重點,職缺清單上的「自動化經驗」越來越刺眼,而你買過的程式課,還停在第三章。\r\n\r\n先說一個好消息:門檻搬家了。AI coding 工具出現後,學 UI 自動化卡的關卡從「會不會寫程式」變成「會不會描述需求、判斷得了對錯」——這兩件事,恰好是測試人員練了多年的本行。\r\n\r\n這個系列用 30 天,帶不太寫程式的你,以 Claude Code 為結對夥伴學會 Playwright。",
       "team": null,
       "signupDate": "2026/08/01T13:25:24+08:00",
-      "lastUpdated": "2026-08-22T04:41:01+08:00",
+      "lastUpdated": "2026-08-22T05:50:56+08:00",
       "dayCount": 21,
       "articleCount": 21,
       "subscriptions": 31,
@@ -5649,7 +5649,7 @@
       "description": "從事 iOS 開發多年，近年開始投入 Android 與 Kotlin，希望透過這次 iThome 鐵人賽，記錄自己從 iOS 涉足 Android 開發的學習歷程，也分享實作經驗，讓剛接觸 Kotlin 的朋友能更快建立基礎觀念。\r\n\r\n本系列將循序漸介紹以帶一點現代的 Kotlin 基本語法、Android Studio、Activity、Fragment、ViewBinding、RecyclerView、Material Design、SQLite、Jetpack Compose、BLE 藍牙、MQTT、Firebase，以及最後的實戰專案，希望陪伴大家一步步打造屬於自己的app",
       "team": null,
       "signupDate": "2026/08/01T16:10:55+08:00",
-      "lastUpdated": "2026-08-22T04:41:05+08:00",
+      "lastUpdated": "2026-08-22T05:51:00+08:00",
       "dayCount": 21,
       "articleCount": 21,
       "subscriptions": 2,
@@ -7921,7 +7921,7 @@
           "title": "Day21：Magpie 超分教學：任意視窗套用 Anime4K、FSR",
           "url": "https://ithelp.ithome.com.tw/articles/10402326",
           "publishedAt": "2026-08-22T00:50:40+08:00",
-          "views": 34,
+          "views": 35,
           "likes": 0,
           "comments": 0
         }
@@ -8150,7 +8150,7 @@
           "title": "Day 21｜Gmail、行事曆、Drive、Microsoft 與 GitHub：整合越多越危險嗎？",
           "url": "https://ithelp.ithome.com.tw/articles/10401336",
           "publishedAt": "2026-08-22T00:53:07+08:00",
-          "views": 49,
+          "views": 50,
           "likes": 0,
           "comments": 0
         }
@@ -8986,7 +8986,7 @@
           "title": "Day16 - 契約版本比較接回畫面",
           "url": "https://ithelp.ithome.com.tw/articles/10403496",
           "publishedAt": "2026-08-17T17:14:35+08:00",
-          "views": 88,
+          "views": 89,
           "likes": 0,
           "comments": 0
         },
@@ -8996,7 +8996,7 @@
           "title": "Day17 - 把版本差異變成可解讀的修正證據",
           "url": "https://ithelp.ithome.com.tw/articles/10403653",
           "publishedAt": "2026-08-18T12:18:56+08:00",
-          "views": 109,
+          "views": 110,
           "likes": 0,
           "comments": 0
         },
@@ -9215,7 +9215,7 @@
           "title": "[Day 17] 消費分析再進化！SubWise 揪出最高單筆消費與支出重點",
           "url": "https://ithelp.ithome.com.tw/articles/10403655",
           "publishedAt": "2026-08-18T13:09:14+08:00",
-          "views": 84,
+          "views": 85,
           "likes": 0,
           "comments": 0
         },
@@ -9424,7 +9424,7 @@
           "title": "Day 16｜讓 AI 協作寫程式時，有一套不會越改越壞的安全網",
           "url": "https://ithelp.ithome.com.tw/articles/10403531",
           "publishedAt": "2026-08-17T20:39:19+08:00",
-          "views": 92,
+          "views": 93,
           "likes": 0,
           "comments": 0
         },
@@ -9643,7 +9643,7 @@
           "title": "Day 16：【Gemini API】前端正式串接 Google Gen AI SDK：告別假資料，賦予貓咪對話靈魂！",
           "url": "https://ithelp.ithome.com.tw/articles/10403283",
           "publishedAt": "2026-08-17T21:20:06+08:00",
-          "views": 77,
+          "views": 78,
           "likes": 0,
           "comments": 0
         },
@@ -10101,7 +10101,7 @@
           "title": "Day 18 - 十個小工都準備好了，Canary 卻走不出去：跨 Repo 時到底該信哪一份 Plan？",
           "url": "https://ithelp.ithome.com.tw/articles/10403316",
           "publishedAt": "2026-08-19T00:38:07+08:00",
-          "views": 135,
+          "views": 136,
           "likes": 0,
           "comments": 0
         },
@@ -10121,7 +10121,7 @@
           "title": "Day 20 - 明明有skill，怎麼還老是跑歪？：把skill寫成牌組 - DECK",
           "url": "https://ithelp.ithome.com.tw/articles/10403554",
           "publishedAt": "2026-08-21T11:12:36+08:00",
-          "views": 90,
+          "views": 91,
           "likes": 0,
           "comments": 0
         }
@@ -10320,7 +10320,7 @@
           "title": "做自己職涯的PM — 如何帶新人快速上手、融入團隊（下）",
           "url": "https://ithelp.ithome.com.tw/articles/10403837",
           "publishedAt": "2026-08-19T19:46:24+08:00",
-          "views": 144,
+          "views": 145,
           "likes": 0,
           "comments": 0
         },
@@ -11176,7 +11176,7 @@
           "title": "Day 16｜選一個值，還是執行命令？Select、Menu、Overflow Menu 與 Command Palette",
           "url": "https://ithelp.ithome.com.tw/articles/10403384",
           "publishedAt": "2026-08-17T07:53:24+08:00",
-          "views": 77,
+          "views": 78,
           "likes": 0,
           "comments": 0
         },
@@ -11234,7 +11234,7 @@
       "description": "急診檢傷不是診斷疾病，而是在有限時間內判斷病患接受處置的先後順序。本系列將使用 Kaggle 公開的韓國急診檢傷與急迫度分級量表（Korean Triage and Acuity Scale, KTAS）資料，從 1,267 筆急診紀錄出發，逐步完成資料清理、公開知識庫、檢索增強生成（Retrieval-Augmented Generation, RAG）、門控、重排序與模型評估。我們不只比較準確率，也會分析檢傷不足、檢傷過度、少數高急迫案例與結果的不確定性，打造一套可重現、可解釋且清楚標示限制的急診檢傷 Side Project。",
       "team": null,
       "signupDate": "2026/08/02T14:46:58+08:00",
-      "lastUpdated": "2026-08-22T04:41:20+08:00",
+      "lastUpdated": "2026-08-22T05:51:12+08:00",
       "dayCount": 20,
       "articleCount": 20,
       "subscriptions": 2,
@@ -11504,7 +11504,7 @@
           "title": "運用 Google Skills 新推出的 ADK 2.0 在應用程式內",
           "url": "https://ithelp.ithome.com.tw/articles/10401697",
           "publishedAt": "2026-08-06T06:25:40+08:00",
-          "views": 158,
+          "views": 159,
           "likes": 0,
           "comments": 0
         },
@@ -11514,7 +11514,7 @@
           "title": "offline-sync , payment-system , state-management",
           "url": "https://ithelp.ithome.com.tw/articles/10401871",
           "publishedAt": "2026-08-07T13:08:23+08:00",
-          "views": 144,
+          "views": 145,
           "likes": 0,
           "comments": 0
         },
@@ -11714,7 +11714,7 @@
           "title": "api-integration : PowerSync Setup",
           "url": "https://ithelp.ithome.com.tw/articles/10403427",
           "publishedAt": "2026-08-17T10:46:59+08:00",
-          "views": 67,
+          "views": 68,
           "likes": 0,
           "comments": 0
         },
@@ -11754,7 +11754,7 @@
           "title": "deployment:  build-configuration.md",
           "url": "https://ithelp.ithome.com.tw/articles/10404254",
           "publishedAt": "2026-08-21T18:11:20+08:00",
-          "views": 76,
+          "views": 77,
           "likes": 0,
           "comments": 0
         }
@@ -11893,7 +11893,7 @@
           "title": "Day 12｜Kubernetes Scheduler 與資源管理 — Pod 到底會被排到哪個 Node？",
           "url": "https://ithelp.ithome.com.tw/articles/10402865",
           "publishedAt": "2026-08-14T09:37:53+08:00",
-          "views": 195,
+          "views": 196,
           "likes": 0,
           "comments": 0
         },
@@ -11943,7 +11943,7 @@
           "title": "Day 17｜Init Container — Pod 啟動前的初始化機制",
           "url": "https://ithelp.ithome.com.tw/articles/10403724",
           "publishedAt": "2026-08-19T01:09:21+08:00",
-          "views": 110,
+          "views": 111,
           "likes": 0,
           "comments": 0
         },
@@ -11973,7 +11973,7 @@
           "title": "Day 20｜Helm — Kubernetes 的套件管理工具",
           "url": "https://ithelp.ithome.com.tw/articles/10403974",
           "publishedAt": "2026-08-22T00:29:55+08:00",
-          "views": 42,
+          "views": 43,
           "likes": 0,
           "comments": 0
         }
@@ -12590,7 +12590,7 @@
           "title": "Day 18 Jenkins 程式碼化：Shared Library 建立重複使用的 Pipeline 架構",
           "url": "https://ithelp.ithome.com.tw/articles/10403527",
           "publishedAt": "2026-08-21T00:08:01+08:00",
-          "views": 89,
+          "views": 90,
           "likes": 0,
           "comments": 0
         },
@@ -12600,7 +12600,7 @@
           "title": "Day 19 安全無死角：Jenkins 整合 HashiCorp Vault 的密鑰管理實作",
           "url": "https://ithelp.ithome.com.tw/articles/10403528",
           "publishedAt": "2026-08-22T01:30:06+08:00",
-          "views": 47,
+          "views": 48,
           "likes": 0,
           "comments": 0
         }
@@ -13187,7 +13187,7 @@
           "title": "# Day 15｜Project Instructions（下）：網址呈現與優缺點",
           "url": "https://ithelp.ithome.com.tw/articles/10403428",
           "publishedAt": "2026-08-17T11:06:54+08:00",
-          "views": 73,
+          "views": 74,
           "likes": 0,
           "comments": 0
         },
@@ -13197,7 +13197,7 @@
           "title": "# Day 16｜四種整合方式總結：實測後的比較與我的最終選擇",
           "url": "https://ithelp.ithome.com.tw/articles/10403644",
           "publishedAt": "2026-08-18T10:56:39+08:00",
-          "views": 92,
+          "views": 93,
           "likes": 0,
           "comments": 0
         },
@@ -13376,7 +13376,7 @@
           "title": "Day13 進二階段吧! 【自主接收使用者回饋功能】",
           "url": "https://ithelp.ithome.com.tw/articles/10403152",
           "publishedAt": "2026-08-15T22:57:13+08:00",
-          "views": 91,
+          "views": 92,
           "likes": 0,
           "comments": 0
         },
@@ -13635,7 +13635,7 @@
           "title": "Day 18 | 用Vibe coding怎麼做市占率推估?",
           "url": "https://ithelp.ithome.com.tw/articles/10403963",
           "publishedAt": "2026-08-20T13:44:33+08:00",
-          "views": 126,
+          "views": 127,
           "likes": 0,
           "comments": 0
         },
@@ -13844,7 +13844,7 @@
           "title": "Day18. 做了全部工作，卻被髒話問候",
           "url": "https://ithelp.ithome.com.tw/articles/10403530",
           "publishedAt": "2026-08-21T00:07:34+08:00",
-          "views": 109,
+          "views": 110,
           "likes": 0,
           "comments": 1
         },
@@ -13854,7 +13854,7 @@
           "title": "Day19. 可是我就是想這樣做",
           "url": "https://ithelp.ithome.com.tw/articles/10403533",
           "publishedAt": "2026-08-22T01:28:49+08:00",
-          "views": 43,
+          "views": 45,
           "likes": 0,
           "comments": 0
         }
@@ -14222,7 +14222,7 @@
           "title": "Day 15 - 簡報核心設計- OCR&字型還原",
           "url": "https://ithelp.ithome.com.tw/articles/10403646",
           "publishedAt": "2026-08-18T11:31:11+08:00",
-          "views": 108,
+          "views": 109,
           "likes": 0,
           "comments": 0
         },
@@ -14610,7 +14610,7 @@
           "title": "認識 Everything-WP：我的 AI 開發 WordPress 工具箱",
           "url": "https://ithelp.ithome.com.tw/articles/10403424",
           "publishedAt": "2026-08-17T10:33:18+08:00",
-          "views": 82,
+          "views": 83,
           "likes": 0,
           "comments": 0
         },
@@ -14809,7 +14809,7 @@
           "title": "Day14 : Spring Security - 解析SecurityConfig",
           "url": "https://ithelp.ithome.com.tw/articles/10403569",
           "publishedAt": "2026-08-17T22:58:57+08:00",
-          "views": 75,
+          "views": 76,
           "likes": 0,
           "comments": 0
         },
@@ -15048,7 +15048,7 @@
           "title": "Day 18｜進階功能實作多欄位搜尋、Prisma分頁與URL狀態同步",
           "url": "https://ithelp.ithome.com.tw/articles/10403557",
           "publishedAt": "2026-08-21T10:47:37+08:00",
-          "views": 74,
+          "views": 75,
           "likes": 0,
           "comments": 0
         }
@@ -15426,7 +15426,7 @@
           "title": "Kotlin Lambda 從零開始 Day 16：sortedWith / compareBy / thenBy — 多欄位排序",
           "url": "https://ithelp.ithome.com.tw/articles/10401503",
           "publishedAt": "2026-08-20T07:37:36+08:00",
-          "views": 112,
+          "views": 113,
           "likes": 0,
           "comments": 0
         },
@@ -15615,7 +15615,7 @@
           "title": "AI 黑魔法（16）：MCP 把工具接起來，也把風險一起接進來",
           "url": "https://ithelp.ithome.com.tw/articles/10403439",
           "publishedAt": "2026-08-17T12:23:28+08:00",
-          "views": 131,
+          "views": 132,
           "likes": 0,
           "comments": 0
         },
@@ -15754,7 +15754,7 @@
           "title": "【Day 11 】 智慧 Log 追蹤與管理：一個一個開 Log 來看也未免太累",
           "url": "https://ithelp.ithome.com.tw/articles/10402997",
           "publishedAt": "2026-08-15T20:57:41+08:00",
-          "views": 101,
+          "views": 102,
           "likes": 0,
           "comments": 0
         },
@@ -16003,7 +16003,7 @@
           "title": "Day 17｜Bloc 狀態機設計實戰",
           "url": "https://ithelp.ithome.com.tw/articles/10404371",
           "publishedAt": "2026-08-22T04:27:25+08:00",
-          "views": 23,
+          "views": 26,
           "likes": 0,
           "comments": 0
         }
@@ -16192,7 +16192,7 @@
           "title": "Day 17｜重寫完，路由的程式碼從 328 行變成 704 行",
           "url": "https://ithelp.ithome.com.tw/articles/10404372",
           "publishedAt": "2026-08-22T04:27:41+08:00",
-          "views": 23,
+          "views": 27,
           "likes": 0,
           "comments": 0
         }
@@ -16381,7 +16381,7 @@
           "title": "Day 17｜我昨天答應給成本數字，今天給不出來",
           "url": "https://ithelp.ithome.com.tw/articles/10404373",
           "publishedAt": "2026-08-22T04:27:53+08:00",
-          "views": 25,
+          "views": 27,
           "likes": 0,
           "comments": 0
         }
@@ -16570,7 +16570,7 @@
           "title": "Day 17｜95 個字元的提示詞，和 13% 的 commit",
           "url": "https://ithelp.ithome.com.tw/articles/10404374",
           "publishedAt": "2026-08-22T04:28:08+08:00",
-          "views": 24,
+          "views": 27,
           "likes": 0,
           "comments": 0
         }
@@ -16759,7 +16759,7 @@
           "title": "Day 17｜碰撞：我沒有關掉蜜蜂互撞，但跑起來的蜜蜂也沒有真的撞在一起",
           "url": "https://ithelp.ithome.com.tw/articles/10404375",
           "publishedAt": "2026-08-22T04:28:24+08:00",
-          "views": 21,
+          "views": 24,
           "likes": 0,
           "comments": 0
         }
@@ -18032,7 +18032,7 @@
           "title": "Day14：拓撲對帳，跟一個問了三次才問對的問題",
           "url": "https://ithelp.ithome.com.tw/articles/10404088",
           "publishedAt": "2026-08-21T00:03:24+08:00",
-          "views": 87,
+          "views": 88,
           "likes": 1,
           "comments": 0
         },
@@ -18042,7 +18042,7 @@
           "title": "Day15：兩條平行線接起來",
           "url": "https://ithelp.ithome.com.tw/articles/10404295",
           "publishedAt": "2026-08-22T00:23:27+08:00",
-          "views": 42,
+          "views": 43,
           "likes": 1,
           "comments": 0
         }
@@ -18211,7 +18211,7 @@
           "title": "【Day 15】核心管道重構：三階段分析管道（Stage 1-3 Pipeline）設計與實作 (daily_analysis.py)",
           "url": "https://ithelp.ithome.com.tw/articles/10403470",
           "publishedAt": "2026-08-17T14:11:02+08:00",
-          "views": 84,
+          "views": 85,
           "likes": 0,
           "comments": 0
         },
@@ -18221,7 +18221,7 @@
           "title": "【Day 16】分析品質提升：Core Execution Rules 與金額兆/億元前處理格式化",
           "url": "https://ithelp.ithome.com.tw/articles/10403803",
           "publishedAt": "2026-08-19T12:25:17+08:00",
-          "views": 152,
+          "views": 153,
           "likes": 0,
           "comments": 0
         },
@@ -18400,7 +18400,7 @@
           "title": "Day 14：區塊 3 The Success：從「都喜歡」轉成量得到的數字",
           "url": "https://ithelp.ithome.com.tw/articles/10403518",
           "publishedAt": "2026-08-17T19:00:16+08:00",
-          "views": 76,
+          "views": 77,
           "likes": 0,
           "comments": 0
         },
@@ -18718,7 +18718,7 @@
           "title": "Day 12｜需求一直改也沒關係，PM 記得誰說過什麼",
           "url": "https://ithelp.ithome.com.tw/articles/10403711",
           "publishedAt": "2026-08-18T21:55:09+08:00",
-          "views": 106,
+          "views": 107,
           "likes": 0,
           "comments": 0
         },
@@ -20070,7 +20070,7 @@
           "title": "Day 13｜Microsoft Foundry 的 AI Agent 攻防實戰：Agent 供應鏈 Release Gate",
           "url": "https://ithelp.ithome.com.tw/articles/10404349",
           "publishedAt": "2026-08-22T00:20:33+08:00",
-          "views": 31,
+          "views": 32,
           "likes": 0,
           "comments": 0
         }
@@ -20666,7 +20666,7 @@
           "title": "Day 13｜聚餐不是破功：我開始為「特殊情境」留下位置",
           "url": "https://ithelp.ithome.com.tw/articles/10402457",
           "publishedAt": "2026-08-15T21:35:00+08:00",
-          "views": 83,
+          "views": 84,
           "likes": 0,
           "comments": 0
         },
@@ -20915,7 +20915,7 @@
           "title": "Day 22｜出問題要回滾，但誰來決定回滾到哪？用 Rollback Gate 把風險寫成可驗收的 evidence",
           "url": "https://ithelp.ithome.com.tw/articles/10403448",
           "publishedAt": "2026-08-17T12:07:42+08:00",
-          "views": 86,
+          "views": 87,
           "likes": 0,
           "comments": 0
         },
@@ -20925,7 +20925,7 @@
           "title": "Day 23｜回滾成功就算恢復了嗎？用 Recovery Verification Gate 確認系統真的回到安全狀態",
           "url": "https://ithelp.ithome.com.tw/articles/10403449",
           "publishedAt": "2026-08-17T12:08:10+08:00",
-          "views": 82,
+          "views": 83,
           "likes": 0,
           "comments": 0
         },
@@ -20935,7 +20935,7 @@
           "title": "Day 24｜恢復驗證通過就能結案嗎？用 Incident Closeout Gate 把復原、學習與追蹤責任綁起來",
           "url": "https://ithelp.ithome.com.tw/articles/10403450",
           "publishedAt": "2026-08-17T12:08:35+08:00",
-          "views": 70,
+          "views": 71,
           "likes": 0,
           "comments": 0
         },
@@ -20945,7 +20945,7 @@
           "title": "Day 25｜Incident 結案後就能刪證據嗎？用 Evidence Retention Gate 守住留存期限與回讀能力",
           "url": "https://ithelp.ithome.com.tw/articles/10403451",
           "publishedAt": "2026-08-17T12:24:12+08:00",
-          "views": 76,
+          "views": 77,
           "likes": 0,
           "comments": 0
         },
@@ -20965,7 +20965,7 @@
           "title": "Day 27｜Evidence 都通過了，整條 Incident Pipeline 真的接得起來嗎？用 Lifecycle Gate 串起 Closeout、Retention 與 Access",
           "url": "https://ithelp.ithome.com.tw/articles/10403453",
           "publishedAt": "2026-08-17T12:25:15+08:00",
-          "views": 68,
+          "views": 69,
           "likes": 0,
           "comments": 0
         },
@@ -20975,7 +20975,7 @@
           "title": "Day 28｜rollout 不是一次推完就好！用 Progressive Rollout Gate 把 canary、flag、rollback 與健康檢查綁成可觀察流程",
           "url": "https://ithelp.ithome.com.tw/articles/10403454",
           "publishedAt": "2026-08-17T12:25:43+08:00",
-          "views": 73,
+          "views": 74,
           "likes": 0,
           "comments": 0
         },
@@ -20995,7 +20995,7 @@
           "title": "Day 30｜AI 會跑不等於能交付！用 Delivery Contract 把 30 天工作流收成可回讀的工程閉環",
           "url": "https://ithelp.ithome.com.tw/articles/10403456",
           "publishedAt": "2026-08-17T12:26:34+08:00",
-          "views": 270,
+          "views": 271,
           "likes": 0,
           "comments": 0
         }
@@ -21561,7 +21561,7 @@
           "title": "我推的Laravel S2｜Day 11：Eloquent 進階：新增/更新/刪除、Transaction、casts()、UUIDv7",
           "url": "https://ithelp.ithome.com.tw/articles/10402628",
           "publishedAt": "2026-08-21T22:40:09+08:00",
-          "views": 36,
+          "views": 37,
           "likes": 0,
           "comments": 0
         }
@@ -22762,7 +22762,7 @@
           "title": "D10  讓機器聽話跟講話",
           "url": "https://ithelp.ithome.com.tw/articles/10403263",
           "publishedAt": "2026-08-22T00:25:21+08:00",
-          "views": 39,
+          "views": 40,
           "likes": 0,
           "comments": 0
         }
@@ -25730,7 +25730,7 @@
           "title": "Cumulus OS - NVUE",
           "url": "https://ithelp.ithome.com.tw/articles/10403542",
           "publishedAt": "2026-08-17T21:23:20+08:00",
-          "views": 80,
+          "views": 81,
           "likes": 0,
           "comments": 0
         },
@@ -27061,7 +27061,7 @@
           "title": "Day 03｜打造你的 AI 開發環境總覽",
           "url": "https://ithelp.ithome.com.tw/articles/10403863",
           "publishedAt": "2026-08-21T09:50:09+08:00",
-          "views": 59,
+          "views": 60,
           "likes": 0,
           "comments": 0
         },
@@ -27071,7 +27071,7 @@
           "title": "Day 04｜先從盤古開天開始說起",
           "url": "https://ithelp.ithome.com.tw/articles/10403864",
           "publishedAt": "2026-08-22T00:13:30+08:00",
-          "views": 38,
+          "views": 39,
           "likes": 0,
           "comments": 0
         }
@@ -27089,7 +27089,7 @@
       "description": "2026 年的 Claude 已擴增為四階模型，官方建議、定價與參數設定都在快速變動。但多數人仍停留在「一支模型用到底」的習慣，帳單越跑越高，效果卻不見得更好。\r\n\r\n這 30 天，我以工程師的視角，帶你把 Claude 用得對，也用得省。內容分五階段：模型怎麼選、Token 成本實戰（Prompt Caching、長對話陷阱）、設定調校（effort、Adaptive Thinking、Prompt 寫法）、開發者實戰（MCP、API 串接），最後探討模型分流的底層邏輯。\r\n\r\n技術細節一律以官方文件為準，因變化很快，讀者請具備查證事實。每篇皆可獨立閱讀。",
       "team": "不買股票買機票",
       "signupDate": "2026/08/08T11:55:00+08:00",
-      "lastUpdated": "2026-08-22T04:21:45+08:00",
+      "lastUpdated": "2026-08-22T05:41:41+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 3,
@@ -27100,7 +27100,7 @@
           "title": "【Day 1】Claude 模型怎麼選？2026 最新四階模型 Fable 5 / Opus 5 / Sonnet 5 / Haiku 4.5 完整比較",
           "url": "https://ithelp.ithome.com.tw/articles/10403792",
           "publishedAt": "2026-08-19T14:21:54+08:00",
-          "views": 212,
+          "views": 215,
           "likes": 1,
           "comments": 1
         },
@@ -29706,9 +29706,6 @@
     }
   ],
   "scrapeLog": [
-    "[stale] 9183: HTTP 429 for https://ithelp.ithome.com.tw/users/20156636/ironman/9183",
-    "[stale] 9184: HTTP 429 for https://ithelp.ithome.com.tw/users/20007542/ironman/9184",
-    "[stale] 9185: HTTP 429 for https://ithelp.ithome.com.tw/users/20129482/ironman/9185",
     "[stale] 9186: HTTP 429 for https://ithelp.ithome.com.tw/users/20111946/ironman/9186",
     "[stale] 9187: HTTP 429 for https://ithelp.ithome.com.tw/users/20183518/ironman/9187",
     "[stale] 9188: HTTP 429 for https://ithelp.ithome.com.tw/users/20121130/ironman/9188",
