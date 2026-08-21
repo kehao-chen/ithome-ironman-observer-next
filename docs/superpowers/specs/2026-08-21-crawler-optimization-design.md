@@ -1,4 +1,4 @@
-# 爬蟲效能優化與雙模式增量同步設計 (v3 正式修訂版)
+# 爬蟲效能優化與雙模式增量同步設計 (v4 最終定稿版)
 
 ## 1. 目標與背景
 
@@ -8,11 +8,17 @@
 - **重複抓取舊資料**：98% 以上的系列在 10 分鐘內未發新文，卻持續重複下載歷史分頁與最新文章頁 HTML。
 - **iThome 分頁機制特性**：系列頁第 1 頁為最舊 10 篇（Day 0~9），最新文章位於最後一頁（`?page=Math.ceil(N / 10)`）。
 
-### 優化目標與驗收基準 (Acceptance Criteria)
-1. **常態請求量指標**：常態增量爬取請求數降至 **520 ~ 580 次**（263 系列 $\times$ 2 請求 + 14 報名頁，相較原先 1,100+ 請求減少 **50% ~ 55% 請求量**，並消除 95%+ 系列的最新文章頁與深層分頁下載）。
-2. **CI 耗時目標**：常態每 10 分鐘增量爬蟲時間目標降至 **< 30 秒**（p95 < 45 秒，透過 5 並行 worker 消除序列 I/O 阻塞）。
-3. **資料一致性與正確性**：最新文章的閱讀數、按讚數、留言數與最新發文狀態每 10 分鐘即時更新；歷史文章透過 ID 集合與分頁校準，絕不因篇數相同而誤合錯誤文章。
-4. **雙模式架構**：日常走高頻「精準最後一頁」增量更新，搭配定時「深度校準（`--full`）」全面刷新歷史文章閱讀數。
+### 優化目標與請求量基準公式 (Parameterized Request Baseline)
+常態增量爬取的請求數計算公式：
+$$R_{\text{inc}} = N_{\text{signup\_pages}} + \sum_{s \in \text{series}} (1_{\text{RSS}} + 1_{\text{last\_page}} + 1_{\text{badge\_if\_new}})$$
+
+以目前 $S \approx 263$ 個系列、報名頁 14 頁、單輪約 5 個系列有新發文為例：
+$$R_{\text{inc}} \approx 14 + (263 \times 2) + 5 \approx \mathbf{545 \text{ 請求}}$$
+相較於既有全量爬取的基準公式：
+$$R_{\text{legacy}} = N_{\text{signup\_pages}} + \sum_{s \in \text{series}} (1_{\text{RSS}} + \text{pages}_s + 1_{\text{badge}}) \approx 14 + 263 \times (1 + 2 + 1) \approx \mathbf{1,066 \text{ 請求}}$$
+- **請求數減少**：減少約 **50% ~ 55%** 的 HTTP 連線，且消除 95%+ 系列的最新文章頁與深層分頁下載。
+- **CI 耗時目標**：常態每 10 分鐘增量爬蟲時間目標降至 **< 30 秒**（p95 < 45 秒，透過 5 並行 worker 消除序列 I/O 阻塞）。
+- **資料一致性保證**：最新文章互動數據每 10 分鐘即時更新；歷史文章透過嚴格的 ID 集合與分頁校準驗證，不符安全條件時一律退回 Full Fallback。
 
 ---
 
@@ -21,7 +27,11 @@
 ### 2.1 權威來源階層 (Authority Hierarchy)
 1. **文章篇數 (`articleCount`)**：以系列頁標頭 `<span>共 N 篇文章</span>` 為唯一權威值。RSS `items.length` 僅作為定位最後一頁的探測提示（Hint $N_{\text{hint}}$）。
 2. **官方參賽天數 (`dayCount`)**：以最新文章頁 `ir-article__days-num` 徽章與系列頁標頭取 `Math.max` 為權威值（官方 streak）。若無新發文且快取有效，直接復用快取 `prev.dayCount`。
-3. **更新時間 (`lastUpdated`)**：以 RSS `<lastBuildDate>` 為主要來源；若 RSS 失敗則以最新文章的 `publishedAt` 作為保底。
+3. **更新時間 (`lastUpdated`)**：
+   - 優先：RSS `<lastBuildDate>`。
+   - 保底：若 RSS 失敗或無 `lastBuildDate`，使用最新文章的 `publishedAt`。
+   - 未開賽（0 篇）：`null`。
+   - `stale` 狀態：維持快取的 `prev.lastUpdated`。
 
 ### 2.2 系列爬取狀態模型 (Series Result Status)
 單一系列爬取結果明確定義為三種狀態，禁止將失敗偽裝成成功：
@@ -36,7 +46,7 @@ export type SeriesResult =
 #### 彙整至 `YearData` 與 `scrapeLog` 規則：
 - **`fresh`**：放入 `YearData.series`。
 - **`stale`**：將快取 `series` 放入 `YearData.series`，同時在 `YearData.scrapeLog` 寫入 `[stale] ${seriesId}: ${error}` 警告。
-- **`failed`**：**絕不放入 `YearData.series`**（徹底修正既有程式在無 stats 時製造假 0 篇系列的 bug），在 `YearData.scrapeLog` 寫入 `[failed] ${seriesId}: ${error}`，並累計至回傳的 `failures` 陣列。
+- **`failed`**：**絕不放入 `YearData.series`**（徹底修正既有程式在無 stats 時製造假 0 篇系列的行為），在 `YearData.scrapeLog` 寫入 `[failed] ${seriesId}: ${error}`，並累計至回傳的 `failures` 陣列。
 - **全部失敗保護**：若 `YearData.series.length === 0`，觸發全失敗防護（終止原子寫入，保留前次資料）。
 
 ---
@@ -80,10 +90,13 @@ flowchart TD
     VerifyLastPageMatch -- 不吻合 (RSS hint 失準) --> FullFallback
     
     VerifyLastPageMatch -- 吻合 (正確最後一頁) --> CheckIncrementalSafe{安全增量條件是否滿足 ?}
-    CheckIncrementalSafe -- 否 (前綴不符/ID改變/跨多頁) --> FullFallback
+    CheckIncrementalSafe -- 否 (篇數減少/前綴不符/跨多頁) --> FullFallback
     CheckIncrementalSafe -- 是 (安全增量) --> MergeID[以 Article ID 映射替換最後一頁數據]
     
-    MergeID --> HasNewPost{header.articleCount > prev.articleCount ?}
+    MergeID --> VerifyMergedLength{merged.length === header.articleCount 且 ID 無重複 ?}
+    VerifyMergedLength -- 不符 --> FullFallback
+    VerifyMergedLength -- 完全相符 --> HasNewPost{header.articleCount > prev.articleCount ?}
+    
     HasNewPost -- 無新發文 (篇數相同) --> ReuseDay[復用 prev.dayCount, 跳過文章頁]
     HasNewPost -- 有新發文 --> FetchBadge[抓取最新文章頁 HTML 計算 officialDayCount]
     
@@ -92,65 +105,50 @@ flowchart TD
     FullFallback --> FullDone[完成 Full Fallback 解析]
 ```
 
-#### 3.1.1 RSS 0 篇保護機制（解決 Blocker #4）
-- 當 RSS $N_{\text{hint}} === 0$ 時：
-  1. 若 `prev && prev.articleCount > 0`：**嚴禁直接判定為未開賽**（防止 RSS 暫時性空白或端點異常覆蓋有效資料），一律轉入 Full Fallback 進行驗證。
-  2. 若 `!prev`（冷啟動）或 `prev.articleCount === 0`：抓取系列第 1 頁 HTML 進行驗證。若第 1 頁標頭確實為 `articleCount === 0`，才輸出 0 篇的未開賽系列；若第 1 頁已有文章，轉入 Full Fallback。
-
-#### 3.1.2 嚴格的安全增量條件（Safety Invariant，解決 Blocker #2、#3）
-當且僅當滿足以下**所有**條件時，才執行「最後一頁直接合併」；任何一項不符合一律轉入 **Full Fallback**：
+#### 3.1.1 嚴格的安全增量條件（Safety Invariants）
+當且僅當滿足以下**所有**條件時，才執行增量合併；任何一項不符合一律轉入 **Full Fallback**：
 1. **快取完整性**：`prev && prev.articles.length === prev.articleCount && prev.articleCount > 0`。
-2. **最後一頁校準**：`lastPage === Math.ceil(header.articleCount / 10)`（證明所抓取的確實是系列真正的最後一頁）。
-3. **無大幅跨頁增長**：`lastPage - Math.ceil(prev.articleCount / 10) <= 1`（一次發文未跨超過 1 頁，保證快取已涵蓋前 $\text{lastPage} - 1$ 頁的所有文章）。
-4. **可執行前綴驗證**：
-   ```ts
-   const prefixLength = (lastPage - 1) * 10;
-   const cachedPrefixIds = prev.articles.slice(0, prefixLength).map((a) => a.id);
-   // 驗證快取前綴長度符合預期
-   const isPrefixValid = cachedPrefixIds.length === prefixLength;
-   ```
-5. **合併後 ID 唯一性**：拼接前段快取文章與本次最後一頁文章後，所有文章 ID 無重複。
-
-#### 3.1.3 文章合併演算法 (`mergeIncrementalArticles`)：
-- 對最後一頁文章列表 `lastPageArticles`：
-  1. 取出快取中前段歷史文章列表：`const prefixArticles = prev.articles.slice(0, (lastPage - 1) * 10)`。
-  2. 建立 ID Identity Map：以 `prefixArticles` 為基礎，將 `lastPageArticles` 依 `id` 進行替換（更新最新瀏覽數、按讚數、留言數）或追加（新文章）。
-  3. 最終輸出排序維持現有契約：`articles.sort((a, b) => a.day - b.day)`（保證與現行資料格式 100% 相容）。
+2. **單調非遞減（禁止刪文時增量）**：`header.articleCount >= prev.articleCount`（若篇數減少，代表文章被刪除，必須走 Full Fallback 重新同步）。
+3. **最後一頁校準**：`lastPage === Math.ceil(header.articleCount / 10)`（證明所抓取的確實是系列真正的最後一頁）。
+4. **無大幅跨頁增長**：`lastPage - Math.ceil(prev.articleCount / 10) <= 1`（一次發文未跨超過 1 頁，保證快取已涵蓋前 $\text{lastPage} - 1$ 頁的所有文章）。
+5. **可執行前綴驗證與合併**：
+   - 提取前段快取文章：`prefixArticles = prev.articles.slice(0, (lastPage - 1) * 10)`。
+   - 驗證前綴長度：`prefixArticles.length === (lastPage - 1) * 10`。
+   - ID 映射合併：以 `prefixArticles` 與 `lastPageArticles` 依 `id` 建立 Map 替換或附加。
+   - 驗證合併後文章數：`mergedArticles.length === header.articleCount` 且 ID 集合完全無重複。
 
 ---
 
-### 3.2 Full Fallback 完整規範（解決 High #5）
+### 3.2 Full Fallback 完整規範與完成條件
 當系列需要 Full Fallback 或處於全量深度校準模式（`--full`）時：
-1. **從第 1 頁開始抓取**：
-   - 驗證 `isSeriesPage(html)`，若失敗且有快取則標記 `stale`，無快取標記 `failed`。
-   - 解析第 1 頁取得權威標頭數據：`headerDayCount`, `articleCount`, `subscriptions`。
-   - 收集第 1 頁文章。
-2. **分頁遍歷**：
-   - 若有下一頁（`nextPage` 且解析文章數 $< \text{articleCount}$），依序抓取後續分頁（`?page=2`, `?page=3`...）。
-   - 每個分頁皆需通過 `isSeriesPage` 驗證。若中途分頁抓取失敗：
-     - 若有快取 $\rightarrow$ 輸出 `stale` 並記錄錯誤。
-     - 若無快取 $\rightarrow$ 輸出 `failed`。
+1. **逐頁遍歷抓取**：
+   - 從第 1 頁開始，依 `nextPage` 依序抓取所有分頁（`?page=1` $\dots$ `?page=M`）。
+   - 每個分頁必須通過 `isSeriesPage` 驗證。
+   - 第 1 頁提供權威標頭數據：`headerDayCount`, `articleCount`, `subscriptions`。
+2. **完成條件（Completion Invariant）**：
+   - 遍歷結束後，收集的文章清單必須滿足：`articles.length === header.articleCount` 且所有文章 `id` 唯一。
+   - 若分頁遍歷完成後篇數仍不符或中途分頁失敗：
+     - 若有快取 $\rightarrow$ 輸出 `stale` 並在 `scrapeLog` 記錄錯誤。
+     - 若無快取 $\rightarrow$ 輸出 `failed`，不製造殘缺資料。
 3. **最新文章徽章計算**：
    - 若 `articles.length > 0`，抓取最新文章頁 HTML 呼叫 `officialDayCount`。
-   - 若最新文章頁抓取或解析失敗，自動退回第 1 頁標頭天數 `headerDayCount` 保底（此為非致命降級，依然輸出 `fresh`，並在 `scrapeLog` 記錄 warning）。
-4. **輸出**：回傳完整組裝的 `fresh` Series 物件。
+   - 若最新文章頁抓取或解析失敗，自動退回第 1 頁標頭天數 `headerDayCount` 保底（非致命降級，依然輸出 `fresh`，並在 `scrapeLog` 記錄 warning）。
+4. **排序與輸出**：維持既有資料契約 `articles.sort((a, b) => a.day - b.day)`。
 
 ---
 
-## 4. 頁面有效性驗證 (Page Validity Invariants，解決 Medium #8)
-
-定義明確的布林驗證純函式，防止 Cloudflare Challenge、反爬阻擋或 500/200 空白頁面被誤判：
+## 4. 頁面有效性驗證 (Page Validity Invariants)
 
 ```ts
 export function isSeriesPage(html: string): boolean {
-  // 必須包含系列頁核心結構標籤，且能辨識參賽天數/總篇數標頭或文章列表容器
+  // 必須包含系列頁標頭特徵（支援 0 篇未開賽系列與正常系列）
   const hasHeader = /參賽天數\s*\d+\s*天/.test(html) && /共\s*\d+\s*篇文章/.test(html);
-  const hasListContainer = html.includes('qa-list__info--ironman') || html.includes('ir-profile-list');
-  return hasHeader && hasListContainer;
+  const hasContainer = html.includes('qa-list__info') || html.includes('profile-main') || html.includes('ir-profile-list');
+  return hasHeader && hasContainer;
 }
 
 export function isArticlePage(html: string): boolean {
-  // 必須包含文章頁核心容器與徽章/問答特徵
+  // 必須包含文章頁標籤或問答特徵
   return html.includes('ir-article') || html.includes('qa-markdown');
 }
 ```
@@ -173,32 +171,119 @@ export function isArticlePage(html: string): boolean {
 ## 6. GitHub Actions 工作流程與競態防護 (Workflow & Concurrency Group)
 
 ### 6.1 共用 Concurrency Group 防護
-`scheduled-update.yml` 與 `deep-calibrate.yml` 統一共用相同的 concurrency group：
+`scheduled-update.yml` 與新增的 `deep-calibrate.yml` 統一共用相同的 concurrency group：
 ```yaml
 concurrency:
   group: data-update-main
   cancel-in-progress: false
 ```
-- 保證兩個工作流在 GitHub Actions 佇列中串行執行，絕不並行搶推 main 分支。
 
-### 6.2 標準化 Rebase & Push 協議
-```bash
-git config user.name "github-actions[bot]"
-git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-git add data/ web/public/data/
-if git diff --cached --quiet; then
-  echo "no data change; skipping commit+build+deploy"
-  exit 0
-fi
-git commit -m "chore: update ironman data $(date -u +%Y-%m-%dT%H:%MZ)"
-for attempt in 1 2 3 4 5; do
-  if git pull --rebase origin main && git push origin main; then
-    exit 0
-  fi
-  sleep 5
-done
-echo "push failed after rebase retries" >&2
-exit 1
+### 6.2 完整 Workflow Step Contract
+
+#### `scheduled-update.yml`（每 10 分鐘一次，Worker 觸發）
+```yaml
+name: scheduled-update
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: data-update-main
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - name: Scrape (Incremental)
+        run: bun run scripts/scrape.ts
+      - name: Commit data if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ web/public/data/
+          if git diff --cached --quiet; then
+            echo "no data change; skipping commit+build+deploy"
+            exit 0
+          fi
+          git commit -m "chore: update ironman data $(date -u +%Y-%m-%dT%H:%MZ)"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin main; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "push failed after rebase retries" >&2
+          exit 1
+      - name: Build site
+        run: cd web && bun install && bun run build
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler pages deploy web/dist --project-name=ironman-observer-next
+```
+
+#### `deep-calibrate.yml`（每 2 小時定時 / 手動觸發）
+```yaml
+name: deep-calibrate
+on:
+  schedule:
+    - cron: "15 */2 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: data-update-main
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  calibrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - name: Scrape (Full Calibration)
+        run: bun run scripts/scrape.ts --full
+      - name: Commit data if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ web/public/data/
+          if git diff --cached --quiet; then
+            echo "no data change; skipping commit+build+deploy"
+            exit 0
+          fi
+          git commit -m "chore: deep calibrate ironman data $(date -u +%Y-%m-%dT%H:%MZ)"
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin main; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "push failed after rebase retries" >&2
+          exit 1
+      - name: Build site
+        run: cd web && bun install && bun run build
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler pages deploy web/dist --project-name=ironman-observer-next
 ```
 
 ---
@@ -214,9 +299,10 @@ exit 1
    - $19 \rightarrow 20$（分頁補滿）
    - $20 \rightarrow 21$（跨入第 3 頁）
    - 一次增加超過 10 篇（跨頁躍升，驗證觸發 Full Fallback）
+   - 篇數減少（作者刪文，驗證觸發 Full Fallback）
 3. **ID 集合一致性檢查**：
-   - 快取文章 ID 前綴一致 $\rightarrow$ 允許增量替換最後一頁。
-   - 快取文章 ID 重複或前綴不符 $\rightarrow$ 拒絕增量合併，觸發 Full Fallback。
+   - 快取文章 ID 前綴一致且合併後總數相符 $\rightarrow$ 增量合併成功。
+   - 合併後出現重複 ID 或總數不符 $\rightarrow$ 拒絕增量合併，觸發 Full Fallback。
 4. **狀態模型與錯誤處理 (`SeriesResult`)**：
    - RSS 失敗但有快取 $\rightarrow$ 走 Full Fallback；若 Full 也失敗 $\rightarrow$ 輸出 `stale` 並記錄 `scrapeLog`。
    - RSS 失敗且無快取 $\rightarrow$ 走 Full Fallback；若 Full 也失敗 $\rightarrow$ 輸出 `failed`，不產生偽造空系列。
