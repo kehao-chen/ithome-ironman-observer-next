@@ -8,6 +8,7 @@ import {
   groupStats,
   titleKeywordStats,
   staleObservation,
+  staleDayDistribution,
 } from "../lib/insights";
 import { DEFAULT_KEYWORDS } from "../lib/keywords";
 import { taipeiToday } from "../lib/daily-status";
@@ -65,13 +66,15 @@ const kwLine = pageEmpty
 
 // 5. 斷更觀察
 const stale = staleObservation(data.series, taipeiToday());
+const staleDist = staleDayDistribution(data.series, taipeiToday());
+const peakStale = staleDist.length > 0 ? staleDist.reduce((a, b) => (b.count > a.count ? b : a), staleDist[0]) : null;
 const riskLine = pageEmpty
   ? "尚無資料"
   : !hasSeries
     ? "尚無系列資料"
-    : stale.length === 0
+    : stale.length === 0 || !peakStale || peakStale.count === 0
       ? "所有系列目前都有更新"
-      : `${stale.length} 個系列已斷更`;
+      : `${stale.length} 個系列已斷更 · 斷更高峰在 Day ${peakStale.day}（${peakStale.count} 系列）`;
 ---
 
 <header class="site-header container">

@@ -65,6 +65,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       publishHeatmap,
       engagementLeaderboard,
       staleObservation,
+      staleDayDistribution,
     } from "../lib/insights";
     import { DEFAULT_KEYWORDS } from "../lib/keywords";
     import { taipeiToday } from "../lib/daily-status";
@@ -435,35 +436,43 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         }, true);
       }
 
-      // 10. 斷更觀察 ────────────────────────────────────────────────────────
+      // 10. 斷更觀察：單日斷更落點分佈 ────────────────────────────────────────
       {
         const stale = staleObservation(d.series, taipeiToday());
-        const riskEl = document.getElementById("chart-risk");
-        if (riskEl && stale.length > 0) riskEl.style.height = `${stale.length * 28 + 24}px`;
+        const staleDist = staleDayDistribution(d.series, taipeiToday());
+        const totalStale = stale.length;
         getChart("chart-risk")?.setOption({
           backgroundColor: "transparent",
-          grid: { top: 12, right: 56, bottom: 12, left: 12, containLabel: true },
+          grid: grid({ bottom: 24 }),
           tooltip: {
-            trigger: "item",
+            trigger: "axis",
             ...tip(c),
             formatter: (p: any) => {
-              const r = stale[p.dataIndex];
-              return r ? `<b>${r.title}</b><br/>Day ${r.dayCount} 後斷更<br/>已停更 ${r.staleDays} 天` : "";
+              const item = staleDist[p[0]?.dataIndex];
+              if (!item) return "";
+              const pct = totalStale > 0 ? ((item.count / totalStale) * 100).toFixed(1) : "0";
+              return `<b>${item.label}</b><br/>斷更系列數：<b>${item.count}</b>（佔斷更 ${pct}%）`;
             },
           },
-          xAxis: { type: "value", name: "最後完成日", nameTextStyle: { color: c.muted, fontSize: 11 }, ...ax },
-          yAxis: {
+          xAxis: {
             type: "category",
-            data: hasSeries ? stale.map((r) => `Day ${r.dayCount} 後斷更`) : [],
-            inverse: true,
+            data: hasSeries ? staleDist.map((b) => b.label) : [],
             ...ax,
-            axisLabel: { ...ax.axisLabel, width: 150, overflow: "truncate" },
+            axisLabel: { ...ax.axisLabel, interval: staleDist.length > 15 ? 1 : 0 },
           },
+          yAxis: { type: "value", name: "斷更系列數", minInterval: 1, ...ax },
           series: [{
             type: "bar",
-            data: hasSeries ? stale.map((r) => r.dayCount) : [],
-            itemStyle: { color: c.danger, borderRadius: [0, 2, 2, 0] },
-            label: { show: true, position: "right", color: c.muted, fontSize: 10, fontFamily: "inherit", formatter: (p: any) => `Day ${p.value}` },
+            data: hasSeries ? staleDist.map((b) => b.count) : [],
+            itemStyle: { color: c.danger, borderRadius: [2, 2, 0, 0] },
+            label: {
+              show: true,
+              position: "top",
+              color: c.muted,
+              fontSize: 10,
+              fontFamily: "inherit",
+              formatter: (p: any) => (p.value > 0 ? String(p.value) : ""),
+            },
           }],
         }, true);
       }
@@ -508,7 +517,14 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         setText("insight-kw-line", kws.length === 0 ? "尚無標題關鍵字" : `${kws[0].count} 個系列標題包含「${kws[0].keyword}」`);
       }
       const stale = staleObservation(d.series, taipeiToday());
-      setText("insight-risk-line", stale.length === 0 ? "所有系列目前都有更新" : `${stale.length} 個系列已斷更`);
+      const staleDist = staleDayDistribution(d.series, taipeiToday());
+      const peakStale = staleDist.length > 0 ? staleDist.reduce((a, b) => (b.count > a.count ? b : a), staleDist[0]) : null;
+      setText(
+        "insight-risk-line",
+        stale.length === 0 || !peakStale || peakStale.count === 0
+          ? "所有系列目前都有更新"
+          : `${stale.length} 個系列已斷更 · 斷更高峰在 Day ${peakStale.day}（${peakStale.count} 系列）`,
+      );
     }
 
     // ── Full render ────────────────────────────────────────────────────────
