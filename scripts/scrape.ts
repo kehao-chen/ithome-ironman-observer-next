@@ -2,6 +2,7 @@
 import { copyFile, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fetchHtml } from "./fetch-html";
+import { pMap } from "./rate-limiter";
 import { parseSignupList, signupListUrl } from "./parse-signup";
 import { parseRss, rssUrl } from "./parse-rss";
 import { parseSeriesPage, seriesUrl, isArticlePage, isSeriesPage } from "./parse-series";
@@ -315,68 +316,75 @@ export async function writeHistorySnapshots(dataDir: string, years: YearData[]):
   return failures;
 }
 
-export async function runScrape(manifest: Manifest): Promise<YearData> {
+export type RunScrapeOptions = {
+  full?: boolean;
+  cachedYearData?: YearData;
+  concurrency?: number;
+  fetcher?: FetchFn;
+};
+
+export async function runScrape(
+  manifest: Manifest,
+  opts: RunScrapeOptions = {},
+): Promise<YearData> {
+  const isFull = opts.full ?? false;
+  const concurrency = opts.concurrency ?? 5;
+  const fetcher = opts.fetcher ?? fetchHtml;
+  const cachedMap = new Map<number, Series>();
+  if (opts.cachedYearData?.series) {
+    for (const s of opts.cachedYearData.series) cachedMap.set(s.id, s);
+  }
+
   // 1. fetch all pages of signup list
   const cards: SignupCard[] = [];
   let page = 1;
   for (;;) {
     const url = `${manifest.signupListUrl}${page === 1 ? "" : `?page=${page}`}`;
-    const html = await fetchHtml(url);
+    const html = await fetcher(url);
     const parsed = parseSignupList(html);
     if (parsed.length === 0) break;
     cards.push(...parsed);
-    const hasNext = /rel="next"/.test(html);
-    if (!hasNext) break;
+    if (!/rel="next"/.test(html)) break;
     page++;
   }
 
-  // 2. per series: RSS + series page (2 requests each; series 頁分頁時逐頁抓取)
-  const statsBySeries = new Map<number, SeriesStats>();
-  const rssBySeries = new Map<number, RssChannel>();
-  const errors: string[] = [];
-  for (const card of cards) {
-    try {
-      const [rssXml, pageHtml] = await Promise.all([
-        fetchHtml(rssUrl(card.seriesId)),
-        fetchHtml(seriesUrl(card.userId, card.seriesId)),
-      ]);
-      rssBySeries.set(card.seriesId, parseRss(rssXml));
-      // series 頁文章清單分頁：每頁約 10 篇，30 天系列最多 3 頁。
-      // 逐頁串接 articles；dayCount/articleCount/subscriptions 只在第 1 頁取。
-      const first = parseSeriesPage(pageHtml);
-      const articles = [...first.articles];
-      let page: string | null = first.nextPage;
-      while (page) {
-        const more = parseSeriesPage(await fetchHtml(seriesUrl(card.userId, card.seriesId) + page));
-        articles.push(...more.articles);
-        page = more.nextPage;
+  // 2. per series worker pool
+  const scrapeLog: string[] = [];
+  const results = await pMap(
+    cards,
+    async (card) => {
+      const cached = cachedMap.get(card.seriesId);
+      if (isFull) {
+        return await scrapeSeriesFull(card, cached, fetcher);
       }
-      // dayCount = 官方參賽天數（2026-08-19 修正，語意見 officialDayCount）。
-      // 舊規則 max(標頭, 去重標題 Day) 已移除：標題是作者自填、會超前 streak，
-      // 把「12 天內補滿 30 篇」誤判成完賽（2026-08-18 的「標頭凍結」是誤診，
-      // 標頭 12 本來就是官方值）。
-      const dayRes = await officialDayCount(first.dayCount, articles[articles.length - 1]?.url);
-      if (dayRes.warning) errors.push(`${card.seriesId}: ${dayRes.warning}`);
-      statsBySeries.set(card.seriesId, {
-        dayCount: dayRes.dayCount,
-        articleCount: first.articleCount,
-        subscriptions: first.subscriptions,
-        articles,
-      });
-    } catch (e) {
-      errors.push(`${card.seriesId}: ${e instanceof Error ? e.message : String(e)}`);
+      return await scrapeSeriesIncremental(card, cached, fetcher);
+    },
+    { concurrency, delayMs: 20 },
+  );
+
+  const series: Series[] = [];
+  for (const res of results) {
+    if (res.status === "fresh") {
+      series.push(res.series);
+      if (res.warnings) {
+        for (const w of res.warnings) scrapeLog.push(`[warning] ${res.series.id}: ${w}`);
+      }
+    } else if (res.status === "stale") {
+      series.push(res.series);
+      scrapeLog.push(`[stale] ${res.series.id}: ${res.error}`);
+    } else if (res.status === "failed") {
+      scrapeLog.push(`[failed] ${res.seriesId}: ${res.error}`);
     }
-    await new Promise((r) => setTimeout(r, 150)); // be gentle to ithelp
   }
 
-  const series = mergeCardsAndStats(cards, statsBySeries, rssBySeries);
+  series.sort((a, b) => b.dayCount - a.dayCount || a.signupDate.localeCompare(b.signupDate));
   const groups = [...new Set(series.map((s) => s.group))].sort();
   return {
     year: manifest.year,
     updatedAt: taipeiTimestamp(new Date()),
     groups,
     series,
-    scrapeLog: errors,
+    scrapeLog,
   };
 }
 
@@ -485,6 +493,7 @@ export async function commitWrites(staged: StagedFile[]): Promise<void> {
 
 // CLI entry
 if (import.meta.main) {
+  const isFull = process.argv.includes("--full");
   const manifestPath = join(import.meta.dir, "..", "config", "series-manifest.json");
   const manifests: Manifest[] = JSON.parse(await readFile(manifestPath, "utf-8"));
   if (!Array.isArray(manifests) || manifests.length === 0) {
@@ -502,8 +511,16 @@ if (import.meta.main) {
   const dataDir = join(import.meta.dir, "..", "data");
   await mkdir(dataDir, { recursive: true });
 
-  const { succeeded, failures } = await collectYears(manifests, runScrape);
-
+  const { succeeded, failures } = await collectYears(manifests, async (m) => {
+    let cachedYearData: YearData | undefined;
+    if (!isFull) {
+      try {
+        const raw = await readFile(join(dataDir, `${m.year}.json`), "utf-8");
+        cachedYearData = JSON.parse(raw);
+      } catch { /* cold start */ }
+    }
+    return runScrape(m, { full: isFull, cachedYearData });
+  });
   // Report per-year failures regardless of outcome (partial scrape visibility).
   for (const f of failures) console.error(`[${f}]`);
   if (succeeded.length === 0) {

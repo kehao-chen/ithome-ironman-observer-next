@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { buildMeta, collectYears, commitWrites, stageWrites } from "./scrape";
+import { buildMeta, collectYears, commitWrites, stageWrites, runScrape } from "./scrape";
 import type { Manifest, YearData } from "./types";
 
 const m2025: Manifest = { year: 2025, signupListUrl: "https://x/2025" };
@@ -109,5 +109,76 @@ describe("two-phase atomic write", () => {
       // No .bak or .tmp residue.
       expect((await import("node:fs")).readdirSync(d).sort()).toEqual(["2025.json", "2026.json", "meta.json"]);
     } finally { await cleanup(d); }
+  });
+});
+
+describe("runScrape integration", () => {
+  const m2026: Manifest = { year: 2026, signupListUrl: "https://ithelp/2026ironman/signup/list" };
+  const signupHtml = `
+    <div class="list-card">
+      <a href="https://ithelp.ithome.com.tw/users/20183319/ironman/9029"></a>
+      <span class="contestants-list__name">Tim</span>
+      <div class="tag"><span>Software</span></div>
+      <h3 class="contestants-list__title title">AI Compiler</h3>
+      <p class="contestants-list__desc content">desc</p>
+      <span class="signup-date">報名日期：2026/08/01 12:00:00</span>
+    </div>`;
+
+  test("runScrape aggregates fresh series and sorts by dayCount desc", async () => {
+    const rssXml = `<channel><lastBuildDate>Fri, 21 Aug 2026 09:45:10 +0800</lastBuildDate><item><title>D1</title><link>https://ithelp/articles/1</link></item></channel>`;
+    const seriesPageHtml = `
+      <div class="board leftside profile-main">
+        <div class="qa-list__info qa-list__info--ironman subscription-group">
+          <span>參賽天數 1 天 ｜</span><span>共 1 篇文章 ｜</span><span class="subscription-amount">3</span>人訂閱
+        </div>
+        <div class="qa-list profile-list ir-profile-list">
+          <div class="profile-list__condition">
+            <div class="ir-qa-list__status"><span class="ir-qa-list__days">DAY 1</span></div>
+            <h3 class="qa-list__title"><a href="https://ithelp.ithome.com.tw/articles/10400001" class="qa-list__title-link">Day 1｜標題 1</a></h3>
+            <div class="qa-list__info"><a title="2026-08-01 10:00:00" class="qa-list__info-time"></a></div>
+            <span class="qa-condition__count">100</span><span class="qa-condition__text">瀏覽</span>
+          </div>
+        </div>
+      </div>`;
+    const articleHtml = `<div class="ir-article"><span class="ir-article__days-num">1</span></div>`;
+
+    const fetcher = async (url: string) => {
+      if (url.includes("/signup/list")) return signupHtml;
+      if (url.includes("/rss/series/")) return rssXml;
+      if (url.includes("/articles/")) return articleHtml;
+      return seriesPageHtml;
+    };
+
+    const yearData = await runScrape(m2026, { full: true, fetcher });
+    expect(yearData.year).toBe(2026);
+    expect(yearData.series.length).toBe(1);
+    expect(yearData.series[0].id).toBe(9029);
+    expect(yearData.series[0].dayCount).toBe(1);
+    expect(yearData.series[0].articleCount).toBe(1);
+    expect(yearData.scrapeLog).toEqual([]);
+  });
+
+  test("runScrape logs stale and failed appropriately", async () => {
+    const fetcher = async (url: string) => {
+      if (url.includes("/signup/list")) return signupHtml;
+      throw new Error("network timeout");
+    };
+
+    // With cache -> stale
+    const cachedYear: YearData = {
+      year: 2026, updatedAt: "2026-08-20 10:00:00+08:00", groups: ["Software"],
+      series: [{
+        id: 9029, user: { id: 20183319, name: "Tim", profileUrl: "p" }, group: "Software", title: "AI Compiler", description: "desc",
+        team: null, signupDate: "2026-08-01T12:00:00+08:00", lastUpdated: null,
+        dayCount: 5, articleCount: 5, subscriptions: 2, articles: [],
+      }],
+      scrapeLog: [],
+    };
+
+    const yearData = await runScrape(m2026, { cachedYearData: cachedYear, fetcher });
+    expect(yearData.series.length).toBe(1);
+    expect(yearData.series[0].dayCount).toBe(5);
+    expect(yearData.scrapeLog.length).toBe(1);
+    expect(yearData.scrapeLog[0]).toContain("[stale] 9029");
   });
 });
