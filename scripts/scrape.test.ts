@@ -62,21 +62,25 @@ describe("mergeCardsAndStats", () => {
       expect(url).toBe(stats.articles[29].url);
       return readFixture("article-page.html"); // 帶刺哥第 30 篇真實頁面
     };
-    await expect(
-      officialDayCount(stats.dayCount, stats.articles[29].url, fetchArticle),
-    ).resolves.toBe(12); // 不是 30 —— 未完賽
+    const dayOutcome = await officialDayCount(stats.dayCount, stats.articles[29].url, fetchArticle);
+    expect(dayOutcome.dayCount).toBe(12); // 不是 30 —— 未完賽
   });
 
   test("officialDayCount：徽章治癒落後標頭／失敗退回標頭／無文章用標頭", async () => {
     const badge = (n: number) => async () =>
-      `<span class="ir-article__days-num">${n}</span>`;
-    expect(await officialDayCount(10, "u", badge(11))).toBe(11); // 標頭落後 → 徽章
-    expect(await officialDayCount(20, "u", badge(17))).toBe(20); // 徽章非最新篇 → 標頭保底
-    expect(await officialDayCount(12, "u", async () => "<html>404</html>")).toBe(12); // 解析失敗
-    await expect(officialDayCount(7, "u", async () => { throw new Error("network"); })).resolves.toBe(7); // 抓取失敗
-    expect(await officialDayCount(5, undefined, async () => { throw new Error("不應抓"); })).toBe(5); // 無文章
+      `<div class="ir-article"><span class="ir-article__days-num">${n}</span></div>`;
+    expect(await officialDayCount(10, "u", badge(11))).toEqual({ dayCount: 11 }); // 標頭落後 → 徽章
+    expect(await officialDayCount(20, "u", badge(17))).toEqual({ dayCount: 20 }); // 徽章非最新篇 → 標頭保底
+    expect(await officialDayCount(12, "u", async () => "<html>404</html>")).toEqual({
+      dayCount: 12,
+      warning: "article badge fetch failed, fallback to header",
+    }); // 解析失敗
+    expect(await officialDayCount(7, "u", async () => { throw new Error("network"); })).toEqual({
+      dayCount: 7,
+      warning: "article badge fetch failed, fallback to header",
+    }); // 抓取失敗
+    expect(await officialDayCount(5, undefined, async () => { throw new Error("不應抓"); })).toEqual({ dayCount: 5 }); // 無文章
   });
-
   test("series with no stats still produced (stats optional)", () => {
     const cards = parseSignupList(readFixture("signup-page.html"));
     const series = mergeCardsAndStats([cards[0]], new Map(), new Map());

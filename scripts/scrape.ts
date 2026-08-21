@@ -4,9 +4,9 @@ import { join } from "node:path";
 import { fetchHtml } from "./fetch-html";
 import { parseSignupList, signupListUrl } from "./parse-signup";
 import { parseRss, rssUrl } from "./parse-rss";
-import { parseSeriesPage, seriesUrl } from "./parse-series";
+import { parseSeriesPage, seriesUrl, isArticlePage } from "./parse-series";
 import { parseArticleDay } from "./parse-article";
-import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel, MetaJson } from "./types";
+import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel, MetaJson, OfficialDayCountResult } from "./types";
 
 export function mergeCardsAndStats(
   cards: SignupCard[],
@@ -44,15 +44,18 @@ export async function officialDayCount(
   headerDays: number,
   latestArticleUrl: string | undefined,
   fetchArticle: (url: string) => Promise<string> = fetchHtml,
-): Promise<number> {
-  if (!latestArticleUrl) return headerDays;
-  let badge: number | null = null;
+): Promise<OfficialDayCountResult> {
+  if (!latestArticleUrl) return { dayCount: headerDays };
   try {
-    badge = parseArticleDay(await fetchArticle(latestArticleUrl));
+    const html = await fetchArticle(latestArticleUrl);
+    if (!isArticlePage(html)) {
+      return { dayCount: headerDays, warning: "article badge fetch failed, fallback to header" };
+    }
+    const badge = parseArticleDay(html);
+    return { dayCount: Math.max(headerDays, badge ?? 0) };
   } catch {
-    // 文章頁失敗不讓整個系列失敗——退回標頭
+    return { dayCount: headerDays, warning: "article badge fetch failed, fallback to header" };
   }
-  return Math.max(headerDays, badge ?? 0);
 }
 
 // Emit the real Taipei wall clock (UTC+8, no DST) as ISO +08:00.
@@ -129,8 +132,10 @@ export async function runScrape(manifest: Manifest): Promise<YearData> {
       // 舊規則 max(標頭, 去重標題 Day) 已移除：標題是作者自填、會超前 streak，
       // 把「12 天內補滿 30 篇」誤判成完賽（2026-08-18 的「標頭凍結」是誤診，
       // 標頭 12 本來就是官方值）。
+      const dayRes = await officialDayCount(first.dayCount, articles[articles.length - 1]?.url);
+      if (dayRes.warning) errors.push(`${card.seriesId}: ${dayRes.warning}`);
       statsBySeries.set(card.seriesId, {
-        dayCount: await officialDayCount(first.dayCount, articles[articles.length - 1]?.url),
+        dayCount: dayRes.dayCount,
         articleCount: first.articleCount,
         subscriptions: first.subscriptions,
         articles,
