@@ -7,9 +7,10 @@ import {
   viewsDistribution,
   groupStats,
   titleKeywordStats,
-  behindSchedule,
+  staleObservation,
 } from "../lib/insights";
 import { DEFAULT_KEYWORDS } from "../lib/keywords";
+import { taipeiToday } from "../lib/daily-status";
 
 interface Props {
   data: YearData;
@@ -62,15 +63,15 @@ const kwLine = pageEmpty
       ? "尚無標題關鍵字"
       : `${topKw.count} 個系列標題包含「${topKw.keyword}」`;
 
-// 5. 完賽風險
-const risk = behindSchedule(data.series, data.updatedAt);
+// 5. 斷更觀察
+const stale = staleObservation(data.series, taipeiToday());
 const riskLine = pageEmpty
   ? "尚無資料"
   : !hasSeries
     ? "尚無系列資料"
-    : risk.length === 0
-      ? "所有系列進度正常"
-      : `${risk.length} 個系列進度落後（最多落後 ${risk[0].deficit} 天）`;
+    : stale.length === 0
+      ? "所有系列目前都有更新"
+      : `${stale.length} 個系列已斷更`;
 ---
 
 <header class="site-header container">
@@ -194,14 +195,14 @@ const riskLine = pageEmpty
   <section class="insight-panel">
     <div class="insight-panel-head">
       <div>
-        <h2 class="insight-title">完賽風險</h2>
+        <h2 class="insight-title">斷更觀察</h2>
         <p class="insight-line" id="insight-risk-line">{riskLine}</p>
       </div>
       <span class="insight-panel-index">05</span>
     </div>
     <div class="insight-charts">
       <div class="insight-chart insight-chart--full">
-        <h3>進度落後天數</h3>
+        <h3>斷更發生日</h3>
         <div id="chart-risk" class="chart-canvas is-loading"></div>
       </div>
     </div>

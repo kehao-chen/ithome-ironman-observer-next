@@ -9,7 +9,7 @@ import {
   titleLengthDistribution,
   publishHeatmap,
   engagementLeaderboard,
-  behindSchedule,
+  staleObservation,
 } from "./insights";
 import type { Article, Series } from "../../../scripts/types";
 
@@ -344,32 +344,39 @@ describe("engagementLeaderboard", () => {
   });
 });
 
-describe("behindSchedule", () => {
-  const SNAP = "2026-08-06 23:02:50+08:00";
-  test("落後系列依 deficit 降序、只回 deficit>0", () => {
-    const series = [
-      // 報名 08-01（經 5 天）、只發 2 篇 → deficit 3
-      makeSeries({ id: 1, title: "落後", signupDate: "2026/08/01T12:00:00+08:00", dayCount: 2 }),
-      // 報名 08-01、發 6 篇 → deficit 0（不回傳）
-      makeSeries({ id: 2, title: "達標", signupDate: "2026/08/01T12:00:00+08:00", dayCount: 6 }),
-      // 報名 08-06（經 0 天）、0 篇 → deficit 0（不回傳）
-      makeSeries({ id: 3, title: "剛報名", signupDate: "2026/08/06T08:00:00+08:00", dayCount: 0 }),
-    ];
-    const r = behindSchedule(series, SNAP);
-    expect(r).toHaveLength(1);
-    expect(r[0].title).toBe("落後");
-    expect(r[0].expected).toBe(5);
-    expect(r[0].deficit).toBe(3);
+describe("staleObservation", () => {
+  const today = "2026-08-21";
+  test("連續兩天未發文才列入，並顯示最後完成日與停更天數", () => {
+    const rows = staleObservation([
+      makeSeries({ id: 1, title: "Day 3", dayCount: 3, articles: [article({ publishedAt: "2026-08-19T10:00:00+08:00" })] }),
+      makeSeries({ id: 2, title: "昨天", dayCount: 8, articles: [article({ publishedAt: "2026-08-20T10:00:00+08:00" })] }),
+    ], today);
+    expect(rows).toEqual([{ title: "Day 3", author: "u", group: "Modern Web", dayCount: 3, staleDays: 2 }]);
   });
-  test("expected 上限 30（clamped）", () => {
-    const series = [
-      makeSeries({ title: "老賽", signupDate: "2025/01/01T00:00:00+08:00", dayCount: 10 }),
-    ];
-    const r = behindSchedule(series, SNAP);
-    expect(r[0].expected).toBe(30);
-    expect(r[0].deficit).toBe(20);
+  test("排除尚未開賽、完賽與無法判定日期的系列", () => {
+    expect(staleObservation([
+      makeSeries({ dayCount: 0, articles: [] }),
+      makeSeries({ dayCount: 30, articles: [article({ publishedAt: "2026-08-10T10:00:00+08:00" })] }),
+      makeSeries({ dayCount: 5, articles: [article({ publishedAt: "invalid" })] }),
+    ], today)).toEqual([]);
   });
-  test("updatedAt 無效 → 空陣列", () => {
-    expect(behindSchedule([makeSeries({})], "")).toEqual([]);
+  test("依 dayCount asc、同日數依 staleDays desc", () => {
+    const rows = staleObservation([
+      makeSeries({ id: 1, title: "後斷", dayCount: 8, articles: [article({ publishedAt: "2026-08-17T10:00:00+08:00" })] }),
+      makeSeries({ id: 2, title: "早斷", dayCount: 3, articles: [article({ publishedAt: "2026-08-19T10:00:00+08:00" })] }),
+    ], today);
+    expect(rows.map((r) => r.title)).toEqual(["早斷", "後斷"]);
+  });
+  test("同 dayCount 時 staleDays 降序", () => {
+    const rows = staleObservation([
+      makeSeries({ id: 1, title: "較久", dayCount: 3, articles: [article({ publishedAt: "2026-08-18T10:00:00+08:00" })] }),
+      makeSeries({ id: 2, title: "較近", dayCount: 3, articles: [article({ publishedAt: "2026-08-19T10:00:00+08:00" })] }),
+    ], today);
+    expect(rows.map((r) => r.title)).toEqual(["較久", "較近"]);
+  });
+  test("today 之前的日期不列入", () => {
+    expect(staleObservation([
+      makeSeries({ articles: [article({ publishedAt: "2026-08-22T10:00:00+08:00" })] }),
+    ], today)).toEqual([]);
   });
 });

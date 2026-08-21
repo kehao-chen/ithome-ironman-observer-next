@@ -64,9 +64,10 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       dayCountDistribution,
       publishHeatmap,
       engagementLeaderboard,
-      behindSchedule,
+      staleObservation,
     } from "../lib/insights";
     import { DEFAULT_KEYWORDS } from "../lib/keywords";
+    import { taipeiToday } from "../lib/daily-status";
     import type { YearData } from "../../../scripts/types";
 
     echarts.use([BarChart, LineChart, ScatterChart, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent, CanvasRenderer]);
@@ -434,11 +435,11 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         }, true);
       }
 
-      // 10. 完賽風險：進度落後天數 ────────────────────────────────────────────
+      // 10. 斷更觀察 ────────────────────────────────────────────────────────
       {
-        const risk = behindSchedule(d.series, d.updatedAt);
+        const stale = staleObservation(d.series, taipeiToday());
         const riskEl = document.getElementById("chart-risk");
-        if (riskEl && risk.length > 0) riskEl.style.height = `${risk.length * 28 + 24}px`;
+        if (riskEl && stale.length > 0) riskEl.style.height = `${stale.length * 28 + 24}px`;
         getChart("chart-risk")?.setOption({
           backgroundColor: "transparent",
           grid: { top: 12, right: 56, bottom: 12, left: 12, containLabel: true },
@@ -446,25 +447,23 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
             trigger: "item",
             ...tip(c),
             formatter: (p: any) => {
-              const r = risk[p.dataIndex];
-              return r
-                ? `<b>${r.title}</b><br/>落後 ${r.deficit} 天<br/>實發 ${r.dayCount} / 應發 ${r.expected} 篇`
-                : "";
+              const r = stale[p.dataIndex];
+              return r ? `<b>${r.title}</b><br/>Day ${r.dayCount} 後斷更<br/>已停更 ${r.staleDays} 天` : "";
             },
           },
-          xAxis: { type: "value", name: "落後天數", nameTextStyle: { color: c.muted, fontSize: 11 }, ...ax },
+          xAxis: { type: "value", name: "最後完成日", nameTextStyle: { color: c.muted, fontSize: 11 }, ...ax },
           yAxis: {
             type: "category",
-            data: hasSeries ? risk.map((r) => r.title) : [],
+            data: hasSeries ? stale.map((r) => `Day ${r.dayCount} 後斷更`) : [],
             inverse: true,
             ...ax,
             axisLabel: { ...ax.axisLabel, width: 150, overflow: "truncate" },
           },
           series: [{
             type: "bar",
-            data: hasSeries ? risk.map((r) => r.deficit) : [],
+            data: hasSeries ? stale.map((r) => r.dayCount) : [],
             itemStyle: { color: c.danger, borderRadius: [0, 2, 2, 0] },
-            label: { show: true, position: "right", color: c.muted, fontSize: 10, fontFamily: "inherit", formatter: (p: any) => `${p.value} 天` },
+            label: { show: true, position: "right", color: c.muted, fontSize: 10, fontFamily: "inherit", formatter: (p: any) => `Day ${p.value}` },
           }],
         }, true);
       }
@@ -508,8 +507,8 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
         setText("insight-kw-line", kws.length === 0 ? "尚無標題關鍵字" : `${kws[0].count} 個系列標題包含「${kws[0].keyword}」`);
       }
-      const risk = behindSchedule(d.series, d.updatedAt);
-      setText("insight-risk-line", risk.length === 0 ? "所有系列進度正常" : `${risk.length} 個系列進度落後（最多落後 ${risk[0].deficit} 天）`);
+      const stale = staleObservation(d.series, taipeiToday());
+      setText("insight-risk-line", stale.length === 0 ? "所有系列目前都有更新" : `${stale.length} 個系列已斷更`);
     }
 
     // ── Full render ────────────────────────────────────────────────────────

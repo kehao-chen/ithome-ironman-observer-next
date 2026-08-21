@@ -1,6 +1,7 @@
 // web/src/lib/insights.ts — 純函數、無 DOM、無 window、無 runtime 依賴。
 // YearData / Series / Article 型別權威：scripts/types.ts（與 Dashboard.astro 同路徑慣例）。
 import type { Article, Series } from "../../../scripts/types";
+import { stalenessDays } from "./daily-status";
 import { DEFAULT_KEYWORDS, ENGLISH_STOPWORDS } from "./keywords"; // Task 2 新增
 
 export function publishHourHistogram(articles: Article[]): { hour: number; count: number }[] {
@@ -253,31 +254,24 @@ export function engagementLeaderboard(
   return rows;
 }
 
-// ── 斷更風險：報名日 → 快照日應有天數 vs 實際 dayCount 的落差 ───────────
-// signupDate/updatedAt 皆為臺北牆鐘（+08:00）；日期差以兩端 YYYY-MM-DD 的 UTC 午夜
-// 計算（環境時區無關）。expected = 報名至快照經過天數（clamped 0–30）；
-export type ScheduleRow = {
+// ── 斷更觀察：最新文章距臺北今日至少 2 天 ────────────────────────────────
+export type StaleObservationRow = {
   title: string; author: string; group: string;
-  dayCount: number; expected: number; deficit: number;
+  dayCount: number; staleDays: number;
 };
-export function behindSchedule(series: Series[], updatedAt: string): ScheduleRow[] {
-  const snap = updatedAt.replace(/\//g, "-").slice(0, 10);
-  const snapMs = Date.parse(`${snap}T00:00:00Z`);
-  if (!Number.isFinite(snapMs)) return [];
-  const DAY = 86400000;
+
+export function staleObservation(series: Series[], today: string): StaleObservationRow[] {
   return series
+    .filter((s) => s.dayCount !== 0 && s.dayCount < 30)
     .map((s) => {
-      const sup = s.signupDate.replace(/\//g, "-").slice(0, 10);
-      const supMs = Date.parse(`${sup}T00:00:00Z`);
-      const expected = Number.isFinite(supMs)
-        ? Math.max(0, Math.min(30, Math.round((snapMs - supMs) / DAY)))
-        : 0;
-      const deficit = Math.max(0, expected - s.dayCount);
+      const latest = s.articles[s.articles.length - 1];
+      const staleDays = stalenessDays(latest?.publishedAt, today);
+      if (staleDays === null || staleDays < 2) return null;
       return {
         title: s.title, author: s.user.name, group: s.group,
-        dayCount: s.dayCount, expected, deficit,
+        dayCount: s.dayCount, staleDays,
       };
     })
-    .filter((r) => r.deficit > 0)
-    .sort((a, b) => b.deficit - a.deficit || a.dayCount - b.dayCount);
+    .filter((row): row is StaleObservationRow => row !== null)
+    .sort((a, b) => a.dayCount - b.dayCount || b.staleDays - a.staleDays);
 }
