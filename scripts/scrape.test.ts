@@ -3,8 +3,8 @@ import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { YearData } from "./types";
-import { mergeCardsAndStats, taipeiTimestamp, historyDate, writeHistorySnapshots, officialDayCount } from "./scrape";
+import type { YearData, Series, Article } from "./types";
+import { mergeCardsAndStats, taipeiTimestamp, historyDate, writeHistorySnapshots, officialDayCount, mergeIncrementalArticles } from "./scrape";
 import { parseSignupList } from "./parse-signup";
 import { parseSeriesPage } from "./parse-series";
 import { parseRss } from "./parse-rss";
@@ -185,5 +185,96 @@ describe("writeHistorySnapshots", () => {
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("mergeIncrementalArticles", () => {
+  const makeArt = (id: number, day: number, views: number = 10): Article => ({
+    id, day, title: `Day ${day}`, url: `https://ithelp/articles/${id}`,
+    publishedAt: `2026-08-${String(day).padStart(2, "0")}T10:00:00+08:00`,
+    views, likes: 1, comments: 0,
+  });
+
+  test("same article count on Page 1 (10 -> 10): updates views/likes/comments", () => {
+    const prevArticles = Array.from({ length: 10 }, (_, i) => makeArt(100 + i, i + 1, 10));
+    const prevSeries: Series = {
+      id: 1, user: { id: 1, name: "u", profileUrl: "p" }, group: "G", title: "T", description: "D",
+      team: null, signupDate: "2026-08-01T00:00:00+08:00", lastUpdated: null,
+      dayCount: 10, articleCount: 10, subscriptions: 0, articles: prevArticles,
+    };
+    // Fresh last page with updated views
+    const freshPage1 = Array.from({ length: 10 }, (_, i) => makeArt(100 + i, i + 1, 50));
+    const merged = mergeIncrementalArticles(prevSeries, freshPage1, 10, 1);
+    expect(merged).not.toBeNull();
+    expect(merged!.length).toBe(10);
+    expect(merged![0].views).toBe(50);
+    expect(merged![9].views).toBe(50);
+  });
+
+  test("Page boundary shift (10 -> 11): Page 2 gets 1st article, Page 1 prefix preserved", () => {
+    const prevArticles = Array.from({ length: 10 }, (_, i) => makeArt(100 + i, i + 1, 10));
+    const prevSeries: Series = {
+      id: 1, user: { id: 1, name: "u", profileUrl: "p" }, group: "G", title: "T", description: "D",
+      team: null, signupDate: "2026-08-01T00:00:00+08:00", lastUpdated: null,
+      dayCount: 10, articleCount: 10, subscriptions: 0, articles: prevArticles,
+    };
+    const freshPage2 = [makeArt(110, 11, 5)];
+    const merged = mergeIncrementalArticles(prevSeries, freshPage2, 11, 2);
+    expect(merged).not.toBeNull();
+    expect(merged!.length).toBe(11);
+    expect(merged![0].id).toBe(100);
+    expect(merged![10].id).toBe(110);
+    expect(merged![10].views).toBe(5);
+  });
+
+  test("Page boundary shift (20 -> 21): Page 3 gets 1st article, Pages 1-2 prefix preserved", () => {
+    const prevArticles = Array.from({ length: 20 }, (_, i) => makeArt(100 + i, i + 1, 10));
+    const prevSeries: Series = {
+      id: 1, user: { id: 1, name: "u", profileUrl: "p" }, group: "G", title: "T", description: "D",
+      team: null, signupDate: "2026-08-01T00:00:00+08:00", lastUpdated: null,
+      dayCount: 20, articleCount: 20, subscriptions: 0, articles: prevArticles,
+    };
+    const freshPage3 = [makeArt(120, 21, 5)];
+    const merged = mergeIncrementalArticles(prevSeries, freshPage3, 21, 3);
+    expect(merged).not.toBeNull();
+    expect(merged!.length).toBe(21);
+    expect(merged![19].id).toBe(119);
+    expect(merged![20].id).toBe(120);
+  });
+
+  test("Monotonic violation: article count decreased (deleted articles) -> returns null (triggers Full Fallback)", () => {
+    const prevArticles = Array.from({ length: 15 }, (_, i) => makeArt(100 + i, i + 1));
+    const prevSeries: Series = {
+      id: 1, user: { id: 1, name: "u", profileUrl: "p" }, group: "G", title: "T", description: "D",
+      team: null, signupDate: "2026-08-01T00:00:00+08:00", lastUpdated: null,
+      dayCount: 15, articleCount: 15, subscriptions: 0, articles: prevArticles,
+    };
+    // header count is 10 (5 posts deleted)
+    const freshPage1 = Array.from({ length: 10 }, (_, i) => makeArt(100 + i, i + 1));
+    expect(mergeIncrementalArticles(prevSeries, freshPage1, 10, 1)).toBeNull();
+  });
+
+  test("Multi-page leap (>1 page jump): returns null to trigger Full Fallback", () => {
+    const prevArticles = Array.from({ length: 5 }, (_, i) => makeArt(100 + i, i + 1));
+    const prevSeries: Series = {
+      id: 1, user: { id: 1, name: "u", profileUrl: "p" }, group: "G", title: "T", description: "D",
+      team: null, signupDate: "2026-08-01T00:00:00+08:00", lastUpdated: null,
+      dayCount: 5, articleCount: 5, subscriptions: 0, articles: prevArticles,
+    };
+    // now 25 articles (lastPage is 3, jump is 3 - 1 = 2)
+    const freshPage3 = Array.from({ length: 5 }, (_, i) => makeArt(120 + i, 21 + i));
+    expect(mergeIncrementalArticles(prevSeries, freshPage3, 25, 3)).toBeNull();
+  });
+
+  test("Overlapping IDs on lastPage > 1 returns null to trigger Full Fallback", () => {
+    const prevArticles = Array.from({ length: 10 }, (_, i) => makeArt(100 + i, i + 1));
+    const prevSeries: Series = {
+      id: 1, user: { id: 1, name: "u", profileUrl: "p" }, group: "G", title: "T", description: "D",
+      team: null, signupDate: "2026-08-01T00:00:00+08:00", lastUpdated: null,
+      dayCount: 10, articleCount: 10, subscriptions: 0, articles: prevArticles,
+    };
+    // Page 2 contains an ID that already existed on Page 1
+    const corruptedPage2 = [makeArt(105, 11)];
+    expect(mergeIncrementalArticles(prevSeries, corruptedPage2, 11, 2)).toBeNull();
   });
 });

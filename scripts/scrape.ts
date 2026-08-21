@@ -6,7 +6,7 @@ import { parseSignupList, signupListUrl } from "./parse-signup";
 import { parseRss, rssUrl } from "./parse-rss";
 import { parseSeriesPage, seriesUrl, isArticlePage } from "./parse-series";
 import { parseArticleDay } from "./parse-article";
-import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel, MetaJson, OfficialDayCountResult } from "./types";
+import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel, MetaJson, OfficialDayCountResult, Article } from "./types";
 
 export function mergeCardsAndStats(
   cards: SignupCard[],
@@ -56,6 +56,54 @@ export async function officialDayCount(
   } catch {
     return { dayCount: headerDays, warning: "article badge fetch failed, fallback to header" };
   }
+}
+
+export function mergeIncrementalArticles(
+  prev: Series,
+  lastPageArticles: Article[],
+  headerArticleCount: number,
+  lastPage: number,
+): Article[] | null {
+  // Safety Invariants
+  if (!prev || !Array.isArray(prev.articles) || prev.articles.length !== prev.articleCount || prev.articleCount <= 0) {
+    return null;
+  }
+  if (headerArticleCount < prev.articleCount) {
+    return null; // Monotonic violation (articles deleted) -> full sync
+  }
+  const prevLastPage = Math.ceil(prev.articleCount / 10);
+  if (lastPage - prevLastPage > 1) {
+    return null; // Multi-page leap -> full sync
+  }
+
+  const prefixLength = (lastPage - 1) * 10;
+  if (prefixLength > prev.articles.length) {
+    return null;
+  }
+  const prefixArticles = prev.articles.slice(0, prefixLength);
+  if (prefixArticles.length !== prefixLength) {
+    return null;
+  }
+
+  // Non-overlapping check when lastPage > 1
+  if (lastPage > 1) {
+    const prefixIdSet = new Set(prefixArticles.map((a) => a.id));
+    for (const art of lastPageArticles) {
+      if (prefixIdSet.has(art.id)) return null; // Overlapping ID detected
+    }
+  }
+
+  const byId = new Map<number, Article>();
+  for (const a of prefixArticles) byId.set(a.id, a);
+  for (const a of lastPageArticles) byId.set(a.id, a);
+
+  const merged = [...byId.values()].sort((a, b) => a.day - b.day);
+
+  // Postconditions Check
+  if (merged.length !== headerArticleCount) return null;
+  if (new Set(merged.map((a) => a.id)).size !== merged.length) return null;
+
+  return merged;
 }
 
 // Emit the real Taipei wall clock (UTC+8, no DST) as ISO +08:00.
