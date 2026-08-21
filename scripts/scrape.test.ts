@@ -3,8 +3,8 @@ import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { YearData, Series, Article } from "./types";
-import { mergeCardsAndStats, taipeiTimestamp, historyDate, writeHistorySnapshots, officialDayCount, mergeIncrementalArticles } from "./scrape";
+import type { YearData, Series, Article, SignupCard } from "./types";
+import { mergeCardsAndStats, taipeiTimestamp, historyDate, writeHistorySnapshots, officialDayCount, mergeIncrementalArticles, scrapeSeriesIncremental, scrapeSeriesFull } from "./scrape";
 import { parseSignupList } from "./parse-signup";
 import { parseSeriesPage } from "./parse-series";
 import { parseRss } from "./parse-rss";
@@ -276,5 +276,67 @@ describe("mergeIncrementalArticles", () => {
     // Page 2 contains an ID that already existed on Page 1
     const corruptedPage2 = [makeArt(105, 11)];
     expect(mergeIncrementalArticles(prevSeries, corruptedPage2, 11, 2)).toBeNull();
+  });
+});
+
+describe("scrapeSeriesIncremental and scrapeSeriesFull", () => {
+  const card: SignupCard = {
+    seriesId: 9029, userId: 20183319, name: "Tim", group: "Software", title: "AI", description: "desc",
+    team: null, signupDate: "2026-08-01 12:00:00", day: 10,
+  };
+
+  test("cold start with 0 articles emits fresh pending series without series page fetch", async () => {
+    const rssXml = `<channel><lastBuildDate>Fri, 01 Aug 2026 12:00:00 +0800</lastBuildDate></channel>`;
+    const seriesPageHtml = `
+      <div class="board leftside profile-main">
+        <div class="qa-list__info qa-list__info--ironman">
+          <span>參賽天數 0 天 ｜</span><span>共 0 篇文章 ｜</span>
+        </div>
+      </div>`;
+    const fetcher = async (url: string) => {
+      if (url.includes("/rss/series/")) return rssXml;
+      return seriesPageHtml;
+    };
+    const res = await scrapeSeriesIncremental(card, undefined, fetcher);
+    expect(res.status).toBe("fresh");
+    if (res.status === "fresh") {
+      expect(res.series.articleCount).toBe(0);
+      expect(res.series.dayCount).toBe(0);
+      expect(res.series.articles).toEqual([]);
+    }
+  });
+
+  test("RSS 0 items with existing cache triggers verification and preserves cache if RSS was glitch", async () => {
+    const prevSeries: Series = {
+      id: 9029, user: { id: 20183319, name: "Tim", profileUrl: "p" }, group: "Software", title: "AI", description: "desc",
+      team: null, signupDate: "2026-08-01T12:00:00+08:00", lastUpdated: null,
+      dayCount: 10, articleCount: 10, subscriptions: 0,
+      articles: Array.from({ length: 10 }, (_, i) => ({
+        id: 100 + i, day: i + 1, title: `D${i + 1}`, url: "u", publishedAt: "2026-08-01T10:00:00+08:00",
+        views: 10, likes: 0, comments: 0,
+      })),
+    };
+    // RSS returns 0 items, series page fetch fails with 500
+    const fetcher = async (url: string) => {
+      if (url.includes("/rss/series/")) return `<channel></channel>`;
+      throw new Error("500 internal server error");
+    };
+    const res = await scrapeSeriesIncremental(card, prevSeries, fetcher);
+    expect(res.status).toBe("stale");
+    if (res.status === "stale") {
+      expect(res.series.articleCount).toBe(10);
+      expect(res.error).toBeDefined();
+    }
+  });
+
+  test("RSS failure with no cache emits failed result (does not create 0-stat series)", async () => {
+    const fetcher = async () => {
+      throw new Error("network timeout");
+    };
+    const res = await scrapeSeriesIncremental(card, undefined, fetcher);
+    expect(res.status).toBe("failed");
+    if (res.status === "failed") {
+      expect(res.seriesId).toBe(card.seriesId);
+    }
   });
 });

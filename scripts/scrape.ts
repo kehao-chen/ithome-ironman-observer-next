@@ -4,9 +4,9 @@ import { join } from "node:path";
 import { fetchHtml } from "./fetch-html";
 import { parseSignupList, signupListUrl } from "./parse-signup";
 import { parseRss, rssUrl } from "./parse-rss";
-import { parseSeriesPage, seriesUrl, isArticlePage } from "./parse-series";
+import { parseSeriesPage, seriesUrl, isArticlePage, isSeriesPage } from "./parse-series";
 import { parseArticleDay } from "./parse-article";
-import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel, MetaJson, OfficialDayCountResult, Article } from "./types";
+import type { Manifest, Series, SignupCard, YearData, SeriesStats, RssChannel, MetaJson, OfficialDayCountResult, Article, SeriesResult } from "./types";
 
 export function mergeCardsAndStats(
   cards: SignupCard[],
@@ -104,6 +104,181 @@ export function mergeIncrementalArticles(
   if (new Set(merged.map((a) => a.id)).size !== merged.length) return null;
 
   return merged;
+}
+
+export type FetchFn = (url: string) => Promise<string>;
+
+export async function scrapeSeriesFull(
+  card: SignupCard,
+  cachedSeries?: Series,
+  fetcher: FetchFn = fetchHtml,
+): Promise<SeriesResult> {
+  try {
+    let rssChannel: RssChannel | null = null;
+    try {
+      const rssXml = await fetcher(rssUrl(card.seriesId));
+      rssChannel = parseRss(rssXml);
+    } catch { /* best-effort */ }
+
+    const firstPageHtml = await fetcher(seriesUrl(card.userId, card.seriesId));
+    if (!isSeriesPage(firstPageHtml)) {
+      throw new Error("Invalid series page HTML");
+    }
+
+    const first = parseSeriesPage(firstPageHtml);
+    const articles = [...first.articles];
+    let page: string | null = first.nextPage;
+
+    while (page && articles.length < first.articleCount) {
+      const pageHtml = await fetcher(seriesUrl(card.userId, card.seriesId) + page);
+      if (!isSeriesPage(pageHtml)) {
+        throw new Error(`Invalid series page HTML at ${page}`);
+      }
+      const parsed = parseSeriesPage(pageHtml);
+      articles.push(...parsed.articles);
+      page = parsed.nextPage;
+    }
+
+    if (first.articleCount > 0 && articles.length !== first.articleCount) {
+      throw new Error(`Articles collected (${articles.length}) mismatch header (${first.articleCount})`);
+    }
+
+    let dayCount = first.dayCount;
+    const warnings: string[] = [];
+    if (articles.length > 0) {
+      const latestUrl = articles[articles.length - 1]?.url;
+      const dayRes = await officialDayCount(first.dayCount, latestUrl, fetcher);
+      dayCount = dayRes.dayCount;
+      if (dayRes.warning) warnings.push(dayRes.warning);
+    }
+
+    const latestPub = articles[articles.length - 1]?.publishedAt ?? null;
+    const lastUpdated = rssChannel?.lastBuildDate ?? latestPub;
+
+    const series: Series = {
+      id: card.seriesId,
+      user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
+      group: card.group,
+      title: card.title,
+      description: card.description,
+      team: card.team,
+      signupDate: card.signupDate.replace(" ", "T") + "+08:00",
+      lastUpdated,
+      dayCount,
+      articleCount: first.articleCount,
+      subscriptions: first.subscriptions,
+      articles: articles.sort((a, b) => a.day - b.day),
+    };
+
+    return { status: "fresh", series, warnings: warnings.length > 0 ? warnings : undefined };
+  } catch (e) {
+    const errorMsg = e instanceof Error ? e.message : String(e);
+    if (cachedSeries) {
+      return { status: "stale", series: cachedSeries, error: errorMsg };
+    }
+    return { status: "failed", seriesId: card.seriesId, error: errorMsg };
+  }
+}
+
+export async function scrapeSeriesIncremental(
+  card: SignupCard,
+  cachedSeries?: Series,
+  fetcher: FetchFn = fetchHtml,
+): Promise<SeriesResult> {
+  try {
+    let rssXml: string;
+    try {
+      rssXml = await fetcher(rssUrl(card.seriesId));
+    } catch {
+      return await scrapeSeriesFull(card, cachedSeries, fetcher);
+    }
+
+    const rss = parseRss(rssXml);
+    const nHint = rss.items.length;
+
+    // RSS 0 items protection
+    if (nHint === 0) {
+      if (cachedSeries && cachedSeries.articleCount > 0) {
+        return await scrapeSeriesFull(card, cachedSeries, fetcher);
+      }
+      const page1Html = await fetcher(seriesUrl(card.userId, card.seriesId));
+      if (isSeriesPage(page1Html)) {
+        const parsed = parseSeriesPage(page1Html);
+        if (parsed.articleCount === 0) {
+          const series: Series = {
+            id: card.seriesId,
+            user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
+            group: card.group, title: card.title, description: card.description, team: card.team,
+            signupDate: card.signupDate.replace(" ", "T") + "+08:00",
+            lastUpdated: null, dayCount: 0, articleCount: 0, subscriptions: parsed.subscriptions, articles: [],
+          };
+          return { status: "fresh", series };
+        }
+      }
+      return await scrapeSeriesFull(card, cachedSeries, fetcher);
+    }
+
+    const lastPage = Math.ceil(nHint / 10);
+    const lastPageUrl = `${seriesUrl(card.userId, card.seriesId)}${lastPage === 1 ? "" : `?page=${lastPage}`}`;
+    const lastPageHtml = await fetcher(lastPageUrl);
+    if (!isSeriesPage(lastPageHtml)) {
+      throw new Error("Invalid series last page HTML");
+    }
+
+    const parsedLastPage = parseSeriesPage(lastPageHtml);
+    const headerArticleCount = parsedLastPage.articleCount;
+
+    // Validate that fetched page is indeed the true last page
+    if (Math.ceil(headerArticleCount / 10) !== lastPage) {
+      return await scrapeSeriesFull(card, cachedSeries, fetcher);
+    }
+
+    if (!cachedSeries) {
+      return await scrapeSeriesFull(card, undefined, fetcher);
+    }
+
+    const mergedArticles = mergeIncrementalArticles(cachedSeries, parsedLastPage.articles, headerArticleCount, lastPage);
+    if (!mergedArticles) {
+      return await scrapeSeriesFull(card, cachedSeries, fetcher);
+    }
+
+    let dayCount = cachedSeries.dayCount;
+    const warnings: string[] = [];
+
+    // If new posts exist, fetch latest article page to compute dayCount
+    if (headerArticleCount > cachedSeries.articleCount && mergedArticles.length > 0) {
+      const latestUrl = mergedArticles[mergedArticles.length - 1]?.url;
+      const dayRes = await officialDayCount(parsedLastPage.dayCount, latestUrl, fetcher);
+      dayCount = dayRes.dayCount;
+      if (dayRes.warning) warnings.push(dayRes.warning);
+    }
+
+    const latestPub = mergedArticles[mergedArticles.length - 1]?.publishedAt ?? null;
+    const lastUpdated = rss.lastBuildDate ?? latestPub;
+
+    const series: Series = {
+      id: card.seriesId,
+      user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
+      group: card.group,
+      title: card.title,
+      description: card.description,
+      team: card.team,
+      signupDate: card.signupDate.replace(" ", "T") + "+08:00",
+      lastUpdated,
+      dayCount,
+      articleCount: headerArticleCount,
+      subscriptions: parsedLastPage.subscriptions,
+      articles: mergedArticles,
+    };
+
+    return { status: "fresh", series, warnings: warnings.length > 0 ? warnings : undefined };
+  } catch (e) {
+    const errorMsg = e instanceof Error ? e.message : String(e);
+    if (cachedSeries) {
+      return { status: "stale", series: cachedSeries, error: errorMsg };
+    }
+    return { status: "failed", seriesId: card.seriesId, error: errorMsg };
+  }
 }
 
 // Emit the real Taipei wall clock (UTC+8, no DST) as ISO +08:00.
