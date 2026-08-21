@@ -10,6 +10,7 @@ import {
   publishHeatmap,
   engagementLeaderboard,
   staleObservation,
+  staleDayDistribution,
 } from "./insights";
 import type { Article, Series } from "../../../scripts/types";
 
@@ -378,5 +379,26 @@ describe("staleObservation", () => {
     expect(staleObservation([
       makeSeries({ articles: [article({ publishedAt: "2026-08-22T10:00:00+08:00" })] }),
     ], today)).toEqual([]);
+  });
+});
+
+describe("staleDayDistribution", () => {
+  const today = "2026-08-21";
+  test("統計單日斷更分佈，涵蓋從 Day 1 到最大斷更日", () => {
+    const series = [
+      makeSeries({ id: 1, title: "S1", dayCount: 1, articles: [article({ publishedAt: "2026-08-18T10:00:00+08:00" })] }),
+      makeSeries({ id: 2, title: "S2", dayCount: 1, articles: [article({ publishedAt: "2026-08-18T10:00:00+08:00" })] }),
+      makeSeries({ id: 3, title: "S3", dayCount: 4, articles: [article({ publishedAt: "2026-08-18T10:00:00+08:00" })] }),
+    ];
+    const dist = staleDayDistribution(series, today);
+    expect(dist).toEqual([
+      { day: 1, label: "Day 1", count: 2 },
+      { day: 2, label: "Day 2", count: 0 },
+      { day: 3, label: "Day 3", count: 0 },
+      { day: 4, label: "Day 4", count: 1 },
+    ]);
+  });
+  test("無斷更系列時回傳空陣列", () => {
+    expect(staleDayDistribution([], today)).toEqual([]);
   });
 });

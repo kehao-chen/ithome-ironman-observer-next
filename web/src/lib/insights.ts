@@ -275,3 +275,25 @@ export function staleObservation(series: Series[], today: string): StaleObservat
     .filter((row): row is StaleObservationRow => row !== null)
     .sort((a, b) => a.dayCount - b.dayCount || b.staleDays - a.staleDays);
 }
+
+export function staleDayDistribution(
+  series: Series[],
+  today: string,
+): { day: number; label: string; count: number }[] {
+  const stale = staleObservation(series, today);
+  if (stale.length === 0) return [];
+  const maxDay = Math.max(...stale.map((s) => s.dayCount));
+  const counts = new Map<number, number>();
+  for (const s of stale) {
+    counts.set(s.dayCount, (counts.get(s.dayCount) ?? 0) + 1);
+  }
+  const result: { day: number; label: string; count: number }[] = [];
+  for (let day = 1; day <= maxDay; day++) {
+    result.push({
+      day,
+      label: `Day ${day}`,
+      count: counts.get(day) ?? 0,
+    });
+  }
+  return result;
+}
