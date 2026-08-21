@@ -1,7 +1,7 @@
 // scripts/parse-series.test.ts
 import { describe, expect, test } from "bun:test";
 import { readFixture } from "./test-utils";
-import { parseSeriesPage, seriesUrl } from "./parse-series";
+import { parseSeriesPage, seriesUrl, isSeriesPage, isArticlePage } from "./parse-series";
 
 describe("parseSeriesPage", () => {
   test("parses stats and articles", () => {
@@ -166,4 +166,37 @@ function page2Html(): string {
   <div class="profile-pagination"><ul class="pager"><li class="disabled"><span>下一頁</span></li></ul></div>
 </div>
 <div class="rightside profile-side"></div>`;
+
+describe("Page validity validators", () => {
+  test("isSeriesPage: valid normal series fixture returns true", () => {
+    const html = readFixture("series-page.html");
+    expect(isSeriesPage(html)).toBe(true);
+  });
+
+  test("isSeriesPage: valid 0-article series page returns true", () => {
+    const html = `
+      <div class="board leftside profile-main">
+        <div class="qa-list__info qa-list__info--ironman subscription-group">
+          <span>參賽天數 0 天 ｜</span><span>共 0 篇文章 ｜</span>
+        </div>
+      </div>`;
+    expect(isSeriesPage(html)).toBe(true);
+  });
+
+  test("isSeriesPage: challenge / error / empty HTML returns false", () => {
+    expect(isSeriesPage("<html><body>Just a moment...</body></html>")).toBe(false);
+    expect(isSeriesPage("<div>500 Internal Server Error</div>")).toBe(false);
+    expect(isSeriesPage("")).toBe(false);
+  });
+
+  test("isArticlePage: valid article fixture returns true", () => {
+    const html = readFixture("article-page.html");
+    expect(isArticlePage(html)).toBe(true);
+  });
+
+  test("isArticlePage: challenge / error returns false", () => {
+    expect(isArticlePage("<html><body>Challenge</body></html>")).toBe(false);
+    expect(isArticlePage("")).toBe(false);
+  });
+});
 }

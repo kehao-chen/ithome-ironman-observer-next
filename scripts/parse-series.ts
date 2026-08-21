@@ -85,3 +85,15 @@ export function parseSeriesPage(html: string): SeriesPage {
   }
   return { dayCount, articleCount, subscriptions, articles, nextPage };
 }
+
+export function isSeriesPage(html: string): boolean {
+  if (!html || typeof html !== "string") return false;
+  const hasHeader = /參賽天數\s*\d+\s*天/.test(html) && /共\s*\d+\s*篇文章/.test(html);
+  const hasContainer = html.includes("qa-list__info") || html.includes("profile-main") || html.includes("ir-profile-list");
+  return hasHeader && hasContainer;
+}
+
+export function isArticlePage(html: string): boolean {
+  if (!html || typeof html !== "string") return false;
+  return html.includes("ir-article") || html.includes("qa-markdown");
+}

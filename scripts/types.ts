@@ -34,3 +34,13 @@ export type MetaJson = {
   updatedAt: string;    // latestYear 年度資料的 updatedAt
   seriesCount: number;  // latestYear 年度資料的 seriesCount
 };
+
+export type SeriesResult =
+  | { status: "fresh"; series: Series; warnings?: string[] }
+  | { status: "stale"; series: Series; error: string }
+  | { status: "failed"; seriesId: number; error: string };
+
+export type OfficialDayCountResult = {
+  dayCount: number;
+  warning?: string;
+};
