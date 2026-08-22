@@ -43,13 +43,15 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
           git commit -m "chore: update ironman data $(date -u +%Y-%m-%dT%H:%MZ)"
 
-          # Rebase onto the latest main before pushing: if a feature commit
-          # landed while we were scraping, the bot commit is replayed on top
-          # of it instead of failing the push.
+          # Rebase onto the latest main before pushing: if a feature commit or
+          # another scraper run landed while we were scraping, the bot commit is
+          # replayed on top with `-X theirs` (newly scraped data takes precedence on JSON conflicts).
           for attempt in 1 2 3 4 5; do
-            if git pull --rebase origin main && git push origin main; then
+            git rebase --abort 2>/dev/null || true
+            if git pull --rebase -X theirs origin main && git push origin main; then
               exit 0
             fi
+            git rebase --abort 2>/dev/null || true
             sleep 5
           done
           echo "push failed after rebase retries" >&2

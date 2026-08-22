@@ -41,9 +41,11 @@ jobs:
           git commit -m "chore: deep calibrate ironman data $(date -u +%Y-%m-%dT%H:%MZ)"
 
           for attempt in 1 2 3 4 5; do
-            if git pull --rebase origin main && git push origin main; then
+            git rebase --abort 2>/dev/null || true
+            if git pull --rebase -X theirs origin main && git push origin main; then
               exit 0
             fi
+            git rebase --abort 2>/dev/null || true
             sleep 5
           done
           echo "push failed after rebase retries" >&2
