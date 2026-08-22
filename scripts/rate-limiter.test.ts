@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { pMap } from "./rate-limiter";
+import { createPacedFetcher, pMap } from "./rate-limiter";
 
 describe("pMap concurrency limiter", () => {
   test("processes all items and preserves input order", async () => {
@@ -46,5 +46,287 @@ describe("pMap concurrency limiter", () => {
   test("handles empty list", async () => {
     const res = await pMap([], async (x) => x);
     expect(res).toEqual([]);
+  });
+});
+
+describe("createPacedFetcher", () => {
+  test("enforces concurrency limit across concurrent fetch calls", async () => {
+    let inFlight = 0;
+    let maxInFlight = 0;
+    const activeResolvers: Array<() => void> = [];
+
+    const mockFetch = async (input: string | URL | Request) => {
+      inFlight++;
+      maxInFlight = Math.max(maxInFlight, inFlight);
+      const { promise, resolve } = Promise.withResolvers<void>();
+      activeResolvers.push(resolve);
+      await promise;
+      inFlight--;
+      return new Response("ok", { status: 200 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 2,
+      minIntervalMs: 0,
+      fetchFn: mockFetch as typeof fetch,
+    });
+
+    const tasks = [
+      fetcher("https://example.com/1"),
+      fetcher("https://example.com/2"),
+      fetcher("https://example.com/3"),
+      fetcher("https://example.com/4"),
+    ];
+    // Wait until 2 workers become active
+    while (activeResolvers.length < 2) {
+      const { promise: waitPromise, resolve: waitResolve } = Promise.withResolvers<void>();
+      setTimeout(waitResolve, 2);
+      await waitPromise;
+    }
+    expect(inFlight).toBe(2);
+    expect(maxInFlight).toBe(2);
+    // Complete active resolvers one by one
+    while (activeResolvers.length > 0) {
+      const resolve = activeResolvers.shift()!;
+      resolve();
+      // Yield to let the next queued fetcher enter
+      const { promise: delayPromise, resolve: delayResolve } = Promise.withResolvers<void>();
+      setTimeout(delayResolve, 10);
+      await delayPromise;
+    }
+    await Promise.all(tasks);
+    expect(maxInFlight).toBe(2);
+  });
+
+  test("enforces global minimum interval (pacing) between request dispatches", async () => {
+    const dispatchTimestamps: number[] = [];
+    const minIntervalMs = 40;
+
+    const mockFetch = async () => {
+      dispatchTimestamps.push(Date.now());
+      return new Response("ok", { status: 200 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 4,
+      minIntervalMs,
+      fetchFn: mockFetch as typeof fetch,
+    });
+
+    const startTime = Date.now();
+    const tasks = [
+      fetcher("https://example.com/1"),
+      fetcher("https://example.com/2"),
+      fetcher("https://example.com/3"),
+      fetcher("https://example.com/4"),
+    ];
+
+    await Promise.all(tasks);
+    expect(dispatchTimestamps.length).toBe(4);
+
+    // Check intervals between consecutive dispatches (allowing 5ms timer margin)
+    for (let i = 1; i < dispatchTimestamps.length; i++) {
+      const diff = dispatchTimestamps[i] - dispatchTimestamps[i - 1];
+      expect(diff).toBeGreaterThanOrEqual(minIntervalMs - 5);
+    }
+
+    const totalElapsed = Date.now() - startTime;
+    expect(totalElapsed).toBeGreaterThanOrEqual(minIntervalMs * 3 - 10);
+  });
+
+  test("handles HTTP 429 with numeric Retry-After header and pauses queue globally", async () => {
+    const dispatchLog: Array<{ url: string; time: number; attempt: number }> = [];
+    let req1Attempts = 0;
+    const startTime = Date.now();
+
+    const mockFetch = async (input: string | URL | Request) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      const now = Date.now() - startTime;
+
+      if (url.includes("/retry-429")) {
+        req1Attempts++;
+        dispatchLog.push({ url, time: now, attempt: req1Attempts });
+        if (req1Attempts === 1) {
+          // Return 429 with 0.1s (100ms) Retry-After
+          return new Response("rate limited", {
+            status: 429,
+            headers: { "Retry-After": "0.1" },
+          });
+        }
+        return new Response("ok on retry", { status: 200 });
+      }
+
+      dispatchLog.push({ url, time: now, attempt: 1 });
+      return new Response("ok other", { status: 200 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 2,
+      minIntervalMs: 10,
+      fetchFn: mockFetch as typeof fetch,
+    });
+
+    // Fire two requests concurrently
+    const [res1, res2] = await Promise.all([
+      fetcher("https://example.com/retry-429"),
+      fetcher("https://example.com/other"),
+    ]);
+
+    expect(await res1.text()).toBe("ok on retry");
+    expect(await res2.text()).toBe("ok other");
+
+    // req1 attempt 1 happens around t=0ms
+    // 429 triggers pause of ~100ms
+    // req1 attempt 2 and req2 must both dispatch after the ~100ms pause (allowing 15ms margin)
+    expect(req1Attempts).toBe(2);
+    const pausedDispatches = dispatchLog.filter((d) => d.attempt > 1 || d.url.includes("/other"));
+    for (const d of pausedDispatches) {
+      expect(d.time).toBeGreaterThanOrEqual(80);
+    }
+  });
+
+  test("handles HTTP 429 with HTTP Date Retry-After header", async () => {
+    let attempts = 0;
+    const startTime = Date.now();
+
+    const mockFetch = async () => {
+      attempts++;
+      if (attempts === 1) {
+        // Date in the future (HTTP Date header has 1-second resolution)
+        const retryDate = new Date(Date.now() + 1000).toUTCString();
+        return new Response("rate limited", {
+          status: 429,
+          headers: { "Retry-After": retryDate },
+        });
+      }
+      return new Response("ok after date", { status: 200 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 2,
+      minIntervalMs: 5,
+      fetchFn: mockFetch as typeof fetch,
+    });
+
+    const res = await fetcher("https://example.com/date-429");
+    const elapsed = Date.now() - startTime;
+
+    expect(await res.text()).toBe("ok after date");
+    expect(attempts).toBe(2);
+    expect(elapsed).toBeGreaterThanOrEqual(100);
+  });
+
+  test("uses exponential backoff when Retry-After header is missing or invalid on 429/5xx", async () => {
+    let attempts = 0;
+    const dispatchTimes: number[] = [];
+
+    const mockFetch = async () => {
+      attempts++;
+      dispatchTimes.push(Date.now());
+      if (attempts <= 2) {
+        return new Response("internal error", { status: 500 });
+      }
+      return new Response("success on 3rd", { status: 200 });
+    };
+
+    const baseRetryDelayMs = 30;
+    const fetcher = createPacedFetcher({
+      concurrency: 2,
+      minIntervalMs: 5,
+      baseRetryDelayMs,
+      fetchFn: mockFetch as typeof fetch,
+    });
+
+    const res = await fetcher("https://example.com/500-retry");
+    expect(await res.text()).toBe("success on 3rd");
+    expect(attempts).toBe(3);
+
+    // attempt 0 -> wait 30ms (2^0 * 30) -> attempt 1 -> wait 60ms (2^1 * 30) -> attempt 2
+    const delay1 = dispatchTimes[1] - dispatchTimes[0];
+    const delay2 = dispatchTimes[2] - dispatchTimes[1];
+    expect(delay1).toBeGreaterThanOrEqual(25);
+    expect(delay2).toBeGreaterThanOrEqual(50);
+  });
+
+  test("throws Error when retries are exhausted on 429/5xx", async () => {
+    let attempts = 0;
+    const mockFetch = async () => {
+      attempts++;
+      return new Response("too many requests", { status: 429 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 2,
+      minIntervalMs: 5,
+      retries: 2,
+      baseRetryDelayMs: 10,
+      fetchFn: mockFetch as typeof fetch,
+    });
+
+    await expect(fetcher("https://example.com/exhaust-429")).rejects.toThrow(
+      "HTTP 429 for https://example.com/exhaust-429",
+    );
+    // Initial (attempt 0) + 2 retries = 3 attempts
+    expect(attempts).toBe(3);
+  });
+
+  test("retries and recovers when network fetch throws", async () => {
+    let attempts = 0;
+    const mockFetch = async () => {
+      attempts++;
+      if (attempts === 1) {
+        throw new Error("Network connection reset");
+      }
+      return new Response("recovered from net err", { status: 200 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 2,
+      minIntervalMs: 5,
+      retries: 2,
+      baseRetryDelayMs: 15,
+      fetchFn: mockFetch as typeof fetch,
+    });
+
+    const res = await fetcher("https://example.com/net-err");
+    expect(await res.text()).toBe("recovered from net err");
+    expect(attempts).toBe(2);
+  });
+
+  test("rethrows original network error when network retries are exhausted", async () => {
+    let attempts = 0;
+    const mockFetch = async () => {
+      attempts++;
+      throw new Error("Fatal network failure");
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 2,
+      minIntervalMs: 5,
+      retries: 2,
+      baseRetryDelayMs: 10,
+      fetchFn: mockFetch as typeof fetch,
+    });
+
+    await expect(fetcher("https://example.com/fatal-net")).rejects.toThrow("Fatal network failure");
+    expect(attempts).toBe(3);
+  });
+
+  test("does not retry on normal non-429/non-5xx responses like 404", async () => {
+    let attempts = 0;
+    const mockFetch = async () => {
+      attempts++;
+      return new Response("not found", { status: 404 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 2,
+      minIntervalMs: 5,
+      fetchFn: mockFetch as typeof fetch,
+    });
+
+    const res = await fetcher("https://example.com/not-found");
+    expect(res.status).toBe(404);
+    expect(attempts).toBe(1);
   });
 });
