@@ -181,4 +181,61 @@ describe("runScrape integration", () => {
     expect(yearData.scrapeLog.length).toBe(1);
     expect(yearData.scrapeLog[0]).toContain("[stale] 9029");
   });
+
+  test("runScrape respects default concurrency of 2 across cards", async () => {
+    const multiCardSignupHtml = `
+      <div class="list-card">
+        <a href="https://ithelp.ithome.com.tw/users/1/ironman/101"></a>
+        <span class="contestants-list__name">User 1</span>
+        <div class="tag"><span>Software</span></div>
+        <h3 class="contestants-list__title title">Series 1</h3>
+        <p class="contestants-list__desc content">desc 1</p>
+        <span class="signup-date">報名日期：2026/08/01 12:00:00</span>
+      </div>
+      <div class="list-card">
+        <a href="https://ithelp.ithome.com.tw/users/2/ironman/102"></a>
+        <span class="contestants-list__name">User 2</span>
+        <div class="tag"><span>Software</span></div>
+        <h3 class="contestants-list__title title">Series 2</h3>
+        <p class="contestants-list__desc content">desc 2</p>
+        <span class="signup-date">報名日期：2026/08/01 12:00:00</span>
+      </div>
+      <div class="list-card">
+        <a href="https://ithelp.ithome.com.tw/users/3/ironman/103"></a>
+        <span class="contestants-list__name">User 3</span>
+        <div class="tag"><span>Software</span></div>
+        <h3 class="contestants-list__title title">Series 3</h3>
+        <p class="contestants-list__desc content">desc 3</p>
+        <span class="signup-date">報名日期：2026/08/01 12:00:00</span>
+      </div>
+      <div class="list-card">
+        <a href="https://ithelp.ithome.com.tw/users/4/ironman/104"></a>
+        <span class="contestants-list__name">User 4</span>
+        <div class="tag"><span>Software</span></div>
+        <h3 class="contestants-list__title title">Series 4</h3>
+        <p class="contestants-list__desc content">desc 4</p>
+        <span class="signup-date">報名日期：2026/08/01 12:00:00</span>
+      </div>`;
+
+    let active = 0;
+    let maxActive = 0;
+    const gate = Promise.withResolvers<void>();
+
+    const fetcher = async (url: string) => {
+      if (url.includes("/signup/list")) return multiCardSignupHtml;
+      active++;
+      maxActive = Math.max(maxActive, active);
+      if (active === 2) {
+        gate.resolve();
+      }
+      await gate.promise;
+      active--;
+      throw new Error("network timeout");
+    };
+
+    const yearData = await runScrape(m2026, { fetcher });
+    expect(yearData.series.length).toBe(0);
+    expect(yearData.scrapeLog.length).toBe(4);
+    expect(maxActive).toBe(2);
+  });
 });

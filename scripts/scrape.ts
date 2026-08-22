@@ -328,7 +328,7 @@ export async function runScrape(
   opts: RunScrapeOptions = {},
 ): Promise<YearData> {
   const isFull = opts.full ?? false;
-  const concurrency = opts.concurrency ?? 5;
+  const concurrency = opts.concurrency ?? 2;
   const fetcher = opts.fetcher ?? fetchHtml;
   const cachedMap = new Map<number, Series>();
   if (opts.cachedYearData?.series) {
@@ -359,7 +359,7 @@ export async function runScrape(
       }
       return await scrapeSeriesIncremental(card, cached, fetcher);
     },
-    { concurrency, delayMs: 20 },
+    { concurrency },
   );
 
   const series: Series[] = [];
