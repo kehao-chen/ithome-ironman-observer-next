@@ -71,7 +71,8 @@
 ## 架構與資料
 
 - 沒有後端、沒有資料庫，JSON 就是資料庫。
-- 每次抓取輸出 `data/{year}.json` 和 `data/meta.json`，並寫一份每日歷史快照到 `data/history/{year}/{date}.json`。
+- 每次抓取輸出 `data/{year}.json` 和 `data/meta.json`；每日歷史快照 `data/history/{year}/{date}.json`
+  一天只寫一次（23:50 臺北那輪 deep-calibrate 帶 `--history`），避免每 15 分鐘重複 commit 同一份 1.9MB 檔案。
 - 硬限制：近乎零成本，靠 Cloudflare Workers/Pages 免費額度 + GH Actions 公開 repo 免費 runner + 自有網域撐著。
 - Non-goals：即時更新（只有每 10 分鐘一次的批次）。
 
@@ -80,23 +81,36 @@
 ```bash
 bun install
 bun run scripts/scrape.ts     # 依 series-manifest 陣列逐年度抓取；全失敗零寫入、exit 1
+bun run scripts/scrape.ts --full --history   # 完整校正 + 寫入當日歷史快照
 cd web && bun install && bun run dev
 ```
+
+`web/public/data/` 是建置產物（`web/scripts/copy-data.mjs` 由 `data/*.json` 產生），
+已 gitignore；`bun run dev` 和 `bun run build` 都會先跑一次 copy。
 
 ## 收藏（Favorites）
 
 卡片右上角星號可收藏系列；「我的收藏」分頁只顯示已收藏系列，沿用排序器。
 收藏以系列 ID 為 key 跨年度共用，只存在本裝置瀏覽器（localStorage），不同裝置和瀏覽器之間不互通。
 
-## 測試
+## 測試與檢查
 
 ```bash
-bun test
+bun run check      # lint + typecheck + 單元測試 + astro check（CI 跑的同一組）
+bun test           # 只跑單元測試
+bun run lint       # 只跑 Biome
 ```
+
+CI（`.github/workflows/ci.yml`）在 push 到 `main` 與所有 PR 上跑這整組。
+Biome 只開 linter、不開 formatter，理由見 [`docs/tooling.md`](docs/tooling.md)。
 
 ## 部署（已上線，僅供參考）
 
 1. Cloudflare Pages 專案 `ironman-observer-next`（workflow 會自動建立）
 2. GitHub repo secrets：`CLOUDFLARE_API_TOKEN`（Pages Edit 權限）、`CLOUDFLARE_ACCOUNT_ID`
 3. 自有網域在 Cloudflare dashboard → Pages 專案 → Custom domains 設定
-4. Cloudflare Worker `ironman-observer-trigger`（cron `*/10 * * * *`，secrets: `GITHUB_TOKEN`、`GITHUB_REPO`）定時觸發 workflow；也可 `gh workflow run scheduled-update` 手動觸發
+4. Cloudflare Worker `ironman-observer-trigger`（cron `*/15 * * * *`，secrets: `GITHUB_TOKEN`、`GITHUB_REPO`、`DISPATCH_SECRET`）定時觸發 workflow；也可 `gh workflow run scheduled-update` 手動觸發
+
+   `POST /dispatch` 需要 `Authorization: Bearer $DISPATCH_SECRET`（該端點會觸發一整輪爬蟲，
+   不能開放匿名呼叫）；`GET /` 維持公開健康檢查。secrets 設定見
+   [`.github/workflows/README.md`](.github/workflows/README.md)。
