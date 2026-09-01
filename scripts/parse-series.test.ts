@@ -1,7 +1,7 @@
 // scripts/parse-series.test.ts
 import { describe, expect, test } from "bun:test";
 import { readFixture } from "./test-utils";
-import { parseSeriesPage, seriesUrl, isSeriesPage, isArticlePage } from "./parse-series";
+import { parseSeriesPage, isSeriesPage, isArticlePage } from "./parse-series";
 
 describe("parseSeriesPage", () => {
   test("parses stats and articles", () => {
@@ -180,6 +180,7 @@ function page2Html(): string {
   <div class="profile-pagination"><ul class="pager"><li class="disabled"><span>下一頁</span></li></ul></div>
 </div>
 <div class="rightside profile-side"></div>`;
+}
 
 describe("Page validity validators", () => {
   test("isSeriesPage: valid normal series fixture returns true", () => {
@@ -233,4 +234,3 @@ describe("Page validity validators", () => {
     expect(isArticlePage("")).toBe(false);
   });
 });
-}
