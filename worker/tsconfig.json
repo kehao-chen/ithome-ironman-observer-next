@@ -10,5 +10,8 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Tests run under Bun and are typechecked by the root tsconfig
+  // (@cloudflare/workers-types and Bun's globals cannot coexist).
+  "exclude": ["src/**/*.test.ts"]
 }

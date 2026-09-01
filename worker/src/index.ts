@@ -11,13 +11,20 @@
  *   prevents overlapping runs (each run takes ~2.5 min, well under the 15 min
  *   interval, but a slow scrape must not stack a second run → push conflicts).
  * - `GET /` is a public health check (no secret required).
+ * - `POST /dispatch` is a privileged manual trigger and REQUIRES
+ *   `Authorization: Bearer <DISPATCH_SECRET>`. Without it anyone who guesses the
+ *   workers.dev hostname could fire unlimited scrapes.
  *
  * Secrets: GITHUB_TOKEN (fine-grained PAT with `actions:write` on the repo),
- * GITHUB_REPO ("owner/name").
+ * GITHUB_REPO ("owner/name"), DISPATCH_SECRET (shared secret for POST /dispatch;
+ * set with `wrangler secret put DISPATCH_SECRET`).
  */
+import { authorizeDispatch } from "./auth";
+
 interface Env {
   GITHUB_TOKEN: string;
   GITHUB_REPO: string;
+  DISPATCH_SECRET: string;
 }
 
 const WORKFLOW_FILE = "scheduled-update.yml";
@@ -49,7 +56,7 @@ async function hasActiveRun(env: Env): Promise<boolean> {
 }
 
 export default {
-  async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+  async scheduled(_controller: ScheduledController, env: Env, _ctx: ExecutionContext): Promise<void> {
     if (await hasActiveRun(env)) {
       // A run is still going — skip this tick rather than stacking a parallel
       // scrape (which races on `git push` and can trigger ithelp rate limits).
@@ -67,7 +74,15 @@ export default {
     if (url.pathname === "/") {
       return new Response("ironman-observer-trigger OK", { status: 200 });
     }
-    if (url.pathname === "/dispatch" && request.method === "POST") {
+    if (url.pathname === "/dispatch") {
+      // Reject non-POST before authenticating so probes never reach the secret check.
+      if (request.method !== "POST") {
+        return new Response("method not allowed", { status: 405, headers: { Allow: "POST" } });
+      }
+      const auth = await authorizeDispatch(request.headers.get("authorization"), env.DISPATCH_SECRET);
+      if (!auth.ok) {
+        return new Response(auth.message, { status: auth.status });
+      }
       if (!env.GITHUB_TOKEN || !env.GITHUB_REPO) {
         return new Response("missing secrets", { status: 500 });
       }
