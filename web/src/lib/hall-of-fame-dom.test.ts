@@ -238,7 +238,7 @@ describe("Retry observable contract", () => {
           throw new Error("Network error");
         }
         empty.hidden = true;
-      } catch (err) {
+      } catch {
         empty.hidden = false;
         msg.textContent = "載入年度資料失敗，請重新整理或點擊重試。";
         retryBtn.hidden = false;

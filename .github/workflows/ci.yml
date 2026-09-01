@@ -1,0 +1,57 @@
+name: ci
+
+# The repo had 321 passing tests that nothing ever ran automatically: the only
+# workflows were the data-update crons. This is the gate for source changes.
+on:
+  push:
+    branches: [main]
+    # Data-only commits (~96/day from the scraper) change no source; skip them.
+    paths-ignore:
+      - "data/**"
+  pull_request: {}
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install (root)
+        run: bun install --frozen-lockfile
+
+      - name: Install (web)
+        run: cd web && bun install --frozen-lockfile
+
+      - name: Install (worker)
+        run: cd worker && bun install --frozen-lockfile
+
+      - name: Lint
+        run: bunx biome check
+
+      - name: Test
+        run: bun test
+
+      - name: Typecheck (scripts + worker auth)
+        run: bunx tsc --noEmit
+
+      - name: Typecheck (worker)
+        run: cd worker && bunx tsc --noEmit
+
+      - name: Typecheck (astro)
+        run: cd web && bunx astro check
+
+      - name: Build
+        run: cd web && bun run build

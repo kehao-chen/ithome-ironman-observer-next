@@ -70,7 +70,7 @@ export function parseSeriesPage(html: string): SeriesPage {
     }
     articles.push({
       id, day, title, url: `https://ithelp.ithome.com.tw/articles/${id}`,
-      publishedAt: publishedAt.replace(" ", "T") + "+08:00",
+      publishedAt: `${publishedAt.replace(" ", "T")}+08:00`,
       views, likes, comments,
     });
   }

@@ -4,9 +4,13 @@
   "scripts": {
     "scrape": "bun run scripts/scrape.ts",
     "test": "bun test",
-    "build": "cd web && bun install && bun run build"
+    "typecheck": "tsc --noEmit && cd worker && tsc --noEmit",
+    "check": "bun run lint && bun run typecheck && bun test && cd web && bun run check",
+    "build": "cd web && bun install --frozen-lockfile && bun run build",
+    "lint": "biome check"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.11",
     "@types/bun": "latest",
     "happy-dom": "^20.11.2",
     "typescript": "^5.6.0"

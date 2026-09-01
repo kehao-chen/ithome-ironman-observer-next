@@ -178,8 +178,8 @@ describe("真實資料全量 sweep（data/2026.json）", () => {
 // card-dom.test.ts 只鎖 client 側結構；這裡直接讀 SSR 模板 + view-model 原始碼，
 // 確保關鍵契約字串與順序仍存在——改 SeriesCard.astro / card.ts 時必須同步改 card-dom.ts（反之亦然）。
 // badge / chip / 進度的 class 不是模板字面值，而是 card.ts view-model 產生，故分開檢查。
-const ssrTemplate = await Bun.file(import.meta.dir + "/../components/SeriesCard.astro").text();
-const viewModelSrc = await Bun.file(import.meta.dir + "/card.ts").text();
+const ssrTemplate = await Bun.file(`${import.meta.dir}/../components/SeriesCard.astro`).text();
+const viewModelSrc = await Bun.file(`${import.meta.dir}/card.ts`).text();
 
 describe("SSR 模板契約 tripwire", () => {
   test("SeriesCard.astro 結構 class 都存在（client 骨架 mirror 的來源）", () => {

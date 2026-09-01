@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { YearData, Series, Article, SignupCard } from "./types";
-import { mergeCardsAndStats, taipeiTimestamp, historyDate, writeHistorySnapshots, officialDayCount, mergeIncrementalArticles, scrapeSeriesIncremental, scrapeSeriesFull } from "./scrape";
+import { mergeCardsAndStats, taipeiTimestamp, historyDate, writeHistorySnapshots, officialDayCount, mergeIncrementalArticles, scrapeSeriesIncremental } from "./scrape";
 import { parseSignupList } from "./parse-signup";
 import { parseSeriesPage } from "./parse-series";
 import { parseRss } from "./parse-rss";
@@ -96,7 +96,7 @@ describe("mergeCardsAndStats", () => {
     const expected = new Date(now.getTime() + 8 * 60 * 60 * 1000)
       .toISOString().slice(0, 19).replace("T", " ");
     const got = taipeiTimestamp(now);
-    expect(got).toBe(expected + "+08:00");
+    expect(got).toBe(`${expected}+08:00`);
   });
 });
 
