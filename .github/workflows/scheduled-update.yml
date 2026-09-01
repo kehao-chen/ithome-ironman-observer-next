@@ -16,6 +16,9 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    # Bounded so a hung scrape cannot hold the `data-update-main` concurrency
+    # group for GitHub's 6h default and stall every later run behind it.
+    timeout-minutes: 20
     steps:
       # Full history so `git pull --rebase` can always find a merge base.
       - uses: actions/checkout@v5
@@ -34,7 +37,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/ web/public/data/
+          git add data/
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "no data change; skipping commit+build+deploy"
@@ -59,7 +62,7 @@ jobs:
 
       - name: Build site
         if: steps.commit.outputs.changed == 'true'
-        run: cd web && bun install && bun run build
+        run: cd web && bun install --frozen-lockfile && bun run build
 
       - name: Deploy to Cloudflare Pages
         if: steps.commit.outputs.changed == 'true'

@@ -2,7 +2,7 @@
   "name": "ironman-observer-web",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "node scripts/copy-data.mjs && astro dev",
     "build": "node scripts/copy-data.mjs && astro build",
     "check": "astro check",
     "preview": "astro preview"

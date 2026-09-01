@@ -2,7 +2,15 @@ name: deep-calibrate
 on:
   schedule:
     - cron: "15 */2 * * *"
-  workflow_dispatch: {}
+    # 15:50 UTC = 23:50 Asia/Taipei — the last full scrape of the Taipei day, so
+    # its snapshot is that day's final state. Only this run passes --history.
+    - cron: "50 15 * * *"
+  workflow_dispatch:
+    inputs:
+      history:
+        description: "Also write a data/history/<year>/<date>.json snapshot"
+        type: boolean
+        default: false
 
 concurrency:
   group: data-update-main
@@ -14,6 +22,9 @@ permissions:
 jobs:
   calibrate:
     runs-on: ubuntu-latest
+    # A full calibration is slower than the incremental run but still ~5 min;
+    # bounded so a hung fetch cannot hold the shared concurrency group for 6h.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
         with:
@@ -24,14 +35,19 @@ jobs:
           bun-version: 1.3.14
 
       - name: Scrape (Full Calibration)
-        run: bun run scripts/scrape.ts --full
+        # Snapshots are a once-a-day archive: writing one on every run re-committed
+        # the same 1.9MB file ~96x/day. Only the 23:50 Taipei cron (or an explicit
+        # manual request) takes one.
+        env:
+          HISTORY_FLAG: ${{ (github.event.schedule == '50 15 * * *' || inputs.history) && '--history' || '' }}
+        run: bun run scripts/scrape.ts --full $HISTORY_FLAG
 
       - name: Commit data if changed
         id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/ web/public/data/
+          git add data/
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "no data change; skipping commit+build+deploy"
@@ -53,7 +69,7 @@ jobs:
 
       - name: Build site
         if: steps.commit.outputs.changed == 'true'
-        run: cd web && bun install && bun run build
+        run: cd web && bun install --frozen-lockfile && bun run build
 
       - name: Deploy to Cloudflare Pages
         if: steps.commit.outputs.changed == 'true'

@@ -3,7 +3,7 @@ import { copyFile, mkdir, readFile, rename, rm, writeFile } from "node:fs/promis
 import { join } from "node:path";
 import { fetchHtml } from "./fetch-html";
 import { pMap } from "./rate-limiter";
-import { parseSignupList, signupListUrl } from "./parse-signup";
+import { parseSignupList } from "./parse-signup";
 import { parseRss, rssUrl } from "./parse-rss";
 import { parseSeriesPage, seriesUrl, isArticlePage, isSeriesPage } from "./parse-series";
 import { parseArticleDay } from "./parse-article";
@@ -24,7 +24,7 @@ export function mergeCardsAndStats(
       title: c.title,
       description: c.description,
       team: c.team,
-      signupDate: c.signupDate.replace(" ", "T") + "+08:00",
+      signupDate: `${c.signupDate.replace(" ", "T")}+08:00`,
       lastUpdated: rss?.lastBuildDate ?? null, // spec: 更新時間 card field
       dayCount: st?.dayCount ?? 0,
       articleCount: st?.articleCount ?? 0,
@@ -163,7 +163,7 @@ export async function scrapeSeriesFull(
       title: card.title,
       description: card.description,
       team: card.team,
-      signupDate: card.signupDate.replace(" ", "T") + "+08:00",
+      signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
       lastUpdated,
       dayCount,
       articleCount: first.articleCount,
@@ -210,7 +210,7 @@ export async function scrapeSeriesIncremental(
             id: card.seriesId,
             user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
             group: card.group, title: card.title, description: card.description, team: card.team,
-            signupDate: card.signupDate.replace(" ", "T") + "+08:00",
+            signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
             lastUpdated: null, dayCount: 0, articleCount: 0, subscriptions: parsed.subscriptions, articles: [],
           };
           return { status: "fresh", series };
@@ -264,7 +264,7 @@ export async function scrapeSeriesIncremental(
       title: card.title,
       description: card.description,
       team: card.team,
-      signupDate: card.signupDate.replace(" ", "T") + "+08:00",
+      signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
       lastUpdated,
       dayCount,
       articleCount: headerArticleCount,
@@ -286,7 +286,7 @@ export async function scrapeSeriesIncremental(
 // Naive `new Date().toISOString().replace("Z","+08:00")` relabels UTC digits
 // as +08:00 without shifting — 8h stale. Shift first, then stamp.
 export function taipeiTimestamp(d: Date): string {
-  return new Date(d.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ") + "+08:00";
+  return `${new Date(d.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ")}+08:00`;
 }
 
 export function historyDate(updatedAt: string): string {
@@ -551,6 +551,12 @@ export async function commitWrites(staged: StagedFile[]): Promise<void> {
 // CLI entry
 if (import.meta.main) {
   const isFull = process.argv.includes("--full");
+  // History snapshots are an append-only daily archive — nothing in the site
+  // reads data/history. They are keyed by Taipei date, so an ungated write meant
+  // the scheduled run overwrote (and re-committed) the same 1.9MB file ~96 times
+  // a day. Behind this flag one scheduled run per day takes the end-of-day
+  // snapshot; see .github/workflows/deep-calibrate.yml.
+  const writeHistory = process.argv.includes("--history");
   const manifestPath = join(import.meta.dir, "..", "config", "series-manifest.json");
   const manifests: Manifest[] = JSON.parse(await readFile(manifestPath, "utf-8"));
   if (!Array.isArray(manifests) || manifests.length === 0) {
@@ -586,13 +592,15 @@ if (import.meta.main) {
 
   // History snapshots: independent of the atomic main-file commit (spec §5.2).
   // Per-year failures are collected and logged; they never block the main
-  // {year}.json write (review #3).
-  try {
-    const failures = await writeHistorySnapshots(dataDir, succeeded);
-    for (const f of failures) console.error(`history snapshot failed: ${f}`);
-  } catch (e) {
-    // writeHistorySnapshots 本身不 throw（單年度失敗已內收），此 catch 為防護
-    console.error(`history snapshot error: ${e instanceof Error ? e.message : String(e)}`);
+  // {year}.json write (review #3). Only on --history (see above).
+  if (writeHistory) {
+    try {
+      const failures = await writeHistorySnapshots(dataDir, succeeded);
+      for (const f of failures) console.error(`history snapshot failed: ${f}`);
+    } catch (e) {
+      // writeHistorySnapshots 本身不 throw（單年度失敗已內收），此 catch 為防護
+      console.error(`history snapshot error: ${e instanceof Error ? e.message : String(e)}`);
+    }
   }
 
   const meta = buildMeta(succeeded);

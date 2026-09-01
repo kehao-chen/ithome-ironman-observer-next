@@ -1,8 +1,11 @@
 node_modules/
-bun.lock
 web/node_modules/
 web/dist/
 web/.astro/
+# Build artifact: `web/scripts/copy-data.mjs` regenerates it from data/*.json on
+# every build. Committing it stored a second 1.9MB copy of the dataset in every
+# one of the ~96 scraper commits per day.
+web/public/data/
 .superpowers/
 .impeccable/critique/
 # Harness / agent skill installs (not project source)
