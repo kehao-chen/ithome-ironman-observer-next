@@ -33,11 +33,33 @@ export interface PacedFetchOptions {
   concurrency?: number; // default 2
   minIntervalMs?: number; // default 150
   retries?: number; // default 3
-  fetchFn?: typeof fetch; // default globalThis.fetch
+  // Per-attempt hard ceiling; 0 disables. Without it a single hung socket stalls
+  // the whole scrape — the GitHub Actions job would sit there and the
+  // `data-update-main` concurrency group blocks every later run behind it.
+  timeoutMs?: number; // default 15000
+  // Structural signature, not `typeof fetch`: the implementation only ever calls
+  // (input, init) => Promise<Response>, and pinning it to the platform `fetch`
+  // type forces every test double to carry runtime-specific extras (Bun's
+  // `fetch.preconnect`) that this module never touches.
+  fetchFn?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+  // default globalThis.fetch
   baseRetryDelayMs?: number; // default 2000
 }
 
-export type PacedFetcher = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+/**
+ * Per-call overrides. `retries` is deliberately a call-time argument rather than
+ * something you get by building a second fetcher: concurrency slots, the minimum
+ * dispatch interval and the 429 back-off window all live in one closure, so a
+ * second fetcher would pace itself independently and double the real request
+ * rate against ithelp.
+ */
+export type PacedFetchOverrides = { retries?: number };
+
+export type PacedFetcher = (
+  input: string | URL | Request,
+  init?: RequestInit,
+  overrides?: PacedFetchOverrides,
+) => Promise<Response>;
 
 function getUrlString(input: string | URL | Request): string {
   if (typeof input === "string") return input;
@@ -63,23 +85,38 @@ function parseRetryAfter(
   }
   if (/^\d+(\.\d+)?$/.test(trimmed)) {
     const seconds = parseFloat(trimmed);
-    if (!isNaN(seconds) && isFinite(seconds) && seconds >= 0) {
+    if (!Number.isNaN(seconds) && Number.isFinite(seconds) && seconds >= 0) {
       return Math.round(seconds * 1000);
     }
   }
   const dateMs = Date.parse(trimmed);
-  if (!isNaN(dateMs)) {
+  if (!Number.isNaN(dateMs)) {
     const diff = dateMs - Date.now();
     return Math.max(0, diff);
   }
   return baseRetryDelayMs * 2 ** attempt;
 }
 
+/**
+ * Attach a per-attempt timeout signal to `init`, preserving a caller-supplied
+ * `signal` by combining the two (either one aborting aborts the request).
+ */
+function withTimeout(init: RequestInit | undefined, timeoutMs: number): RequestInit | undefined {
+  if (timeoutMs <= 0) return init;
+  const timeoutSignal = AbortSignal.timeout(timeoutMs);
+  const callerSignal = init?.signal;
+  return {
+    ...init,
+    signal: callerSignal ? AbortSignal.any([callerSignal, timeoutSignal]) : timeoutSignal,
+  };
+}
+
 export function createPacedFetcher(options?: PacedFetchOptions): PacedFetcher {
   const concurrency = Math.max(1, options?.concurrency ?? 2);
   const minIntervalMs = Math.max(0, options?.minIntervalMs ?? 150);
-  const retries = Math.max(0, options?.retries ?? 3);
+  const defaultRetries = Math.max(0, options?.retries ?? 3);
   const baseRetryDelayMs = Math.max(0, options?.baseRetryDelayMs ?? 2000);
+  const timeoutMs = Math.max(0, options?.timeoutMs ?? 15_000);
   const fetchFn = options?.fetchFn ?? globalThis.fetch;
 
   let activeCount = 0;
@@ -133,7 +170,12 @@ export function createPacedFetcher(options?: PacedFetchOptions): PacedFetcher {
     }
   }
 
-  return async function pacedFetch(input: string | URL | Request, init?: RequestInit): Promise<Response> {
+  return async function pacedFetch(
+    input: string | URL | Request,
+    init?: RequestInit,
+    overrides?: PacedFetchOverrides,
+  ): Promise<Response> {
+    const retries = overrides?.retries === undefined ? defaultRetries : Math.max(0, overrides.retries);
     await acquireConcurrencySlot();
     try {
       for (let attempt = 0; attempt <= retries; attempt++) {
@@ -141,7 +183,10 @@ export function createPacedFetcher(options?: PacedFetchOptions): PacedFetcher {
 
         let res: Response;
         try {
-          res = await fetchFn(input, init);
+          // Fresh deadline per attempt: one signal hoisted out of the loop would
+          // leave later retries with whatever is left of the first attempt's
+          // budget, and abort them instantly once it had fired.
+          res = await fetchFn(input, withTimeout(init, timeoutMs));
         } catch (err) {
           if (attempt < retries) {
             const waitMs = baseRetryDelayMs * 2 ** attempt;

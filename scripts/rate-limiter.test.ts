@@ -55,7 +55,7 @@ describe("createPacedFetcher", () => {
     let maxInFlight = 0;
     const activeResolvers: Array<() => void> = [];
 
-    const mockFetch = async (input: string | URL | Request) => {
+    const mockFetch = async (_input: string | URL | Request) => {
       inFlight++;
       maxInFlight = Math.max(maxInFlight, inFlight);
       const { promise, resolve } = Promise.withResolvers<void>();
@@ -68,7 +68,7 @@ describe("createPacedFetcher", () => {
     const fetcher = createPacedFetcher({
       concurrency: 2,
       minIntervalMs: 0,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     const tasks = [
@@ -110,7 +110,7 @@ describe("createPacedFetcher", () => {
     const fetcher = createPacedFetcher({
       concurrency: 4,
       minIntervalMs,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     const startTime = Date.now();
@@ -163,7 +163,7 @@ describe("createPacedFetcher", () => {
     const fetcher = createPacedFetcher({
       concurrency: 2,
       minIntervalMs: 10,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     // Fire two requests concurrently
@@ -205,7 +205,7 @@ describe("createPacedFetcher", () => {
     const fetcher = createPacedFetcher({
       concurrency: 2,
       minIntervalMs: 5,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     const res = await fetcher("https://example.com/date-429");
@@ -234,7 +234,7 @@ describe("createPacedFetcher", () => {
       concurrency: 2,
       minIntervalMs: 5,
       baseRetryDelayMs,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     const res = await fetcher("https://example.com/500-retry");
@@ -260,7 +260,7 @@ describe("createPacedFetcher", () => {
       minIntervalMs: 5,
       retries: 2,
       baseRetryDelayMs: 10,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     await expect(fetcher("https://example.com/exhaust-429")).rejects.toThrow(
@@ -285,7 +285,7 @@ describe("createPacedFetcher", () => {
       minIntervalMs: 5,
       retries: 2,
       baseRetryDelayMs: 15,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     const res = await fetcher("https://example.com/net-err");
@@ -305,7 +305,7 @@ describe("createPacedFetcher", () => {
       minIntervalMs: 5,
       retries: 2,
       baseRetryDelayMs: 10,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     await expect(fetcher("https://example.com/fatal-net")).rejects.toThrow("Fatal network failure");
@@ -322,11 +322,122 @@ describe("createPacedFetcher", () => {
     const fetcher = createPacedFetcher({
       concurrency: 2,
       minIntervalMs: 5,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     const res = await fetcher("https://example.com/not-found");
     expect(res.status).toBe(404);
     expect(attempts).toBe(1);
+  });
+});
+
+describe("createPacedFetcher — per-attempt timeout", () => {
+  test("aborts an attempt that outlives timeoutMs and retries it", async () => {
+    const seenSignals: (AbortSignal | null | undefined)[] = [];
+    let attempts = 0;
+    const mockFetch = async (_input: string | URL | Request, init?: RequestInit) => {
+      attempts++;
+      seenSignals.push(init?.signal);
+      if (attempts === 1) {
+        // Never settles on its own — only the timeout signal can end it.
+        return await new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () => reject(new Error("aborted")));
+        });
+      }
+      return new Response("ok", { status: 200 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 1,
+      minIntervalMs: 0,
+      retries: 1,
+      baseRetryDelayMs: 0,
+      timeoutMs: 20,
+      fetchFn: mockFetch,
+    });
+
+    const res = await fetcher("https://example.com/hang");
+    expect(res.status).toBe(200);
+    expect(attempts).toBe(2);
+    // Each attempt gets its OWN signal — a shared one would leave the retry with
+    // an already-fired deadline and abort it instantly.
+    expect(seenSignals[0]).not.toBe(seenSignals[1]);
+    expect(seenSignals[1]?.aborted).toBe(false);
+  });
+
+  test("preserves a caller-supplied signal alongside the timeout", async () => {
+    const controller = new AbortController();
+    const mockFetch = async (_input: string | URL | Request, init?: RequestInit) =>
+      await new Promise<Response>((_resolve, reject) => {
+        const signal = init?.signal;
+        // The abort can land before fetchFn is even reached (the limiter awaits a
+        // concurrency slot first), so check the flag before attaching a listener.
+        if (signal?.aborted) return reject(new Error("aborted by caller"));
+        signal?.addEventListener("abort", () => reject(new Error("aborted by caller")));
+      });
+
+    const fetcher = createPacedFetcher({
+      concurrency: 1,
+      minIntervalMs: 0,
+      retries: 0,
+      timeoutMs: 60_000,
+      fetchFn: mockFetch,
+    });
+
+    const pending = fetcher("https://example.com/slow", { signal: controller.signal });
+    controller.abort();
+    await expect(pending).rejects.toThrow("aborted by caller");
+  });
+
+  test("timeoutMs: 0 disables the deadline and leaves init untouched", async () => {
+    let seenSignal: AbortSignal | null | undefined = null;
+    const mockFetch = async (_input: string | URL | Request, init?: RequestInit) => {
+      seenSignal = init?.signal;
+      return new Response("ok", { status: 200 });
+    };
+
+    const fetcher = createPacedFetcher({ concurrency: 1, minIntervalMs: 0, timeoutMs: 0, fetchFn: mockFetch });
+    await fetcher("https://example.com/no-deadline");
+    expect(seenSignal).toBeUndefined();
+  });
+});
+
+describe("createPacedFetcher — per-call retry override", () => {
+  test("honours a per-call retries override without a second limiter", async () => {
+    let attempts = 0;
+    const mockFetch = async () => {
+      attempts++;
+      return new Response("boom", { status: 503 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 1,
+      minIntervalMs: 0,
+      retries: 3,
+      baseRetryDelayMs: 0,
+      fetchFn: mockFetch,
+    });
+
+    await expect(fetcher("https://example.com/flaky", undefined, { retries: 1 })).rejects.toThrow("HTTP 503");
+    expect(attempts).toBe(2); // 1 initial + 1 override retry, not the default 3
+  });
+
+  test("an undefined override falls back to the configured default", async () => {
+    let attempts = 0;
+    const mockFetch = async () => {
+      attempts++;
+      return new Response("boom", { status: 503 });
+    };
+
+    const fetcher = createPacedFetcher({
+      concurrency: 1,
+      minIntervalMs: 0,
+      retries: 2,
+      baseRetryDelayMs: 0,
+      fetchFn: mockFetch,
+    });
+
+    await expect(fetcher("https://example.com/flaky", undefined, { retries: undefined })).rejects.toThrow("HTTP 503");
+    expect(attempts).toBe(3);
   });
 });

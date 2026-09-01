@@ -11,20 +11,23 @@ export interface FetchHtmlOptions {
 export type HtmlFetcher = (url: string, opts?: FetchHtmlOptions) => Promise<string>;
 
 export function createPacedHtmlFetcher(opts?: PacedFetchOptions): HtmlFetcher {
-  const defaultPacedFetch = createPacedFetcher(opts);
+  // Exactly one paced fetcher per HTML fetcher. A per-call `retries` override is
+  // passed through to this shared instance instead of spawning a second one —
+  // a second fetcher would carry its own concurrency/interval/back-off state and
+  // silently double the request rate against ithelp.
+  const pacedFetch = createPacedFetcher(opts);
 
   return async function pacedHtmlFetch(url: string, callOpts?: FetchHtmlOptions): Promise<string> {
-    const pacedFetch =
-      callOpts?.retries !== undefined && callOpts.retries !== opts?.retries
-        ? createPacedFetcher({ ...opts, retries: callOpts.retries })
-        : defaultPacedFetch;
-
-    const res = await pacedFetch(url, {
-      headers: {
-        "User-Agent": BROWSER_UA,
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    const res = await pacedFetch(
+      url,
+      {
+        headers: {
+          "User-Agent": BROWSER_UA,
+          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        },
       },
-    });
+      { retries: callOpts?.retries },
+    );
 
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} for ${url}`);

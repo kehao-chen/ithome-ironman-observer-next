@@ -4,7 +4,6 @@ import {
   fetchHtml,
   createPacedHtmlFetcher,
   BROWSER_UA,
-  type HtmlFetcher,
 } from "./fetch-html";
 
 describe("createPacedHtmlFetcher", () => {
@@ -28,13 +27,13 @@ describe("createPacedHtmlFetcher", () => {
       });
     };
 
-    const fetcher = createPacedHtmlFetcher({ fetchFn: mockFetch as typeof fetch });
+    const fetcher = createPacedHtmlFetcher({ fetchFn: mockFetch });
     const html = await fetcher("https://example.com/article/1");
 
     expect(html).toBe("<html><body>test page</body></html>");
     expect(capturedUrl).toBe("https://example.com/article/1");
     expect(capturedHeaders?.["User-Agent"]).toBe(BROWSER_UA);
-    expect(capturedHeaders?.["Accept"]).toBe(
+    expect(capturedHeaders?.Accept).toBe(
       "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     );
   });
@@ -58,7 +57,7 @@ describe("createPacedHtmlFetcher", () => {
     const fetcher = createPacedHtmlFetcher({
       concurrency: 2,
       minIntervalMs: 30,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     const urls = [
@@ -92,7 +91,7 @@ describe("createPacedHtmlFetcher", () => {
     const fetcher = createPacedHtmlFetcher({
       retries: 2,
       baseRetryDelayMs: 20,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     const html = await fetcher("https://example.com/retry");
@@ -109,7 +108,7 @@ describe("createPacedHtmlFetcher", () => {
 
     const fetcher = createPacedHtmlFetcher({
       retries: 3,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     await expect(fetcher("https://example.com/not-found")).rejects.toThrow("HTTP 404 for https://example.com/not-found");
@@ -126,7 +125,7 @@ describe("createPacedHtmlFetcher", () => {
     const fetcher = createPacedHtmlFetcher({
       retries: 2,
       baseRetryDelayMs: 10,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     await expect(fetcher("https://example.com/server-error")).rejects.toThrow("HTTP 500 for https://example.com/server-error");
@@ -143,7 +142,7 @@ describe("createPacedHtmlFetcher", () => {
     const fetcher = createPacedHtmlFetcher({
       retries: 3,
       baseRetryDelayMs: 10,
-      fetchFn: mockFetch as typeof fetch,
+      fetchFn: mockFetch,
     });
 
     await expect(fetcher("https://example.com/override", { retries: 1 })).rejects.toThrow("HTTP 503");
