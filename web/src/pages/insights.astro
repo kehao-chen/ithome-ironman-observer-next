@@ -542,7 +542,11 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       const token = ++fetchToken;
       const sel = document.getElementById("insight-year-select") as HTMLSelectElement | null;
       setLoadingState(true);
-      fetch(`/data/${year}.json?t=${Date.now()}`, { cache: "no-store" })
+      // Plain URL, default cache mode: the `?t=` buster made every request a
+      // unique key (guaranteed edge miss) and `no-store` disabled the browser
+      // cache on top. /data/* already ships `max-age=60,
+      // stale-while-revalidate=300`, which is exactly the freshness this needs.
+      fetch(`/data/${year}.json`)
         .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
         .then((fresh) => {
           if (token !== fetchToken) return null;

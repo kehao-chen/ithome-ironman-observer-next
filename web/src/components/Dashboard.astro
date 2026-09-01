@@ -184,13 +184,21 @@ const updatedAtFallback = isoInitial(data.updatedAt);
   const scrapeLogList = document.getElementById("scrape-log-list");
   let lastRenderedYear: number | null = null;
 
-  async function loadYear(year: number) {
+  // `force: true` renders even when the payload is byte-identical to what is on
+  // screen — used for a year switch, where the user asked for a redraw.
+  async function loadYear(year: number, opts: { force?: boolean } = {}) {
     const token = ++fetchToken;
     try {
+      // No cache-buster: /data/* ships `max-age=60, stale-while-revalidate=300`,
+      // so an unchanged file costs a conditional request and a 304, not 1.6MB.
       const res = await fetch(`/data/${year}.json`);
       if (!res.ok) return;
       const fresh = (await res.json()) as ViewData;
       if (token !== fetchToken) return; // stale response — a newer request owns the render
+      // The scraper publishes every ~15 min, so most 60s polls see the same
+      // snapshot. Rebuilding the whole grid for identical data just costs a
+      // layout pass and throws away transient DOM state.
+      if (!opts.force && current && fresh.year === current.year && fresh.updatedAt === current.updatedAt) return;
       render(fresh);
     } catch { /* keep current render */ }
   }
@@ -490,9 +498,18 @@ const updatedAtFallback = isoInitial(data.updatedAt);
   yearSelect?.addEventListener("change", () => {
     const y = Number(yearSelect.value);
     if (!Number.isInteger(y)) return;
-    loadYear(y);
+    loadYear(y, { force: true });
   });
-  setInterval(() => { if (current) loadYear(currentYear); }, 60_000);
+
+  /* Freshness polling. Gated on visibility: a background tab used to keep
+     revalidating the year file and re-rendering the grid indefinitely. Becoming
+     visible again triggers an immediate catch-up poll, so a returning reader
+     never waits out the remainder of the interval. */
+  const POLL_INTERVAL_MS = 60_000;
+  setInterval(() => { if (current && !document.hidden) loadYear(currentYear); }, POLL_INTERVAL_MS);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && current) loadYear(currentYear);
+  });
 
   // SSR 星號一律 aria-pressed="false"；首輪依 favSet 同步填色狀態。
   document.querySelectorAll<HTMLElement>(".card-fav").forEach((b) => {
