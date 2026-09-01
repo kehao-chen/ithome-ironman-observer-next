@@ -27,7 +27,10 @@ function extractArticleChunks(html: string): string[] {
 // 「Day N」。分頁時整個 block 都包在 `qa-list profile-list` 巢狀 wrapper 裡，
 // 不能用全頁 regex（會跨 block 誤配）——只在單一 block chunk 內找。
 export function parseSeriesPage(html: string): SeriesPage {
-  const dayCount = Number(html.match(/參賽天數\s*(\d+)\s*天/)?.[1] ?? 0);
+  const matchDays = html.match(/參賽天數\s*(\d+)\s*天/);
+  const headerDays = matchDays ? Number(matchDays[1]) : 0;
+  const isFinished = /鐵人[鍊煉]成/.test(html);
+  const dayCount = Math.max(headerDays, isFinished ? 30 : 0);
   const articleCount = Number(html.match(/共\s*(\d+)\s*篇文章/)?.[1] ?? 0);
   const subscriptions = Number(html.match(/<span class="subscription-amount">(\d+)<\/span>\s*人訂閱/)?.[1] ?? 0);
 
@@ -88,7 +91,7 @@ export function parseSeriesPage(html: string): SeriesPage {
 
 export function isSeriesPage(html: string): boolean {
   if (!html || typeof html !== "string") return false;
-  const hasHeader = /參賽天數\s*\d+\s*天/.test(html) && /共\s*\d+\s*篇文章/.test(html);
+  const hasHeader = (/參賽天數\s*\d+\s*天/.test(html) || /鐵人[鍊煉]成/.test(html)) && /共\s*\d+\s*篇文章/.test(html);
   const hasContainer = html.includes("qa-list__info") || html.includes("profile-main") || html.includes("ir-profile-list");
   return hasHeader && hasContainer;
 }

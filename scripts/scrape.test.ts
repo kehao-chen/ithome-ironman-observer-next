@@ -339,4 +339,57 @@ describe("scrapeSeriesIncremental and scrapeSeriesFull", () => {
       expect(res.seriesId).toBe(card.seriesId);
     }
   });
+
+  test("completed series with 鐵人鍊成 in header scrapes successfully with dayCount 30", async () => {
+    const completedCard: SignupCard = {
+      seriesId: 9036, userId: 20161809, name: "kojenchieh", group: "Software Development",
+      title: "你的自動化測試，大部分是在演戲", description: "desc", team: null,
+      signupDate: "2026-08-01 12:12:27", day: 30,
+    };
+    const rssXml = `<channel>
+      <lastBuildDate>Sun, 30 Aug 2026 06:37:48 +0800</lastBuildDate>
+      ${Array.from({ length: 30 }, (_, i) => `<item><title>Day ${i + 1}</title></item>`).join("\n")}
+    </channel>`;
+    const seriesPage3Html = `
+      <div class="board leftside profile-main">
+        <div class="qa-list__info qa-list__info--ironman subscription-group">
+          <span class="ir-profile-days">鐵人鍊成 ｜</span>
+          <span>共 30 篇文章 ｜</span>
+          <span class="subscription-amount">29</span> 人訂閱
+        </div>
+        ${Array.from({ length: 10 }, (_, i) => {
+          const day = 21 + i;
+          return `<div class="qa-list profile-list ir-profile-list"><div class="profile-list__condition">
+            <div class="ir-qa-list__status"><span class="ir-qa-list__days">DAY ${day}</span></div>
+            <h3 class="qa-list__title"><a href="https://ithelp.ithome.com.tw/articles/${10403750 + day}" class="qa-list__title-link">Day ${day}</a></h3>
+            <div class="qa-list__info"><a title="2026-08-${day} 06:00:00" class="qa-list__info-time"></a></div>
+          </div></div>`;
+        }).join("\n")}
+        <div class="profile-pagination"><ul class="pager"><li class="disabled"><span>下一頁</span></li></ul></div>
+      </div>`;
+    const prevSeries: Series = {
+      id: 9036, user: { id: 20161809, name: "kojenchieh", profileUrl: "p" }, group: "Software Development",
+      title: "你的自動化測試，大部分是在演戲", description: "desc", team: null,
+      signupDate: "2026-08-01T12:12:27+08:00", lastUpdated: null,
+      dayCount: 20, articleCount: 20, subscriptions: 29,
+      articles: Array.from({ length: 20 }, (_, i) => ({
+        id: 10403750 + i + 1, day: i + 1, title: `Day ${i + 1}`, url: `https://ithelp.ithome.com.tw/articles/${10403750 + i + 1}`,
+        publishedAt: "2026-08-01T10:00:00+08:00", views: 10, likes: 0, comments: 0,
+      })),
+    };
+    const fetcher = async (url: string) => {
+      if (url.includes("/rss/series/")) return rssXml;
+      if (url.includes("/articles/")) {
+        return `<div class="ir-article"><span class="ir-article__days-num">30</span></div>`;
+      }
+      return seriesPage3Html;
+    };
+    const res = await scrapeSeriesIncremental(completedCard, prevSeries, fetcher);
+    expect(res.status).toBe("fresh");
+    if (res.status === "fresh") {
+      expect(res.series.dayCount).toBe(30);
+      expect(res.series.articleCount).toBe(30);
+      expect(res.series.articles.length).toBe(30);
+    }
+  });
 });

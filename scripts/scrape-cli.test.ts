@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { buildMeta, collectYears, commitWrites, stageWrites, runScrape } from "./scrape";
+import { buildMeta, collectYears, commitWrites, stageWrites, runScrape, checkCircuitBreaker } from "./scrape";
 import type { Manifest, YearData } from "./types";
 
 const m2025: Manifest = { year: 2025, signupListUrl: "https://x/2025" };
@@ -237,5 +237,81 @@ describe("runScrape integration", () => {
     expect(yearData.series.length).toBe(0);
     expect(yearData.scrapeLog.length).toBe(4);
     expect(maxActive).toBe(2);
+  });
+});
+
+describe("circuit breaker", () => {
+  test("healthy scrape: does not trip", () => {
+    const prev = data(2026, 100);
+    const res = checkCircuitBreaker({ seriesCount: 102, failedCount: 0 }, prev);
+    expect(res.tripped).toBe(false);
+  });
+
+  test("failed series exceed limit: trips circuit breaker", () => {
+    const prev = data(2026, 100);
+    const res = checkCircuitBreaker({ seriesCount: 95, failedCount: 6 }, prev);
+    expect(res.tripped).toBe(true);
+    if (res.tripped) {
+      expect(res.reason).toContain("failed series count (6) exceeded limit (5)");
+    }
+  });
+
+  test("series count drops significantly (>2% and >=minDrop): trips circuit breaker", () => {
+    const prev = data(2026, 100);
+    // 100 -> 90 is 10% drop, dropped = 10 >= 3 and 10% > 2%
+    const res = checkCircuitBreaker({ seriesCount: 90, failedCount: 0 }, prev);
+    expect(res.tripped).toBe(true);
+    if (res.tripped) {
+      expect(res.reason).toContain("dropped from 100 to 90");
+    }
+  });
+
+  test("small normal drop below threshold: does not trip", () => {
+    const prev = data(2026, 100);
+    // 100 -> 99 is 1 drop, < minDropCount (3)
+    const res = checkCircuitBreaker({ seriesCount: 99, failedCount: 0 }, prev);
+    expect(res.tripped).toBe(false);
+  });
+
+  test("cold start with no previous data: does not trip on 0 previous", () => {
+    const res = checkCircuitBreaker({ seriesCount: 50, failedCount: 0 }, undefined);
+    expect(res.tripped).toBe(false);
+  });
+
+  test("runScrape throws when circuit breaker trips on massive drop", async () => {
+    const prev = data(2026, 50);
+    const m2026: Manifest = { year: 2026, signupListUrl: "https://ithelp/2026ironman/signup/list" };
+    const singleCardHtml = `
+      <div class="list-card">
+        <a href="https://ithelp.ithome.com.tw/users/1/ironman/9029"></a>
+        <div class="contestants-list__name">User</div>
+        <div class="tag"><span>Group</span></div>
+        <a class="contestants-list__title title">Title</a>
+        <p class="contestants-list__desc content">Desc</p>
+        <div class="contestants-list__date date">報名日期：2026/08/01 12:00:00</div>
+      </div>`;
+    const fetcher = async (url: string) => {
+      if (url.includes("/signup/list")) return singleCardHtml;
+      if (url.includes("/rss/series/")) return `<channel><lastBuildDate>Fri, 21 Aug 2026 09:45:10 +0800</lastBuildDate></channel>`;
+      return `
+        <div class="board leftside profile-main">
+          <div class="qa-list__info qa-list__info--ironman subscription-group">
+            <span>參賽天數 1 天 ｜</span><span>共 1 篇文章 ｜</span><span class="subscription-amount">1</span>人訂閱
+          </div>
+          <div class="qa-list profile-list ir-profile-list">
+            <div class="profile-list__condition">
+              <div class="profile-list__content">
+                <h3 class="qa-list__title"><a href="https://ithelp.ithome.com.tw/articles/1" class="qa-list__title-link">D1</a></h3>
+                <div class="qa-list__info"><a title="2026-08-01 10:00:00" class="qa-list__info-time"></a></div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    };
+
+    // Prev has 50 series, scrape only returned 1 series -> drop from 50 to 1 trips circuit breaker
+    await expect(runScrape(m2026, { cachedYearData: prev, fetcher })).rejects.toThrow(
+      "circuit breaker tripped",
+    );
   });
 });

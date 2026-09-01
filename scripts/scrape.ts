@@ -243,14 +243,14 @@ export async function scrapeSeriesIncremental(
       return await scrapeSeriesFull(card, cachedSeries, fetcher);
     }
 
-    let dayCount = cachedSeries.dayCount;
+    let dayCount = Math.max(cachedSeries.dayCount, parsedLastPage.dayCount);
     const warnings: string[] = [];
 
     // If new posts exist, fetch latest article page to compute dayCount
     if (headerArticleCount > cachedSeries.articleCount && mergedArticles.length > 0) {
       const latestUrl = mergedArticles[mergedArticles.length - 1]?.url;
       const dayRes = await officialDayCount(parsedLastPage.dayCount, latestUrl, fetcher);
-      dayCount = dayRes.dayCount;
+      dayCount = Math.max(dayCount, dayRes.dayCount);
       if (dayRes.warning) warnings.push(dayRes.warning);
     }
 
@@ -316,11 +316,58 @@ export async function writeHistorySnapshots(dataDir: string, years: YearData[]):
   return failures;
 }
 
+export interface CircuitBreakerOptions {
+  maxFailedCount?: number;
+  maxDropPercent?: number;
+  minDropCount?: number;
+}
+
+export type CircuitBreakerInput = {
+  seriesCount: number;
+  failedCount: number;
+};
+
+export type CircuitBreakerResult =
+  | { tripped: false }
+  | { tripped: true; reason: string };
+
+export function checkCircuitBreaker(
+  curr: CircuitBreakerInput,
+  prev?: YearData,
+  opts?: CircuitBreakerOptions,
+): CircuitBreakerResult {
+  const maxFailed = opts?.maxFailedCount ?? 5;
+  const maxDropPct = opts?.maxDropPercent ?? 0.02;
+  const minDropCount = opts?.minDropCount ?? 3;
+
+  if (curr.failedCount > maxFailed) {
+    return {
+      tripped: true,
+      reason: `failed series count (${curr.failedCount}) exceeded limit (${maxFailed})`,
+    };
+  }
+
+  if (prev && prev.series.length > 0 && curr.seriesCount < prev.series.length) {
+    const dropped = prev.series.length - curr.seriesCount;
+    const dropPct = dropped / prev.series.length;
+    const dropThreshold = Math.max(minDropCount, Math.floor(prev.series.length * maxDropPct));
+    if (dropped >= dropThreshold && dropPct > maxDropPct) {
+      return {
+        tripped: true,
+        reason: `series count dropped from ${prev.series.length} to ${curr.seriesCount} (-${dropped}, ${(dropPct * 100).toFixed(1)}% > ${(maxDropPct * 100).toFixed(1)}%)`,
+      };
+    }
+  }
+
+  return { tripped: false };
+}
+
 export type RunScrapeOptions = {
   full?: boolean;
   cachedYearData?: YearData;
   concurrency?: number;
   fetcher?: FetchFn;
+  circuitBreaker?: CircuitBreakerOptions;
 };
 
 export async function runScrape(
@@ -376,6 +423,16 @@ export async function runScrape(
       scrapeLog.push(`[failed] ${res.seriesId}: ${res.error}`);
     }
   }
+  const failedCount = scrapeLog.filter((l) => l.startsWith("[failed]")).length;
+  const cb = checkCircuitBreaker(
+    { seriesCount: series.length, failedCount },
+    opts.cachedYearData,
+    opts.circuitBreaker,
+  );
+  if (cb.tripped) {
+    throw new Error(`circuit breaker tripped: ${cb.reason}`);
+  }
+
 
   series.sort((a, b) => b.dayCount - a.dayCount || a.signupDate.localeCompare(b.signupDate));
   const groups = [...new Set(series.map((s) => s.group))].sort();
@@ -513,12 +570,10 @@ if (import.meta.main) {
 
   const { succeeded, failures } = await collectYears(manifests, async (m) => {
     let cachedYearData: YearData | undefined;
-    if (!isFull) {
-      try {
-        const raw = await readFile(join(dataDir, `${m.year}.json`), "utf-8");
-        cachedYearData = JSON.parse(raw);
-      } catch { /* cold start */ }
-    }
+    try {
+      const raw = await readFile(join(dataDir, `${m.year}.json`), "utf-8");
+      cachedYearData = JSON.parse(raw);
+    } catch { /* cold start */ }
     return runScrape(m, { full: isFull, cachedYearData });
   });
   // Report per-year failures regardless of outcome (partial scrape visibility).

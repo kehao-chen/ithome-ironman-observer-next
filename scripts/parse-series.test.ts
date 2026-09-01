@@ -35,6 +35,20 @@ describe("parseSeriesPage", () => {
     const s = parseSeriesPage(readFixture("series-page.html"));
     expect(s.nextPage).toBeNull();
   });
+  test("完賽系列（鐵人鍊成標頭無參賽天數）→ dayCount 至少 30", () => {
+    const html = `
+      <div class="board leftside profile-main">
+        <div class="qa-list__info qa-list__info--ironman subscription-group">
+          <span class="ir-profile-days">鐵人鍊成 ｜</span><span>共 30 篇文章 ｜</span>
+          <span class="subscription-amount">42</span> 人訂閱
+        </div>
+      </div>`;
+    const s = parseSeriesPage(html);
+    expect(s.dayCount).toBe(30);
+    expect(s.articleCount).toBe(30);
+    expect(s.subscriptions).toBe(42);
+  });
+
 
   test("分頁第 1 頁：有下一頁、DAY 徽章取官方數字", () => {
     const s = parseSeriesPage(page1Html());
@@ -182,6 +196,26 @@ describe("Page validity validators", () => {
       </div>`;
     expect(isSeriesPage(html)).toBe(true);
   });
+  test("isSeriesPage: valid completed series with 鐵人鍊成 returns true", () => {
+    const html = `
+      <div class="board leftside profile-main">
+        <div class="qa-list__info qa-list__info--ironman subscription-group">
+          <span class="ir-profile-days">鐵人鍊成 ｜</span><span>共 30 篇文章 ｜</span>
+        </div>
+      </div>`;
+    expect(isSeriesPage(html)).toBe(true);
+  });
+
+  test("isSeriesPage: valid completed series with 鐵人煉成 returns true", () => {
+    const html = `
+      <div class="board leftside profile-main">
+        <div class="qa-list__info qa-list__info--ironman subscription-group">
+          <span class="ir-profile-days">鐵人煉成 ｜</span><span>共 30 篇文章 ｜</span>
+        </div>
+      </div>`;
+    expect(isSeriesPage(html)).toBe(true);
+  });
+
 
   test("isSeriesPage: challenge / error / empty HTML returns false", () => {
     expect(isSeriesPage("<html><body>Just a moment...</body></html>")).toBe(false);

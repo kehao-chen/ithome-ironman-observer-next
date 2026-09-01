@@ -193,7 +193,7 @@ describe("createPacedFetcher", () => {
       attempts++;
       if (attempts === 1) {
         // Date in the future (HTTP Date header has 1-second resolution)
-        const retryDate = new Date(Date.now() + 1000).toUTCString();
+        const retryDate = new Date(Date.now() + 1500).toUTCString();
         return new Response("rate limited", {
           status: 429,
           headers: { "Retry-After": retryDate },
