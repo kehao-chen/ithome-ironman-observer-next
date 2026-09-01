@@ -551,12 +551,6 @@ export async function commitWrites(staged: StagedFile[]): Promise<void> {
 // CLI entry
 if (import.meta.main) {
   const isFull = process.argv.includes("--full");
-  // History snapshots are an append-only daily archive — nothing in the site
-  // reads data/history. They are keyed by Taipei date, so an ungated write meant
-  // the scheduled run overwrote (and re-committed) the same 1.9MB file ~96 times
-  // a day. Behind this flag one scheduled run per day takes the end-of-day
-  // snapshot; see .github/workflows/deep-calibrate.yml.
-  const writeHistory = process.argv.includes("--history");
   const manifestPath = join(import.meta.dir, "..", "config", "series-manifest.json");
   const manifests: Manifest[] = JSON.parse(await readFile(manifestPath, "utf-8"));
   if (!Array.isArray(manifests) || manifests.length === 0) {
@@ -592,15 +586,29 @@ if (import.meta.main) {
 
   // History snapshots: independent of the atomic main-file commit (spec §5.2).
   // Per-year failures are collected and logged; they never block the main
-  // {year}.json write (review #3). Only on --history (see above).
-  if (writeHistory) {
-    try {
-      const failures = await writeHistorySnapshots(dataDir, succeeded);
-      for (const f of failures) console.error(`history snapshot failed: ${f}`);
-    } catch (e) {
-      // writeHistorySnapshots 本身不 throw（單年度失敗已內收），此 catch 為防護
-      console.error(`history snapshot error: ${e instanceof Error ? e.message : String(e)}`);
-    }
+  // {year}.json write (review #3).
+  //
+  // Written on EVERY run, deliberately. It looks wasteful — the file is keyed by
+  // Taipei date, so the 15-minute scraper rewrites and re-commits the same ~1.9MB
+  // file ~96 times a day — but it costs git essentially nothing: this snapshot is
+  // byte-identical to the data/{year}.json written by stageWrites below (same
+  // object, same JSON.stringify(data, null, 2)), so git content-addressing stores
+  // one shared blob per run, not two. Measured on the real repo: data/history/
+  // accounts for 1.26 MiB of a 36.5 MiB pack, against 30.37 MiB for
+  // data/<year>.json itself.
+  //
+  // Do not "optimise" this to once a day. That trades zero storage for a real
+  // failure mode: one write per day means one chance per day, and the obvious
+  // place to hang it — a GitHub `schedule` cron — is the exact trigger this
+  // project abandoned as unreliable (see .github/workflows/scheduled-update.yml).
+  // Writing every run means any successful scrape leaves the day's snapshot, and
+  // the last run of the day naturally wins.
+  try {
+    const failures = await writeHistorySnapshots(dataDir, succeeded);
+    for (const f of failures) console.error(`history snapshot failed: ${f}`);
+  } catch (e) {
+    // writeHistorySnapshots 本身不 throw（單年度失敗已內收），此 catch 為防護
+    console.error(`history snapshot error: ${e instanceof Error ? e.message : String(e)}`);
   }
 
   const meta = buildMeta(succeeded);

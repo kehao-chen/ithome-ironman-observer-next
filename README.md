@@ -71,8 +71,8 @@
 ## 架構與資料
 
 - 沒有後端、沒有資料庫，JSON 就是資料庫。
-- 每次抓取輸出 `data/{year}.json` 和 `data/meta.json`；每日歷史快照 `data/history/{year}/{date}.json`
-  一天只寫一次（23:50 臺北那輪 deep-calibrate 帶 `--history`），避免每 15 分鐘重複 commit 同一份 1.9MB 檔案。
+- 每次抓取輸出 `data/{year}.json` 和 `data/meta.json`，並寫一份每日歷史快照到 `data/history/{year}/{date}.json`。
+  快照每次都寫（看似浪費，實際上與同一輪的 `data/{year}.json` 內容完全相同，git 內容定址只存一份 blob）。
 - 硬限制：近乎零成本，靠 Cloudflare Workers/Pages 免費額度 + GH Actions 公開 repo 免費 runner + 自有網域撐著。
 - Non-goals：即時更新（只有每 10 分鐘一次的批次）。
 
@@ -81,7 +81,7 @@
 ```bash
 bun install
 bun run scripts/scrape.ts     # 依 series-manifest 陣列逐年度抓取；全失敗零寫入、exit 1
-bun run scripts/scrape.ts --full --history   # 完整校正 + 寫入當日歷史快照
+bun run scripts/scrape.ts --full   # 完整校正（不走 RSS 快速路徑，重讀每個系列頁）
 cd web && bun install && bun run dev
 ```
 

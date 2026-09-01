@@ -2,15 +2,7 @@ name: deep-calibrate
 on:
   schedule:
     - cron: "15 */2 * * *"
-    # 15:50 UTC = 23:50 Asia/Taipei — the last full scrape of the Taipei day, so
-    # its snapshot is that day's final state. Only this run passes --history.
-    - cron: "50 15 * * *"
-  workflow_dispatch:
-    inputs:
-      history:
-        description: "Also write a data/history/<year>/<date>.json snapshot"
-        type: boolean
-        default: false
+  workflow_dispatch: {}
 
 concurrency:
   group: data-update-main
@@ -35,12 +27,7 @@ jobs:
           bun-version: 1.3.14
 
       - name: Scrape (Full Calibration)
-        # Snapshots are a once-a-day archive: writing one on every run re-committed
-        # the same 1.9MB file ~96x/day. Only the 23:50 Taipei cron (or an explicit
-        # manual request) takes one.
-        env:
-          HISTORY_FLAG: ${{ (github.event.schedule == '50 15 * * *' || inputs.history) && '--history' || '' }}
-        run: bun run scripts/scrape.ts --full $HISTORY_FLAG
+        run: bun run scripts/scrape.ts --full
 
       - name: Commit data if changed
         id: commit

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { buildMeta, collectYears, commitWrites, stageWrites, runScrape, checkCircuitBreaker } from "./scrape";
+import { buildMeta, collectYears, commitWrites, stageWrites, runScrape, checkCircuitBreaker, writeHistorySnapshots } from "./scrape";
 import type { Manifest, YearData } from "./types";
 
 const m2025: Manifest = { year: 2025, signupListUrl: "https://x/2025" };
@@ -313,5 +313,48 @@ describe("circuit breaker", () => {
     await expect(runScrape(m2026, { cachedYearData: prev, fetcher })).rejects.toThrow(
       "circuit breaker tripped",
     );
+  });
+});
+
+describe("history snapshot / year file byte-equality", () => {
+  // The daily snapshot is written on every run — ~96 times a day for the same
+  // Taipei date — and that is only affordable because it is byte-identical to
+  // the data/{year}.json written in the same run: git content-addresses blobs,
+  // so the pair costs one blob, not two. Measured on the real repo, data/history/
+  // is 1.26 MiB of a 36.5 MiB pack against 30.37 MiB for data/<year>.json.
+  //
+  // Nothing enforces that except both call sites happening to use the same
+  // serialisation. Change the indent, key order or a trailing newline on one
+  // side and the snapshots silently stop sharing, roughly doubling the repo's
+  // growth rate with no visible symptom. This test is that enforcement.
+  test("the snapshot and the year file serialise to identical bytes", async () => {
+    const d = await mkdtemp(join(tmpdir(), "share-"));
+    try {
+      const data = {
+        year: 2026,
+        updatedAt: "2026-09-02 06:51:03+08:00",
+        groups: ["Modern Web", "Security"],
+        series: [
+          {
+            id: 7, user: { id: 1, name: "u", profileUrl: "https://ithelp.ithome.com.tw/users/1/profile" },
+            group: "Modern Web", title: "t", description: "d", team: "T",
+            signupDate: "2026-08-01T00:00:00+08:00", lastUpdated: "2026-09-02T06:00:00+08:00",
+            dayCount: 3, articleCount: 1, subscriptions: 2,
+            articles: [{ id: 11, day: 1, title: "a", url: "https://example.com", publishedAt: "2026-09-01T10:00:00+08:00", views: 5, likes: 1, comments: 0 }],
+          },
+        ],
+        scrapeLog: ["[warning] 7: something"],
+      } as unknown as Parameters<typeof writeHistorySnapshots>[1][number];
+
+      await writeHistorySnapshots(d, [data]);
+      const staged = await stageWrites(d, [data], buildMeta([data]));
+      await commitWrites(staged);
+
+      const snapshot = await readFile(join(d, "history", "2026", "2026-09-02.json"), "utf-8");
+      const yearFile = await readFile(join(d, "2026.json"), "utf-8");
+      expect(snapshot).toBe(yearFile);
+    } finally {
+      await rm(d, { recursive: true, force: true });
+    }
   });
 });

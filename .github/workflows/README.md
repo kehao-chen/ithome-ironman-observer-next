@@ -4,7 +4,7 @@
 |---|---|---|
 | `ci.yml` | push to `main` (source changes), PR | lint, typecheck, test, build |
 | `scheduled-update.yml` | `workflow_dispatch` from the Cloudflare Worker, every 15 min | incremental scrape → commit → deploy |
-| `deep-calibrate.yml` | cron `15 */2 * * *`, plus `50 15 * * *` | full re-scrape; the 23:50 Taipei run also writes the daily history snapshot |
+| `deep-calibrate.yml` | cron `15 */2 * * *` | full re-scrape (re-reads every series page instead of the RSS fast path) |
 
 `ci.yml` ignores `data/**` so the ~96 scraper commits a day do not queue source checks.
 
@@ -41,9 +41,22 @@
 ## History snapshots
 
 `data/history/<year>/<taipei-date>.json` is an append-only archive; nothing in the
-site reads it. It is written only when `scripts/scrape.ts` gets `--history`, which
-happens once a day. Writing it on every run re-committed the same ~1.9MB file
-about 96 times a day — the main driver of git history growth.
+site reads it. It is written on every scrape run, and that is intentional.
 
-To take one by hand: run `deep-calibrate` via `workflow_dispatch` with the
-`history` input checked.
+It looks like waste — the file is keyed by Taipei date, so the 15-minute scraper
+rewrites and re-commits the same ~1.9MB file about 96 times a day. It is not:
+the snapshot is byte-identical to the `data/<year>.json` written in the same run,
+so git content-addressing stores one shared blob, not two. Measured on the real
+packed repository:
+
+| path | packed size | blobs |
+|---|---|---|
+| `data/<year>.json` | 30.37 MiB | 2924 |
+| `data/history/` | 1.26 MiB | 28 |
+| everything else | 2.35 MiB | 529 |
+
+A 15-minute cadence of full-dataset commits costs roughly 1 MB/day, ~30 MB per
+season; a fresh clone is 38 MB and takes about 5 seconds. The snapshots are not
+the driver, and gating them to once a day was tried and reverted: it saved no
+space and introduced one chance per day to capture a snapshot, hung on a GitHub
+`schedule` cron — the exact trigger this project abandoned as unreliable.
