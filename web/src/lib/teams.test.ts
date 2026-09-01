@@ -43,9 +43,11 @@ describe("aggregateTeams", () => {
     expect(row.hasAlert).toBe(true); // id 2 昨日有發、今日未發 → 今日缺發
   });
 
-  test("平均進度 cap 30（完賽成員不爆表）", () => {
+  // dayCount 必須超過 30 才真的踩到 cap：原本兩個成員都用 30，Math.min(30, 30)
+  // 與「沒有 cap」結果相同，拿掉 Math.min 這個測試照樣綠。
+  test("平均進度 cap 30（dayCount 溢出時不爆表）", () => {
     const year = makeYear([
-      makeSeries({ id: 1, team: "T", dayCount: 30, articles: [] }),
+      makeSeries({ id: 1, team: "T", dayCount: 34, articles: [] }),
       makeSeries({ id: 2, team: "T", dayCount: 30, articles: [] }),
     ]);
     expect(aggregateTeams(year, TODAY)[0].avgProgress).toBe(30);
@@ -105,23 +107,65 @@ describe("aggregateTeams", () => {
     expect(b.postedToday).toBe(a.postedToday); // 1（只看 latest）
   });
 
-  test("真實資料 sweep：隊數/成員數動態下限、數值與手算一致", () => {
+  // 真實資料 sweep 斷言「不變量」而非當下數值。原本版本鎖死了領先隊名、
+  // top.staleCount === 0 和 top.alertSummary 含「今日缺發」——這些都會隨賽季
+  // 漂移：該隊完賽（30/30）後全體停止發文，staleCount 變成 5，測試就紅了，
+  // 但聚合邏輯完全正確。鎖住性質，賽季推進不會產生假警報。
+  test("真實資料 sweep：隊數/成員數動態下限、聚合不變量成立", () => {
     const rows = aggregateTeams(realData, realData.updatedAt.slice(0, 10));
     // 隊數/成員數隨資料漂移，只鎖下限（data-driven 測試的固有維護）
     expect(rows.length).toBeGreaterThanOrEqual(8);
     expect(rows.reduce((n, r) => n + r.memberCount, 0)).toBeGreaterThanOrEqual(30);
-    const top = rows[0]; // 總瀏覽 desc 主排序預設
-    expect(top.name).toBe("五人成行，Bug 不行");
-    expect(top.totalViews).toBeGreaterThan(8000);
-    expect(top.avgViews).toBe(Math.floor(top.totalViews / 5));
-    expect(top.avgProgress).toBeGreaterThan(16);
-    expect(top.staleCount).toBe(0);
-    // 今日發文數隨「當日」漂移，只驗證警示類別仍組裝正確
-    expect(top.alertSummary).toContain("今日缺發");
-    // 總瀏覽 0 的未開賽團隊：未開賽不落入今日缺發/停更警示
-    const last = rows[rows.length - 1]; // 總瀏覽 asc 末位
-    expect(last.totalViews).toBe(0);
-    expect(last.alertSummary).toContain("未開賽");
+
+    // 預設排序＝總瀏覽 desc
+    for (let i = 1; i < rows.length; i++) {
+      expect(rows[i - 1].totalViews).toBeGreaterThanOrEqual(rows[i].totalViews);
+    }
+
+    for (const row of rows) {
+      expect(row.memberCount).toBe(row.members.length);
+      expect(row.memberCount).toBeGreaterThan(0);
+
+      // 總瀏覽＝成員總瀏覽和；人均＝無條件捨去
+      expect(row.totalViews).toBe(row.members.reduce((n, m) => n + m.views, 0));
+      expect(row.avgViews).toBe(Math.floor(row.totalViews / row.memberCount));
+
+      // 平均進度＝成員 dayCount（cap 30）平均
+      expect(row.avgProgress).toBeCloseTo(
+        row.members.reduce((n, m) => n + Math.min(m.series.dayCount, 30), 0) / row.memberCount,
+        10,
+      );
+      expect(row.avgProgress).toBeGreaterThanOrEqual(0);
+      expect(row.avgProgress).toBeLessThanOrEqual(30);
+
+      // 警示分類互斥（spec §1.3）：任一成員最多落入一類，總和不超過人數
+      const missedToday = row.members.filter((m) => !m.isPending && m.staleDays === 1).length;
+      expect(row.pendingCount + row.staleCount + row.postedToday + missedToday)
+        .toBeLessThanOrEqual(row.memberCount);
+      for (const n of [row.postedToday, row.staleCount, row.pendingCount]) {
+        expect(n).toBeGreaterThanOrEqual(0);
+        expect(n).toBeLessThanOrEqual(row.memberCount);
+      }
+
+      // 摘要恰好列出非零類別，且 hasAlert 與之同步
+      expect(row.hasAlert).toBe(row.alertSummary !== null);
+      expect(row.alertSummary === null).toBe(missedToday === 0 && row.staleCount === 0 && row.pendingCount === 0);
+      if (row.alertSummary !== null) {
+        expect(row.alertSummary.includes("今日缺發")).toBe(missedToday > 0);
+        expect(row.alertSummary.includes("停更")).toBe(row.staleCount > 0);
+        expect(row.alertSummary.includes("未開賽")).toBe(row.pendingCount > 0);
+      }
+    }
+
+    // 全員未開賽的隊伍：總瀏覽為 0，且只落入「未開賽」一類
+    const allPending = rows.filter((r) => r.pendingCount === r.memberCount);
+    expect(allPending.length).toBeGreaterThan(0);
+    for (const row of allPending) {
+      expect(row.totalViews).toBe(0);
+      expect(row.staleCount).toBe(0);
+      expect(row.postedToday).toBe(0);
+      expect(row.alertSummary).toContain("未開賽");
+    }
   });
 });
 
