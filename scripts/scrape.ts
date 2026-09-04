@@ -109,20 +109,100 @@ export function mergeIncrementalArticles(
 
 export type FetchFn = (url: string) => Promise<string>;
 
+export function buildSeriesFromRss(
+  card: SignupCard,
+  rss: RssChannel,
+  cachedSeries?: Series,
+): SeriesResult {
+  const cachedArticleMap = new Map<number, Article>();
+  if (cachedSeries?.articles) {
+    for (const a of cachedSeries.articles) {
+      cachedArticleMap.set(a.id, a);
+    }
+  }
+
+  const articles: Article[] = rss.items
+    .map((item, idx) => {
+      const idMatch = item.link.match(/articles\/(\d+)/);
+      const id = idMatch ? Number(idMatch[1]) : idx + 1;
+      const cachedArt = cachedArticleMap.get(id);
+      const mDay = item.title.match(/DAY[-_\s]*(\d+)/i) || item.title.match(/D(\d+)\b/i);
+      const day = mDay ? Number(mDay[1]) : (cachedArt?.day ?? idx + 1);
+      const url = item.link.replace(/\?.*$/, "");
+      const publishedAt = item.pubDate ? `${item.pubDate.replace(" ", "T")}+08:00` : (cachedArt?.publishedAt ?? "");
+
+      return {
+        id,
+        day,
+        title: item.title,
+        url,
+        publishedAt,
+        views: cachedArt?.views ?? 0,
+        likes: cachedArt?.likes ?? 0,
+        comments: cachedArt?.comments ?? 0,
+      };
+    })
+    .sort((a, b) => a.day - b.day || a.id - b.id);
+
+  const dayCount = Math.max(
+    card.day,
+    cachedSeries?.dayCount ?? 0,
+    articles.length > 0 ? articles[articles.length - 1].day : 0,
+  );
+  const latestPub = articles.length > 0 ? articles[articles.length - 1].publishedAt : null;
+  const lastUpdated = rss.lastBuildDate ?? latestPub ?? cachedSeries?.lastUpdated ?? null;
+
+  const series: Series = {
+    id: card.seriesId,
+    user: {
+      id: card.userId,
+      name: card.name,
+      profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile`,
+    },
+    group: card.group,
+    title: card.title,
+    description: card.description,
+    team: card.team,
+    signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
+    lastUpdated,
+    dayCount,
+    articleCount: articles.length,
+    subscriptions: cachedSeries?.subscriptions ?? 0,
+    articles,
+  };
+
+  return {
+    status: "fresh",
+    series,
+    warnings: ["Cloudflare 403 on series page; updated via RSS fallback"],
+  };
+}
+
 export async function scrapeSeriesFull(
   card: SignupCard,
   cachedSeries?: Series,
   fetcher: FetchFn = fetchHtml,
 ): Promise<SeriesResult> {
+  let rssChannel: RssChannel | null = null;
   try {
-    let rssChannel: RssChannel | null = null;
     try {
       const rssXml = await fetcher(rssUrl(card.seriesId));
       rssChannel = parseRss(rssXml);
     } catch { /* best-effort */ }
 
-    const firstPageHtml = await fetcher(seriesUrl(card.userId, card.seriesId));
+    let firstPageHtml: string;
+    try {
+      firstPageHtml = await fetcher(seriesUrl(card.userId, card.seriesId));
+    } catch (err) {
+      if (err instanceof Error && err.message.includes("403") && rssChannel) {
+        return buildSeriesFromRss(card, rssChannel, cachedSeries);
+      }
+      throw err;
+    }
     if (!isSeriesPage(firstPageHtml)) {
+      if (rssChannel) {
+        return buildSeriesFromRss(card, rssChannel, cachedSeries);
+      }
       throw new Error("Invalid series page HTML");
     }
 
@@ -174,6 +254,9 @@ export async function scrapeSeriesFull(
     return { status: "fresh", series, warnings: warnings.length > 0 ? warnings : undefined };
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : String(e);
+    if (errorMsg.includes("403") && rssChannel) {
+      return buildSeriesFromRss(card, rssChannel, cachedSeries);
+    }
     if (cachedSeries) {
       return { status: "stale", series: cachedSeries, error: errorMsg };
     }
@@ -208,7 +291,7 @@ export async function scrapeSeriesIncremental(
   ) {
     return { status: "fresh", series: cachedSeries };
   }
-
+  let rss: RssChannel | null = null;
   try {
     let rssXml: string;
     try {
@@ -217,7 +300,7 @@ export async function scrapeSeriesIncremental(
       return await scrapeSeriesFull(card, cachedSeries, fetcher);
     }
 
-    const rss = parseRss(rssXml);
+    rss = parseRss(rssXml);
     const nHint = rss.items.length;
 
     // RSS 0 items protection
@@ -244,9 +327,17 @@ export async function scrapeSeriesIncremental(
 
     const lastPage = Math.ceil(nHint / 10);
     const lastPageUrl = `${seriesUrl(card.userId, card.seriesId)}${lastPage === 1 ? "" : `?page=${lastPage}`}`;
-    const lastPageHtml = await fetcher(lastPageUrl);
+    let lastPageHtml: string;
+    try {
+      lastPageHtml = await fetcher(lastPageUrl);
+    } catch (err) {
+      if (err instanceof Error && err.message.includes("403")) {
+        return buildSeriesFromRss(card, rss, cachedSeries);
+      }
+      throw err;
+    }
     if (!isSeriesPage(lastPageHtml)) {
-      throw new Error("Invalid series last page HTML");
+      return buildSeriesFromRss(card, rss, cachedSeries);
     }
 
     const parsedLastPage = parseSeriesPage(lastPageHtml);
@@ -298,6 +389,9 @@ export async function scrapeSeriesIncremental(
     return { status: "fresh", series, warnings: warnings.length > 0 ? warnings : undefined };
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : String(e);
+    if (errorMsg.includes("403") && rss) {
+      return buildSeriesFromRss(card, rss, cachedSeries);
+    }
     if (cachedSeries) {
       return { status: "stale", series: cachedSeries, error: errorMsg };
     }

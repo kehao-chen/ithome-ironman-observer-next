@@ -443,4 +443,49 @@ describe("scrapeSeriesIncremental and scrapeSeriesFull", () => {
       expect(res.series).toBe(prevSeries);
     }
   });
+
+  test("falls back to buildSeriesFromRss when series page returns HTTP 403", async () => {
+    const activeCard: SignupCard = {
+      seriesId: 9031, userId: 20065770, name: "高見龍", group: "Software", title: "Claude Code",
+      description: "desc", team: null, signupDate: "2026-08-01 12:02:51", day: 15,
+    };
+    const prevSeries: Series = {
+      id: 9031, user: { id: 20065770, name: "高見龍", profileUrl: "p" }, group: "Software",
+      title: "Claude Code", description: "desc", team: null, signupDate: "2026-08-01T12:02:51+08:00",
+      lastUpdated: null, dayCount: 14, articleCount: 14, subscriptions: 49,
+      articles: [{ id: 10400753, day: 1, title: "Day 1", url: "https://ithelp/articles/10400753", publishedAt: "2026-08-01T12:04:10+08:00", views: 100, likes: 5, comments: 1 }],
+    };
+    const rssXml = `<channel>
+      <lastBuildDate>Fri, 04 Sep 2026 19:32:06 +0800</lastBuildDate>
+      <item>
+        <title>Day 15 - 新文章</title>
+        <link>https://ithelp.ithome.com.tw/articles/10403136?sc=rss.iron</link>
+        <pubDate>2026-08-15 23:13:35</pubDate>
+      </item>
+      <item>
+        <title>Day 1 - 舊文章</title>
+        <link>https://ithelp.ithome.com.tw/articles/10400753?sc=rss.iron</link>
+        <pubDate>2026-08-01 12:04:10</pubDate>
+      </item>
+    </channel>`;
+
+    const fetcher = async (url: string) => {
+      if (url.includes("/rss/series/")) return rssXml;
+      // Series page blocked by Cloudflare
+      throw new Error("HTTP 403 (Cloudflare challenge) for " + url);
+    };
+
+    const res = await scrapeSeriesIncremental(activeCard, prevSeries, fetcher);
+    expect(res.status).toBe("fresh");
+    if (res.status === "fresh") {
+      expect(res.series.articleCount).toBe(2);
+      expect(res.series.dayCount).toBe(15);
+      expect(res.series.articles.length).toBe(2);
+      // Preserves historical views/likes/comments
+      expect(res.series.articles[0].views).toBe(100);
+      expect(res.series.articles[0].likes).toBe(5);
+      expect(res.warnings).toBeDefined();
+      expect(res.warnings![0]).toContain("Cloudflare 403 on series page; updated via RSS fallback");
+    }
+  });
 });
