@@ -30,8 +30,8 @@ export async function pMap<T, R>(
 }
 
 export interface PacedFetchOptions {
-  concurrency?: number; // default 2
-  minIntervalMs?: number; // default 150
+  concurrency?: number; // default 1
+  minIntervalMs?: number; // default 1000
   retries?: number; // default 3
   // Per-attempt hard ceiling; 0 disables. Without it a single hung socket stalls
   // the whole scrape — the GitHub Actions job would sit there and the
@@ -43,7 +43,7 @@ export interface PacedFetchOptions {
   // `fetch.preconnect`) that this module never touches.
   fetchFn?: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
   // default globalThis.fetch
-  baseRetryDelayMs?: number; // default 2000
+  baseRetryDelayMs?: number; // default 5000
 }
 
 /**
@@ -112,10 +112,12 @@ function withTimeout(init: RequestInit | undefined, timeoutMs: number): RequestI
 }
 
 export function createPacedFetcher(options?: PacedFetchOptions): PacedFetcher {
-  const concurrency = Math.max(1, options?.concurrency ?? 2);
-  const minIntervalMs = Math.max(0, options?.minIntervalMs ?? 150);
+  const envConcurrency = process.env.CRAWLER_CONCURRENCY ? Number(process.env.CRAWLER_CONCURRENCY) : undefined;
+  const envMinInterval = process.env.CRAWLER_MIN_INTERVAL_MS ? Number(process.env.CRAWLER_MIN_INTERVAL_MS) : undefined;
+  const concurrency = Math.max(1, options?.concurrency ?? envConcurrency ?? 1);
+  const minIntervalMs = Math.max(0, options?.minIntervalMs ?? envMinInterval ?? 1000);
   const defaultRetries = Math.max(0, options?.retries ?? 3);
-  const baseRetryDelayMs = Math.max(0, options?.baseRetryDelayMs ?? 2000);
+  const baseRetryDelayMs = Math.max(0, options?.baseRetryDelayMs ?? 5000);
   const timeoutMs = Math.max(0, options?.timeoutMs ?? 15_000);
   const fetchFn = options?.fetchFn ?? globalThis.fetch;
 

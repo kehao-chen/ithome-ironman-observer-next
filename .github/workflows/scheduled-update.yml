@@ -1,7 +1,7 @@
 name: scheduled-update
 on:
   # No `schedule`: the Cloudflare Worker `ironman-observer-trigger` fires this
-  # workflow via `workflow_dispatch` every 15 min (GitHub's `schedule` trigger
+  # workflow via `workflow_dispatch` every 2 hours (GitHub's `schedule` trigger
   # is delayed/dropped at the top of every hour).
   workflow_dispatch: {}
 

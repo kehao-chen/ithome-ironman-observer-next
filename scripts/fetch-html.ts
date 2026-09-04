@@ -24,6 +24,10 @@ export function createPacedHtmlFetcher(opts?: PacedFetchOptions): HtmlFetcher {
         headers: {
           "User-Agent": BROWSER_UA,
           Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+          "Sec-CH-UA": '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+          "Sec-CH-UA-Mobile": "?0",
+          "Sec-CH-UA-Platform": '"macOS"',
         },
       },
       { retries: callOpts?.retries },

@@ -1,7 +1,8 @@
 name: deep-calibrate
 on:
   schedule:
-    - cron: "15 */2 * * *"
+    # Daily off-peak calibration at 04:00 Taipei time (20:00 UTC)
+    - cron: "0 20 * * *"
   workflow_dispatch: {}
 
 concurrency:

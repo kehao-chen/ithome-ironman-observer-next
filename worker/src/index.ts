@@ -6,9 +6,9 @@
  * GitHub `schedule` trigger (which is delayed/dropped at the top of every hour)
  * with Cloudflare's network-scheduled cron — same zero-cost constraint.
  *
- * - Scheduled every 15 minutes via wrangler.toml `[triggers]`.
+ * - Scheduled every 2 hours via wrangler.toml `[triggers]`.
  * - Skips dispatch while the latest workflow run is still queued/in_progress:
- *   prevents overlapping runs (each run takes ~2.5 min, well under the 15 min
+ *   prevents overlapping runs (each run takes ~2-5 min, well under the 2-hour
  *   interval, but a slow scrape must not stack a second run → push conflicts).
  * - `GET /` is a public health check (no secret required).
  * - `POST /dispatch` is a privileged manual trigger and REQUIRES

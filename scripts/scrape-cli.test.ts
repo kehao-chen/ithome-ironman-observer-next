@@ -278,6 +278,44 @@ describe("circuit breaker", () => {
     expect(res.tripped).toBe(false);
   });
 
+  test("stale series exceed limit: trips circuit breaker (Cloudflare block protection)", () => {
+    const prev = data(2026, 100);
+    // 25 stale out of 100 series exceeds 20% limit
+    const res = checkCircuitBreaker({ seriesCount: 100, failedCount: 0, staleCount: 25 }, prev);
+    expect(res.tripped).toBe(true);
+    if (res.tripped) {
+      expect(res.reason).toContain("stale series count (25) exceeded limit (20)");
+    }
+  });
+
+  test("runScrape aborts early when consecutive series return HTTP 403 (Cloudflare challenge)", async () => {
+    const prev = data(2026, 50);
+    const m2026: Manifest = { year: 2026, signupListUrl: "https://ithelp/2026ironman/signup/list" };
+    // 10 cards in signup list
+    const tenCardsHtml = Array.from({ length: 10 }, (_, i) => `
+      <div class="list-card">
+        <a href="https://ithelp.ithome.com.tw/users/${i + 1}/ironman/${9000 + i}"></a>
+        <div class="contestants-list__name">User ${i + 1}</div>
+        <div class="tag"><span>Group</span></div>
+        <a class="contestants-list__title title">Title ${i + 1}</a>
+        <p class="contestants-list__desc content">Desc</p>
+        <div class="contestants-list__date date">報名日期：2026/08/01 12:00:00</div>
+      </div>`).join("\n");
+
+    let requestCount = 0;
+    const fetcher = async (url: string) => {
+      if (url.includes("/signup/list")) return tenCardsHtml;
+      requestCount++;
+      throw new Error("HTTP 403 for " + url);
+    };
+
+    await expect(runScrape(m2026, { cachedYearData: prev, fetcher })).rejects.toThrow(
+      /Cloudflare challenge \/ HTTP 403 detected/,
+    );
+    // Must have aborted early without processing all 10 cards
+    expect(requestCount).toBeLessThan(10 * 2);
+  });
+
   test("runScrape throws when circuit breaker trips on massive drop", async () => {
     const prev = data(2026, 50);
     const m2026: Manifest = { year: 2026, signupListUrl: "https://ithelp/2026ironman/signup/list" };

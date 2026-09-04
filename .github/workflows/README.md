@@ -3,10 +3,10 @@
 | Workflow | Trigger | Purpose |
 |---|---|---|
 | `ci.yml` | push to `main` (source changes), PR | lint, typecheck, test, build |
-| `scheduled-update.yml` | `workflow_dispatch` from the Cloudflare Worker, every 15 min | incremental scrape → commit → deploy |
-| `deep-calibrate.yml` | cron `15 */2 * * *` | full re-scrape (re-reads every series page instead of the RSS fast path) |
+| `scheduled-update.yml` | `workflow_dispatch` from the Cloudflare Worker, every 2 hours | incremental scrape → commit → deploy |
+| `deep-calibrate.yml` | cron `0 20 * * *` (daily 04:00 Taipei) | full re-scrape (re-reads every series page instead of the RSS fast path) |
 
-`ci.yml` ignores `data/**` so the ~96 scraper commits a day do not queue source checks.
+`ci.yml` ignores `data/**` so the ~12 scraper commits a day do not queue source checks.
 
 ## Secrets
 

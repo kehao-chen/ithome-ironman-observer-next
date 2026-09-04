@@ -186,6 +186,29 @@ export async function scrapeSeriesIncremental(
   cachedSeries?: Series,
   fetcher: FetchFn = fetchHtml,
 ): Promise<SeriesResult> {
+  // Fast path 1: series is already completed (dayCount >= 30, articleCount >= 30, card.day >= 30)
+  // Ironman series complete at 30 days. No new articles can be posted.
+  if (
+    cachedSeries &&
+    cachedSeries.dayCount >= 30 &&
+    cachedSeries.articleCount >= 30 &&
+    cachedSeries.articles.length >= 30 &&
+    card.day >= 30
+  ) {
+    return { status: "fresh", series: cachedSeries };
+  }
+
+  // Fast path 2: series has not started yet (card.day === 0 and cached articleCount === 0)
+  // The signup card explicitly shows DAY 0; no posts have been created yet.
+  if (
+    cachedSeries &&
+    cachedSeries.articleCount === 0 &&
+    cachedSeries.dayCount === 0 &&
+    card.day === 0
+  ) {
+    return { status: "fresh", series: cachedSeries };
+  }
+
   try {
     let rssXml: string;
     try {
@@ -320,11 +343,14 @@ export interface CircuitBreakerOptions {
   maxFailedCount?: number;
   maxDropPercent?: number;
   minDropCount?: number;
+  maxStaleCount?: number;
+  maxStalePercent?: number;
 }
 
 export type CircuitBreakerInput = {
   seriesCount: number;
   failedCount: number;
+  staleCount?: number;
 };
 
 export type CircuitBreakerResult =
@@ -346,6 +372,17 @@ export function checkCircuitBreaker(
       reason: `failed series count (${curr.failedCount}) exceeded limit (${maxFailed})`,
     };
   }
+  // Check stale series threshold (detects when Cloudflare blocks or crawler is throttled)
+  if (curr.staleCount !== undefined && curr.staleCount > 0) {
+    const maxStale = opts?.maxStaleCount ?? (opts?.maxStalePercent ? Math.floor(curr.seriesCount * opts.maxStalePercent) : Math.max(10, Math.floor(curr.seriesCount * 0.2)));
+    if (curr.staleCount > maxStale) {
+      return {
+        tripped: true,
+        reason: `stale series count (${curr.staleCount}) exceeded limit (${maxStale}), scraper may be blocked`,
+      };
+    }
+  }
+
 
   if (prev && prev.series.length > 0 && curr.seriesCount < prev.series.length) {
     const dropped = prev.series.length - curr.seriesCount;
@@ -397,14 +434,38 @@ export async function runScrape(
 
   // 2. per series worker pool
   const scrapeLog: string[] = [];
+  let consecutive403 = 0;
+  let aborted = false;
+  const maxConsecutive403 = 5;
+
   const results = await pMap(
     cards,
     async (card) => {
-      const cached = cachedMap.get(card.seriesId);
-      if (isFull) {
-        return await scrapeSeriesFull(card, cached, fetcher);
+      if (aborted) {
+        throw new Error("Scrape aborted due to Cloudflare blocks");
       }
-      return await scrapeSeriesIncremental(card, cached, fetcher);
+      const cached = cachedMap.get(card.seriesId);
+      const res = isFull
+        ? await scrapeSeriesFull(card, cached, fetcher)
+        : await scrapeSeriesIncremental(card, cached, fetcher);
+
+      const is403 =
+        (res.status === "stale" && res.error?.includes("403")) ||
+        (res.status === "failed" && res.error?.includes("403"));
+
+      if (is403) {
+        consecutive403++;
+        if (consecutive403 >= maxConsecutive403) {
+          aborted = true;
+          throw new Error(
+            `Cloudflare challenge / HTTP 403 detected across ${consecutive403} consecutive series; aborting scrape to avoid hammering iThome`,
+          );
+        }
+      } else if (res.status === "fresh") {
+        consecutive403 = 0;
+      }
+
+      return res;
     },
     { concurrency },
   );
@@ -423,9 +484,10 @@ export async function runScrape(
       scrapeLog.push(`[failed] ${res.seriesId}: ${res.error}`);
     }
   }
+  const staleCount = scrapeLog.filter((l) => l.startsWith("[stale]")).length;
   const failedCount = scrapeLog.filter((l) => l.startsWith("[failed]")).length;
   const cb = checkCircuitBreaker(
-    { seriesCount: series.length, failedCount },
+    { seriesCount: series.length, failedCount, staleCount },
     opts.cachedYearData,
     opts.circuitBreaker,
   );

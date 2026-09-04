@@ -392,4 +392,55 @@ describe("scrapeSeriesIncremental and scrapeSeriesFull", () => {
       expect(res.series.articles.length).toBe(30);
     }
   });
+
+  test("fast path skips completed series without network fetch", async () => {
+    const completedCard: SignupCard = {
+      seriesId: 9028, userId: 20177695, name: "michelle", group: "UX", title: "UX", description: "desc",
+      team: null, signupDate: "2026-08-01 12:00:00", day: 30,
+    };
+    const prevSeries: Series = {
+      id: 9028, user: { id: 20177695, name: "michelle", profileUrl: "p" }, group: "UX", title: "UX", description: "desc",
+      team: null, signupDate: "2026-08-01T12:00:00+08:00", lastUpdated: null,
+      dayCount: 30, articleCount: 30, subscriptions: 5,
+      articles: Array.from({ length: 30 }, (_, i) => ({
+        id: 100 + i, day: i + 1, title: `Day ${i + 1}`, url: `https://ithelp/articles/${100 + i}`,
+        publishedAt: "2026-08-01T10:00:00+08:00", views: 10, likes: 0, comments: 0,
+      })),
+    };
+    let fetchCalled = false;
+    const fetcher = async () => {
+      fetchCalled = true;
+      throw new Error("fetcher must not be called for completed series");
+    };
+    const res = await scrapeSeriesIncremental(completedCard, prevSeries, fetcher);
+    expect(res.status).toBe("fresh");
+    expect(fetchCalled).toBe(false);
+    if (res.status === "fresh") {
+      expect(res.series).toBe(prevSeries);
+    }
+  });
+
+  test("fast path skips unstarted series (day 0) without network fetch", async () => {
+    const unstartedCard: SignupCard = {
+      seriesId: 9032, userId: 20177567, name: "alice", group: "Career", title: "Career", description: "desc",
+      team: null, signupDate: "2026-08-01 12:02:55", day: 0,
+    };
+    const prevSeries: Series = {
+      id: 9032, user: { id: 20177567, name: "alice", profileUrl: "p" }, group: "Career", title: "Career", description: "desc",
+      team: null, signupDate: "2026-08-01T12:02:55+08:00", lastUpdated: null,
+      dayCount: 0, articleCount: 0, subscriptions: 0,
+      articles: [],
+    };
+    let fetchCalled = false;
+    const fetcher = async () => {
+      fetchCalled = true;
+      throw new Error("fetcher must not be called for unstarted series");
+    };
+    const res = await scrapeSeriesIncremental(unstartedCard, prevSeries, fetcher);
+    expect(res.status).toBe("fresh");
+    expect(fetchCalled).toBe(false);
+    if (res.status === "fresh") {
+      expect(res.series).toBe(prevSeries);
+    }
+  });
 });

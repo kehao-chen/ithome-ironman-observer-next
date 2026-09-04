@@ -109,7 +109,7 @@ Biome 只開 linter、不開 formatter，理由見 [`docs/tooling.md`](docs/tool
 1. Cloudflare Pages 專案 `ironman-observer-next`（workflow 會自動建立）
 2. GitHub repo secrets：`CLOUDFLARE_API_TOKEN`（Pages Edit 權限）、`CLOUDFLARE_ACCOUNT_ID`
 3. 自有網域在 Cloudflare dashboard → Pages 專案 → Custom domains 設定
-4. Cloudflare Worker `ironman-observer-trigger`（cron `*/15 * * * *`，secrets: `GITHUB_TOKEN`、`GITHUB_REPO`、`DISPATCH_SECRET`）定時觸發 workflow；也可 `gh workflow run scheduled-update` 手動觸發
+4. Cloudflare Worker `ironman-observer-trigger`（cron `0 */2 * * *`，secrets: `GITHUB_TOKEN`、`GITHUB_REPO`、`DISPATCH_SECRET`）定時觸發 workflow；也可 `gh workflow run scheduled-update` 手動觸發
 
    `POST /dispatch` 需要 `Authorization: Bearer $DISPATCH_SECRET`（該端點會觸發一整輪爬蟲，
    不能開放匿名呼叫）；`GET /` 維持公開健康檢查。secrets 設定見
