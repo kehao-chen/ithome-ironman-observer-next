@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-09-06 06:07:45+08:00",
+  "updatedAt": "2026-09-06 06:18:17+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -42746,6 +42746,175 @@
       ]
     },
     {
+      "id": 9287,
+      "user": {
+        "id": 20121948,
+        "name": "Cash",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20121948/profile"
+      },
+      "group": "Software Development",
+      "title": "Kotlin 手刻 Ktor 從零開始",
+      "description": "會使用 Kotlin 從零手刻一個 Ktor 風格的輕量 Web 框架 Relix，從 JDK 內建的 HttpServer 起步，一路做到 Routing DSL、Pipeline 洋蔥模型、Plugin 系統、Content Negotiation 和 DI 容器，手刻一次不是為了取代 Ktor，而是把藏在背後的機制拆開來看",
+      "team": null,
+      "signupDate": "2026/08/20T21:41:22+08:00",
+      "lastUpdated": "2026-09-06T05:59:55+08:00",
+      "dayCount": 16,
+      "articleCount": 15,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10404300,
+          "day": 1,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 01 系列導讀，為什麼要手刻 Ktor 框架 ?",
+          "url": "https://ithelp.ithome.com.tw/articles/10404300",
+          "publishedAt": "2026-08-22T06:18:24+08:00",
+          "views": 211,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404301,
+          "day": 2,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 02 專案建置與開發環境，用 Kotlin Toolchain CLI 建立專案",
+          "url": "https://ithelp.ithome.com.tw/articles/10404301",
+          "publishedAt": "2026-08-23T07:42:48+08:00",
+          "views": 112,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404302,
+          "day": 3,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 03 Hello, Relix，用 JDK HttpServer 跑起第一個伺服器",
+          "url": "https://ithelp.ithome.com.tw/articles/10404302",
+          "publishedAt": "2026-08-24T06:15:04+08:00",
+          "views": 106,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404303,
+          "day": 4,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 04 Request 的封裝，把 HttpExchange 變成好用的 RelixRequest",
+          "url": "https://ithelp.ithome.com.tw/articles/10404303",
+          "publishedAt": "2026-08-25T06:13:40+08:00",
+          "views": 115,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404304,
+          "day": 5,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 05 Response 的封裝，設計直覺的 RelixResponse",
+          "url": "https://ithelp.ithome.com.tw/articles/10404304",
+          "publishedAt": "2026-08-26T04:02:56+08:00",
+          "views": 88,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404305,
+          "day": 6,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 06 RelixCall 與可測核心，Application / Engine / Handler",
+          "url": "https://ithelp.ithome.com.tw/articles/10404305",
+          "publishedAt": "2026-08-27T06:09:20+08:00",
+          "views": 104,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404306,
+          "day": 7,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 07 最簡單的路由，用 Map 做 URL 對應",
+          "url": "https://ithelp.ithome.com.tw/articles/10404306",
+          "publishedAt": "2026-08-28T06:09:30+08:00",
+          "views": 90,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404307,
+          "day": 8,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 08 Route 與匹配規則，讓路由行為可預期",
+          "url": "https://ithelp.ithome.com.tw/articles/10404307",
+          "publishedAt": "2026-08-29T06:09:57+08:00",
+          "views": 66,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404308,
+          "day": 9,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 09 路徑參數，讓 /users/{id} 活起來",
+          "url": "https://ithelp.ithome.com.tw/articles/10404308",
+          "publishedAt": "2026-08-30T06:12:47+08:00",
+          "views": 60,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404309,
+          "day": 10,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 10 路由 DSL (上)，用 Kotlin DSL 寫出漂亮的路由定義",
+          "url": "https://ithelp.ithome.com.tw/articles/10404309",
+          "publishedAt": "2026-08-31T06:11:52+08:00",
+          "views": 86,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404310,
+          "day": 11,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 11 路由 DSL (下)，路由群組與巢狀路由",
+          "url": "https://ithelp.ithome.com.tw/articles/10404310",
+          "publishedAt": "2026-09-01T06:12:36+08:00",
+          "views": 61,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404311,
+          "day": 12,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 12 Pipeline 的概念，請求處理的洋蔥模型",
+          "url": "https://ithelp.ithome.com.tw/articles/10404311",
+          "publishedAt": "2026-09-02T06:12:42+08:00",
+          "views": 52,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404312,
+          "day": 13,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 13 實作同步版 Pipeline，把 Middleware 串成鏈",
+          "url": "https://ithelp.ithome.com.tw/articles/10404312",
+          "publishedAt": "2026-09-03T06:10:09+08:00",
+          "views": 58,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404313,
+          "day": 14,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 14 升級 suspend，讓 Pipeline 支援協程",
+          "url": "https://ithelp.ithome.com.tw/articles/10404313",
+          "publishedAt": "2026-09-04T06:07:54+08:00",
+          "views": 52,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404314,
+          "day": 15,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 15 內建 Middleware，Logging",
+          "url": "https://ithelp.ithome.com.tw/articles/10404314",
+          "publishedAt": "2026-09-05T06:08:33+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
       "id": 9294,
       "user": {
         "id": 20183597,
@@ -43484,175 +43653,6 @@
           "title": "Day 15 | 鏈上鏈下對齊：Reconciliation Engine 實作",
           "url": "https://ithelp.ithome.com.tw/articles/10407354",
           "publishedAt": "2026-09-06T01:49:25+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9287,
-      "user": {
-        "id": 20121948,
-        "name": "Cash",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20121948/profile"
-      },
-      "group": "Software Development",
-      "title": "Kotlin 手刻 Ktor 從零開始",
-      "description": "會使用 Kotlin 從零手刻一個 Ktor 風格的輕量 Web 框架 Relix，從 JDK 內建的 HttpServer 起步，一路做到 Routing DSL、Pipeline 洋蔥模型、Plugin 系統、Content Negotiation 和 DI 容器，手刻一次不是為了取代 Ktor，而是把藏在背後的機制拆開來看",
-      "team": null,
-      "signupDate": "2026/08/20T21:41:22+08:00",
-      "lastUpdated": "2026-09-06T05:59:55+08:00",
-      "dayCount": 15,
-      "articleCount": 15,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10404300,
-          "day": 1,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 01 系列導讀，為什麼要手刻 Ktor 框架 ?",
-          "url": "https://ithelp.ithome.com.tw/articles/10404300",
-          "publishedAt": "2026-08-22T06:18:24+08:00",
-          "views": 211,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404301,
-          "day": 2,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 02 專案建置與開發環境，用 Kotlin Toolchain CLI 建立專案",
-          "url": "https://ithelp.ithome.com.tw/articles/10404301",
-          "publishedAt": "2026-08-23T07:42:48+08:00",
-          "views": 112,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404302,
-          "day": 3,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 03 Hello, Relix，用 JDK HttpServer 跑起第一個伺服器",
-          "url": "https://ithelp.ithome.com.tw/articles/10404302",
-          "publishedAt": "2026-08-24T06:15:04+08:00",
-          "views": 106,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404303,
-          "day": 4,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 04 Request 的封裝，把 HttpExchange 變成好用的 RelixRequest",
-          "url": "https://ithelp.ithome.com.tw/articles/10404303",
-          "publishedAt": "2026-08-25T06:13:40+08:00",
-          "views": 115,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404304,
-          "day": 5,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 05 Response 的封裝，設計直覺的 RelixResponse",
-          "url": "https://ithelp.ithome.com.tw/articles/10404304",
-          "publishedAt": "2026-08-26T04:02:56+08:00",
-          "views": 88,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404305,
-          "day": 6,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 06 RelixCall 與可測核心，Application / Engine / Handler",
-          "url": "https://ithelp.ithome.com.tw/articles/10404305",
-          "publishedAt": "2026-08-27T06:09:20+08:00",
-          "views": 104,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404306,
-          "day": 7,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 07 最簡單的路由，用 Map 做 URL 對應",
-          "url": "https://ithelp.ithome.com.tw/articles/10404306",
-          "publishedAt": "2026-08-28T06:09:30+08:00",
-          "views": 90,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404307,
-          "day": 8,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 08 Route 與匹配規則，讓路由行為可預期",
-          "url": "https://ithelp.ithome.com.tw/articles/10404307",
-          "publishedAt": "2026-08-29T06:09:57+08:00",
-          "views": 66,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404308,
-          "day": 9,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 09 路徑參數，讓 /users/{id} 活起來",
-          "url": "https://ithelp.ithome.com.tw/articles/10404308",
-          "publishedAt": "2026-08-30T06:12:47+08:00",
-          "views": 60,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404309,
-          "day": 10,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 10 路由 DSL (上)，用 Kotlin DSL 寫出漂亮的路由定義",
-          "url": "https://ithelp.ithome.com.tw/articles/10404309",
-          "publishedAt": "2026-08-31T06:11:52+08:00",
-          "views": 86,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404310,
-          "day": 11,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 11 路由 DSL (下)，路由群組與巢狀路由",
-          "url": "https://ithelp.ithome.com.tw/articles/10404310",
-          "publishedAt": "2026-09-01T06:12:36+08:00",
-          "views": 61,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404311,
-          "day": 12,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 12 Pipeline 的概念，請求處理的洋蔥模型",
-          "url": "https://ithelp.ithome.com.tw/articles/10404311",
-          "publishedAt": "2026-09-02T06:12:42+08:00",
-          "views": 52,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404312,
-          "day": 13,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 13 實作同步版 Pipeline，把 Middleware 串成鏈",
-          "url": "https://ithelp.ithome.com.tw/articles/10404312",
-          "publishedAt": "2026-09-03T06:10:09+08:00",
-          "views": 58,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404313,
-          "day": 14,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 14 升級 suspend，讓 Pipeline 支援協程",
-          "url": "https://ithelp.ithome.com.tw/articles/10404313",
-          "publishedAt": "2026-09-04T06:07:54+08:00",
-          "views": 52,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404314,
-          "day": 15,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 15 內建 Middleware，Logging",
-          "url": "https://ithelp.ithome.com.tw/articles/10404314",
-          "publishedAt": "2026-09-05T06:08:33+08:00",
           "views": 0,
           "likes": 0,
           "comments": 0
@@ -55630,7 +55630,7 @@
       "description": "我們每天使用網路銀行、行動銀行或證券下單帳戶時，只需要幾個步驟，就能輕鬆完成轉帳、付款與各種金融服務。但在這些便利的背後，其實存在著一套我們平常看不見的安全機制，確認「你真的是你」，並守護每一筆交易。\r\n\r\n此次參賽內容將以「數位身分驗證」為主軸，期望能讓大家重新認識那些每天默默守護我們金融安全的驗證技術。",
       "team": null,
       "signupDate": "2026/08/25T16:36:34+08:00",
-      "lastUpdated": "2026-09-06T05:08:38+08:00",
+      "lastUpdated": "2026-09-06T06:15:01+08:00",
       "dayCount": 5,
       "articleCount": 5,
       "subscriptions": 0,
@@ -56320,7 +56320,7 @@
       "description": "8月都忙於面試，差點忘記要報名鐵人賽，面試最近剛結束完，想說還來得及報名參賽。\r\n\r\n這次選擇的書籍是程杰的【大話資料結構】，也是很多人推薦的書籍，現在終於有時間可以來細細品味，也希望藉由此次的機會來提升自己的專業知識。",
       "team": null,
       "signupDate": "2026/09/01T21:40:50+08:00",
-      "lastUpdated": "2026-09-06T05:14:37+08:00",
+      "lastUpdated": "2026-09-06T06:17:06+08:00",
       "dayCount": 5,
       "articleCount": 5,
       "subscriptions": 0,
@@ -56819,7 +56819,7 @@
       "description": "本系列將記錄從 Multipass 搭建 Linux 環境開始，一步步掌握伺服器設定、Nginx 反向代理、Bash 腳本開發與 Crontab 自動化監控的實戰過程。",
       "team": "我跟對面一隊",
       "signupDate": "2026/08/26T20:50:17+08:00",
-      "lastUpdated": "2026-09-06T05:08:10+08:00",
+      "lastUpdated": "2026-09-06T06:15:06+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
