@@ -113,6 +113,7 @@ export function buildSeriesFromRss(
   card: SignupCard,
   rss: RssChannel,
   cachedSeries?: Series,
+  reason = "Series page unavailable",
 ): SeriesResult {
   const cachedArticleMap = new Map<number, Article>();
   if (cachedSeries?.articles) {
@@ -121,34 +122,37 @@ export function buildSeriesFromRss(
     }
   }
 
-  const articles: Article[] = rss.items
-    .map((item, idx) => {
-      const idMatch = item.link.match(/articles\/(\d+)/);
-      const id = idMatch ? Number(idMatch[1]) : idx + 1;
-      const cachedArt = cachedArticleMap.get(id);
-      const mDay = item.title.match(/DAY[-_\s]*(\d+)/i) || item.title.match(/D(\d+)\b/i);
-      const day = mDay ? Number(mDay[1]) : (cachedArt?.day ?? idx + 1);
-      const url = item.link.replace(/\?.*$/, "");
-      const publishedAt = item.pubDate ? `${item.pubDate.replace(" ", "T")}+08:00` : (cachedArt?.publishedAt ?? "");
-
-      return {
-        id,
-        day,
-        title: item.title,
-        url,
-        publishedAt,
-        views: cachedArt?.views ?? 0,
-        likes: cachedArt?.likes ?? 0,
-        comments: cachedArt?.comments ?? 0,
-      };
-    })
-    .sort((a, b) => a.day - b.day || a.id - b.id);
-
-  const dayCount = Math.max(
-    card.day,
-    cachedSeries?.dayCount ?? 0,
-    articles.length > 0 ? articles[articles.length - 1].day : 0,
+  // RSS can be truncated or empty during a challenge. It cannot establish deletions.
+  const invalidItem = rss.items.some(item =>
+    !/^https:\/\/ithelp\.ithome\.com\.tw\/articles\/[1-9]\d*(?:[?#].*)?$/.test(item.link) ||
+    !item.title.trim(),
   );
+  if (rss.items.length === 0 || invalidItem) {
+    const error = `${reason}; RSS fallback unavailable: empty or invalid feed`;
+    return cachedSeries
+      ? { status: "stale", series: cachedSeries, error }
+      : { status: "failed", seriesId: card.seriesId, error };
+  }
+
+  const byId = new Map(cachedArticleMap);
+  // Chronological order gives untitled day numbers a stable order within this feed.
+  const items = [...rss.items].sort((a, b) => a.pubDate.localeCompare(b.pubDate) || a.link.localeCompare(b.link));
+  for (const item of items) {
+    const id = Number(item.link.match(/articles\/(\d+)/)![1]);
+    const cachedArt = cachedArticleMap.get(id);
+    const mDay = item.title.match(/DAY[-_\s]*(\d+)/i) || item.title.match(/D(\d+)\b/i);
+    const day = cachedArt?.day ?? (mDay ? Number(mDay[1]) : Math.max(0, ...[...byId.values()].map(a => a.day)) + 1);
+    byId.set(id, {
+      id, day, title: item.title, url: item.link.replace(/[?#].*$/, ""),
+      publishedAt: item.pubDate ? `${item.pubDate.replace(" ", "T")}+08:00` : (cachedArt?.publishedAt ?? ""),
+      views: cachedArt?.views ?? 0,
+      likes: cachedArt?.likes ?? 0,
+      comments: cachedArt?.comments ?? 0,
+    });
+  }
+  const articles = [...byId.values()].sort((a, b) => a.day - b.day || a.id - b.id);
+  // Article titles are not the official streak (a series can contain catch-up posts).
+  const dayCount = Math.max(card.day, cachedSeries?.dayCount ?? 0);
   const latestPub = articles.length > 0 ? articles[articles.length - 1].publishedAt : null;
   const lastUpdated = rss.lastBuildDate ?? latestPub ?? cachedSeries?.lastUpdated ?? null;
 
@@ -166,15 +170,16 @@ export function buildSeriesFromRss(
     signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
     lastUpdated,
     dayCount,
-    articleCount: articles.length,
+    articleCount: Math.max(articles.length, cachedSeries?.articleCount ?? 0),
+    rssFallback: true,
     subscriptions: cachedSeries?.subscriptions ?? 0,
     articles,
   };
 
   return {
-    status: "fresh",
+    status: "stale",
     series,
-    warnings: ["Cloudflare 403 on series page; updated via RSS fallback"],
+    error: `${reason}; RSS fallback merged with cache; completeness and metrics unverified`,
   };
 }
 
@@ -195,13 +200,13 @@ export async function scrapeSeriesFull(
       firstPageHtml = await fetcher(seriesUrl(card.userId, card.seriesId));
     } catch (err) {
       if (err instanceof Error && err.message.includes("403") && rssChannel) {
-        return buildSeriesFromRss(card, rssChannel, cachedSeries);
+        return buildSeriesFromRss(card, rssChannel, cachedSeries, err.message);
       }
       throw err;
     }
     if (!isSeriesPage(firstPageHtml)) {
       if (rssChannel) {
-        return buildSeriesFromRss(card, rssChannel, cachedSeries);
+        return buildSeriesFromRss(card, rssChannel, cachedSeries, "Invalid series page HTML");
       }
       throw new Error("Invalid series page HTML");
     }
@@ -255,7 +260,7 @@ export async function scrapeSeriesFull(
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : String(e);
     if (errorMsg.includes("403") && rssChannel) {
-      return buildSeriesFromRss(card, rssChannel, cachedSeries);
+      return buildSeriesFromRss(card, rssChannel, cachedSeries, errorMsg);
     }
     if (cachedSeries) {
       return { status: "stale", series: cachedSeries, error: errorMsg };
@@ -269,6 +274,10 @@ export async function scrapeSeriesIncremental(
   cachedSeries?: Series,
   fetcher: FetchFn = fetchHtml,
 ): Promise<SeriesResult> {
+  // A persisted RSS merge is not a verified baseline for completion or page merging.
+  if (cachedSeries?.rssFallback) {
+    return scrapeSeriesFull(card, cachedSeries, fetcher);
+  }
   // Fast path 1: series is already completed (dayCount >= 30, articleCount >= 30, card.day >= 30)
   // Ironman series complete at 30 days. No new articles can be posted.
   if (
@@ -332,12 +341,12 @@ export async function scrapeSeriesIncremental(
       lastPageHtml = await fetcher(lastPageUrl);
     } catch (err) {
       if (err instanceof Error && err.message.includes("403")) {
-        return buildSeriesFromRss(card, rss, cachedSeries);
+        return buildSeriesFromRss(card, rss, cachedSeries, err.message);
       }
       throw err;
     }
     if (!isSeriesPage(lastPageHtml)) {
-      return buildSeriesFromRss(card, rss, cachedSeries);
+      return buildSeriesFromRss(card, rss, cachedSeries, "Invalid series page HTML");
     }
 
     const parsedLastPage = parseSeriesPage(lastPageHtml);
@@ -390,7 +399,7 @@ export async function scrapeSeriesIncremental(
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : String(e);
     if (errorMsg.includes("403") && rss) {
-      return buildSeriesFromRss(card, rss, cachedSeries);
+      return buildSeriesFromRss(card, rss, cachedSeries, errorMsg);
     }
     if (cachedSeries) {
       return { status: "stale", series: cachedSeries, error: errorMsg };
@@ -510,7 +519,16 @@ export async function runScrape(
   const fetcher = opts.fetcher ?? fetchHtml;
   const cachedMap = new Map<number, Series>();
   if (opts.cachedYearData?.series) {
-    for (const s of opts.cachedYearData.series) cachedMap.set(s.id, s);
+    // Older snapshots only recorded RSS provenance in the log.
+    const rssFallbackIds = new Set(
+      opts.cachedYearData.scrapeLog.flatMap(line => {
+        const match = line.match(/^\[(?:warning|stale)\] (\d+): .*RSS fallback/);
+        return match ? [Number(match[1])] : [];
+      }),
+    );
+    for (const s of opts.cachedYearData.series) {
+      cachedMap.set(s.id, rssFallbackIds.has(s.id) ? { ...s, rssFallback: true } : s);
+    }
   }
 
   // 1. fetch all pages of signup list

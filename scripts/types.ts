@@ -25,6 +25,7 @@ export type Series = {
   signupDate: string; lastUpdated: string | null; // RSS lastBuildDate (spec: 更新時間 card field)
   dayCount: number; articleCount: number; subscriptions: number;
   articles: Article[];
+  rssFallback?: boolean; // Persist degraded provenance until a full HTML scrape succeeds.
 };
 export type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[]; scrapeLog: string[] };
 export type Manifest = { year: number; signupListUrl: string };

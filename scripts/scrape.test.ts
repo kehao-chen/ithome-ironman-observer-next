@@ -476,16 +476,16 @@ describe("scrapeSeriesIncremental and scrapeSeriesFull", () => {
     };
 
     const res = await scrapeSeriesIncremental(activeCard, prevSeries, fetcher);
-    expect(res.status).toBe("fresh");
-    if (res.status === "fresh") {
-      expect(res.series.articleCount).toBe(2);
+    expect(res.status).toBe("stale");
+    if (res.status === "stale") {
+      expect(res.series.articleCount).toBe(14);
       expect(res.series.dayCount).toBe(15);
       expect(res.series.articles.length).toBe(2);
       // Preserves historical views/likes/comments
       expect(res.series.articles[0].views).toBe(100);
       expect(res.series.articles[0].likes).toBe(5);
-      expect(res.warnings).toBeDefined();
-      expect(res.warnings![0]).toContain("Cloudflare 403 on series page; updated via RSS fallback");
+      expect(res.error).toContain("HTTP 403");
+      expect(res.error).toContain("RSS fallback");
     }
   });
 });
