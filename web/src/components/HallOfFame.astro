@@ -96,6 +96,25 @@ const vms = rows.map((r) => ({ ...r, vm: famousProfileViewModel(r) }));
             </li>
           ))}
         </ul>
+        {vm.ithomeBooks.length > 0 && (
+          <div class="hof-books">
+            <h3 class="hof-books-title">iThome 鐵人賽系列書</h3>
+            <div class="hof-books-list">
+              {vm.ithomeBooks.map((b) => (
+                <a class="hof-book-card" href={b.bookUrl} target="_blank" rel="noopener">
+                  {b.coverUrl && (
+                    <img class="hof-book-cover" src={b.coverUrl} alt={b.title} loading="lazy" />
+                  )}
+                  <div class="hof-book-info">
+                    {b.award && <span class="hof-book-award">{b.award}</span>}
+                    <span class="hof-book-title">《{b.title}》</span>
+                  </div>
+                  <svg class="hof-book-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
         <h3 class="hof-series-title">{data.year} 系列</h3>
         <div class="hof-series">
           {series.map((s) => <HallOfFameSeriesCard series={s} today={today} />)}

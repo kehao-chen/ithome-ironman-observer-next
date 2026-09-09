@@ -1440,6 +1440,84 @@ input, select, textarea { caret-color: var(--accent); }
   font-size: var(--text-xs);
 }
 .hof-cred-icon { width: 12px; height: 12px; flex-shrink: 0; fill: currentColor; }
+/* 名人堂 iThome 鐵人賽系列書專屬區塊 */
+.hof-books {
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.hof-books-title {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.hof-books-list {
+  display: flex; flex-wrap: wrap; gap: var(--space-2);
+}
+.hof-book-card {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 6px 12px;
+  min-height: 48px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
+  max-width: 100%;
+}
+.hof-book-card:hover, .hof-book-card:focus-visible {
+  border-color: var(--accent);
+  background: var(--surface);
+  color: var(--accent);
+  text-decoration: none;
+}
+.hof-book-cover {
+  width: 28px; height: 38px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.hof-book-info {
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 0;
+}
+.hof-book-award {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hof-book-title {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 420px;
+}
+.hof-book-card:hover .hof-book-title {
+  color: var(--accent);
+}
+.hof-book-icon {
+  width: 12px; height: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--muted);
+}
+.hof-book-card:hover .hof-book-icon {
+  color: var(--accent);
+}
+
 
 .hof-series-title { margin: var(--space-2) 0 0; font-size: var(--text-sm); color: var(--muted); }
 .hof-series { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-3); }

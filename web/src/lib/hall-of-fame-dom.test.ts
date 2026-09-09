@@ -67,6 +67,29 @@ function createSsrProfileFixture(row: FamousRow, today: string, year: number): H
     )
     .join("");
 
+  const booksHtml =
+    vm.ithomeBooks.length > 0
+      ? `
+        <div class="hof-books">
+          <h3 class="hof-books-title">iThome 鐵人賽系列書</h3>
+          <div class="hof-books-list">
+            ${vm.ithomeBooks
+              .map(
+                (b) => `
+              <a class="hof-book-card" href="${b.bookUrl}" target="_blank" rel="noopener">
+                ${b.coverUrl ? `<img class="hof-book-cover" src="${b.coverUrl}" alt="${b.title}" loading="lazy" />` : ""}
+                <div class="hof-book-info">
+                  ${b.award ? `<span class="hof-book-award">${b.award}</span>` : ""}
+                  <span class="hof-book-title">《${b.title}》</span>
+                </div>
+                <svg class="hof-book-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>`
+              )
+              .join("")}
+          </div>
+        </div>`
+      : "";
+
   const catsHtml = vm.categories.map((c) => `<span class="hof-cat-chip">${c.label}</span>`).join("");
 
   div.innerHTML = `
@@ -85,6 +108,7 @@ function createSsrProfileFixture(row: FamousRow, today: string, year: number): H
       </header>
       <p class="hof-bio">${vm.bio}</p>
       <ul class="hof-credentials">${credsHtml}</ul>
+      ${booksHtml}
       <h3 class="hof-series-title">${year} 系列</h3>
       <div class="hof-series"></div>
       <footer class="hof-card-foot">
@@ -176,6 +200,39 @@ describe("SSR vs Client DOM Parity", () => {
     expect(clientSig.credentialCount).toBe(2);
     expect(clientSig.seriesCount).toBe(1);
     expect(clientSig.anchorId).toBe("hof-person-20065770");
+  });
+
+  test("SSR fixture and Client DOM buildProfileSection produce identical structural signature with ithomeBooks", () => {
+    const row: FamousRow = {
+      entry: {
+        id: 20161809,
+        name: "kojenchieh",
+        bio: "敏捷三叔公（David Ko / 柯仁傑）",
+        credentials: [{ label: "《軟體測試修練指南》", url: "https://example.com" }],
+        categories: ["speaker", "book"],
+        ithomeBooks: [
+          {
+            id: 613,
+            title: "軟體測試修練指南：我獨自升級的實戰心法",
+            award: "第16屆(2024)iThome鐵人賽冠軍",
+            coverUrl: "https://ccmsassets.ithome.com.tw/2025/7/15/5da528f8-39b9-420f-9487-5bb15cd211aa.jpg",
+          },
+        ],
+      },
+      series: [sampleSeries()],
+      totalViews: 800,
+    };
+    const today = "2026-08-19";
+    const year = 2026;
+
+    const ssrSection = createSsrProfileFixture(row, today, year);
+    const clientSection = buildProfileSection(row, today, year);
+
+    const ssrSig = extractProfileSignature(ssrSection);
+    const clientSig = extractProfileSignature(clientSection);
+
+    expect(clientSig).toEqual(ssrSig);
+    expect(clientSig.linkHrefs).toContain("https://ithelp.ithome.com.tw/2026ironman/book?id=613");
   });
 });
 

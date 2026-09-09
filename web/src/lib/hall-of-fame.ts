@@ -7,12 +7,21 @@ import { totalViewsOf, type ViewSeries } from "./card";
 import famousAuthors from "../data/famous-authors.json";
 
 export type FamousCategory = "speaker" | "community" | "oss" | "book";
+
+export type IthomeBook = {
+  id: number;
+  title: string;
+  award?: string;
+  coverUrl?: string;
+};
+
 export type FamousEntry = {
   id: number;               // ithelp user.id（JSON object key 轉 number，join 唯一鍵）
   name: string;
   bio: string;
   credentials: { label: string; url: string }[];
   categories: FamousCategory[];
+  ithomeBooks?: IthomeBook[];
 };
 export type FamousSeries = ViewSeries;
 export type FamousRow = {
@@ -37,6 +46,13 @@ export type FamousProfileViewModel = {
   bio: string;
   categories: { id: FamousCategory; label: string }[];
   credentials: { label: string; url: string | null }[];
+  ithomeBooks: {
+    id: number;
+    title: string;
+    award: string | null;
+    coverUrl: string | null;
+    bookUrl: string;
+  }[];
   statsText: string;
   seriesCount: number;
 };
@@ -69,6 +85,13 @@ export function famousProfileViewModel(row: FamousRow): FamousProfileViewModel {
     credentials: row.entry.credentials.map((c) => ({
       label: c.label,
       url: safeHref(c.url),
+    })),
+    ithomeBooks: (row.entry.ithomeBooks ?? []).map((b) => ({
+      id: b.id,
+      title: b.title,
+      award: b.award ?? null,
+      coverUrl: b.coverUrl && isSafeUrl(b.coverUrl) ? b.coverUrl : null,
+      bookUrl: `https://ithelp.ithome.com.tw/2026ironman/book?id=${b.id}`,
     })),
     statsText,
     seriesCount,

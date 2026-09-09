@@ -281,6 +281,72 @@ export function buildProfileSection(row: FamousRow, today: string, year: number)
     credsList.appendChild(li);
   }
   section.appendChild(credsList);
+  // iThome Books
+  if (vm.ithomeBooks.length > 0) {
+    const booksSection = document.createElement("div");
+    booksSection.className = "hof-books";
+
+    const booksTitle = document.createElement("h3");
+    booksTitle.className = "hof-books-title";
+    booksTitle.textContent = "iThome 鐵人賽系列書";
+    booksSection.appendChild(booksTitle);
+
+    const booksList = document.createElement("div");
+    booksList.className = "hof-books-list";
+
+    for (const b of vm.ithomeBooks) {
+      const a = document.createElement("a");
+      a.className = "hof-book-card";
+      a.href = b.bookUrl;
+      a.target = "_blank";
+      a.rel = "noopener";
+
+      if (b.coverUrl) {
+        const img = document.createElement("img");
+        img.className = "hof-book-cover";
+        img.src = b.coverUrl;
+        img.alt = b.title;
+        img.loading = "lazy";
+        a.appendChild(img);
+      }
+
+      const info = document.createElement("div");
+      info.className = "hof-book-info";
+
+      if (b.award) {
+        const awardSpan = document.createElement("span");
+        awardSpan.className = "hof-book-award";
+        awardSpan.textContent = b.award;
+        info.appendChild(awardSpan);
+      }
+
+      const titleSpan = document.createElement("span");
+      titleSpan.className = "hof-book-title";
+      titleSpan.textContent = `《${b.title}》`;
+      info.appendChild(titleSpan);
+
+      a.appendChild(info);
+
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("class", "hof-book-icon");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("aria-hidden", "true");
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3");
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "currentColor");
+      path.setAttribute("stroke-width", "2");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(path);
+      a.appendChild(svg);
+
+      booksList.appendChild(a);
+    }
+    booksSection.appendChild(booksList);
+    section.appendChild(booksSection);
+  }
+
 
   // Series title & container
   const seriesTitle = document.createElement("h3");

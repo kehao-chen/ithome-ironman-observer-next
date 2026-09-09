@@ -46,14 +46,15 @@ describe("loadFamousAuthors", () => {
     expect(kao!.name).toBe("高見龍");
   });
 
-  test("exact-set：完整 11 位名人資料格式與 ID 集合驗證", () => {
+  test("exact-set：完整 14 位名人資料格式與 ID 集合驗證", () => {
     const expectedIds = new Set([
       20065770, 20040221, 20083608, 20109516,
       20161809, 20120030, 20133765, 20104930,
       20046160, 20058745, 20119486,
+      20107197, 20105602, 20129163,
     ]);
     const authors = loadFamousAuthors();
-    expect(authors.length).toBe(11);
+    expect(authors.length).toBe(14);
     expect(new Set(authors.map((a) => a.id))).toEqual(expectedIds);
 
     for (const author of authors) {
@@ -70,6 +71,19 @@ describe("loadFamousAuthors", () => {
         expect(typeof cred.label).toBe("string");
         expect(cred.label.trim().length).toBeGreaterThan(0);
         expect(isSafeUrl(cred.url)).toBe(true);
+      }
+
+      if (author.ithomeBooks) {
+        expect(Array.isArray(author.ithomeBooks)).toBe(true);
+        for (const book of author.ithomeBooks) {
+          expect(typeof book.id).toBe("number");
+          expect(book.id).toBeGreaterThan(0);
+          expect(typeof book.title).toBe("string");
+          expect(book.title.trim().length).toBeGreaterThan(0);
+          if (book.coverUrl) {
+            expect(isSafeUrl(book.coverUrl)).toBe(true);
+          }
+        }
       }
     }
   });
@@ -229,5 +243,43 @@ describe("famousProfileViewModel", () => {
       { id: "oss", label: "開源" },
       { id: "book", label: "書籍" }
     ]);
+  });
+
+  test("ithomeBooks 正確映射至 view model，包含 bookUrl 與封面連結安全過濾", () => {
+    const row: FamousRow = {
+      entry: {
+        id: 20161809,
+        name: "kojenchieh",
+        bio: "敏捷三叔公",
+        credentials: [],
+        categories: ["book"],
+        ithomeBooks: [
+          {
+            id: 613,
+            title: "軟體測試修練指南：我獨自升級的實戰心法",
+            award: "第16屆(2024)iThome鐵人賽冠軍",
+            coverUrl: "https://example.com/cover.jpg",
+          },
+          {
+            id: 999,
+            title: "惡意封面測試",
+            coverUrl: "javascript:alert(1)",
+          },
+        ],
+      },
+      series: [],
+      totalViews: 0,
+    };
+    const vm = famousProfileViewModel(row);
+    expect(vm.ithomeBooks.length).toBe(2);
+    expect(vm.ithomeBooks[0]).toEqual({
+      id: 613,
+      title: "軟體測試修練指南：我獨自升級的實戰心法",
+      award: "第16屆(2024)iThome鐵人賽冠軍",
+      coverUrl: "https://example.com/cover.jpg",
+      bookUrl: "https://ithelp.ithome.com.tw/2026ironman/book?id=613",
+    });
+    expect(vm.ithomeBooks[1].coverUrl).toBeNull();
+    expect(vm.ithomeBooks[1].bookUrl).toBe("https://ithelp.ithome.com.tw/2026ironman/book?id=999");
   });
 });
