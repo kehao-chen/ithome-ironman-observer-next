@@ -128,6 +128,16 @@ export function buildSeriesFromRss(
     !item.title.trim(),
   );
   if (rss.items.length === 0 || invalidItem) {
+    if (card.day === 0 && (cachedSeries?.articleCount ?? 0) === 0) {
+      const series: Series = {
+        id: card.seriesId,
+        user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
+        group: card.group, title: card.title, description: card.description, team: card.team,
+        signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
+        lastUpdated: null, dayCount: 0, articleCount: 0, subscriptions: cachedSeries?.subscriptions ?? 0, articles: [],
+      };
+      return { status: "fresh", series };
+    }
     const error = `${reason}; RSS fallback unavailable: empty or invalid feed`;
     return cachedSeries
       ? { status: "stale", series: cachedSeries, error }
@@ -315,7 +325,25 @@ export async function scrapeSeriesIncremental(
       if (cachedSeries && cachedSeries.articleCount > 0) {
         return await scrapeSeriesFull(card, cachedSeries, fetcher);
       }
-      const page1Html = await fetcher(seriesUrl(card.userId, card.seriesId));
+      if (card.day === 0) {
+        const series: Series = {
+          id: card.seriesId,
+          user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
+          group: card.group, title: card.title, description: card.description, team: card.team,
+          signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
+          lastUpdated: null, dayCount: 0, articleCount: 0, subscriptions: cachedSeries?.subscriptions ?? 0, articles: [],
+        };
+        return { status: "fresh", series };
+      }
+      let page1Html: string;
+      try {
+        page1Html = await fetcher(seriesUrl(card.userId, card.seriesId));
+      } catch (err) {
+        if (err instanceof Error && err.message.includes("403")) {
+          return buildSeriesFromRss(card, rss, cachedSeries, err.message);
+        }
+        throw err;
+      }
       if (isSeriesPage(page1Html)) {
         const parsed = parseSeriesPage(page1Html);
         if (parsed.articleCount === 0) {
@@ -331,7 +359,6 @@ export async function scrapeSeriesIncremental(
       }
       return await scrapeSeriesFull(card, cachedSeries, fetcher);
     }
-
     // RSS-First incremental check:
     // If this series previously relied on RSS fallback (Cloudflare 403 on HTML)
     // and RSS shows no new articles while card.day has not increased,
