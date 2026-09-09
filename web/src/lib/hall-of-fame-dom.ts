@@ -307,6 +307,8 @@ export function buildProfileSection(row: FamousRow, today: string, year: number)
         img.src = b.coverUrl;
         img.alt = b.title;
         img.loading = "lazy";
+        img.setAttribute("referrerpolicy", "no-referrer");
+        img.setAttribute("onerror", "this.style.display='none'");
         a.appendChild(img);
       }
 

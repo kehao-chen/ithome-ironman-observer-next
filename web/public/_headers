@@ -9,7 +9,7 @@
   # earns its place: no external origin can serve script, and object/base-uri/
   # form-action are shut off entirely. `style-src` needs 'unsafe-inline' for the
   # ~285 inline style attributes the card grid renders.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://ccmsassets.ithome.com.tw; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests
   Cache-Control: public, max-age=0, must-revalidate
 
 # `_headers` rules COMBINE across matching patterns rather than override, so the

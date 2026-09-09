@@ -77,7 +77,7 @@ function createSsrProfileFixture(row: FamousRow, today: string, year: number): H
               .map(
                 (b) => `
               <a class="hof-book-card" href="${b.bookUrl}" target="_blank" rel="noopener">
-                ${b.coverUrl ? `<img class="hof-book-cover" src="${b.coverUrl}" alt="${b.title}" loading="lazy" />` : ""}
+                ${b.coverUrl ? `<img class="hof-book-cover" src="${b.coverUrl}" alt="${b.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'" />` : ""}
                 <div class="hof-book-info">
                   ${b.award ? `<span class="hof-book-award">${b.award}</span>` : ""}
                   <span class="hof-book-title">《${b.title}》</span>
