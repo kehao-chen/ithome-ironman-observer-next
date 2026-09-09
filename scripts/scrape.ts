@@ -274,13 +274,10 @@ export async function scrapeSeriesIncremental(
   cachedSeries?: Series,
   fetcher: FetchFn = fetchHtml,
 ): Promise<SeriesResult> {
-  // A persisted RSS merge is not a verified baseline for completion or page merging.
-  if (cachedSeries?.rssFallback) {
-    return scrapeSeriesFull(card, cachedSeries, fetcher);
-  }
   // Fast path 1: series is already completed (dayCount >= 30, articleCount >= 30, card.day >= 30)
-  // Ironman series complete at 30 days. No new articles can be posted.
+  // Verified series with 30 days are complete. If rssFallback is true, we still allow an RSS refresh below.
   if (
+    !cachedSeries?.rssFallback &&
     cachedSeries &&
     cachedSeries.dayCount >= 30 &&
     cachedSeries.articleCount >= 30 &&
@@ -293,6 +290,7 @@ export async function scrapeSeriesIncremental(
   // Fast path 2: series has not started yet (card.day === 0 and cached articleCount === 0)
   // The signup card explicitly shows DAY 0; no posts have been created yet.
   if (
+    !cachedSeries?.rssFallback &&
     cachedSeries &&
     cachedSeries.articleCount === 0 &&
     cachedSeries.dayCount === 0 &&
@@ -332,6 +330,25 @@ export async function scrapeSeriesIncremental(
         }
       }
       return await scrapeSeriesFull(card, cachedSeries, fetcher);
+    }
+
+    // RSS-First incremental check:
+    // If this series previously relied on RSS fallback (Cloudflare 403 on HTML)
+    // and RSS shows no new articles while card.day has not increased,
+    // merge with latest RSS channel metadata without making a doomed HTML request.
+    const cachedArticleIds = new Set(cachedSeries?.articles?.map((a) => a.id) ?? []);
+    const hasNewArticles = rss.items.some((item) => {
+      const idMatch = item.link.match(/articles\/(\d+)/);
+      return idMatch && !cachedArticleIds.has(Number(idMatch[1]));
+    });
+
+    if (
+      cachedSeries?.rssFallback &&
+      !hasNewArticles &&
+      card.day <= (cachedSeries.dayCount ?? 0) &&
+      cachedArticleIds.size > 0
+    ) {
+      return buildSeriesFromRss(card, rss, cachedSeries, "Series page blocked by Cloudflare (403)");
     }
 
     const lastPage = Math.ceil(nHint / 10);
@@ -561,9 +578,15 @@ export async function runScrape(
         ? await scrapeSeriesFull(card, cached, fetcher)
         : await scrapeSeriesIncremental(card, cached, fetcher);
 
+      // A successful RSS fallback has merged latest articles with cache.
+      // Only treat 403 as a blocking error if data could NOT be retrieved (failed, or RSS unavailable).
+      const isRssFallbackMerged =
+        res.status === "stale" && res.error?.includes("RSS fallback merged with cache");
+
       const is403 =
-        (res.status === "stale" && res.error?.includes("403")) ||
-        (res.status === "failed" && res.error?.includes("403"));
+        !isRssFallbackMerged &&
+        ((res.status === "stale" && res.error?.includes("403")) ||
+          (res.status === "failed" && res.error?.includes("403")));
 
       if (is403) {
         consecutive403++;
@@ -573,7 +596,7 @@ export async function runScrape(
             `Cloudflare challenge / HTTP 403 detected across ${consecutive403} consecutive series; aborting scrape to avoid hammering iThome`,
           );
         }
-      } else if (res.status === "fresh") {
+      } else {
         consecutive403 = 0;
       }
 
@@ -596,7 +619,11 @@ export async function runScrape(
       scrapeLog.push(`[failed] ${res.seriesId}: ${res.error}`);
     }
   }
-  const staleCount = scrapeLog.filter((l) => l.startsWith("[stale]")).length;
+  // Only count series that could not be updated at all (unmodified cache) toward the breaker,
+  // not series that successfully merged latest articles via RSS.
+  const staleCount = scrapeLog.filter(
+    (l) => l.startsWith("[stale]") && !l.includes("RSS fallback merged"),
+  ).length;
   const failedCount = scrapeLog.filter((l) => l.startsWith("[failed]")).length;
   const cb = checkCircuitBreaker(
     { seriesCount: series.length, failedCount, staleCount },

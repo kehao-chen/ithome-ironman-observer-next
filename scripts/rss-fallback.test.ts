@@ -98,18 +98,30 @@ test("year output logs RSS merges as stale and preserves provenance", async () =
   expect(year.series[0].rssFallback).toBe(true);
 });
 
-test("successful RSS does not bypass consecutive HTTP 403 protection", async () => {
+test("successful RSS fallback allows runScrape to complete without 403 abort", async () => {
+  const year = await runScrape({ year: 2026, signupListUrl: "https://test/signup/list" }, {
+    concurrency: 1,
+    fetcher: async url => {
+      if (url.includes("signup/list")) return signup(10);
+      if (url.includes("/rss/series/")) return `<channel>${item(104, 4)}</channel>`;
+      throw new Error("HTTP 403");
+    },
+  });
+  expect(year.series.length).toBe(10);
+  expect(year.series[0].rssFallback).toBe(true);
+});
+
+test("consecutive HTTP 403 aborts scrape when RSS fallback is also unavailable", async () => {
   let blockedRequests = 0;
   await expect(runScrape({ year: 2026, signupListUrl: "https://test/signup/list" }, {
     concurrency: 1,
     fetcher: async url => {
       if (url.includes("signup/list")) return signup(10);
-      if (url.includes("/rss/series/")) return `<channel>${item(104, 4)}</channel>`;
       blockedRequests++;
       throw new Error("HTTP 403");
     },
   })).rejects.toThrow("aborting scrape to avoid hammering iThome");
-  expect(blockedRequests).toBeLessThan(10);
+  expect(blockedRequests).toBeLessThan(20);
 });
 
 test("full HTML recovery clears persisted RSS provenance", async () => {
@@ -138,4 +150,43 @@ test("legacy RSS warnings invalidate cached fast paths without editing snapshots
   expect(requests).toBeGreaterThan(0);
   expect(year.scrapeLog[0]).toContain("[stale]");
   expect(year.series[0].rssFallback).toBe(true);
+});
+
+test("RSS-first incremental skips series page HTML when RSS has no new articles", async () => {
+  let htmlFetched = false;
+  const res = await scrapeSeriesIncremental(
+    { ...card, day: 2 },
+    { ...cached, rssFallback: true },
+    async (url: string) => {
+      if (url.includes("/rss/series/")) {
+        return `<channel>${item(101, 1)}${item(102, 2)}</channel>`;
+      }
+      htmlFetched = true;
+      throw new Error("HTML fetch should not have been called");
+    },
+  );
+  expect(htmlFetched).toBe(false);
+  expect(res.status).toBe("stale");
+  if (res.status === "stale") {
+    expect(res.series.articleCount).toBe(2);
+    expect(res.series.articles.length).toBe(2);
+  }
+});
+
+test("circuit breaker does not trip when majority of series are updated via RSS fallback", async () => {
+  // 10 out of 10 series (100% > 20% limit) updated via RSS fallback
+  const year = await runScrape(
+    { year: 2026, signupListUrl: "https://test/signup/list" },
+    {
+      concurrency: 2,
+      fetcher: async (url: string) => {
+        if (url.includes("signup/list")) return signup(10);
+        if (url.includes("/rss/series/")) return `<channel>${item(104, 4)}</channel>`;
+        throw new Error("HTTP 403 (Cloudflare challenge)");
+      },
+      circuitBreaker: { maxStalePercent: 0.2 },
+    },
+  );
+  expect(year.series.length).toBe(10);
+  expect(year.scrapeLog.filter((l) => l.startsWith("[stale]")).length).toBe(10);
 });

@@ -87,8 +87,9 @@ cd web && bun install && bun run dev
 
 系列頁回傳 HTTP 403 或無效 HTML 時，RSS fallback 會依文章 ID 合併快取，保留 RSS 未包含的舊文章。
 此結果記錄為 `[stale]`：文章完整性與互動統計尚未驗證；空白／無效 RSS 保留快取，無快取則 `[failed]`。
-`rssFallback` 標記會保留到完整 HTML 抓取成功，舊快照的 RSS 警告也會在讀入時套用此標記。
-RSS 降級仍計入連續 403 與 stale 中止保護，因此大規模封鎖時會停止該年度更新，保留原檔。
+`rssFallback` 標記會保留到完整 HTML 抓取成功（如每日 `--full` 校正）。
+增量抓取採 RSS-First 策略：先前已降級且 RSS 無新文章、天數未增加者，直接複用 RSS 摘要避免無效敲 HTML 系列頁（節省 50% 請求並防範 WAF）。
+僅在系列頁與 RSS 皆遭遇 403 阻斷或無法取得時，才計入連續 403 中止與熔斷器保護，兼顧大規模封鎖防護與海外機房正常排程更新。
 
 `web/public/data/` 是建置產物（`web/scripts/copy-data.mjs` 由 `data/*.json` 產生），
 已 gitignore；`bun run dev` 和 `bun run build` 都會先跑一次 copy。
