@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-09-10 00:20:10+08:00",
+  "updatedAt": "2026-09-10 00:36:58+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -35984,6 +35984,266 @@
       ]
     },
     {
+      "id": 9251,
+      "user": {
+        "id": 20007956,
+        "name": "jeff377",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20007956/profile"
+      },
+      "group": "Software Development",
+      "title": "ERP 架構師筆記：定義驅動的框架設計",
+      "description": "ERP 的複雜度不在單一功能有多難，而在同一件事被重述太多次、乘以太多張表、再乘以太多次客製。\r\n\r\n這個系列談的不是怎麼用框架做一張表單，而是怎麼設計一套能驅動上百張表單的框架：唯一真相放在定義而非程式碼，資料庫結構、SQL、多前端畫面、驗證與計算、多語系、多租戶與客製化都從同一層定義衍生。\r\n\r\n三十篇分八章，從為什麼談起，依序走過定義層、資料存取與快取、業務邏輯與 API、多租戶與客製化、傳輸安全與稽核、資料語意，最後回到案例對帳與全圖。案例用 Northwind 驗證，但案例是佐證，不是主角。\r\n\r\n談機制與取捨，不寫使用教學；每個設計的代價會跟它的好處寫得一樣清楚。",
+      "team": null,
+      "signupDate": "2026/08/17T11:17:45+08:00",
+      "lastUpdated": "2026-09-10T00:03:33+08:00",
+      "dayCount": 25,
+      "articleCount": 24,
+      "rssFallback": true,
+      "subscriptions": 3,
+      "articles": [
+        {
+          "id": 10403436,
+          "day": 1,
+          "title": "Day 1：為什麼 ERP 需要 Definition-Driven 框架",
+          "url": "https://ithelp.ithome.com.tw/articles/10403436",
+          "publishedAt": "2026-08-17T11:31:38+08:00",
+          "views": 205,
+          "likes": 0,
+          "comments": 1
+        },
+        {
+          "id": 10403587,
+          "day": 2,
+          "title": "Day 2：Definition-Driven 架構總覽",
+          "url": "https://ithelp.ithome.com.tw/articles/10403587",
+          "publishedAt": "2026-08-18T00:23:12+08:00",
+          "views": 199,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10403733,
+          "day": 3,
+          "title": "Day 3：Northwind 案例的八張表單與自訂業務物件",
+          "url": "https://ithelp.ithome.com.tw/articles/10403733",
+          "publishedAt": "2026-08-19T00:09:10+08:00",
+          "views": 182,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10403932,
+          "day": 4,
+          "title": "Day 4：定義檔的用途與分類",
+          "url": "https://ithelp.ithome.com.tw/articles/10403932",
+          "publishedAt": "2026-08-20T01:59:54+08:00",
+          "views": 408,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404111,
+          "day": 5,
+          "title": "Day 5：FormSchema 如何驅動 SQL",
+          "url": "https://ithelp.ithome.com.tw/articles/10404111",
+          "publishedAt": "2026-08-21T00:07:55+08:00",
+          "views": 169,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404342,
+          "day": 6,
+          "title": "Day 6：TableSchema 與資料庫結構升級",
+          "url": "https://ithelp.ithome.com.tw/articles/10404342",
+          "publishedAt": "2026-08-22T00:09:54+08:00",
+          "views": 118,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404501,
+          "day": 7,
+          "title": "Day 7：FormLayout 與多前端畫面產生",
+          "url": "https://ithelp.ithome.com.tw/articles/10404501",
+          "publishedAt": "2026-08-23T00:14:19+08:00",
+          "views": 117,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404730,
+          "day": 8,
+          "title": "Day 8：宣告式業務規則與計算欄",
+          "url": "https://ithelp.ithome.com.tw/articles/10404730",
+          "publishedAt": "2026-08-24T00:15:57+08:00",
+          "views": 110,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404979,
+          "day": 9,
+          "title": "Day 9：資料與定義分家，表單不必各自建型別",
+          "url": "https://ithelp.ithome.com.tw/articles/10404979",
+          "publishedAt": "2026-08-25T00:19:07+08:00",
+          "views": 138,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405200,
+          "day": 10,
+          "title": "Day 10：多資料庫支援：CRUD 與結構升級",
+          "url": "https://ithelp.ithome.com.tw/articles/10405200",
+          "publishedAt": "2026-08-26T00:16:50+08:00",
+          "views": 150,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405385,
+          "day": 11,
+          "title": "Day 11：資料存取層的連線Transaction 與查詢條件",
+          "url": "https://ithelp.ithome.com.tw/articles/10405385",
+          "publishedAt": "2026-08-27T00:20:04+08:00",
+          "views": 117,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405590,
+          "day": 12,
+          "title": "Day 12：定義與資料快取的跨節點失效",
+          "url": "https://ithelp.ithome.com.tw/articles/10405590",
+          "publishedAt": "2026-08-28T00:12:36+08:00",
+          "views": 107,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405832,
+          "day": 13,
+          "title": "Day 13：Session 管理與生命週期",
+          "url": "https://ithelp.ithome.com.tw/articles/10405832",
+          "publishedAt": "2026-08-29T00:13:55+08:00",
+          "views": 95,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406028,
+          "day": 14,
+          "title": "Day 14：業務物件的擴充點與覆寫時機",
+          "url": "https://ithelp.ithome.com.tw/articles/10406028",
+          "publishedAt": "2026-08-30T00:15:03+08:00",
+          "views": 79,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406295,
+          "day": 15,
+          "title": "Day 15：API 合約分層與型別註冊表",
+          "url": "https://ithelp.ithome.com.tw/articles/10406295",
+          "publishedAt": "2026-08-31T00:10:35+08:00",
+          "views": 90,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406550,
+          "day": 16,
+          "title": "Day 16：JSON-RPC 2.0：協定選型與請求管線",
+          "url": "https://ithelp.ithome.com.tw/articles/10406550",
+          "publishedAt": "2026-09-01T00:08:17+08:00",
+          "views": 77,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406905,
+          "day": 17,
+          "title": "Day 17：Connector 與呼叫端的職責收斂",
+          "url": "https://ithelp.ithome.com.tw/articles/10406905",
+          "publishedAt": "2026-09-02T00:07:36+08:00",
+          "views": 67,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407120,
+          "day": 18,
+          "title": "Day 18：錯誤契約與使用者可見訊息",
+          "url": "https://ithelp.ithome.com.tw/articles/10407120",
+          "publishedAt": "2026-09-03T00:09:24+08:00",
+          "views": 78,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407434,
+          "day": 19,
+          "title": "Day 19：客製層的範圍與疊加粒度",
+          "url": "https://ithelp.ithome.com.tw/articles/10407434",
+          "publishedAt": "2026-09-04T01:13:01+08:00",
+          "views": 72,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407712,
+          "day": 20,
+          "title": "Day 20：多語系客製與資源結構",
+          "url": "https://ithelp.ithome.com.tw/articles/10407712",
+          "publishedAt": "2026-09-05T00:21:17+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407958,
+          "day": 21,
+          "title": "Day 21：業務邏輯客製與 Plugin 的四個時點",
+          "url": "https://ithelp.ithome.com.tw/articles/10407958",
+          "publishedAt": "2026-09-06T00:20:26+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408219,
+          "day": 22,
+          "title": "Day 22：XMLJSON 與 MessagePack 的分工",
+          "url": "https://ithelp.ithome.com.tw/articles/10408219",
+          "publishedAt": "2026-09-07T00:09:21+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408423,
+          "day": 23,
+          "title": "Day 23：API Payload 安全管線：順序保護等級與金鑰",
+          "url": "https://ithelp.ithome.com.tw/articles/10408423",
+          "publishedAt": "2026-09-08T00:08:44+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408731,
+          "day": 24,
+          "title": "Day 24：權限的三軸：動作列與欄",
+          "url": "https://ithelp.ithome.com.tw/articles/10408731",
+          "publishedAt": "2026-09-09T00:12:07+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
       "id": 9141,
       "user": {
         "id": 20127932,
@@ -37325,7 +37585,7 @@
       "description": "torch.compile 一行就能讓模型加速，但沒人告訴你背後發生了什麼。本系列用 30 天拆解 PyTorch 編譯器的三層架構：Dynamo 怎麼捕獲 Python、AOTAutograd 怎麼生成 backpropagation、Inductor 怎麼產出 GPU kernel。這個系列會直接深入原始碼、用簡單易懂的圖來幫助理解，把黑盒子打開給你看。讀完你會知道它什麼時候快、為什麼慢以及怎麼修。",
       "team": "源來適愛開緣",
       "signupDate": "2026/08/16T10:53:15+08:00",
-      "lastUpdated": "2026-09-09T23:22:48+08:00",
+      "lastUpdated": "2026-09-10T00:33:09+08:00",
       "dayCount": 24,
       "articleCount": 24,
       "rssFallback": true,
@@ -37827,266 +38087,6 @@
           "title": "Day 24 沒過關的東西，進不了 main",
           "url": "https://ithelp.ithome.com.tw/articles/10405686",
           "publishedAt": "2026-09-09T18:16:32+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9251,
-      "user": {
-        "id": 20007956,
-        "name": "jeff377",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20007956/profile"
-      },
-      "group": "Software Development",
-      "title": "ERP 架構師筆記：定義驅動的框架設計",
-      "description": "ERP 的複雜度不在單一功能有多難，而在同一件事被重述太多次、乘以太多張表、再乘以太多次客製。\r\n\r\n這個系列談的不是怎麼用框架做一張表單，而是怎麼設計一套能驅動上百張表單的框架：唯一真相放在定義而非程式碼，資料庫結構、SQL、多前端畫面、驗證與計算、多語系、多租戶與客製化都從同一層定義衍生。\r\n\r\n三十篇分八章，從為什麼談起，依序走過定義層、資料存取與快取、業務邏輯與 API、多租戶與客製化、傳輸安全與稽核、資料語意，最後回到案例對帳與全圖。案例用 Northwind 驗證，但案例是佐證，不是主角。\r\n\r\n談機制與取捨，不寫使用教學；每個設計的代價會跟它的好處寫得一樣清楚。",
-      "team": null,
-      "signupDate": "2026/08/17T11:17:45+08:00",
-      "lastUpdated": "2026-09-10T00:03:33+08:00",
-      "dayCount": 24,
-      "articleCount": 24,
-      "rssFallback": true,
-      "subscriptions": 3,
-      "articles": [
-        {
-          "id": 10403436,
-          "day": 1,
-          "title": "Day 1：為什麼 ERP 需要 Definition-Driven 框架",
-          "url": "https://ithelp.ithome.com.tw/articles/10403436",
-          "publishedAt": "2026-08-17T11:31:38+08:00",
-          "views": 205,
-          "likes": 0,
-          "comments": 1
-        },
-        {
-          "id": 10403587,
-          "day": 2,
-          "title": "Day 2：Definition-Driven 架構總覽",
-          "url": "https://ithelp.ithome.com.tw/articles/10403587",
-          "publishedAt": "2026-08-18T00:23:12+08:00",
-          "views": 199,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10403733,
-          "day": 3,
-          "title": "Day 3：Northwind 案例的八張表單與自訂業務物件",
-          "url": "https://ithelp.ithome.com.tw/articles/10403733",
-          "publishedAt": "2026-08-19T00:09:10+08:00",
-          "views": 182,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10403932,
-          "day": 4,
-          "title": "Day 4：定義檔的用途與分類",
-          "url": "https://ithelp.ithome.com.tw/articles/10403932",
-          "publishedAt": "2026-08-20T01:59:54+08:00",
-          "views": 408,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404111,
-          "day": 5,
-          "title": "Day 5：FormSchema 如何驅動 SQL",
-          "url": "https://ithelp.ithome.com.tw/articles/10404111",
-          "publishedAt": "2026-08-21T00:07:55+08:00",
-          "views": 169,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404342,
-          "day": 6,
-          "title": "Day 6：TableSchema 與資料庫結構升級",
-          "url": "https://ithelp.ithome.com.tw/articles/10404342",
-          "publishedAt": "2026-08-22T00:09:54+08:00",
-          "views": 118,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404501,
-          "day": 7,
-          "title": "Day 7：FormLayout 與多前端畫面產生",
-          "url": "https://ithelp.ithome.com.tw/articles/10404501",
-          "publishedAt": "2026-08-23T00:14:19+08:00",
-          "views": 117,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404730,
-          "day": 8,
-          "title": "Day 8：宣告式業務規則與計算欄",
-          "url": "https://ithelp.ithome.com.tw/articles/10404730",
-          "publishedAt": "2026-08-24T00:15:57+08:00",
-          "views": 110,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404979,
-          "day": 9,
-          "title": "Day 9：資料與定義分家，表單不必各自建型別",
-          "url": "https://ithelp.ithome.com.tw/articles/10404979",
-          "publishedAt": "2026-08-25T00:19:07+08:00",
-          "views": 138,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405200,
-          "day": 10,
-          "title": "Day 10：多資料庫支援：CRUD 與結構升級",
-          "url": "https://ithelp.ithome.com.tw/articles/10405200",
-          "publishedAt": "2026-08-26T00:16:50+08:00",
-          "views": 150,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405385,
-          "day": 11,
-          "title": "Day 11：資料存取層的連線Transaction 與查詢條件",
-          "url": "https://ithelp.ithome.com.tw/articles/10405385",
-          "publishedAt": "2026-08-27T00:20:04+08:00",
-          "views": 117,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405590,
-          "day": 12,
-          "title": "Day 12：定義與資料快取的跨節點失效",
-          "url": "https://ithelp.ithome.com.tw/articles/10405590",
-          "publishedAt": "2026-08-28T00:12:36+08:00",
-          "views": 107,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405832,
-          "day": 13,
-          "title": "Day 13：Session 管理與生命週期",
-          "url": "https://ithelp.ithome.com.tw/articles/10405832",
-          "publishedAt": "2026-08-29T00:13:55+08:00",
-          "views": 95,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406028,
-          "day": 14,
-          "title": "Day 14：業務物件的擴充點與覆寫時機",
-          "url": "https://ithelp.ithome.com.tw/articles/10406028",
-          "publishedAt": "2026-08-30T00:15:03+08:00",
-          "views": 79,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406295,
-          "day": 15,
-          "title": "Day 15：API 合約分層與型別註冊表",
-          "url": "https://ithelp.ithome.com.tw/articles/10406295",
-          "publishedAt": "2026-08-31T00:10:35+08:00",
-          "views": 90,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406550,
-          "day": 16,
-          "title": "Day 16：JSON-RPC 2.0：協定選型與請求管線",
-          "url": "https://ithelp.ithome.com.tw/articles/10406550",
-          "publishedAt": "2026-09-01T00:08:17+08:00",
-          "views": 77,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406905,
-          "day": 17,
-          "title": "Day 17：Connector 與呼叫端的職責收斂",
-          "url": "https://ithelp.ithome.com.tw/articles/10406905",
-          "publishedAt": "2026-09-02T00:07:36+08:00",
-          "views": 67,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407120,
-          "day": 18,
-          "title": "Day 18：錯誤契約與使用者可見訊息",
-          "url": "https://ithelp.ithome.com.tw/articles/10407120",
-          "publishedAt": "2026-09-03T00:09:24+08:00",
-          "views": 78,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407434,
-          "day": 19,
-          "title": "Day 19：客製層的範圍與疊加粒度",
-          "url": "https://ithelp.ithome.com.tw/articles/10407434",
-          "publishedAt": "2026-09-04T01:13:01+08:00",
-          "views": 72,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407712,
-          "day": 20,
-          "title": "Day 20：多語系客製與資源結構",
-          "url": "https://ithelp.ithome.com.tw/articles/10407712",
-          "publishedAt": "2026-09-05T00:21:17+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407958,
-          "day": 21,
-          "title": "Day 21：業務邏輯客製與 Plugin 的四個時點",
-          "url": "https://ithelp.ithome.com.tw/articles/10407958",
-          "publishedAt": "2026-09-06T00:20:26+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408219,
-          "day": 22,
-          "title": "Day 22：XMLJSON 與 MessagePack 的分工",
-          "url": "https://ithelp.ithome.com.tw/articles/10408219",
-          "publishedAt": "2026-09-07T00:09:21+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408423,
-          "day": 23,
-          "title": "Day 23：API Payload 安全管線：順序保護等級與金鑰",
-          "url": "https://ithelp.ithome.com.tw/articles/10408423",
-          "publishedAt": "2026-09-08T00:08:44+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408731,
-          "day": 24,
-          "title": "Day 24：權限的三軸：動作列與欄",
-          "url": "https://ithelp.ithome.com.tw/articles/10408731",
-          "publishedAt": "2026-09-09T00:12:07+08:00",
           "views": 0,
           "likes": 0,
           "comments": 0
@@ -38864,6 +38864,256 @@
       ]
     },
     {
+      "id": 9270,
+      "user": {
+        "id": 20181780,
+        "name": "KY",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20181780/profile"
+      },
+      "group": "Software Development",
+      "title": "從像素到 Computer Vision：30 天理解數位影像處理",
+      "description": "介紹影像處理的方法、原理及應用",
+      "team": null,
+      "signupDate": "2026/08/18T15:08:37+08:00",
+      "lastUpdated": "2026-09-10T00:03:50+08:00",
+      "dayCount": 24,
+      "articleCount": 23,
+      "rssFallback": true,
+      "subscriptions": 1,
+      "articles": [
+        {
+          "id": 10403671,
+          "day": 1,
+          "title": "Day 1  |  前言",
+          "url": "https://ithelp.ithome.com.tw/articles/10403671",
+          "publishedAt": "2026-08-18T15:12:38+08:00",
+          "views": 155,
+          "likes": 0,
+          "comments": 1
+        },
+        {
+          "id": 10403740,
+          "day": 2,
+          "title": "Day 2  |  電腦到底是怎麼看見一張圖片的？",
+          "url": "https://ithelp.ithome.com.tw/articles/10403740",
+          "publishedAt": "2026-08-19T01:08:21+08:00",
+          "views": 200,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10403923,
+          "day": 3,
+          "title": "Day 3  |  PixelResolutionColor Depth：一張圖片到底是怎麼組成的？",
+          "url": "https://ithelp.ithome.com.tw/articles/10403923",
+          "publishedAt": "2026-08-20T00:34:36+08:00",
+          "views": 223,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404117,
+          "day": 4,
+          "title": "Day 4  |  RGBGrayHSV：電腦是怎麼表示顏色的？",
+          "url": "https://ithelp.ithome.com.tw/articles/10404117",
+          "publishedAt": "2026-08-21T00:30:51+08:00",
+          "views": 208,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404368,
+          "day": 5,
+          "title": "Day 5  |  Sampling 與 Quantization：連續的世界，是怎麼變成數位影像的？",
+          "url": "https://ithelp.ithome.com.tw/articles/10404368",
+          "publishedAt": "2026-08-22T03:24:40+08:00",
+          "views": 142,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404370,
+          "day": 6,
+          "title": "Day 6  |  Histogram：一張圖片的亮度都跑去哪了？",
+          "url": "https://ithelp.ithome.com.tw/articles/10404370",
+          "publishedAt": "2026-08-23T00:28:40+08:00",
+          "views": 113,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404723,
+          "day": 7,
+          "title": "Day 7  |  Convolution（卷積）：為什麼影像處理幾乎都離不開它？",
+          "url": "https://ithelp.ithome.com.tw/articles/10404723",
+          "publishedAt": "2026-08-24T00:17:45+08:00",
+          "views": 107,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404976,
+          "day": 8,
+          "title": "Day 8  |  Kernel 設計：為什麼不同的 Kernel 會產生不同的效果？",
+          "url": "https://ithelp.ithome.com.tw/articles/10404976",
+          "publishedAt": "2026-08-25T00:19:00+08:00",
+          "views": 121,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405205,
+          "day": 9,
+          "title": "Day 9  |  Mean Filter：為什麼取平均，就能讓圖片變平滑？",
+          "url": "https://ithelp.ithome.com.tw/articles/10405205",
+          "publishedAt": "2026-08-26T01:31:59+08:00",
+          "views": 120,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405395,
+          "day": 10,
+          "title": "Day 10  |  Gaussian Filter：為什麼離中心越近，應該越重要？",
+          "url": "https://ithelp.ithome.com.tw/articles/10405395",
+          "publishedAt": "2026-08-27T02:04:36+08:00",
+          "views": 109,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405586,
+          "day": 11,
+          "title": "Day 11  |  Median Filter：如果不要平均，會發生什麼事？",
+          "url": "https://ithelp.ithome.com.tw/articles/10405586",
+          "publishedAt": "2026-08-28T00:16:51+08:00",
+          "views": 91,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405850,
+          "day": 12,
+          "title": "Day 12  |  Image Gradient：電腦怎麼知道哪裡是邊緣？",
+          "url": "https://ithelp.ithome.com.tw/articles/10405850",
+          "publishedAt": "2026-08-29T01:16:45+08:00",
+          "views": 97,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406026,
+          "day": 13,
+          "title": "Day 13  |  Sobel Operator：如何找出圖片的亮度變化？",
+          "url": "https://ithelp.ithome.com.tw/articles/10406026",
+          "publishedAt": "2026-08-30T00:23:49+08:00",
+          "views": 75,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406308,
+          "day": 14,
+          "title": "Day 14  |  Prewitt Operator：它和 Sobel 到底差在哪裡？",
+          "url": "https://ithelp.ithome.com.tw/articles/10406308",
+          "publishedAt": "2026-08-31T01:15:56+08:00",
+          "views": 96,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406552,
+          "day": 15,
+          "title": "Day 15  |  Laplacian：除了亮度變化，還能觀察什麼？",
+          "url": "https://ithelp.ithome.com.tw/articles/10406552",
+          "publishedAt": "2026-09-01T00:22:29+08:00",
+          "views": 61,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406907,
+          "day": 16,
+          "title": "Day 16  |  Canny Edge Detection：經典的邊緣偵測方法",
+          "url": "https://ithelp.ithome.com.tw/articles/10406907",
+          "publishedAt": "2026-09-02T00:41:59+08:00",
+          "views": 97,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407119,
+          "day": 17,
+          "title": "Day 17  |  Threshold：怎麼把圖片分成黑白兩個世界？",
+          "url": "https://ithelp.ithome.com.tw/articles/10407119",
+          "publishedAt": "2026-09-03T00:26:09+08:00",
+          "views": 60,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407426,
+          "day": 18,
+          "title": "Day 18  |  Otsu&#039;s Thresholding：讓電腦自己找到最佳 Threshold",
+          "url": "https://ithelp.ithome.com.tw/articles/10407426",
+          "publishedAt": "2026-09-04T00:25:56+08:00",
+          "views": 51,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407703,
+          "day": 19,
+          "title": "Day 19  |  Adaptive Threshold：不是每個地方，都該用同一個 Threshold",
+          "url": "https://ithelp.ithome.com.tw/articles/10407703",
+          "publishedAt": "2026-09-05T00:20:30+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407963,
+          "day": 20,
+          "title": "Day 20  |  Morphology：怎麼把二值化後的圖片整理乾淨？",
+          "url": "https://ithelp.ithome.com.tw/articles/10407963",
+          "publishedAt": "2026-09-06T00:42:28+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408220,
+          "day": 21,
+          "title": "Day 21  |  Connected Component：電腦怎麼知道這是幾個物體？",
+          "url": "https://ithelp.ithome.com.tw/articles/10408220",
+          "publishedAt": "2026-09-07T00:22:26+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408418,
+          "day": 22,
+          "title": "Day 22 | Fourier Transform：圖片也能分析頻率？",
+          "url": "https://ithelp.ithome.com.tw/articles/10408418",
+          "publishedAt": "2026-09-08T00:14:52+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408728,
+          "day": 23,
+          "title": "Day 23  |  Fast Fourier Transform（FFT）：為什麼傅立葉轉換可以快這麼多？",
+          "url": "https://ithelp.ithome.com.tw/articles/10408728",
+          "publishedAt": "2026-09-09T00:34:53+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
       "id": 9259,
       "user": {
         "id": 20141194,
@@ -39107,256 +39357,6 @@
           "title": "Day 23：實作 RDB 保存與啟動時的 AOF/RDB 自動加載資料恢復",
           "url": "https://ithelp.ithome.com.tw/articles/10408811",
           "publishedAt": "2026-09-09T09:08:06+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9270,
-      "user": {
-        "id": 20181780,
-        "name": "KY",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20181780/profile"
-      },
-      "group": "Software Development",
-      "title": "從像素到 Computer Vision：30 天理解數位影像處理",
-      "description": "介紹影像處理的方法、原理及應用",
-      "team": null,
-      "signupDate": "2026/08/18T15:08:37+08:00",
-      "lastUpdated": "2026-09-10T00:03:50+08:00",
-      "dayCount": 23,
-      "articleCount": 23,
-      "rssFallback": true,
-      "subscriptions": 1,
-      "articles": [
-        {
-          "id": 10403671,
-          "day": 1,
-          "title": "Day 1  |  前言",
-          "url": "https://ithelp.ithome.com.tw/articles/10403671",
-          "publishedAt": "2026-08-18T15:12:38+08:00",
-          "views": 155,
-          "likes": 0,
-          "comments": 1
-        },
-        {
-          "id": 10403740,
-          "day": 2,
-          "title": "Day 2  |  電腦到底是怎麼看見一張圖片的？",
-          "url": "https://ithelp.ithome.com.tw/articles/10403740",
-          "publishedAt": "2026-08-19T01:08:21+08:00",
-          "views": 200,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10403923,
-          "day": 3,
-          "title": "Day 3  |  PixelResolutionColor Depth：一張圖片到底是怎麼組成的？",
-          "url": "https://ithelp.ithome.com.tw/articles/10403923",
-          "publishedAt": "2026-08-20T00:34:36+08:00",
-          "views": 223,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404117,
-          "day": 4,
-          "title": "Day 4  |  RGBGrayHSV：電腦是怎麼表示顏色的？",
-          "url": "https://ithelp.ithome.com.tw/articles/10404117",
-          "publishedAt": "2026-08-21T00:30:51+08:00",
-          "views": 208,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404368,
-          "day": 5,
-          "title": "Day 5  |  Sampling 與 Quantization：連續的世界，是怎麼變成數位影像的？",
-          "url": "https://ithelp.ithome.com.tw/articles/10404368",
-          "publishedAt": "2026-08-22T03:24:40+08:00",
-          "views": 142,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404370,
-          "day": 6,
-          "title": "Day 6  |  Histogram：一張圖片的亮度都跑去哪了？",
-          "url": "https://ithelp.ithome.com.tw/articles/10404370",
-          "publishedAt": "2026-08-23T00:28:40+08:00",
-          "views": 113,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404723,
-          "day": 7,
-          "title": "Day 7  |  Convolution（卷積）：為什麼影像處理幾乎都離不開它？",
-          "url": "https://ithelp.ithome.com.tw/articles/10404723",
-          "publishedAt": "2026-08-24T00:17:45+08:00",
-          "views": 107,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404976,
-          "day": 8,
-          "title": "Day 8  |  Kernel 設計：為什麼不同的 Kernel 會產生不同的效果？",
-          "url": "https://ithelp.ithome.com.tw/articles/10404976",
-          "publishedAt": "2026-08-25T00:19:00+08:00",
-          "views": 121,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405205,
-          "day": 9,
-          "title": "Day 9  |  Mean Filter：為什麼取平均，就能讓圖片變平滑？",
-          "url": "https://ithelp.ithome.com.tw/articles/10405205",
-          "publishedAt": "2026-08-26T01:31:59+08:00",
-          "views": 120,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405395,
-          "day": 10,
-          "title": "Day 10  |  Gaussian Filter：為什麼離中心越近，應該越重要？",
-          "url": "https://ithelp.ithome.com.tw/articles/10405395",
-          "publishedAt": "2026-08-27T02:04:36+08:00",
-          "views": 109,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405586,
-          "day": 11,
-          "title": "Day 11  |  Median Filter：如果不要平均，會發生什麼事？",
-          "url": "https://ithelp.ithome.com.tw/articles/10405586",
-          "publishedAt": "2026-08-28T00:16:51+08:00",
-          "views": 91,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405850,
-          "day": 12,
-          "title": "Day 12  |  Image Gradient：電腦怎麼知道哪裡是邊緣？",
-          "url": "https://ithelp.ithome.com.tw/articles/10405850",
-          "publishedAt": "2026-08-29T01:16:45+08:00",
-          "views": 97,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406026,
-          "day": 13,
-          "title": "Day 13  |  Sobel Operator：如何找出圖片的亮度變化？",
-          "url": "https://ithelp.ithome.com.tw/articles/10406026",
-          "publishedAt": "2026-08-30T00:23:49+08:00",
-          "views": 75,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406308,
-          "day": 14,
-          "title": "Day 14  |  Prewitt Operator：它和 Sobel 到底差在哪裡？",
-          "url": "https://ithelp.ithome.com.tw/articles/10406308",
-          "publishedAt": "2026-08-31T01:15:56+08:00",
-          "views": 96,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406552,
-          "day": 15,
-          "title": "Day 15  |  Laplacian：除了亮度變化，還能觀察什麼？",
-          "url": "https://ithelp.ithome.com.tw/articles/10406552",
-          "publishedAt": "2026-09-01T00:22:29+08:00",
-          "views": 61,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406907,
-          "day": 16,
-          "title": "Day 16  |  Canny Edge Detection：經典的邊緣偵測方法",
-          "url": "https://ithelp.ithome.com.tw/articles/10406907",
-          "publishedAt": "2026-09-02T00:41:59+08:00",
-          "views": 97,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407119,
-          "day": 17,
-          "title": "Day 17  |  Threshold：怎麼把圖片分成黑白兩個世界？",
-          "url": "https://ithelp.ithome.com.tw/articles/10407119",
-          "publishedAt": "2026-09-03T00:26:09+08:00",
-          "views": 60,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407426,
-          "day": 18,
-          "title": "Day 18  |  Otsu&#039;s Thresholding：讓電腦自己找到最佳 Threshold",
-          "url": "https://ithelp.ithome.com.tw/articles/10407426",
-          "publishedAt": "2026-09-04T00:25:56+08:00",
-          "views": 51,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407703,
-          "day": 19,
-          "title": "Day 19  |  Adaptive Threshold：不是每個地方，都該用同一個 Threshold",
-          "url": "https://ithelp.ithome.com.tw/articles/10407703",
-          "publishedAt": "2026-09-05T00:20:30+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407963,
-          "day": 20,
-          "title": "Day 20  |  Morphology：怎麼把二值化後的圖片整理乾淨？",
-          "url": "https://ithelp.ithome.com.tw/articles/10407963",
-          "publishedAt": "2026-09-06T00:42:28+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408220,
-          "day": 21,
-          "title": "Day 21  |  Connected Component：電腦怎麼知道這是幾個物體？",
-          "url": "https://ithelp.ithome.com.tw/articles/10408220",
-          "publishedAt": "2026-09-07T00:22:26+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408418,
-          "day": 22,
-          "title": "Day 22 | Fourier Transform：圖片也能分析頻率？",
-          "url": "https://ithelp.ithome.com.tw/articles/10408418",
-          "publishedAt": "2026-09-08T00:14:52+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408728,
-          "day": 23,
-          "title": "Day 23  |  Fast Fourier Transform（FFT）：為什麼傅立葉轉換可以快這麼多？",
-          "url": "https://ithelp.ithome.com.tw/articles/10408728",
-          "publishedAt": "2026-09-09T00:34:53+08:00",
           "views": 0,
           "likes": 0,
           "comments": 0
@@ -45003,6 +45003,196 @@
       ]
     },
     {
+      "id": 9292,
+      "user": {
+        "id": 20168764,
+        "name": "kater1122",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20168764/profile"
+      },
+      "group": "Software Development",
+      "title": "台股日頻量化交易：開發一條從資料、特徵、模型到每日下單清單的產線",
+      "description": "量化交易系統本質上就是一套 ML 系統：爬蟲是資料管線，因子是特徵工程，回測是離線評估，每日訊號是線上推論。30 天，用 AI Engineering 的方法蓋一條台股日頻產線，終點是每天早上一張下單清單。\r\n\r\n資料自己爬 TWSE 與 TPEx，處理民國年、CP950 編碼與存活者偏差，再把除權息接回日線算還原股價。接著是因子工程、LightGBM 排序模型，與一套含成本、漲跌停的回測引擎。",
+      "team": "會後不散場",
+      "signupDate": "2026/08/21T18:20:00+08:00",
+      "lastUpdated": "2026-09-10T00:04:12+08:00",
+      "dayCount": 18,
+      "articleCount": 17,
+      "rssFallback": true,
+      "subscriptions": 3,
+      "articles": [
+        {
+          "id": 10404255,
+          "day": 1,
+          "title": "Day 1 - 明天要不要買？我要蓋的那條產線",
+          "url": "https://ithelp.ithome.com.tw/articles/10404255",
+          "publishedAt": "2026-08-24T19:37:12+08:00",
+          "views": 152,
+          "likes": 1,
+          "comments": 0
+        },
+        {
+          "id": 10404879,
+          "day": 2,
+          "title": "Day 2 - 台股每個月 10 號的那件事，美股沒有",
+          "url": "https://ithelp.ithome.com.tw/articles/10404879",
+          "publishedAt": "2026-08-25T10:40:09+08:00",
+          "views": 114,
+          "likes": 1,
+          "comments": 0
+        },
+        {
+          "id": 10405247,
+          "day": 3,
+          "title": "Day 3 - 選股和擇時混在一起，你永遠不知道是誰賺的",
+          "url": "https://ithelp.ithome.com.tw/articles/10405247",
+          "publishedAt": "2026-08-26T10:16:31+08:00",
+          "views": 125,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405249,
+          "day": 4,
+          "title": "Day 4 - 開工前的四條規矩，違反任何一條回測都會騙你",
+          "url": "https://ithelp.ithome.com.tw/articles/10405249",
+          "publishedAt": "2026-08-27T09:14:09+08:00",
+          "views": 68,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405471,
+          "day": 5,
+          "title": "Day 5 - 台股資料到處都有，為什麼我還要自己爬",
+          "url": "https://ithelp.ithome.com.tw/articles/10405471",
+          "publishedAt": "2026-08-28T11:05:11+08:00",
+          "views": 105,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405892,
+          "day": 6,
+          "title": "Day 6 - 被交易所擋了幾百次，還能接著跑的爬蟲",
+          "url": "https://ithelp.ithome.com.tw/articles/10405892",
+          "publishedAt": "2026-08-29T10:47:05+08:00",
+          "views": 83,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406061,
+          "day": 7,
+          "title": "Day 7 - 它不會報錯，只會給你錯的東西",
+          "url": "https://ithelp.ithome.com.tw/articles/10406061",
+          "publishedAt": "2026-08-30T06:59:10+08:00",
+          "views": 97,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406409,
+          "day": 8,
+          "title": "Day 8 - 除權息那天的跳空，不是真的跌",
+          "url": "https://ithelp.ithome.com.tw/articles/10406409",
+          "publishedAt": "2026-08-31T13:24:17+08:00",
+          "views": 70,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406617,
+          "day": 9,
+          "title": "Day 9 - 全台股的財報都在這個網站，免費，但別直接餵給模型",
+          "url": "https://ithelp.ithome.com.tw/articles/10406617",
+          "publishedAt": "2026-09-01T10:48:19+08:00",
+          "views": 120,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406973,
+          "day": 10,
+          "title": "Day 10 - 跟著外資買，隔天真的會漲：機率 52%，賺 0.1%",
+          "url": "https://ithelp.ithome.com.tw/articles/10406973",
+          "publishedAt": "2026-09-02T11:24:02+08:00",
+          "views": 76,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407206,
+          "day": 11,
+          "title": "Day 11 - 大盤在想什麼：十一個指標猜不到漲跌，但猜得到風暴",
+          "url": "https://ithelp.ithome.com.tw/articles/10407206",
+          "publishedAt": "2026-09-03T13:28:04+08:00",
+          "views": 69,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407588,
+          "day": 12,
+          "title": "Day 12 - 133 個特徵，數量最多的那一類最沒用",
+          "url": "https://ithelp.ithome.com.tw/articles/10407588",
+          "publishedAt": "2026-09-04T14:18:52+08:00",
+          "views": 5,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407734,
+          "day": 13,
+          "title": "Day 13 - 選股訊號在什麼行情有效：大盤跌的時候",
+          "url": "https://ithelp.ithome.com.tw/articles/10407734",
+          "publishedAt": "2026-09-05T04:13:55+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407961,
+          "day": 14,
+          "title": "Day 14 - 時序資料的 k-fold，切錯就全錯",
+          "url": "https://ithelp.ithome.com.tw/articles/10407961",
+          "publishedAt": "2026-09-06T00:28:10+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408244,
+          "day": 15,
+          "title": "Day 15 - LightGBM 一個打九個嗎？順便定一把尺",
+          "url": "https://ithelp.ithome.com.tw/articles/10408244",
+          "publishedAt": "2026-09-07T08:45:05+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408456,
+          "day": 16,
+          "title": "Day 16 - 昨晚的美股，開盤那一秒就用完了",
+          "url": "https://ithelp.ithome.com.tw/articles/10408456",
+          "publishedAt": "2026-09-08T07:40:12+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408719,
+          "day": 17,
+          "title": "Day 17 - 34 個產業，輪動是真的，但一個月只值 0.8%",
+          "url": "https://ithelp.ithome.com.tw/articles/10408719",
+          "publishedAt": "2026-09-09T01:07:26+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
       "id": 9306,
       "user": {
         "id": 20140310,
@@ -46556,196 +46746,6 @@
           "title": "Day 17｜AI 工作流跑到一半停了，怎麼接著跑？",
           "url": "https://ithelp.ithome.com.tw/articles/10408978",
           "publishedAt": "2026-09-09T23:21:41+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9292,
-      "user": {
-        "id": 20168764,
-        "name": "kater1122",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20168764/profile"
-      },
-      "group": "Software Development",
-      "title": "台股日頻量化交易：開發一條從資料、特徵、模型到每日下單清單的產線",
-      "description": "量化交易系統本質上就是一套 ML 系統：爬蟲是資料管線，因子是特徵工程，回測是離線評估，每日訊號是線上推論。30 天，用 AI Engineering 的方法蓋一條台股日頻產線，終點是每天早上一張下單清單。\r\n\r\n資料自己爬 TWSE 與 TPEx，處理民國年、CP950 編碼與存活者偏差，再把除權息接回日線算還原股價。接著是因子工程、LightGBM 排序模型，與一套含成本、漲跌停的回測引擎。",
-      "team": "會後不散場",
-      "signupDate": "2026/08/21T18:20:00+08:00",
-      "lastUpdated": "2026-09-10T00:04:12+08:00",
-      "dayCount": 17,
-      "articleCount": 17,
-      "rssFallback": true,
-      "subscriptions": 3,
-      "articles": [
-        {
-          "id": 10404255,
-          "day": 1,
-          "title": "Day 1 - 明天要不要買？我要蓋的那條產線",
-          "url": "https://ithelp.ithome.com.tw/articles/10404255",
-          "publishedAt": "2026-08-24T19:37:12+08:00",
-          "views": 152,
-          "likes": 1,
-          "comments": 0
-        },
-        {
-          "id": 10404879,
-          "day": 2,
-          "title": "Day 2 - 台股每個月 10 號的那件事，美股沒有",
-          "url": "https://ithelp.ithome.com.tw/articles/10404879",
-          "publishedAt": "2026-08-25T10:40:09+08:00",
-          "views": 114,
-          "likes": 1,
-          "comments": 0
-        },
-        {
-          "id": 10405247,
-          "day": 3,
-          "title": "Day 3 - 選股和擇時混在一起，你永遠不知道是誰賺的",
-          "url": "https://ithelp.ithome.com.tw/articles/10405247",
-          "publishedAt": "2026-08-26T10:16:31+08:00",
-          "views": 125,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405249,
-          "day": 4,
-          "title": "Day 4 - 開工前的四條規矩，違反任何一條回測都會騙你",
-          "url": "https://ithelp.ithome.com.tw/articles/10405249",
-          "publishedAt": "2026-08-27T09:14:09+08:00",
-          "views": 68,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405471,
-          "day": 5,
-          "title": "Day 5 - 台股資料到處都有，為什麼我還要自己爬",
-          "url": "https://ithelp.ithome.com.tw/articles/10405471",
-          "publishedAt": "2026-08-28T11:05:11+08:00",
-          "views": 105,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405892,
-          "day": 6,
-          "title": "Day 6 - 被交易所擋了幾百次，還能接著跑的爬蟲",
-          "url": "https://ithelp.ithome.com.tw/articles/10405892",
-          "publishedAt": "2026-08-29T10:47:05+08:00",
-          "views": 83,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406061,
-          "day": 7,
-          "title": "Day 7 - 它不會報錯，只會給你錯的東西",
-          "url": "https://ithelp.ithome.com.tw/articles/10406061",
-          "publishedAt": "2026-08-30T06:59:10+08:00",
-          "views": 97,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406409,
-          "day": 8,
-          "title": "Day 8 - 除權息那天的跳空，不是真的跌",
-          "url": "https://ithelp.ithome.com.tw/articles/10406409",
-          "publishedAt": "2026-08-31T13:24:17+08:00",
-          "views": 70,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406617,
-          "day": 9,
-          "title": "Day 9 - 全台股的財報都在這個網站，免費，但別直接餵給模型",
-          "url": "https://ithelp.ithome.com.tw/articles/10406617",
-          "publishedAt": "2026-09-01T10:48:19+08:00",
-          "views": 120,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406973,
-          "day": 10,
-          "title": "Day 10 - 跟著外資買，隔天真的會漲：機率 52%，賺 0.1%",
-          "url": "https://ithelp.ithome.com.tw/articles/10406973",
-          "publishedAt": "2026-09-02T11:24:02+08:00",
-          "views": 76,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407206,
-          "day": 11,
-          "title": "Day 11 - 大盤在想什麼：十一個指標猜不到漲跌，但猜得到風暴",
-          "url": "https://ithelp.ithome.com.tw/articles/10407206",
-          "publishedAt": "2026-09-03T13:28:04+08:00",
-          "views": 69,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407588,
-          "day": 12,
-          "title": "Day 12 - 133 個特徵，數量最多的那一類最沒用",
-          "url": "https://ithelp.ithome.com.tw/articles/10407588",
-          "publishedAt": "2026-09-04T14:18:52+08:00",
-          "views": 5,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407734,
-          "day": 13,
-          "title": "Day 13 - 選股訊號在什麼行情有效：大盤跌的時候",
-          "url": "https://ithelp.ithome.com.tw/articles/10407734",
-          "publishedAt": "2026-09-05T04:13:55+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407961,
-          "day": 14,
-          "title": "Day 14 - 時序資料的 k-fold，切錯就全錯",
-          "url": "https://ithelp.ithome.com.tw/articles/10407961",
-          "publishedAt": "2026-09-06T00:28:10+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408244,
-          "day": 15,
-          "title": "Day 15 - LightGBM 一個打九個嗎？順便定一把尺",
-          "url": "https://ithelp.ithome.com.tw/articles/10408244",
-          "publishedAt": "2026-09-07T08:45:05+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408456,
-          "day": 16,
-          "title": "Day 16 - 昨晚的美股，開盤那一秒就用完了",
-          "url": "https://ithelp.ithome.com.tw/articles/10408456",
-          "publishedAt": "2026-09-08T07:40:12+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408719,
-          "day": 17,
-          "title": "Day 17 - 34 個產業，輪動是真的，但一個月只值 0.8%",
-          "url": "https://ithelp.ithome.com.tw/articles/10408719",
-          "publishedAt": "2026-09-09T01:07:26+08:00",
           "views": 0,
           "likes": 0,
           "comments": 0
@@ -54533,7 +54533,7 @@
       "description": "本系列以開發一套內部專案管理系統為主線，從 User Story、流程與架構設計出發，逐步完成 Vue 3 前端、ASP.NET Core Web API、SQL Server 資料庫、自動化測試、版本控制、CI/CD 與 Google Cloud 部署。過程中導入規格驅動開發，運用 Codex 協助整理需求、規劃實作、產生程式與文件，再透過測試與人工驗收確認成果。希望用 30 天記錄一套可落地、可維護，也能重複運用的人機協作開發流程。",
       "team": "HIT靈機一動萬象成章",
       "signupDate": "2026/08/27T20:59:07+08:00",
-      "lastUpdated": "2026-09-09T23:29:51+08:00",
+      "lastUpdated": "2026-09-10T00:34:40+08:00",
       "dayCount": 11,
       "articleCount": 11,
       "rssFallback": true,
@@ -58122,6 +58122,116 @@
       ]
     },
     {
+      "id": 9443,
+      "user": {
+        "id": 20162883,
+        "name": "Benben",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20162883/profile"
+      },
+      "group": "AI Engineering",
+      "title": "[ opencode ] 開源 AI coding agent",
+      "description": "Build on Google AI, Claude AI, ChatGPT & Codex, 的主題通通都有，就是沒有屬於開源 AI 工具的主題。\r\n既然這樣，今後只好自己創造。\r\n做出屬於自己的開源 AI 工具箱，在開源世界的偉大抒情史詩 。",
+      "team": null,
+      "signupDate": "2026/09/01T00:07:13+08:00",
+      "lastUpdated": "2026-09-10T00:05:51+08:00",
+      "dayCount": 10,
+      "articleCount": 9,
+      "rssFallback": true,
+      "subscriptions": 1,
+      "articles": [
+        {
+          "id": 10406551,
+          "day": 1,
+          "title": "01-opencode | 你的終端機 AI 戰友：系列開場",
+          "url": "https://ithelp.ithome.com.tw/articles/10406551",
+          "publishedAt": "2026-09-01T01:21:19+08:00",
+          "views": 129,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407689,
+          "day": 1,
+          "title": "05-opencode | Plan mode vs Build mode：先規劃再動手",
+          "url": "https://ithelp.ithome.com.tw/articles/10407689",
+          "publishedAt": "2026-09-05T07:41:30+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407966,
+          "day": 1,
+          "title": "06-opencode | 上下文提供技巧：@ 引用圖片與 prompt 心法",
+          "url": "https://ithelp.ithome.com.tw/articles/10407966",
+          "publishedAt": "2026-09-06T00:46:44+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408205,
+          "day": 1,
+          "title": "07-opencode | /undo 與 /redo：放心讓 AI 動手的安全網",
+          "url": "https://ithelp.ithome.com.tw/articles/10408205",
+          "publishedAt": "2026-09-07T21:23:11+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408290,
+          "day": 1,
+          "title": "08-opencode | 個人化你的 TUI：themeskeybinds 與 config",
+          "url": "https://ithelp.ithome.com.tw/articles/10408290",
+          "publishedAt": "2026-09-08T00:48:04+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406777,
+          "day": 2,
+          "title": "02-opencode | 五分鐘安裝設定開工",
+          "url": "https://ithelp.ithome.com.tw/articles/10406777",
+          "publishedAt": "2026-09-02T00:55:30+08:00",
+          "views": 94,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407074,
+          "day": 3,
+          "title": "03-opencode | TUI 介面導覽：把每個角落走一遍",
+          "url": "https://ithelp.ithome.com.tw/articles/10407074",
+          "publishedAt": "2026-09-03T00:08:26+08:00",
+          "views": 65,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407417,
+          "day": 4,
+          "title": "04-opencode | /init 與 AGENTS.md：讓 AI 認識你的專案",
+          "url": "https://ithelp.ithome.com.tw/articles/10407417",
+          "publishedAt": "2026-09-04T00:01:53+08:00",
+          "views": 23,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408546,
+          "day": 5,
+          "title": "09-opencode | LSP 與 formatters：讓 AI 改得更準",
+          "url": "https://ithelp.ithome.com.tw/articles/10408546",
+          "publishedAt": "2026-09-09T01:03:33+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
       "id": 9147,
       "user": {
         "id": 20145462,
@@ -58243,7 +58353,7 @@
       "description": "這個系列將以我開發的 TACT（Trust-Anchored Confidence Tempering）為主軸，從 LLM Self-Consistency 的多數決限制出發，逐步說明有號信心加權、死區安全機制、無標籤估計、數學推導、Python 實作與實驗設計。我也會公開失敗案例、消融實驗與真實模型軌跡，討論何時可以信任信心訊號，以及證據不足時為何應退回一般多數決。",
       "team": null,
       "signupDate": "2026/08/14T15:44:48+08:00",
-      "lastUpdated": "2026-09-09T23:21:39+08:00",
+      "lastUpdated": "2026-09-10T00:32:51+08:00",
       "dayCount": 9,
       "articleCount": 9,
       "rssFallback": true,
@@ -59674,116 +59784,6 @@
           "title": "Day 9：第一條 Data Science Pipeline",
           "url": "https://ithelp.ithome.com.tw/articles/10408854",
           "publishedAt": "2026-09-09T21:00:03+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9443,
-      "user": {
-        "id": 20162883,
-        "name": "Benben",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20162883/profile"
-      },
-      "group": "AI Engineering",
-      "title": "[ opencode ] 開源 AI coding agent",
-      "description": "Build on Google AI, Claude AI, ChatGPT & Codex, 的主題通通都有，就是沒有屬於開源 AI 工具的主題。\r\n既然這樣，今後只好自己創造。\r\n做出屬於自己的開源 AI 工具箱，在開源世界的偉大抒情史詩 。",
-      "team": null,
-      "signupDate": "2026/09/01T00:07:13+08:00",
-      "lastUpdated": "2026-09-10T00:05:51+08:00",
-      "dayCount": 9,
-      "articleCount": 9,
-      "rssFallback": true,
-      "subscriptions": 1,
-      "articles": [
-        {
-          "id": 10406551,
-          "day": 1,
-          "title": "01-opencode | 你的終端機 AI 戰友：系列開場",
-          "url": "https://ithelp.ithome.com.tw/articles/10406551",
-          "publishedAt": "2026-09-01T01:21:19+08:00",
-          "views": 129,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407689,
-          "day": 1,
-          "title": "05-opencode | Plan mode vs Build mode：先規劃再動手",
-          "url": "https://ithelp.ithome.com.tw/articles/10407689",
-          "publishedAt": "2026-09-05T07:41:30+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407966,
-          "day": 1,
-          "title": "06-opencode | 上下文提供技巧：@ 引用圖片與 prompt 心法",
-          "url": "https://ithelp.ithome.com.tw/articles/10407966",
-          "publishedAt": "2026-09-06T00:46:44+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408205,
-          "day": 1,
-          "title": "07-opencode | /undo 與 /redo：放心讓 AI 動手的安全網",
-          "url": "https://ithelp.ithome.com.tw/articles/10408205",
-          "publishedAt": "2026-09-07T21:23:11+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408290,
-          "day": 1,
-          "title": "08-opencode | 個人化你的 TUI：themeskeybinds 與 config",
-          "url": "https://ithelp.ithome.com.tw/articles/10408290",
-          "publishedAt": "2026-09-08T00:48:04+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406777,
-          "day": 2,
-          "title": "02-opencode | 五分鐘安裝設定開工",
-          "url": "https://ithelp.ithome.com.tw/articles/10406777",
-          "publishedAt": "2026-09-02T00:55:30+08:00",
-          "views": 94,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407074,
-          "day": 3,
-          "title": "03-opencode | TUI 介面導覽：把每個角落走一遍",
-          "url": "https://ithelp.ithome.com.tw/articles/10407074",
-          "publishedAt": "2026-09-03T00:08:26+08:00",
-          "views": 65,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407417,
-          "day": 4,
-          "title": "04-opencode | /init 與 AGENTS.md：讓 AI 認識你的專案",
-          "url": "https://ithelp.ithome.com.tw/articles/10407417",
-          "publishedAt": "2026-09-04T00:01:53+08:00",
-          "views": 23,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408546,
-          "day": 5,
-          "title": "09-opencode | LSP 與 formatters：讓 AI 改得更準",
-          "url": "https://ithelp.ithome.com.tw/articles/10408546",
-          "publishedAt": "2026-09-09T01:03:33+08:00",
           "views": 0,
           "likes": 0,
           "comments": 0
@@ -62530,6 +62530,96 @@
       ]
     },
     {
+      "id": 9493,
+      "user": {
+        "id": 20168537,
+        "name": "yifan0802",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20168537/profile"
+      },
+      "group": "Kubernetes",
+      "title": "不是背 YAML！30 天從零打造 Kubernetes 微服務：從本機實戰一路到 CKA",
+      "description": "本系列將以「做中學」取代死背 YAML，從零開始在本機建立 Kubernetes 環境，並逐步打造一套由 FastAPI、Redis、PostgreSQL 組成的微服務系統。30 天內容將涵蓋 Deployment、Service、ConfigMap、Secret、Storage、Scheduling、HPA、RBAC、NetworkPolicy、Gateway API、Helm、Kustomize、etcd 與故障排查等核心主題。每個觀念都會搭配實際操作與刻意製造的錯誤情境，帶讀者從「會部署」一路進階到「會管理、會除錯」，同時建立 CKA 所需的實戰能力與 Kubernetes 系統思維。",
+      "team": null,
+      "signupDate": "2026/09/03T21:52:03+08:00",
+      "lastUpdated": "2026-09-10T00:06:41+08:00",
+      "dayCount": 8,
+      "articleCount": 7,
+      "rssFallback": true,
+      "subscriptions": 1,
+      "articles": [
+        {
+          "id": 10407347,
+          "day": 1,
+          "title": "Day 1｜為什麼學 Kubernetes 總是學到一半？這 30 天我們換一種方式",
+          "url": "https://ithelp.ithome.com.tw/articles/10407347",
+          "publishedAt": "2026-09-03T21:59:12+08:00",
+          "views": 102,
+          "likes": 1,
+          "comments": 0
+        },
+        {
+          "id": 10407352,
+          "day": 2,
+          "title": "Day 2｜從實體機VM 到 Docker：Kubernetes 到底補上了哪一塊？",
+          "url": "https://ithelp.ithome.com.tw/articles/10407352",
+          "publishedAt": "2026-09-04T10:40:32+08:00",
+          "views": 46,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407353,
+          "day": 3,
+          "title": "Day 3｜Kubernetes 架構一次看懂：Control Plane 與 Worker 到底誰在做事？",
+          "url": "https://ithelp.ithome.com.tw/articles/10407353",
+          "publishedAt": "2026-09-05T01:50:50+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407355,
+          "day": 4,
+          "title": "Day 4｜不用花一毛錢：用 kind 在自己的電腦建立三節點 Kubernetes Cluster",
+          "url": "https://ithelp.ithome.com.tw/articles/10407355",
+          "publishedAt": "2026-09-06T01:51:09+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407356,
+          "day": 5,
+          "title": "Day 5｜第一個 Pod：Kubernetes 為什麼不直接管理 Container？",
+          "url": "https://ithelp.ithome.com.tw/articles/10407356",
+          "publishedAt": "2026-09-07T00:59:17+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407499,
+          "day": 6,
+          "title": "Day 6｜LabelSelectorNamespace：Kubernetes 是怎麼找到自己人的？",
+          "url": "https://ithelp.ithome.com.tw/articles/10407499",
+          "publishedAt": "2026-09-08T00:17:52+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407504,
+          "day": 7,
+          "title": "Day 7｜Deployment 與 ReplicaSet：第一次看到 Kubernetes 的 Self-Healing",
+          "url": "https://ithelp.ithome.com.tw/articles/10407504",
+          "publishedAt": "2026-09-09T00:16:36+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
       "id": 9480,
       "user": {
         "id": 20183410,
@@ -63063,96 +63153,6 @@
           "title": "Day 7｜一筆 case 通過的條件誰來寫？寫完誰來驗？",
           "url": "https://ithelp.ithome.com.tw/articles/10408934",
           "publishedAt": "2026-09-09T21:54:30+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9493,
-      "user": {
-        "id": 20168537,
-        "name": "yifan0802",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20168537/profile"
-      },
-      "group": "Kubernetes",
-      "title": "不是背 YAML！30 天從零打造 Kubernetes 微服務：從本機實戰一路到 CKA",
-      "description": "本系列將以「做中學」取代死背 YAML，從零開始在本機建立 Kubernetes 環境，並逐步打造一套由 FastAPI、Redis、PostgreSQL 組成的微服務系統。30 天內容將涵蓋 Deployment、Service、ConfigMap、Secret、Storage、Scheduling、HPA、RBAC、NetworkPolicy、Gateway API、Helm、Kustomize、etcd 與故障排查等核心主題。每個觀念都會搭配實際操作與刻意製造的錯誤情境，帶讀者從「會部署」一路進階到「會管理、會除錯」，同時建立 CKA 所需的實戰能力與 Kubernetes 系統思維。",
-      "team": null,
-      "signupDate": "2026/09/03T21:52:03+08:00",
-      "lastUpdated": "2026-09-10T00:06:41+08:00",
-      "dayCount": 7,
-      "articleCount": 7,
-      "rssFallback": true,
-      "subscriptions": 1,
-      "articles": [
-        {
-          "id": 10407347,
-          "day": 1,
-          "title": "Day 1｜為什麼學 Kubernetes 總是學到一半？這 30 天我們換一種方式",
-          "url": "https://ithelp.ithome.com.tw/articles/10407347",
-          "publishedAt": "2026-09-03T21:59:12+08:00",
-          "views": 102,
-          "likes": 1,
-          "comments": 0
-        },
-        {
-          "id": 10407352,
-          "day": 2,
-          "title": "Day 2｜從實體機VM 到 Docker：Kubernetes 到底補上了哪一塊？",
-          "url": "https://ithelp.ithome.com.tw/articles/10407352",
-          "publishedAt": "2026-09-04T10:40:32+08:00",
-          "views": 46,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407353,
-          "day": 3,
-          "title": "Day 3｜Kubernetes 架構一次看懂：Control Plane 與 Worker 到底誰在做事？",
-          "url": "https://ithelp.ithome.com.tw/articles/10407353",
-          "publishedAt": "2026-09-05T01:50:50+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407355,
-          "day": 4,
-          "title": "Day 4｜不用花一毛錢：用 kind 在自己的電腦建立三節點 Kubernetes Cluster",
-          "url": "https://ithelp.ithome.com.tw/articles/10407355",
-          "publishedAt": "2026-09-06T01:51:09+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407356,
-          "day": 5,
-          "title": "Day 5｜第一個 Pod：Kubernetes 為什麼不直接管理 Container？",
-          "url": "https://ithelp.ithome.com.tw/articles/10407356",
-          "publishedAt": "2026-09-07T00:59:17+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407499,
-          "day": 6,
-          "title": "Day 6｜LabelSelectorNamespace：Kubernetes 是怎麼找到自己人的？",
-          "url": "https://ithelp.ithome.com.tw/articles/10407499",
-          "publishedAt": "2026-09-08T00:17:52+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407504,
-          "day": 7,
-          "title": "Day 7｜Deployment 與 ReplicaSet：第一次看到 Kubernetes 的 Self-Healing",
-          "url": "https://ithelp.ithome.com.tw/articles/10407504",
-          "publishedAt": "2026-09-09T00:16:36+08:00",
           "views": 0,
           "likes": 0,
           "comments": 0
@@ -64210,6 +64210,76 @@
       ]
     },
     {
+      "id": 9521,
+      "user": {
+        "id": 20107403,
+        "name": "eviler",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20107403/profile"
+      },
+      "group": "自我挑戰組",
+      "title": "群島計畫：你複製的是結論，還是看見的能力？",
+      "description": "《群島計畫》正式開始連載——這是《綠洲計畫》的續集，但這次的主角不是一個團隊，是一整個部門。\r\n\r\n當同一套驗證有效的方法，被複製到五個完全不同的團隊，為什麼結果長得完全不一樣？顧問艾佛勒帶著新收的學徒蘇菲，要一次看懂五座島。\r\n\r\n接下來30天，我們每天更新一章，一起跟著蘇菲走過五座島，看她從一個照著SOP做訪談的學徒，慢慢學會在沒有標準答案時，仍然做出判斷。",
+      "team": null,
+      "signupDate": "2026/09/05T23:20:52+08:00",
+      "lastUpdated": "2026-09-10T00:07:12+08:00",
+      "dayCount": 6,
+      "articleCount": 5,
+      "rssFallback": true,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10407937,
+          "day": 1,
+          "title": "Day 01｜第一章：五座島與一張問卷",
+          "url": "https://ithelp.ithome.com.tw/articles/10407937",
+          "publishedAt": "2026-09-05T23:27:02+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407939,
+          "day": 2,
+          "title": "Day 02｜第二章：領航者的第二本筆記",
+          "url": "https://ithelp.ithome.com.tw/articles/10407939",
+          "publishedAt": "2026-09-06T00:35:25+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407940,
+          "day": 3,
+          "title": "Day 03｜第三章：蘇菲的登島清單",
+          "url": "https://ithelp.ithome.com.tw/articles/10407940",
+          "publishedAt": "2026-09-07T00:41:13+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407941,
+          "day": 4,
+          "title": "Day 04｜第四章：值班的人與沉默的假設",
+          "url": "https://ithelp.ithome.com.tw/articles/10407941",
+          "publishedAt": "2026-09-08T00:41:03+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407942,
+          "day": 5,
+          "title": "Day 05｜第五章：同一晚，另一邊的沉默",
+          "url": "https://ithelp.ithome.com.tw/articles/10407942",
+          "publishedAt": "2026-09-09T00:03:40+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
       "id": 9099,
       "user": {
         "id": 20109732,
@@ -64700,6 +64770,66 @@
       ]
     },
     {
+      "id": 9494,
+      "user": {
+        "id": 20162280,
+        "name": "ck642509",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20162280/profile"
+      },
+      "group": "AI 自動化",
+      "title": "用 AI Agent 打造你的產品使用手冊產線",
+      "description": "這是一個不想浪費時間寫文件的工程師的 side project。\r\n透過 Playwright 與 AI Agent，打造可以自動化生成產品使用手冊的產線。",
+      "team": null,
+      "signupDate": "2026/09/03T22:28:38+08:00",
+      "lastUpdated": "2026-09-10T00:06:43+08:00",
+      "dayCount": 5,
+      "articleCount": 4,
+      "rssFallback": true,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10407367,
+          "day": 1,
+          "title": "[Day 01] 緣起：總是過期的使用手冊",
+          "url": "https://ithelp.ithome.com.tw/articles/10407367",
+          "publishedAt": "2026-09-06T00:10:50+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408223,
+          "day": 2,
+          "title": "[Day 02] 技術選擇 (上)：先想想使用手冊長什麼樣子",
+          "url": "https://ithelp.ithome.com.tw/articles/10408223",
+          "publishedAt": "2026-09-07T00:17:12+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408435,
+          "day": 3,
+          "title": "[Day 03] 技術選擇 (中)：確認需求與規格",
+          "url": "https://ithelp.ithome.com.tw/articles/10408435",
+          "publishedAt": "2026-09-08T00:44:21+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408758,
+          "day": 4,
+          "title": "[Day 04] 技術選擇 (下)：工具選擇",
+          "url": "https://ithelp.ithome.com.tw/articles/10408758",
+          "publishedAt": "2026-09-09T01:25:46+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
       "id": 9516,
       "user": {
         "id": 20065818,
@@ -64763,76 +64893,6 @@
           "title": "Day 05：21 個測試方法，哪裡測得細哪裡只測了半套",
           "url": "https://ithelp.ithome.com.tw/articles/10408771",
           "publishedAt": "2026-09-09T05:50:10+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9521,
-      "user": {
-        "id": 20107403,
-        "name": "eviler",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20107403/profile"
-      },
-      "group": "自我挑戰組",
-      "title": "群島計畫：你複製的是結論，還是看見的能力？",
-      "description": "《群島計畫》正式開始連載——這是《綠洲計畫》的續集，但這次的主角不是一個團隊，是一整個部門。\r\n\r\n當同一套驗證有效的方法，被複製到五個完全不同的團隊，為什麼結果長得完全不一樣？顧問艾佛勒帶著新收的學徒蘇菲，要一次看懂五座島。\r\n\r\n接下來30天，我們每天更新一章，一起跟著蘇菲走過五座島，看她從一個照著SOP做訪談的學徒，慢慢學會在沒有標準答案時，仍然做出判斷。",
-      "team": null,
-      "signupDate": "2026/09/05T23:20:52+08:00",
-      "lastUpdated": "2026-09-10T00:07:12+08:00",
-      "dayCount": 5,
-      "articleCount": 5,
-      "rssFallback": true,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10407937,
-          "day": 1,
-          "title": "Day 01｜第一章：五座島與一張問卷",
-          "url": "https://ithelp.ithome.com.tw/articles/10407937",
-          "publishedAt": "2026-09-05T23:27:02+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407939,
-          "day": 2,
-          "title": "Day 02｜第二章：領航者的第二本筆記",
-          "url": "https://ithelp.ithome.com.tw/articles/10407939",
-          "publishedAt": "2026-09-06T00:35:25+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407940,
-          "day": 3,
-          "title": "Day 03｜第三章：蘇菲的登島清單",
-          "url": "https://ithelp.ithome.com.tw/articles/10407940",
-          "publishedAt": "2026-09-07T00:41:13+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407941,
-          "day": 4,
-          "title": "Day 04｜第四章：值班的人與沉默的假設",
-          "url": "https://ithelp.ithome.com.tw/articles/10407941",
-          "publishedAt": "2026-09-08T00:41:03+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407942,
-          "day": 5,
-          "title": "Day 05｜第五章：同一晚，另一邊的沉默",
-          "url": "https://ithelp.ithome.com.tw/articles/10407942",
-          "publishedAt": "2026-09-09T00:03:40+08:00",
           "views": 0,
           "likes": 0,
           "comments": 0
@@ -64994,66 +65054,6 @@
           "views": 133,
           "likes": 1,
           "comments": 1
-        }
-      ]
-    },
-    {
-      "id": 9494,
-      "user": {
-        "id": 20162280,
-        "name": "ck642509",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20162280/profile"
-      },
-      "group": "AI 自動化",
-      "title": "用 AI Agent 打造你的產品使用手冊產線",
-      "description": "這是一個不想浪費時間寫文件的工程師的 side project。\r\n透過 Playwright 與 AI Agent，打造可以自動化生成產品使用手冊的產線。",
-      "team": null,
-      "signupDate": "2026/09/03T22:28:38+08:00",
-      "lastUpdated": "2026-09-10T00:06:43+08:00",
-      "dayCount": 4,
-      "articleCount": 4,
-      "rssFallback": true,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10407367,
-          "day": 1,
-          "title": "[Day 01] 緣起：總是過期的使用手冊",
-          "url": "https://ithelp.ithome.com.tw/articles/10407367",
-          "publishedAt": "2026-09-06T00:10:50+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408223,
-          "day": 2,
-          "title": "[Day 02] 技術選擇 (上)：先想想使用手冊長什麼樣子",
-          "url": "https://ithelp.ithome.com.tw/articles/10408223",
-          "publishedAt": "2026-09-07T00:17:12+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408435,
-          "day": 3,
-          "title": "[Day 03] 技術選擇 (中)：確認需求與規格",
-          "url": "https://ithelp.ithome.com.tw/articles/10408435",
-          "publishedAt": "2026-09-08T00:44:21+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408758,
-          "day": 4,
-          "title": "[Day 04] 技術選擇 (下)：工具選擇",
-          "url": "https://ithelp.ithome.com.tw/articles/10408758",
-          "publishedAt": "2026-09-09T01:25:46+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
         }
       ]
     },
@@ -66276,6 +66276,46 @@
       ]
     },
     {
+      "id": 9535,
+      "user": {
+        "id": 20178770,
+        "name": "zoeeyee",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20178770/profile"
+      },
+      "group": "Software Development",
+      "title": "SyncETA 開發日記：手把手打造你的智慧出發時間推薦 PWA",
+      "description": "本系列將記錄開發 SyncETA Lite 的完整歷程——一套基於機率式思維、為初學者設計的出發時間推薦 PWA。\r\n\r\n內容涵蓋 PWA 基礎架構、台灣 TDX 運輸資料與 Google Maps API 串接、簡化版機率推薦邏輯（分位數運算）、離線與推播體驗優化，以及部署上線。\r\n\r\n全程程式碼皆會標注寫在專案 syncetalite-pwa/ 資料夾中的哪個檔案，適合對智慧交通、PWA 開發有興趣的初學者跟著實作。",
+      "team": null,
+      "signupDate": "2026/09/08T01:24:38+08:00",
+      "lastUpdated": "2026-09-10T00:07:20+08:00",
+      "dayCount": 3,
+      "articleCount": 2,
+      "rssFallback": true,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10408443,
+          "day": 1,
+          "title": "Day 01為什麼要做智慧出發時間推薦？",
+          "url": "https://ithelp.ithome.com.tw/articles/10408443",
+          "publishedAt": "2026-09-08T01:26:01+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408472,
+          "day": 2,
+          "title": "Day 02PWA 是什麼？為何選它當開發框架",
+          "url": "https://ithelp.ithome.com.tw/articles/10408472",
+          "publishedAt": "2026-09-09T00:20:10+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      ]
+    },
+    {
       "id": 9067,
       "user": {
         "id": 20120287,
@@ -66737,46 +66777,6 @@
           "title": "[Day 02] 掌握全局：用 ER Diagram 釐清 9 張電商資料表的關聯邏輯",
           "url": "https://ithelp.ithome.com.tw/articles/10408716",
           "publishedAt": "2026-09-09T00:00:48+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        }
-      ]
-    },
-    {
-      "id": 9535,
-      "user": {
-        "id": 20178770,
-        "name": "zoeeyee",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20178770/profile"
-      },
-      "group": "Software Development",
-      "title": "SyncETA 開發日記：手把手打造你的智慧出發時間推薦 PWA",
-      "description": "本系列將記錄開發 SyncETA Lite 的完整歷程——一套基於機率式思維、為初學者設計的出發時間推薦 PWA。\r\n\r\n內容涵蓋 PWA 基礎架構、台灣 TDX 運輸資料與 Google Maps API 串接、簡化版機率推薦邏輯（分位數運算）、離線與推播體驗優化，以及部署上線。\r\n\r\n全程程式碼皆會標注寫在專案 syncetalite-pwa/ 資料夾中的哪個檔案，適合對智慧交通、PWA 開發有興趣的初學者跟著實作。",
-      "team": null,
-      "signupDate": "2026/09/08T01:24:38+08:00",
-      "lastUpdated": "2026-09-10T00:07:20+08:00",
-      "dayCount": 2,
-      "articleCount": 2,
-      "rssFallback": true,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10408443,
-          "day": 1,
-          "title": "Day 01為什麼要做智慧出發時間推薦？",
-          "url": "https://ithelp.ithome.com.tw/articles/10408443",
-          "publishedAt": "2026-09-08T01:26:01+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408472,
-          "day": 2,
-          "title": "Day 02PWA 是什麼？為何選它當開發框架",
-          "url": "https://ithelp.ithome.com.tw/articles/10408472",
-          "publishedAt": "2026-09-09T00:20:10+08:00",
           "views": 0,
           "likes": 0,
           "comments": 0
@@ -70681,7 +70681,7 @@
     "[stale] 9210: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9211: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9212: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9213: HTTP 403 for https://ithelp.ithome.com.tw/users/20140126/ironman/9213?page=3; RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9213: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9214: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9215: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9216: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
@@ -70712,13 +70712,13 @@
     "[stale] 9246: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9247: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9249: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9251: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9251: HTTP 403 for https://ithelp.ithome.com.tw/users/20007956/ironman/9251?page=3; RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9252: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9253: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9254: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9255: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9256: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9257: HTTP 403 for https://ithelp.ithome.com.tw/users/20161290/ironman/9257?page=3; RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9257: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9258: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9259: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9262: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
@@ -70729,7 +70729,7 @@
     "[stale] 9267: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9268: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9269: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9270: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9270: HTTP 403 for https://ithelp.ithome.com.tw/users/20181780/ironman/9270?page=3; RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9273: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9274: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9275: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
@@ -70747,7 +70747,7 @@
     "[stale] 9289: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9290: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9291: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9292: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9292: HTTP 403 for https://ithelp.ithome.com.tw/users/20168764/ironman/9292?page=2; RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9294: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9296: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9298: HTTP 403 for https://ithelp.ithome.com.tw/users/20181011/ironman/9298; RSS fallback unavailable: empty or invalid feed",
@@ -70763,7 +70763,7 @@
     "[stale] 9309: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9310: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9311: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9312: HTTP 403 for https://ithelp.ithome.com.tw/users/20111580/ironman/9312?page=2; RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9312: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9313: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9314: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9315: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
@@ -70799,7 +70799,7 @@
     "[stale] 9393: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9396: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9398: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9399: HTTP 403 for https://ithelp.ithome.com.tw/users/20121130/ironman/9399?page=2; RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9399: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9400: HTTP 403 for https://ithelp.ithome.com.tw/users/20063465/ironman/9400; RSS fallback unavailable: empty or invalid feed",
     "[stale] 9401: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9402: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
@@ -70832,7 +70832,7 @@
     "[stale] 9437: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9439: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9442: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9443: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9443: HTTP 403 for https://ithelp.ithome.com.tw/users/20162883/ironman/9443; RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9444: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9446: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9447: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
@@ -70872,8 +70872,8 @@
     "[stale] 9489: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9490: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9491: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9493: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9494: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9493: HTTP 403 for https://ithelp.ithome.com.tw/users/20168537/ironman/9493; RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9494: HTTP 403 for https://ithelp.ithome.com.tw/users/20162280/ironman/9494; RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9497: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9498: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9499: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
@@ -70894,7 +70894,7 @@
     "[stale] 9518: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9519: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9520: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9521: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9521: HTTP 403 for https://ithelp.ithome.com.tw/users/20107403/ironman/9521; RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9522: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9523: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9524: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
@@ -70902,7 +70902,7 @@
     "[stale] 9532: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9533: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9534: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
-    "[stale] 9535: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
+    "[stale] 9535: HTTP 403 for https://ithelp.ithome.com.tw/users/20178770/ironman/9535; RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9540: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9545: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
     "[stale] 9547: Series page blocked by Cloudflare (403); RSS fallback merged with cache; completeness and metrics unverified",
