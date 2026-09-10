@@ -106,11 +106,43 @@ describe("aggregateTeams", () => {
     expect(b.totalViews).toBe(a.totalViews); // 100
     expect(b.postedToday).toBe(a.postedToday); // 1（只看 latest）
   });
+  test("完賽成員（dayCount ≥ 30）不判定為停更或今日缺發", () => {
+    const year = makeYear([
+      makeSeries({ id: 1, team: "T", dayCount: 30, articles: [makeArticle({ publishedAt: "2026-08-01T10:00:00+08:00", views: 10 })] }), // staleDays 10 → 完賽，不算停更
+      makeSeries({ id: 2, team: "T", dayCount: 30, articles: [makeArticle({ publishedAt: "2026-08-10T10:00:00+08:00", views: 10 })] }), // staleDays 1 → 完賽，不算今日缺發
+    ]);
+    const [row] = aggregateTeams(year, TODAY);
+    expect(row.staleCount).toBe(0);
+    expect(row.postedToday).toBe(0);
+    expect(row.alertSummary).toBeNull();
+    expect(row.hasAlert).toBe(false);
+  });
 
-  // 真實資料 sweep 斷言「不變量」而非當下數值。原本版本鎖死了領先隊名、
-  // top.staleCount === 0 和 top.alertSummary 含「今日缺發」——這些都會隨賽季
-  // 漂移：該隊完賽（30/30）後全體停止發文，staleCount 變成 5，測試就紅了，
-  // 但聚合邏輯完全正確。鎖住性質，賽季推進不會產生假警報。
+  test("完賽成員若今日發文仍計入 postedToday，但其餘完賽成員不計入停更", () => {
+    const year = makeYear([
+      makeSeries({ id: 1, team: "T", dayCount: 30, articles: [makeArticle({ publishedAt: "2026-08-11T10:00:00+08:00", views: 10 })] }), // 今日發文
+      makeSeries({ id: 2, team: "T", dayCount: 30, articles: [makeArticle({ publishedAt: "2026-08-05T10:00:00+08:00", views: 10 })] }), // 6 天前
+    ]);
+    const [row] = aggregateTeams(year, TODAY);
+    expect(row.postedToday).toBe(1);
+    expect(row.staleCount).toBe(0);
+    expect(row.alertSummary).toBeNull();
+  });
+
+  test("混合隊伍：完賽者不計入警示，未完賽者依發文狀態判定", () => {
+    const year = makeYear([
+      makeSeries({ id: 1, team: "T", dayCount: 30, articles: [makeArticle({ publishedAt: "2026-08-01T10:00:00+08:00", views: 10 })] }), // 完賽
+      makeSeries({ id: 2, team: "T", dayCount: 15, articles: [makeArticle({ publishedAt: "2026-08-08T10:00:00+08:00", views: 10 })] }), // staleDays 3 → 停更
+      makeSeries({ id: 3, team: "T", dayCount: 20, articles: [makeArticle({ publishedAt: "2026-08-10T10:00:00+08:00", views: 10 })] }), // staleDays 1 → 今日缺發
+    ]);
+    const [row] = aggregateTeams(year, TODAY);
+    expect(row.staleCount).toBe(1);
+    expect(row.alertSummary).toBe("今日缺發 1 人 · 停更 1 人");
+  });
+
+
+  // 真實資料 sweep 斷言「不變量」而非當下數值。
+  // 完賽隊伍（30/30）不判定為停更（staleCount === 0），不會產生假警報。
   test("真實資料 sweep：隊數/成員數動態下限、聚合不變量成立", () => {
     const rows = aggregateTeams(realData, realData.updatedAt.slice(0, 10));
     // 隊數/成員數隨資料漂移，只鎖下限（data-driven 測試的固有維護）
@@ -139,7 +171,7 @@ describe("aggregateTeams", () => {
       expect(row.avgProgress).toBeLessThanOrEqual(30);
 
       // 警示分類互斥（spec §1.3）：任一成員最多落入一類，總和不超過人數
-      const missedToday = row.members.filter((m) => !m.isPending && m.staleDays === 1).length;
+      const missedToday = row.members.filter((m) => !m.isPending && m.series.dayCount < 30 && m.staleDays === 1).length;
       expect(row.pendingCount + row.staleCount + row.postedToday + missedToday)
         .toBeLessThanOrEqual(row.memberCount);
       for (const n of [row.postedToday, row.staleCount, row.pendingCount]) {

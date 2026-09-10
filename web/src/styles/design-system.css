@@ -1020,6 +1020,18 @@ input, select, textarea { caret-color: var(--accent); }
   border-radius: var(--radius-pill);
   white-space: nowrap;
 }
+.team-status-done {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  color: var(--badge-success-text);
+  background: var(--badge-success-bg);
+  border: 1px solid color-mix(in srgb, var(--success) 35%, transparent);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
 .team-status-pending {
   display: inline-flex;
   align-items: center;

@@ -149,11 +149,17 @@ export function buildTeamRow(row: TeamRow, today: string, rank: number = 1): HTM
   // 8. Status / Alert
   const statusCol = document.createElement("div");
   statusCol.className = "team-col-status";
+  const isAllDone = row.memberCount > 0 && row.members.every((m) => (m.isDone ?? (m.series.dayCount >= 30)));
   if (row.alertSummary) {
     const alert = document.createElement("span");
     alert.className = "team-alert";
     alert.textContent = row.alertSummary;
     statusCol.appendChild(alert);
+  } else if (isAllDone) {
+    const done = document.createElement("span");
+    done.className = "team-status-done";
+    done.textContent = "全隊完賽 ✓";
+    statusCol.appendChild(done);
   } else if (isAllPosted) {
     const clear = document.createElement("span");
     clear.className = "team-status-clear";

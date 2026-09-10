@@ -73,6 +73,25 @@ const memberStale: TeamMemberRow = {
   staleDays: 3,
   isPending: false,
 };
+// 完賽成員（30/30，文章 = 3 天前）→ chip「鐵人煉成」、progressLabel「30/30」。
+const memberDone: TeamMemberRow = {
+  series: makeSeries({
+    id: 1003,
+    user: { id: 20118583, name: "完賽神人", profileUrl: "https://ithelp.ithome.com.tw/users/20118583" },
+    title: "完賽三十天",
+    dayCount: 30,
+    articleCount: 30,
+    articles: [
+      { id: 30, day: 30, title: "Day 30", url: "https://ithelp.ithome.com.tw/articles/30", publishedAt: "2026-08-08T12:00:00+08:00", views: 2000, likes: 0, comments: 0 },
+    ],
+  }),
+  views: 2000,
+  status: { kind: "done" },
+  staleDays: 3,
+  isPending: false,
+  isDone: true,
+};
+
 
 function makeRow(partial: Partial<TeamRow> = {}): TeamRow {
   return {
@@ -116,6 +135,29 @@ describe("buildTeamRow", () => {
     expect(el.querySelector(".team-alert")).toBeNull();
     expect(el.textContent).not.toContain("停更");
     expect(el.textContent).not.toContain("今日缺發");
+  });
+  test("全隊完賽：顯示「全隊完賽 ✓」徽章、進度條滿條、無警示色", () => {
+    const el = buildTeamRow(
+      makeRow({
+        name: "五人成行，Bug 不行",
+        members: [memberDone, memberDone],
+        memberCount: 2,
+        avgProgress: 30,
+        postedToday: 0,
+        staleCount: 0,
+        pendingCount: 0,
+        alertSummary: null,
+        hasAlert: false,
+      }),
+      TODAY,
+    );
+    expect(el.classList.contains("team-row--alert")).toBe(false);
+    expect(el.querySelector(".team-alert")).toBeNull();
+    const doneStatus = el.querySelector(".team-status-done");
+    expect(doneStatus).not.toBeNull();
+    expect(doneStatus?.textContent).toBe("全隊完賽 ✓");
+    expect(el.textContent).not.toContain("停更");
+    expect(el.querySelector(".progress-fill")?.classList.contains("progress-fill--done")).toBe(true);
   });
   test("展開區初始 hidden、含成員列與看該隊系列", () => {
     const el = buildTeamRow(makeRow(), TODAY);

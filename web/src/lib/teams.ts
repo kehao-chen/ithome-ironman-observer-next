@@ -11,6 +11,7 @@ export type TeamMemberRow = {
   status: StatusChip;       // 既有 daily-status 判定（今日/昨日/停更/長時間停更/已刪文/完賽/尚未開賽）
   staleDays: number | null; // 停更天數（stalenessDays：null = 無文章或缺陷日期 → 不落入警示類別）
   isPending: boolean;       // dayCount === 0（尚未開賽）
+  isDone?: boolean;         // dayCount >= 30（完賽）
 };
 
 export type TeamRow = {
@@ -47,6 +48,7 @@ export function aggregateTeams(data: YearData, today: string): TeamRow[] {
       status: statusChip(latest?.publishedAt, s.dayCount, today, s.articleCount),
       staleDays: stalenessDays(latest?.publishedAt, today),
       isPending: s.dayCount === 0, // 已刪文（dayCount>0 且 0 篇）天然排除
+      isDone: s.dayCount >= 30,
     });
     byName.set(s.team, members);
   }
@@ -60,6 +62,11 @@ export function aggregateTeams(data: YearData, today: string): TeamRow[] {
     // 任一成員只落入一類。
     for (const m of members) {
       if (m.isPending) { pendingCount++; continue; }
+      // 完賽成員（dayCount ≥ 30）：達成參賽目標，不計入停更或今日缺發；今日若有發文仍計入 postedToday。
+      if (m.series.dayCount >= 30) {
+        if (m.staleDays === 0) postedToday++;
+        continue;
+      }
       if (m.staleDays !== null && m.staleDays >= 2) { staleCount++; continue; }
       if (m.staleDays === 0) postedToday++;
       else if (m.staleDays === 1) missedToday++;
