@@ -69,7 +69,7 @@ export function famousProfileViewModel(row: FamousRow): FamousProfileViewModel {
   const avatarChar = getAvatarChar(name);
   const profileUrl = `https://ithelp.ithome.com.tw/users/${row.entry.id}`;
   const seriesCount = row.series.length;
-  const statsText = `${row.totalViews.toLocaleString()} 總瀏覽 · ${seriesCount} 系列`;
+  const statsText = `${seriesCount} 支系列`;
 
   return {
     id: row.entry.id,

@@ -207,7 +207,7 @@ describe("famousProfileViewModel", () => {
     expect(vm.avatarChar).toBe("高");
     expect(vm.profileUrl).toBe("https://ithelp.ithome.com.tw/users/20065770");
     expect(vm.bio).toBe("五倍紅寶石創辦人");
-    expect(vm.statsText).toBe("38,400 總瀏覽 · 1 系列");
+    expect(vm.statsText).toBe("1 支系列");
     expect(vm.seriesCount).toBe(1);
     expect(vm.categories).toEqual([
       { id: "speaker", label: "講師" },
@@ -235,7 +235,7 @@ describe("famousProfileViewModel", () => {
     const vm = famousProfileViewModel(row);
     expect(vm.avatarChar).toBe("K");
     expect(vm.name).toBe("kojenchieh");
-    expect(vm.statsText).toBe("1,234,567 總瀏覽 · 2 系列");
+    expect(vm.statsText).toBe("2 支系列");
     expect(vm.seriesCount).toBe(2);
     expect(vm.categories).toEqual([
       { id: "speaker", label: "講師" },

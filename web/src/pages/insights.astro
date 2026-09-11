@@ -25,7 +25,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>鐵人觀察家 Next — Insights</title>
-  <meta name="description" content={`${latestYear || ""} iThome 鐵人賽 Insights 分析：發文行為、人氣結構、組別分析與標題文字分析`} />
+  <meta name="description" content={`${latestYear || ""} iThome 鐵人賽 Insights 分析：發文行為、組別生態、文字分析與斷更觀察`} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
   <link rel="shortcut icon" href="/favicon.ico" />
@@ -51,19 +51,16 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
 
   <script>
     import * as echarts from "echarts/core";
-    import { BarChart, LineChart, ScatterChart, HeatmapChart } from "echarts/charts";
-    import { GridComponent, TooltipComponent, VisualMapComponent } from "echarts/components";
+    import { BarChart, LineChart, HeatmapChart } from "echarts/charts";
+    import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent } from "echarts/components";
     import { CanvasRenderer } from "echarts/renderers";
     import {
       publishHourHistogram,
-      viewsDistribution,
-      topSeriesBySubscriptions,
       groupStats,
       titleKeywordStats,
       titleLengthDistribution,
       dayCountDistribution,
       publishHeatmap,
-      engagementLeaderboard,
       staleObservation,
       staleDayDistribution,
     } from "../lib/insights";
@@ -71,8 +68,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
     import { taipeiToday } from "../lib/daily-status";
     import type { YearData } from "../../../scripts/types";
 
-    echarts.use([BarChart, LineChart, ScatterChart, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent, CanvasRenderer]);
-
+    echarts.use([BarChart, LineChart, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, CanvasRenderer]);
     // ── State ──────────────────────────────────────────────────────────────
     const initialData = (window as any).INSIGHTS_DATA as YearData;
     const yearsList = (window as any).INSIGHTS_YEARS as number[];
@@ -213,99 +209,48 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         }, true);
       }
 
-      // 3. 文章觀看分佈：關鍵百分位 bar ─────────────────────────────────────
-      // CDF 在線性座標下幾乎全部壓在 0，改用 p25/p50/p75/p90/p95/p99 直接看差距。
+      // 3. 各組別系列數與發文量：horizontal grouped bar ───────────────────────
       {
-        const percs = keyPercentiles(arts.map((a) => a.views ?? 0));
-        getChart("chart-dist")?.setOption({
+        const grps = groupStats(d.series);
+        const groupEl = document.getElementById("chart-group");
+        if (groupEl && grps.length > 0) groupEl.style.height = `${grps.length * 30 + 50}px`;
+        getChart("chart-group")?.setOption({
           backgroundColor: "transparent",
-          grid: grid({ bottom: 32 }),
+          grid: { top: 32, right: 32, bottom: 12, left: 12, containLabel: true },
+          legend: { data: ["系列數", "發文篇數"], textStyle: { color: c.muted, fontSize: 11 }, top: 0, right: 12 },
           tooltip: {
             trigger: "axis",
+            axisPointer: { type: "shadow" },
             ...tip(c),
-            formatter: (p: any) => {
-              const item = percs[p[0]?.dataIndex];
-              return item
-                ? `第 ${item.pct} 百分位（${item.label}）<br/>觀看數：<b>${item.value.toLocaleString()}</b>`
+            formatter: (params: any) => {
+              const g = grps[params[0]?.dataIndex];
+              return g
+                ? `<b>${g.group}</b><br/>系列數：${g.seriesCount}<br/>累計發文：${g.articleCount} 篇`
                 : "";
             },
           },
-          xAxis: { type: "category", data: percs.map((p) => p.label), ...ax },
-          yAxis: { type: "value", ...ax },
-          series: [{
-            type: "bar",
-            data: hasArts ? percs.map((p) => p.value) : [],
-            itemStyle: { borderRadius: [2, 2, 0, 0], color: (params: any) => {
-              // 越高百分位越深藍
-              const alpha = 0.4 + (params.dataIndex / 5) * 0.6;
-              return c.accent + Math.round(alpha * 255).toString(16).padStart(2, "0");
-            }},
-            label: {
-              show: true,
-              position: "top",
-              color: c.muted,
-              fontSize: 10,
-              fontFamily: "inherit",
-              formatter: (p: any) => (p.value > 0 ? p.value.toLocaleString() : ""),
-            },
-          }],
-        }, true);
-      }
-
-      // 4. 訂閱數排行：horizontal bar ───────────────────────────────────────
-      {
-        const subs = topSeriesBySubscriptions(d.series);
-        // 動態高度：每項約 28px + 邊距，確保所有條目完整顯示不需 hover
-        const subsEl = document.getElementById("chart-subs");
-        if (subsEl && subs.length > 0) subsEl.style.height = `${subs.length * 28 + 24}px`;
-        getChart("chart-subs")?.setOption({
-          backgroundColor: "transparent",
-          grid: { top: 12, right: 48, bottom: 12, left: 12, containLabel: true },
-          tooltip: { trigger: "item", ...tip(c) },
           xAxis: { type: "value", ...ax },
           yAxis: {
             type: "category",
-            data: hasSeries ? subs.map((s) => s.name) : [],
+            data: hasSeries ? grps.map((g) => g.group) : [],
             inverse: true,
             ...ax,
-            axisLabel: { ...ax.axisLabel, width: 160, overflow: "truncate" },
+            axisLabel: { ...ax.axisLabel, width: 140, overflow: "truncate" },
           },
-          series: [{ type: "bar", data: hasSeries ? subs.map((s) => s.subscriptions) : [], itemStyle: { color: c.success, borderRadius: [0, 2, 2, 0] } }],
-        }, true);
-      }
-
-      // 5. 組別 scatter：修正 tooltip，加組名 label ─────────────────────────
-      {
-        const grps = groupStats(d.series);
-        getChart("chart-scatter")?.setOption({
-          backgroundColor: "transparent",
-          grid: { top: 20, right: 20, bottom: 32, left: 12, containLabel: true },
-          tooltip: {
-            trigger: "item",
-            ...tip(c),
-            formatter: (params: any) => {
-              const g = grps[params.dataIndex];
-              return g
-                ? `<b>${g.group}</b><br/>${g.seriesCount} 系列 · ${g.articleCount} 文<br/>平均 ${g.avgViews.toLocaleString()} 次觀看`
-                : "";
+          series: [
+            {
+              name: "系列數",
+              type: "bar",
+              data: hasSeries ? grps.map((g) => g.seriesCount) : [],
+              itemStyle: { color: c.accent, borderRadius: [0, 2, 2, 0] },
             },
-          },
-          xAxis: { type: "value", name: "文章數", nameTextStyle: { color: c.muted, fontSize: 11 }, ...ax },
-          yAxis: { type: "value", name: "平均觀看", nameTextStyle: { color: c.muted, fontSize: 11 }, ...ax },
-          series: [{
-            type: "scatter",
-            data: hasSeries ? grps.map((g) => [g.articleCount, g.avgViews, g.seriesCount]) : [],
-            symbolSize: (d: number[]) => Math.max(10, Math.min(48, (d[2] ?? 1) * 2)),
-            itemStyle: { color: c.accent, opacity: 0.7 },
-            label: {
-              show: true,
-              formatter: (params: any) => grps[params.dataIndex]?.group ?? "",
-              position: "right",
-              color: c.muted,
-              fontSize: 10,
-              fontFamily: "inherit",
+            {
+              name: "發文篇數",
+              type: "bar",
+              data: hasSeries ? grps.map((g) => g.articleCount) : [],
+              itemStyle: { color: c.success, borderRadius: [0, 2, 2, 0] },
             },
-          }],
+          ],
         }, true);
       }
 
@@ -395,46 +340,6 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         }, true);
       }
 
-      // 9. 互動轉換率排行（views → like）────────────────────────────────────
-      {
-        const eng = engagementLeaderboard(d.series, { minViews: 50, metric: "likeRate", limit: 12 });
-        const engEl = document.getElementById("chart-engage");
-        if (engEl && eng.length > 0) engEl.style.height = `${eng.length * 28 + 24}px`;
-        getChart("chart-engage")?.setOption({
-          backgroundColor: "transparent",
-          grid: { top: 12, right: 56, bottom: 12, left: 12, containLabel: true },
-          tooltip: {
-            trigger: "item",
-            ...tip(c),
-            formatter: (p: any) => {
-              const r = eng[p.dataIndex];
-              return r
-                ? `<b>${r.title}</b><br/>${(r.likeRate * 100).toFixed(1)}% 按讚率<br/>${r.likes} 讚 · ${r.views.toLocaleString()} 觀看 · ${r.comments} 留言`
-                : "";
-            },
-          },
-          xAxis: {
-            type: "value",
-            name: "按讚率 %",
-            nameTextStyle: { color: c.muted, fontSize: 11 },
-            ...ax,
-            axisLabel: { ...ax.axisLabel, formatter: (v: number) => `${v}%` },
-          },
-          yAxis: {
-            type: "category",
-            data: hasSeries ? eng.map((r) => r.title) : [],
-            inverse: true,
-            ...ax,
-            axisLabel: { ...ax.axisLabel, width: 150, overflow: "truncate" },
-          },
-          series: [{
-            type: "bar",
-            data: hasSeries ? eng.map((r) => +(r.likeRate * 100).toFixed(2)) : [],
-            itemStyle: { color: c.success, borderRadius: [0, 2, 2, 0] },
-            label: { show: true, position: "right", color: c.muted, fontSize: 10, fontFamily: "inherit", formatter: (p: any) => `${p.value}%` },
-          }],
-        }, true);
-      }
 
       // 10. 斷更觀察：單日斷更落點分佈 ────────────────────────────────────────
       {
@@ -491,20 +396,17 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       const hasSeries = d.series.length > 0;
 
       if (d.year === 0) {
-        for (const id of ["insight-hour-line", "insight-dist-line", "insight-group-line", "insight-kw-line", "insight-risk-line"])
+        for (const id of ["insight-hour-line", "insight-group-line", "insight-kw-line", "insight-risk-line"])
           setText(id, "尚無資料");
         return;
       }
 
       if (arts.length === 0) {
         setText("insight-hour-line", "尚無發文資料");
-        setText("insight-dist-line", "尚無觀看資料");
       } else {
         const hour = publishHourHistogram(arts);
         const peak = hour.reduce((a, b) => (b.count > a.count ? b : a), hour[0]);
         setText("insight-hour-line", `${String(peak.hour).padStart(2, "0")} 時為發文高峰（${peak.count} 篇）`);
-        const dist = viewsDistribution(arts);
-        setText("insight-dist-line", !dist.hasViews ? "尚無可計算的觀看資料" : `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`);
       }
 
       if (!hasSeries) {

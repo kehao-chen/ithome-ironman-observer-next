@@ -4,7 +4,6 @@
 import type { YearData } from "../../../scripts/types";
 import {
   publishHourHistogram,
-  viewsDistribution,
   groupStats,
   titleKeywordStats,
   staleObservation,
@@ -33,16 +32,6 @@ const hourLine = pageEmpty
   : articleCount === 0
     ? "尚無發文資料"
     : `${String(peakHour.hour).padStart(2, "0")} 時為發文高峰（${peakHour.count} 篇）`;
-
-// 2. 人氣結構
-const dist = viewsDistribution(articles);
-const distLine = pageEmpty
-  ? "尚無資料"
-  : articleCount === 0
-    ? "尚無觀看資料"
-    : !dist.hasViews
-      ? "尚無可計算的觀看資料"
-      : `前 10% 文章佔總觀看 ${Math.round(dist.top10PctShare * 100)}%`;
 
 // 3. 組別分析
 const groups = groupStats(data.series);
@@ -138,39 +127,15 @@ const riskLine = pageEmpty
   <section class="insight-panel">
     <div class="insight-panel-head">
       <div>
-        <h2 class="insight-title">人氣結構</h2>
-        <p class="insight-line" id="insight-dist-line">{distLine}</p>
+        <h2 class="insight-title">組別分析</h2>
+        <p class="insight-line" id="insight-group-line">{groupLine}</p>
       </div>
       <span class="insight-panel-index">02</span>
     </div>
     <div class="insight-charts">
       <div class="insight-chart insight-chart--full">
-        <h3>文章觀看分佈</h3>
-        <div id="chart-dist" class="chart-canvas is-loading"></div>
-      </div>
-      <div class="insight-chart insight-chart--full">
-        <h3>訂閱數排行</h3>
-        <div id="chart-subs" class="chart-canvas is-loading"></div>
-      </div>
-      <div class="insight-chart insight-chart--full">
-        <h3>互動轉換率（views → like）</h3>
-        <div id="chart-engage" class="chart-canvas is-loading"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="insight-panel">
-    <div class="insight-panel-head">
-      <div>
-        <h2 class="insight-title">組別分析</h2>
-        <p class="insight-line" id="insight-group-line">{groupLine}</p>
-      </div>
-      <span class="insight-panel-index">03</span>
-    </div>
-    <div class="insight-charts">
-      <div class="insight-chart insight-chart--wide">
-        <h3>發文量與平均觀看</h3>
-        <div id="chart-scatter" class="chart-canvas is-loading"></div>
+        <h3>各組別系列數與發文量</h3>
+        <div id="chart-group" class="chart-canvas is-loading"></div>
       </div>
     </div>
   </section>
@@ -181,7 +146,7 @@ const riskLine = pageEmpty
         <h2 class="insight-title">文字分析</h2>
         <p class="insight-line" id="insight-kw-line">{kwLine}</p>
       </div>
-      <span class="insight-panel-index">04</span>
+      <span class="insight-panel-index">03</span>
     </div>
     <div class="insight-charts">
       <div class="insight-chart">
@@ -201,7 +166,7 @@ const riskLine = pageEmpty
         <h2 class="insight-title">斷更觀察</h2>
         <p class="insight-line" id="insight-risk-line">{riskLine}</p>
       </div>
-      <span class="insight-panel-index">05</span>
+      <span class="insight-panel-index">04</span>
     </div>
     <div class="insight-charts">
       <div class="insight-chart insight-chart--full">
