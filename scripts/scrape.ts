@@ -126,23 +126,33 @@ export function buildSeriesFromRss(
     !/articles\/[1-9]\d*(?:[?#].*)?$/.test(item.link) ||
     !item.title.trim(),
   );
-  if (rss.items.length === 0 || invalidItem) {
-    if (card.day === 0 && (cachedSeries?.articleCount ?? 0) === 0) {
-      const series: Series = {
-        id: card.seriesId,
-        user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
-        group: card.group, title: card.title, description: card.description, team: card.team,
-        signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
-        lastUpdated: null, dayCount: 0, articleCount: 0, subscriptions: cachedSeries?.subscriptions ?? 0, articles: [],
-      };
-      return { status: "fresh", series };
-    }
-    const error = `${reason}: empty or invalid feed`;
+  if (invalidItem || (!rss.title && card.day > 0)) {
+    const error = `${reason}: invalid feed`;
     return cachedSeries
       ? { status: "stale", series: cachedSeries, error }
       : { status: "failed", seriesId: card.seriesId, error };
   }
 
+  if (rss.items.length === 0) {
+    if (card.day === 0 || (cachedSeries && cachedSeries.articleCount === 0) || (rss.title && !cachedSeries)) {
+      const series: Series = {
+        id: card.seriesId,
+        user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
+        group: card.group, title: card.title, description: card.description, team: card.team,
+        signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
+        lastUpdated: rss.lastBuildDate ?? cachedSeries?.lastUpdated ?? null,
+        dayCount: Math.max(card.day, cachedSeries?.dayCount ?? 0),
+        articleCount: 0,
+        subscriptions: cachedSeries?.subscriptions ?? 0,
+        articles: [],
+      };
+      return { status: "fresh", series };
+    }
+    const error = `${reason}: empty feed with existing articles`;
+    return cachedSeries
+      ? { status: "stale", series: cachedSeries, error }
+      : { status: "failed", seriesId: card.seriesId, error };
+  }
   const byId = new Map(cachedArticleMap);
   const items = [...rss.items].sort((a, b) => a.pubDate.localeCompare(b.pubDate) || a.link.localeCompare(b.link));
   for (const item of items) {
