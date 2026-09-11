@@ -119,8 +119,6 @@ describe("buildTeamRow", () => {
     const text = el.textContent ?? "";
     expect(text).toContain("五人成行，Bug 不行");
     expect(text).toContain("2");          // 成員數
-    expect(text).toContain("1,891");      // 總瀏覽 toLocaleString
-    expect(text).toContain("945");        // 人均
     expect(text).toContain("9");          // 平均進度
     expect(text).toContain("1/2");        // 今日發文
     expect(text).toContain("今日缺發 1 人 · 停更 1 人");
@@ -172,8 +170,6 @@ describe("buildTeamRow", () => {
     expect(nameLink?.textContent).toBe("SQLMASTER");
     expect(el.textContent).toContain("自我挑戰組 · 9/30");
     expect(el.textContent).toContain("自我挑戰組 · 5/30");
-    expect(el.textContent).toContain("832 瀏覽");
-    expect(el.textContent).toContain("1,059 瀏覽");
     // 狀態 chip 文字由 cardViewModel（同 statusChipText）決定——非手寫分支
     expect(el.textContent).toContain(statusChipText({ kind: "today" }));
     expect(el.textContent).toContain(statusChipText({ kind: "stale", days: 3 }));

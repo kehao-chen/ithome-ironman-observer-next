@@ -49,7 +49,7 @@ const BUCKETS: { label: string; test: (v: number) => boolean }[] = [
 ];
 
 export function viewsDistribution(articles: Article[]): ViewsDistribution {
-  const views = articles.map((a) => a.views);
+  const views = articles.map((a) => a.views ?? 0);
   const n = views.length;
   const total = views.reduce((s, v) => s + v, 0);
   const hasViews = total > 0;
@@ -75,9 +75,9 @@ export function topSeriesBySubscriptions(
 ): { name: string; subscriptions: number; dayCount: number; views: number }[] {
   const rows = series.map((s) => ({
     name: s.title,
-    subscriptions: s.subscriptions,
+    subscriptions: s.subscriptions ?? 0,
     dayCount: s.dayCount,
-    views: s.articles.reduce((sum, a) => sum + a.views, 0),
+    views: s.articles.reduce((sum, a) => sum + (a.views ?? 0), 0),
   }));
   rows.sort((a, b) => b.subscriptions - a.subscriptions || a.name.localeCompare(b.name, "zh-Hant"));
   return rows.slice(0, n);
@@ -94,13 +94,13 @@ export function groupStats(
   }
   const rows = [...byGroup.entries()].map(([group, list]) => {
     const articles = list.flatMap((s) => s.articles);
-    const totalViews = articles.reduce((sum, a) => sum + a.views, 0);
+    const totalViews = articles.reduce((sum, a) => sum + (a.views ?? 0), 0);
     return {
       group,
       seriesCount: list.length,
       articleCount: articles.length,
       avgViews: articles.length === 0 ? 0 : Math.round(totalViews / articles.length),
-      totalSubscriptions: list.reduce((sum, s) => sum + s.subscriptions, 0),
+      totalSubscriptions: list.reduce((sum, s) => sum + (s.subscriptions ?? 0), 0),
     };
   });
   rows.sort((a, b) => b.seriesCount - a.seriesCount || a.group.localeCompare(b.group, "zh-Hant"));
@@ -192,7 +192,7 @@ export function dayCountDistribution(series: Series[]): { label: string; count: 
 // 文章觀看 CDF：每 5 百分位一點（共 21 點），揭露長尾分佈。
 export function viewsPercentiles(articles: Article[]): { pct: number; views: number }[] {
   if (articles.length === 0) return [];
-  const sorted = articles.map((a) => a.views).sort((a, b) => a - b);
+  const sorted = articles.map((a) => a.views ?? 0).sort((a, b) => a - b);
   const n = sorted.length;
   return Array.from({ length: 21 }, (_, i) => {
     const pct = i * 5;
@@ -238,9 +238,9 @@ export function engagementLeaderboard(
   const rows: EngagementRow[] = series
     .filter((s) => s.articles.length > 0)
     .map((s) => {
-      const views = s.articles.reduce((a, x) => a + x.views, 0);
-      const likes = s.articles.reduce((a, x) => a + x.likes, 0);
-      const comments = s.articles.reduce((a, x) => a + x.comments, 0);
+      const views = s.articles.reduce((a, x) => a + (x.views ?? 0), 0);
+      const likes = s.articles.reduce((a, x) => a + (x.likes ?? 0), 0);
+      const comments = s.articles.reduce((a, x) => a + (x.comments ?? 0), 0);
       return {
         title: s.title, author: s.user.name, group: s.group,
         views, likes, comments,

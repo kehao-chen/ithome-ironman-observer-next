@@ -37,4 +37,25 @@ describe("parseSignupList", () => {
     }
     expect(cards.some((c) => c.group === "ChatGPT & Codex")).toBe(true);
   });
+
+  test("day is extracted from team-dashboard__day, ignoring Day numbers in title/desc", () => {
+    const sampleHtml = `
+      <div class="list-card">
+        <a href="/users/123/ironman/456"></a>
+        <div class="contestants-list__name">test</div>
+        <div class="tag"><span>AI</span></div>
+        <div class="contestants-list__title title">Day6500 組差分</div>
+        <div class="contestants-list__desc content">Day 999 description</div>
+        <div class="contestants-list__date date">報名日期：2026/08/01 12:00:00</div>
+        <div class="team-dashboard__box">
+          <label class="note team-dashboard__day">
+            DAY 6
+          </label>
+        </div>
+      </div>
+    `;
+    const cards = parseSignupList(sampleHtml);
+    expect(cards).toHaveLength(1);
+    expect(cards[0].day).toBe(6);
+  });
 });

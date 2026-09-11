@@ -134,8 +134,6 @@ describe("buildReadOnlyCard", () => {
     expect(el.querySelector(".card-title")).not.toBeNull();
     expect(el.querySelector(".meta")).not.toBeNull();
     expect(el.querySelector(".latest")).not.toBeNull();
-    expect(el.querySelector(".card-stat")).not.toBeNull();
-    expect(el.querySelector(".card-stat")!.textContent).toContain("瀏覽");
   });
 
   test("無收藏與 RSS 按鈕（dead controls 禁止）", () => {

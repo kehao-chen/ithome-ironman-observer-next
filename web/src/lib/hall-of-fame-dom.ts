@@ -12,20 +12,6 @@ import type { FamousRow, FamousProfileViewModel } from "./hall-of-fame";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-function svgEl(tag: string, attrs: Record<string, string>, children: SVGElement[] = []): SVGElement {
-  const el = document.createElementNS(SVG_NS, tag);
-  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
-  for (const c of children) el.appendChild(c);
-  return el;
-}
-
-function eyeIcon(): SVGElement {
-  return svgEl("svg", { class: "ico-eye", viewBox: "0 0 24 24", "aria-hidden": "true" }, [
-    svgEl("path", { d: "M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z" }),
-    svgEl("circle", { cx: "12", cy: "12", r: "3", fill: "currentColor", stroke: "none" }),
-  ]);
-}
-
 // Grid card（read-only）：與 buildCard 同骨架，但 card-head-right 只保留 stat，
 // 無收藏星號（.card-fav）與 RSS 按鈕（[data-rss]）——名人堂無 Dashboard 的 fav/RSS infrastructure。
 export function buildReadOnlyCard(s: ViewSeries, today: string): HTMLElement {
@@ -43,10 +29,6 @@ export function buildReadOnlyCard(s: ViewSeries, today: string): HTMLElement {
   if (chip) headLeft.append(chip);
   const right = document.createElement("div");
   right.className = "card-head-right";
-  const stat = document.createElement("span");
-  stat.className = "card-stat tabular-nums";
-  stat.textContent = `${v.totalViews.toLocaleString()} 瀏覽`;
-  right.appendChild(stat);   // 只保留 stat；無 fav / rss
   head.append(headLeft, right);
 
   const prog = document.createElement("div"); prog.className = "progress";
@@ -92,10 +74,6 @@ export function buildReadOnlyCard(s: ViewSeries, today: string): HTMLElement {
       const span = document.createElement("span"); span.className = "latest-link muted"; span.textContent = v.latest.title;
       lat.appendChild(span);
     }
-    const lv = document.createElement("span"); lv.className = "latest-views tabular-nums";
-    lv.appendChild(eyeIcon());
-    lv.appendChild(document.createTextNode(`${v.latest.views.toLocaleString()} 當篇觀看`));
-    lat.append(lv);
   } else {
     const span = document.createElement("span"); span.className = "latest-link muted"; span.textContent = v.emptySlotText;
     lat.appendChild(span);

@@ -41,4 +41,7 @@ export function createPacedHtmlFetcher(opts?: PacedFetchOptions): HtmlFetcher {
   };
 }
 
-export const fetchHtml: HtmlFetcher = createPacedHtmlFetcher();
+export const fetchHtml: HtmlFetcher = createPacedHtmlFetcher({
+  concurrency: 2,
+  minIntervalMs: 150,
+});

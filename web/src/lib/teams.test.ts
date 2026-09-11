@@ -149,9 +149,9 @@ describe("aggregateTeams", () => {
     expect(rows.length).toBeGreaterThanOrEqual(8);
     expect(rows.reduce((n, r) => n + r.memberCount, 0)).toBeGreaterThanOrEqual(30);
 
-    // 預設排序＝總瀏覽 desc
+    // 預設排序＝平均進度 desc
     for (let i = 1; i < rows.length; i++) {
-      expect(rows[i - 1].totalViews).toBeGreaterThanOrEqual(rows[i].totalViews);
+      expect(rows[i - 1].avgProgress).toBeGreaterThanOrEqual(rows[i].avgProgress);
     }
 
     for (const row of rows) {
@@ -159,8 +159,8 @@ describe("aggregateTeams", () => {
       expect(row.memberCount).toBeGreaterThan(0);
 
       // 總瀏覽＝成員總瀏覽和；人均＝無條件捨去
-      expect(row.totalViews).toBe(row.members.reduce((n, m) => n + m.views, 0));
-      expect(row.avgViews).toBe(Math.floor(row.totalViews / row.memberCount));
+      expect(row.totalViews).toBe(row.members.reduce((n, m) => n + (m.views ?? 0), 0));
+      expect(row.avgViews).toBe(Math.floor((row.totalViews ?? 0) / row.memberCount));
 
       // 平均進度＝成員 dayCount（cap 30）平均
       expect(row.avgProgress).toBeCloseTo(

@@ -3,7 +3,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Series, YearData } from "../../../scripts/types";
 import { applySeriesFilters, activeGroupFor, currentYearFavCount, favSeries, groupCounts } from "./filter";
-import { totalViewsOf } from "./card";
 import { taipeiDay } from "./daily-status";
 import realData from "../../../data/2026.json";
 
@@ -88,14 +87,6 @@ describe("applySeriesFilters — 排序語意", () => {
     expect(r.map((s) => s.id)).toEqual([2, 1, 3]);
   });
 
-  test("views：totalViewsOf desc（sumViews 優先，無則 articles 求和）", () => {
-    const a = makeSeries({ id: 1, sumViews: 50 });
-    const b = makeSeries({ id: 2, sumViews: 120 });
-    const c = makeSeries({ id: 3 }); // 無 sumViews → articles 求和 = 10 + 99 = 109
-    const r = applySeriesFilters(makeData([a, b, c]), { group: "全部", sort: "views", query: "", favSet: NO_FAV });
-    expect(r.map((s) => s.id)).toEqual([2, 3, 1]);
-    expect(totalViewsOf(c)).toBe(109);
-  });
 
   test("latest：有文章者在前，臺北日 desc，同日按發文秒 desc，無文章沉底", () => {
     const a = makeSeries({ id: 1, articles: [{ id: 7, day: 7, title: "Day 7", url: "u", publishedAt: "2026-08-07T13:00:00+08:00", views: 1, likes: 0, comments: 0 }] });
@@ -163,49 +154,6 @@ describe("applySeriesFilters — 排序語意", () => {
     expect(r.map((s) => s.id)).toEqual([1, 2, 3]);
   });
 
-  test("todayViews：今日文章最大觀看 desc；無今日文章沉底依進度", () => {
-    // makeData 快照日 = 2026-08-07 → 錨點日 2026-08-07。
-    const a = makeSeries({ id: 1, dayCount: 7, articles: [{ id: 7, day: 7, title: "A今", url: "u", publishedAt: "2026-08-07T13:00:00+08:00", views: 50, likes: 0, comments: 0 }] });
-    const b = makeSeries({ id: 2, dayCount: 6, articles: [{ id: 6, day: 6, title: "B昨", url: "u", publishedAt: "2026-08-06T13:00:00+08:00", views: 999, likes: 0, comments: 0 }] }); // 昨天 999 觀看 → 不算今日
-    const c = makeSeries({ id: 3, dayCount: 5, articles: [{ id: 5, day: 5, title: "C前", url: "u", publishedAt: "2026-08-05T13:00:00+08:00", views: 9999, likes: 0, comments: 0 }] }); // 前天 → 無今日文章
-    const r = applySeriesFilters(makeData([c, a, b]), { group: "全部", sort: "todayViews", query: "", favSet: NO_FAV });
-    expect(r.map((s) => s.id)).toEqual([1, 2, 3]); // 今日者在前（50）、無今日者依進度（6 > 5）
-  });
-
-  test("todayViews：同日多篇取最大觀看（非最新一篇）", () => {
-    const a = makeSeries({ id: 1, dayCount: 7, articles: [
-      { id: 7, day: 7, title: "A今低", url: "u", publishedAt: "2026-08-07T20:00:00+08:00", views: 10, likes: 0, comments: 0 }, // 最新但觀看低
-      { id: 6, day: 6, title: "A今高", url: "u", publishedAt: "2026-08-07T09:00:00+08:00", views: 80, likes: 0, comments: 0 }, // 較早但觀看高
-    ] });
-    const b = makeSeries({ id: 2, dayCount: 6, articles: [{ id: 6, day: 6, title: "B今", url: "u", publishedAt: "2026-08-07T12:00:00+08:00", views: 60, likes: 0, comments: 0 }] });
-    const r = applySeriesFilters(makeData([b, a]), { group: "全部", sort: "todayViews", query: "", favSet: NO_FAV });
-    expect(r.map((s) => s.id)).toEqual([1, 2]); // a 最大 80 > b 60
-  });
-
-  test("todayViews：compact todayMaxViews 優先於 articles 推導", () => {
-    // 模擬 frontmatter compact 資料：帶 todayMaxViews，articles 只剩最新一篇（觀看不同）。
-    const a = makeSeries({ id: 1, dayCount: 7, todayMaxViews: 90, articles: [{ id: 7, day: 7, title: "A", url: "u", publishedAt: "2026-08-07T13:00:00+08:00", views: 30, likes: 0, comments: 0 }] });
-    const b = makeSeries({ id: 2, dayCount: 6, articles: [{ id: 6, day: 6, title: "B", url: "u", publishedAt: "2026-08-07T12:00:00+08:00", views: 70, likes: 0, comments: 0 }] });
-    const r = applySeriesFilters(makeData([b, a]), { group: "全部", sort: "todayViews", query: "", favSet: NO_FAV });
-    expect(r.map((s) => s.id)).toEqual([1, 2]); // a 用 90（非 30）
-  });
-
-  test("todayViews：平手 → 有今日文章者在前；兩者皆有今日文章 → 穩定序", () => {
-    // a 今日文章 views 0（今日發文但觀看 0）→ 仍算今日有發文；c 無今日文章 → 沉底依進度。
-    const a = makeSeries({ id: 1, dayCount: 2, articles: [{ id: 1, day: 1, title: "A0", url: "u", publishedAt: "2026-08-07T09:00:00+08:00", views: 0, likes: 0, comments: 0 }] });
-    const b = makeSeries({ id: 2, dayCount: 8, articles: [{ id: 1, day: 1, title: "B昨", url: "u", publishedAt: "2026-08-06T09:00:00+08:00", views: 0, likes: 0, comments: 0 }] }); // 昨天 → 無今日文章
-    const c = makeSeries({ id: 3, dayCount: 3, articles: [{ id: 1, day: 1, title: "C昨", url: "u", publishedAt: "2026-08-06T09:00:00+08:00", views: 0, likes: 0, comments: 0 }] });
-    const r = applySeriesFilters(makeData([b, a, c]), { group: "全部", sort: "todayViews", query: "", favSet: NO_FAV });
-    expect(r.map((s) => s.id)).toEqual([1, 2, 3]); // a 今日 0 → 前；b、c 無今日依進度（8 > 3）
-  });
-
-  test("todayViews：快照日錨點——非 updatedAt 日的文章不算今日", () => {
-    // 快照日 2026-08-06：a 的文章在 8/5（不算今日）、b 在 8/6（算今日）→ b 在前。
-    const a = makeSeries({ id: 1, dayCount: 5, articles: [{ id: 5, day: 5, title: "A05", url: "u", publishedAt: "2026-08-05T13:00:00+08:00", views: 777, likes: 0, comments: 0 }] });
-    const b = makeSeries({ id: 2, dayCount: 5, articles: [{ id: 5, day: 5, title: "B06", url: "u", publishedAt: "2026-08-06T13:00:00+08:00", views: 10, likes: 0, comments: 0 }] });
-    const r = applySeriesFilters(makeData([a, b], "2026-08-06T23:30:00+08:00"), { group: "全部", sort: "todayViews", query: "", favSet: NO_FAV });
-    expect(r.map((s) => s.id)).toEqual([2, 1]); // b 今日 10 → 前；a 昨日 777 不算今日 → 沉底
-  });
 });
 
 describe("applySeriesFilters — 搜尋組合（spec §3.1：組別之後、排序之前）", () => {
@@ -303,11 +251,6 @@ describe("真實資料全量 sweep（data/2026.json）", () => {
     for (let i = 1; i < r.length; i++) expect(r[i - 1].dayCount).toBeGreaterThanOrEqual(r[i].dayCount);
   });
 
-  test("views：totalViewsOf 單調遞減", () => {
-    const r = applySeriesFilters(data, { group: "全部", sort: "views", query: "", favSet });
-    expect(r.length).toBe(data.series.length);
-    for (let i = 1; i < r.length; i++) expect(totalViewsOf(r[i - 1])).toBeGreaterThanOrEqual(totalViewsOf(r[i]));
-  });
 
   test("latest：有文章者全部排在無文章者之前，有文章段內臺北日非遞增", () => {
     const r = applySeriesFilters(data, { group: "全部", sort: "latest", query: "", favSet });
@@ -330,22 +273,4 @@ describe("真實資料全量 sweep（data/2026.json）", () => {
     for (const s of r) expect(favSet.has(s.id)).toBe(true);
   });
 
-  test("todayViews：有今日文章者全部排在無今日文章者之前，今日段內觀看單調遞減", () => {
-    const anchor = data.updatedAt.slice(0, 10); // 快照日（與 applySeriesFilters 內部錨點一致）
-    const r = applySeriesFilters(data, { group: "全部", sort: "todayViews", query: "", favSet });
-    // 手算今日最大觀看：與實作同式（taipeiDay + max over 今日）。
-    const hasToday = (s: (typeof data.series)[number]) =>
-      s.articles.some((a) => a.publishedAt.slice(0, 10) === anchor);
-    const firstNoToday = r.findIndex((s) => !hasToday(s));
-    if (firstNoToday !== -1) {
-      for (let i = firstNoToday; i < r.length; i++) expect(hasToday(r[i])).toBe(false);
-    }
-    for (let i = 1; i < r.length; i++) {
-      const prev = r[i - 1], cur = r[i];
-      const pv = hasToday(prev) ? Math.max(0, ...prev.articles.filter((a) => a.publishedAt.slice(0, 10) === anchor).map((a) => a.views)) : 0;
-      const cv = hasToday(cur) ? Math.max(0, ...cur.articles.filter((a) => a.publishedAt.slice(0, 10) === anchor).map((a) => a.views)) : 0;
-      if (pv === 0 && cv === 0) continue; // 皆無今日 → 依進度（非單調，跳過）
-      expect(pv).toBeGreaterThanOrEqual(cv);
-    }
-  });
 });

@@ -4,7 +4,7 @@
 // 無 DOM、無 window、無 runtime 依賴（僅 daily-status / search / card 的純函式）——可單元測試。
 // 這是全專案最後一塊原本沒有測試覆蓋的商業邏輯（排序語意跨 search/daily-status/favorites 三個 spec）。
 import { taipeiDay } from "./daily-status";
-import { totalViewsOf, type ViewSeries } from "./card";
+import type { ViewSeries } from "./card";
 import { seriesMatchesQuery } from "./search";
 import type { YearData } from "../../../scripts/types";
 
@@ -54,21 +54,6 @@ function latestPubMs(s: ViewSeries): number {
   return Number.isFinite(ms) ? ms : 0;
 }
 
-// 「當篇觀看（今日）」排序鍵：該系列今日（排序錨點日）文章的最大觀看數。
-// 語意：-1 = 無今日文章（沉底）；≥0 = 今日有文章，值為今日最大觀看（今日文章 0 觀看 = 0，
-// 仍是「今日有發文」，排在任何無今日文章系列之前）。
-// compact 資料帶 todayMaxViews（frontmatter 由完整 articles 預計算，同樣 -1 語意）；
-// 完整資料由 articles 即時推導：今日最大觀看 = max over 臺北日 == anchorDay 的 views。
-// anchorDay 為資料快照日（data.updatedAt 的臺北日）——與「今日發文」chip 的 runtime
-// 判定不同：排序錨點隨快照走，跨日不漂移（60s refresh 取得新快照即更新錨點）。
-export function todayMaxViewsOf(s: ViewSeries, anchorDay: string): number {
-  if (typeof s.todayMaxViews === "number") return s.todayMaxViews;
-  let max = -1;
-  for (const a of s.articles) {
-    if (taipeiDay(a.publishedAt) === anchorDay && a.views > max) max = a.views;
-  }
-  return max;
-}
 
 // 尚未開賽（無文章）系列的報名日 ms；無效/空 → 0（排序時沉底到最後）。
 function signupMs(s: ViewSeries): number {
@@ -80,17 +65,8 @@ function signupMs(s: ViewSeries): number {
 
 // 依 sort 語意排序（[...series] 副本，不 mutate 輸入）。
 // anchorDay：「當篇觀看（今日）」的今日錨點（臺北日）；預設 = 資料快照日。
-function sortSeries(series: ViewSeries[], sort: SortKey, anchorDay: string): ViewSeries[] {
+function sortSeries(series: ViewSeries[], sort: SortKey, _anchorDay: string = ""): ViewSeries[] {
   return [...series].sort((a, b) => {
-    if (sort === "views") return totalViewsOf(b) - totalViewsOf(a);
-    if (sort === "todayViews") {
-      const va = todayMaxViewsOf(a, anchorDay), vb = todayMaxViewsOf(b, anchorDay);
-      // -1 哨兵：任何今日文章（≥0）恆在無今日文章（-1）之前；有今日者依最大觀看 desc。
-      if (va !== vb) return vb - va;
-      // 平手且皆無今日文章 → 依進度 desc（與「今日發文」排序的沉底段語意一致）。
-      if (va === -1) return b.dayCount - a.dayCount;
-      return 0; // 兩者皆有今日文章且觀看相同 → 穩定序（來源序）
-    }
     if (sort === "latest") {
       const lastA = a.articles.length ? a.articles[a.articles.length - 1] : null;
       const lastB = b.articles.length ? b.articles[b.articles.length - 1] : null;

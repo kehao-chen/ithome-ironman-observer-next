@@ -60,10 +60,8 @@ const updatedAtFallback = isoInitial(data.updatedAt);
     <div class="teams-head" role="row">
       <span class="th th-rank">#</span>
       <span class="th th-name">團隊名稱</span>
-      <span class="th th-members">成員</span>
-      <button type="button" class="th th-sortable th-views" data-sort="totalViews" aria-sort="descending">總瀏覽</button>
-      <button type="button" class="th th-sortable th-avg" data-sort="avgViews">人均</button>
-      <button type="button" class="th th-sortable th-progress" data-sort="avgProgress">平均進度</button>
+      <button type="button" class="th th-sortable th-members" data-sort="memberCount">成員</button>
+      <button type="button" class="th th-sortable th-progress" data-sort="avgProgress" aria-sort="descending">平均進度</button>
       <button type="button" class="th th-sortable th-today" data-sort="postedToday">今日發文</button>
       <span class="th th-status">狀態</span>
     </div>
@@ -94,7 +92,7 @@ const updatedAtFallback = isoInitial(data.updatedAt);
 
   let current: YearData = (window as any).TEAMS_DATA;
   let today = taipeiToday();
-  let teamSortKey: TeamSortKey = "totalViews";
+  let teamSortKey: TeamSortKey = "avgProgress";
   const expandedTeams = new Set<string>();
 
   function humanizeAll() {

@@ -20,7 +20,7 @@ export type ViewSeries = Series & { sumViews?: number; todayMaxViews?: number };
 
 // 總瀏覽數：sumViews ?? articles 求和（排序器與 view-model 共用）。
 export function totalViewsOf(s: ViewSeries): number {
-  return typeof s.sumViews === "number" ? s.sumViews : s.articles.reduce((n, a) => n + a.views, 0);
+  return typeof s.sumViews === "number" ? s.sumViews : s.articles.reduce((n, a) => n + (a.views ?? 0), 0);
 }
 
 export type CardView = {

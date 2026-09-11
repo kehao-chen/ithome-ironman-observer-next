@@ -49,14 +49,12 @@ describe("buildCard — 結構契約（mirror SeriesCard.astro）", () => {
     expect(headLeft.children[0].textContent).toBe("DAY 7");
     expect(headLeft.children[1].textContent).toBe("今日發文");
 
-    // 順序契約：與 SeriesCard.astro 的 <span stat><button fav><button rss> 相同
+    // 順序契約：與 SeriesCard.astro 的 <button fav><button rss> 相同
     const headRight = head.querySelector(".card-head-right")!;
     expect([...headRight.children].map((c) => c.className)).toEqual([
-      "card-stat tabular-nums",
       "card-action card-fav",
       "card-action",
     ]);
-    expect(headRight.querySelector<HTMLElement>(".card-stat")!.textContent).toBe("109 瀏覽");
     const fav = headRight.querySelector<HTMLElement>(".card-fav")!;
     expect(fav.getAttribute("aria-pressed")).toBe("false");
     expect(fav.dataset.favId).toBe("9034");
@@ -77,7 +75,6 @@ describe("buildCard — 結構契約（mirror SeriesCard.astro）", () => {
     expect(card.querySelector(".latest-tag")!.textContent).toBe("最新");
     expect(card.querySelector<HTMLAnchorElement>(".latest-link")!.href).toBe("https://ithelp.ithome.com.tw/articles/7");
     expect(card.querySelector(".latest-link")!.textContent).toContain("Day 7");
-    expect(card.querySelector(".latest-views")!.textContent).toContain("99 當篇觀看");
 
     // updated：time datetime = publishedAt
     const time = card.querySelector<HTMLTimeElement>(".updated time")!;
@@ -118,18 +115,16 @@ describe("buildCard — 結構契約（mirror SeriesCard.astro）", () => {
 });
 
 describe("buildRow — 結構契約", () => {
-  test("row-left → row-main → row-views → row-actions", () => {
+  test("row-left → row-main → row-actions", () => {
     const row = buildRow(makeSeries({}), TODAY, true);
     expect(row.className).toBe("series-row");
     expect([...row.children].map((c) => c.className)).toEqual([
       "row-left",
       "row-main",
-      "row-views tabular-nums",
       "row-actions",
     ]);
     const left = row.querySelector(".row-left")!;
     expect([...left.children].map((c) => c.className)).toEqual(["day-badge", "status-chip"]);
-    expect(row.querySelector(".row-views")!.textContent).toBe("109");
     const actions = row.querySelector(".row-actions")!;
     expect([...actions.children].map((c) => c.className)).toEqual(["card-action card-fav", "card-action", "card-action"]);
     expect(actions.querySelector<HTMLElement>(".card-fav")!.getAttribute("aria-pressed")).toBe("true");
@@ -154,7 +149,6 @@ describe("真實資料全量 sweep（data/2026.json）", () => {
       // 標題、作者、進度、URL 有帶進 DOM
       expect(card.querySelector(".card-title a")!.textContent).toBe(s.title);
       expect(row.querySelector(".row-title")!.textContent).toBe(s.title);
-      expect(card.querySelector<HTMLElement>(".card-stat")!.textContent).toBe(`${v.totalViews.toLocaleString()} 瀏覽`);
       expect(card.querySelector(".progress-label")!.textContent).toBe(v.progressLabel);
       if (v.latest) {
         expect(card.querySelector(".updated time")).not.toBeNull();
@@ -185,9 +179,9 @@ describe("SSR 模板契約 tripwire", () => {
   test("SeriesCard.astro 結構 class 都存在（client 骨架 mirror 的來源）", () => {
     for (const cls of [
       "series-card", "card-head", "card-head-left", "card-head-right",
-      "card-stat", "card-action card-fav", "progress", "progress-track",
+      "card-action card-fav", "progress", "progress-track",
       "progress-label", "card-title", "meta-author", "latest", "latest-link",
-      "latest-tag", "latest-views", "updated", "muted",
+      "latest-tag", "updated", "muted",
     ]) {
       expect(ssrTemplate).toContain(cls);
     }
@@ -203,13 +197,11 @@ describe("SSR 模板契約 tripwire", () => {
     }
   });
 
-  test("card-head-right 內順序：card-stat → card-fav → data-rss", () => {
+  test("card-head-right 內順序：card-fav → data-rss", () => {
     const right = ssrTemplate.indexOf("card-head-right");
-    const stat = ssrTemplate.indexOf("card-stat", right);
     const fav = ssrTemplate.indexOf("card-fav", right);
     const rss = ssrTemplate.indexOf("data-rss", right);
-    expect(stat).toBeGreaterThan(right);
-    expect(fav).toBeGreaterThan(stat);
+    expect(fav).toBeGreaterThan(right);
     expect(rss).toBeGreaterThan(fav);
   });
 

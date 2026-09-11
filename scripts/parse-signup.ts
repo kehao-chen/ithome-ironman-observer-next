@@ -19,7 +19,8 @@ export function parseSignupList(html: string): SignupCard[] {
     const description = decodeHtmlEntities(block.match(/contestants-list__desc content">([\s\S]*?)<\/p>/)?.[1]?.trim() ?? "");
     const team = block.match(/team-badge">所屬團隊<\/span>\s*<a[^>]*>([^<]+)<\/a>/)?.[1]?.trim() ?? null;
     const signupDate = block.match(/報名日期：([\d/]+ [\d:]+)/)?.[1] ?? "";
-    const day = block.match(/DAY\s*(\d+)/) ? Number(block.match(/DAY\s*(\d+)/)![1]) : 0;
+    const dayMatch = block.match(/team-dashboard__day[^>]*>[\s\S]*?DAY\s*(\d+)/i);
+    const day = dayMatch ? Number(dayMatch[1]) : 0;
     cards.push({ seriesId, userId, name, group, title, description, team: team ? decodeHtmlEntities(team) : null, signupDate, day });
   }
   return cards;

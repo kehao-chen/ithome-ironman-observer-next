@@ -216,7 +216,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       // 3. 文章觀看分佈：關鍵百分位 bar ─────────────────────────────────────
       // CDF 在線性座標下幾乎全部壓在 0，改用 p25/p50/p75/p90/p95/p99 直接看差距。
       {
-        const percs = keyPercentiles(arts.map((a) => a.views));
+        const percs = keyPercentiles(arts.map((a) => a.views ?? 0));
         getChart("chart-dist")?.setOption({
           backgroundColor: "transparent",
           grid: grid({ bottom: 32 }),

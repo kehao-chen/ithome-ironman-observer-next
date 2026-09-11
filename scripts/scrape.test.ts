@@ -297,7 +297,7 @@ describe("scrapeSeriesIncremental and scrapeSeriesFull", () => {
       if (url.includes("/rss/series/")) return rssXml;
       return seriesPageHtml;
     };
-    const res = await scrapeSeriesIncremental(card, undefined, fetcher);
+    const res = await scrapeSeriesIncremental({ ...card, day: 0 }, undefined, fetcher);
     expect(res.status).toBe("fresh");
     if (res.status === "fresh") {
       expect(res.series.articleCount).toBe(0);
@@ -348,7 +348,7 @@ describe("scrapeSeriesIncremental and scrapeSeriesFull", () => {
     };
     const rssXml = `<channel>
       <lastBuildDate>Sun, 30 Aug 2026 06:37:48 +0800</lastBuildDate>
-      ${Array.from({ length: 30 }, (_, i) => `<item><title>Day ${i + 1}</title></item>`).join("\n")}
+      ${Array.from({ length: 30 }, (_, i) => `<item><title>Day ${i + 1}</title><link>https://ithelp.ithome.com.tw/articles/${10403750 + i + 1}</link></item>`).join("\n")}
     </channel>`;
     const seriesPage3Html = `
       <div class="board leftside profile-main">
@@ -472,20 +472,18 @@ describe("scrapeSeriesIncremental and scrapeSeriesFull", () => {
     const fetcher = async (url: string) => {
       if (url.includes("/rss/series/")) return rssXml;
       // Series page blocked by Cloudflare
-      throw new Error("HTTP 403 (Cloudflare challenge) for " + url);
+      throw new Error(`HTTP 403 (Cloudflare challenge) for ${url}`);
     };
 
     const res = await scrapeSeriesIncremental(activeCard, prevSeries, fetcher);
-    expect(res.status).toBe("stale");
-    if (res.status === "stale") {
+    expect(res.status).toBe("fresh");
+    if (res.status === "fresh") {
       expect(res.series.articleCount).toBe(14);
       expect(res.series.dayCount).toBe(15);
       expect(res.series.articles.length).toBe(2);
       // Preserves historical views/likes/comments
       expect(res.series.articles[0].views).toBe(100);
       expect(res.series.articles[0].likes).toBe(5);
-      expect(res.error).toContain("HTTP 403");
-      expect(res.error).toContain("RSS fallback");
     }
   });
 });

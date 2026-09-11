@@ -51,16 +51,13 @@ function buildMemberRow(m: TeamMemberRow, today: string): HTMLElement {
   progressCol.className = "team-member-progress tabular-nums";
   progressCol.textContent = v.progressLabel;
 
-  const views = document.createElement("span");
-  views.className = "team-member-views tabular-nums";
-  views.textContent = `${m.views.toLocaleString()} 瀏覽`;
 
   const chipCol = document.createElement("span");
   chipCol.className = "team-member-chip-wrap";
   const chip = buildChip(v);
   if (chip) chipCol.appendChild(chip);
 
-  row.append(authorCol, meta, progressCol, views, chipCol);
+  row.append(authorCol, meta, progressCol, chipCol);
   return row;
 }
 
@@ -107,16 +104,6 @@ export function buildTeamRow(row: TeamRow, today: string, rank: number = 1): HTM
   const membersCol = document.createElement("div");
   membersCol.className = "team-col-members tabular-nums";
   membersCol.textContent = String(row.memberCount);
-
-  // 4. Total Views
-  const viewsCol = document.createElement("div");
-  viewsCol.className = "team-col-views tabular-nums";
-  viewsCol.textContent = row.totalViews.toLocaleString();
-
-  // 5. Avg Views
-  const avgCol = document.createElement("div");
-  avgCol.className = "team-col-avg tabular-nums";
-  avgCol.textContent = row.avgViews.toLocaleString();
 
   // 6. Avg Progress (Progress bar + Label)
   const progressCol = document.createElement("div");
@@ -173,7 +160,7 @@ export function buildTeamRow(row: TeamRow, today: string, rank: number = 1): HTM
   }
 
   // 桌面結構：各直屬 column 直接放入 head 以吻合 CSS Grid 對齊
-  head.append(rankCol, nameCol, membersCol, viewsCol, avgCol, progressCol, todayCol, statusCol);
+  head.append(rankCol, nameCol, membersCol, progressCol, todayCol, statusCol);
 
   // 展開區：成員清單 + 看該隊系列
   const body = document.createElement("div");

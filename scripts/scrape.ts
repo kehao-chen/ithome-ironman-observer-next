@@ -113,7 +113,7 @@ export function buildSeriesFromRss(
   card: SignupCard,
   rss: RssChannel,
   cachedSeries?: Series,
-  reason = "Series page unavailable",
+  reason = "RSS unavailable",
 ): SeriesResult {
   const cachedArticleMap = new Map<number, Article>();
   if (cachedSeries?.articles) {
@@ -122,9 +122,8 @@ export function buildSeriesFromRss(
     }
   }
 
-  // RSS can be truncated or empty during a challenge. It cannot establish deletions.
   const invalidItem = rss.items.some(item =>
-    !/^https:\/\/ithelp\.ithome\.com\.tw\/articles\/[1-9]\d*(?:[?#].*)?$/.test(item.link) ||
+    !/articles\/[1-9]\d*(?:[?#].*)?$/.test(item.link) ||
     !item.title.trim(),
   );
   if (rss.items.length === 0 || invalidItem) {
@@ -138,31 +137,33 @@ export function buildSeriesFromRss(
       };
       return { status: "fresh", series };
     }
-    const error = `${reason}; RSS fallback unavailable: empty or invalid feed`;
+    const error = `${reason}: empty or invalid feed`;
     return cachedSeries
       ? { status: "stale", series: cachedSeries, error }
       : { status: "failed", seriesId: card.seriesId, error };
   }
 
   const byId = new Map(cachedArticleMap);
-  // Chronological order gives untitled day numbers a stable order within this feed.
   const items = [...rss.items].sort((a, b) => a.pubDate.localeCompare(b.pubDate) || a.link.localeCompare(b.link));
   for (const item of items) {
-    const id = Number(item.link.match(/articles\/(\d+)/)![1]);
+    const matchId = item.link.match(/articles\/(\d+)/);
+    if (!matchId) continue;
+    const id = Number(matchId[1]);
     const cachedArt = cachedArticleMap.get(id);
     const mDay = item.title.match(/DAY[-_\s]*(\d+)/i) || item.title.match(/D(\d+)\b/i);
-    const day = cachedArt?.day ?? (mDay ? Number(mDay[1]) : Math.max(0, ...[...byId.values()].map(a => a.day)) + 1);
+    const parsedDay = mDay ? Number(mDay[1]) : 0;
+    const validTitleDay = parsedDay > 0 && parsedDay <= 40 ? parsedDay : undefined;
+    const day = cachedArt?.day ?? validTitleDay ?? Math.max(0, ...[...byId.values()].map(a => a.day)) + 1;
     byId.set(id, {
       id, day, title: item.title, url: item.link.replace(/[?#].*$/, ""),
       publishedAt: item.pubDate ? `${item.pubDate.replace(" ", "T")}+08:00` : (cachedArt?.publishedAt ?? ""),
-      views: cachedArt?.views ?? 0,
-      likes: cachedArt?.likes ?? 0,
-      comments: cachedArt?.comments ?? 0,
+      views: cachedArt?.views,
+      likes: cachedArt?.likes,
+      comments: cachedArt?.comments,
     });
   }
   const articles = [...byId.values()].sort((a, b) => a.day - b.day || a.id - b.id);
-  // Article titles are not the official streak (a series can contain catch-up posts).
-  const dayCount = Math.max(card.day, cachedSeries?.dayCount ?? 0);
+  const dayCount = Math.max(card.day, cachedSeries?.dayCount ?? 0, articles.length > 0 ? 1 : 0);
   const latestPub = articles.length > 0 ? articles[articles.length - 1].publishedAt : null;
   const lastUpdated = rss.lastBuildDate ?? latestPub ?? cachedSeries?.lastUpdated ?? null;
 
@@ -181,15 +182,13 @@ export function buildSeriesFromRss(
     lastUpdated,
     dayCount,
     articleCount: Math.max(articles.length, cachedSeries?.articleCount ?? 0),
-    rssFallback: true,
     subscriptions: cachedSeries?.subscriptions ?? 0,
     articles,
   };
 
   return {
-    status: "stale",
+    status: "fresh",
     series,
-    error: `${reason}; RSS fallback merged with cache; completeness and metrics unverified`,
   };
 }
 
@@ -198,80 +197,12 @@ export async function scrapeSeriesFull(
   cachedSeries?: Series,
   fetcher: FetchFn = fetchHtml,
 ): Promise<SeriesResult> {
-  let rssChannel: RssChannel | null = null;
   try {
-    try {
-      const rssXml = await fetcher(rssUrl(card.seriesId));
-      rssChannel = parseRss(rssXml);
-    } catch { /* best-effort */ }
-
-    let firstPageHtml: string;
-    try {
-      firstPageHtml = await fetcher(seriesUrl(card.userId, card.seriesId));
-    } catch (err) {
-      if (err instanceof Error && err.message.includes("403") && rssChannel) {
-        return buildSeriesFromRss(card, rssChannel, cachedSeries, err.message);
-      }
-      throw err;
-    }
-    if (!isSeriesPage(firstPageHtml)) {
-      if (rssChannel) {
-        return buildSeriesFromRss(card, rssChannel, cachedSeries, "Invalid series page HTML");
-      }
-      throw new Error("Invalid series page HTML");
-    }
-
-    const first = parseSeriesPage(firstPageHtml);
-    const articles = [...first.articles];
-    let page: string | null = first.nextPage;
-
-    while (page && articles.length < first.articleCount) {
-      const pageHtml = await fetcher(seriesUrl(card.userId, card.seriesId) + page);
-      if (!isSeriesPage(pageHtml)) {
-        throw new Error(`Invalid series page HTML at ${page}`);
-      }
-      const parsed = parseSeriesPage(pageHtml);
-      articles.push(...parsed.articles);
-      page = parsed.nextPage;
-    }
-
-    if (first.articleCount > 0 && articles.length !== first.articleCount) {
-      throw new Error(`Articles collected (${articles.length}) mismatch header (${first.articleCount})`);
-    }
-
-    let dayCount = first.dayCount;
-    const warnings: string[] = [];
-    if (articles.length > 0) {
-      const latestUrl = articles[articles.length - 1]?.url;
-      const dayRes = await officialDayCount(first.dayCount, latestUrl, fetcher);
-      dayCount = dayRes.dayCount;
-      if (dayRes.warning) warnings.push(dayRes.warning);
-    }
-
-    const latestPub = articles[articles.length - 1]?.publishedAt ?? null;
-    const lastUpdated = rssChannel?.lastBuildDate ?? latestPub;
-
-    const series: Series = {
-      id: card.seriesId,
-      user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
-      group: card.group,
-      title: card.title,
-      description: card.description,
-      team: card.team,
-      signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
-      lastUpdated,
-      dayCount,
-      articleCount: first.articleCount,
-      subscriptions: first.subscriptions,
-      articles: articles.sort((a, b) => a.day - b.day),
-    };
-
-    return { status: "fresh", series, warnings: warnings.length > 0 ? warnings : undefined };
+    const rssXml = await fetcher(rssUrl(card.seriesId));
+    const rss = parseRss(rssXml);
+    return buildSeriesFromRss(card, rss, cachedSeries);
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : String(e);
-    if (errorMsg.includes("403") && rssChannel) {
-      return buildSeriesFromRss(card, rssChannel, cachedSeries, errorMsg);
-    }
     if (cachedSeries) {
       return { status: "stale", series: cachedSeries, error: errorMsg };
     }
@@ -285,9 +216,7 @@ export async function scrapeSeriesIncremental(
   fetcher: FetchFn = fetchHtml,
 ): Promise<SeriesResult> {
   // Fast path 1: series is already completed (dayCount >= 30, articleCount >= 30, card.day >= 30)
-  // Verified series with 30 days are complete. If rssFallback is true, we still allow an RSS refresh below.
   if (
-    !cachedSeries?.rssFallback &&
     cachedSeries &&
     cachedSeries.dayCount >= 30 &&
     cachedSeries.articleCount >= 30 &&
@@ -298,9 +227,7 @@ export async function scrapeSeriesIncremental(
   }
 
   // Fast path 2: series has not started yet (card.day === 0 and cached articleCount === 0)
-  // The signup card explicitly shows DAY 0; no posts have been created yet.
   if (
-    !cachedSeries?.rssFallback &&
     cachedSeries &&
     cachedSeries.articleCount === 0 &&
     cachedSeries.dayCount === 0 &&
@@ -308,148 +235,8 @@ export async function scrapeSeriesIncremental(
   ) {
     return { status: "fresh", series: cachedSeries };
   }
-  let rss: RssChannel | null = null;
-  try {
-    let rssXml: string;
-    try {
-      rssXml = await fetcher(rssUrl(card.seriesId));
-    } catch {
-      return await scrapeSeriesFull(card, cachedSeries, fetcher);
-    }
 
-    rss = parseRss(rssXml);
-    const nHint = rss.items.length;
-
-    // RSS 0 items protection
-    if (nHint === 0) {
-      if (cachedSeries && cachedSeries.articleCount > 0) {
-        return await scrapeSeriesFull(card, cachedSeries, fetcher);
-      }
-      if (card.day === 0) {
-        const series: Series = {
-          id: card.seriesId,
-          user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
-          group: card.group, title: card.title, description: card.description, team: card.team,
-          signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
-          lastUpdated: null, dayCount: 0, articleCount: 0, subscriptions: cachedSeries?.subscriptions ?? 0, articles: [],
-        };
-        return { status: "fresh", series };
-      }
-      let page1Html: string;
-      try {
-        page1Html = await fetcher(seriesUrl(card.userId, card.seriesId));
-      } catch (err) {
-        if (err instanceof Error && err.message.includes("403")) {
-          return buildSeriesFromRss(card, rss, cachedSeries, err.message);
-        }
-        throw err;
-      }
-      if (isSeriesPage(page1Html)) {
-        const parsed = parseSeriesPage(page1Html);
-        if (parsed.articleCount === 0) {
-          const series: Series = {
-            id: card.seriesId,
-            user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
-            group: card.group, title: card.title, description: card.description, team: card.team,
-            signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
-            lastUpdated: null, dayCount: 0, articleCount: 0, subscriptions: parsed.subscriptions, articles: [],
-          };
-          return { status: "fresh", series };
-        }
-      }
-      return await scrapeSeriesFull(card, cachedSeries, fetcher);
-    }
-    // RSS-First incremental check:
-    // If this series previously relied on RSS fallback (Cloudflare 403 on HTML)
-    // and RSS shows no new articles while card.day has not increased,
-    // merge with latest RSS channel metadata without making a doomed HTML request.
-    const cachedArticleIds = new Set(cachedSeries?.articles?.map((a) => a.id) ?? []);
-    const hasNewArticles = rss.items.some((item) => {
-      const idMatch = item.link.match(/articles\/(\d+)/);
-      return idMatch && !cachedArticleIds.has(Number(idMatch[1]));
-    });
-
-    if (
-      cachedSeries?.rssFallback &&
-      !hasNewArticles &&
-      card.day <= (cachedSeries.dayCount ?? 0) &&
-      cachedArticleIds.size > 0
-    ) {
-      return buildSeriesFromRss(card, rss, cachedSeries, "Series page blocked by Cloudflare (403)");
-    }
-
-    const lastPage = Math.ceil(nHint / 10);
-    const lastPageUrl = `${seriesUrl(card.userId, card.seriesId)}${lastPage === 1 ? "" : `?page=${lastPage}`}`;
-    let lastPageHtml: string;
-    try {
-      lastPageHtml = await fetcher(lastPageUrl);
-    } catch (err) {
-      if (err instanceof Error && err.message.includes("403")) {
-        return buildSeriesFromRss(card, rss, cachedSeries, err.message);
-      }
-      throw err;
-    }
-    if (!isSeriesPage(lastPageHtml)) {
-      return buildSeriesFromRss(card, rss, cachedSeries, "Invalid series page HTML");
-    }
-
-    const parsedLastPage = parseSeriesPage(lastPageHtml);
-    const headerArticleCount = parsedLastPage.articleCount;
-
-    // Validate that fetched page is indeed the true last page
-    if (Math.ceil(headerArticleCount / 10) !== lastPage) {
-      return await scrapeSeriesFull(card, cachedSeries, fetcher);
-    }
-
-    if (!cachedSeries) {
-      return await scrapeSeriesFull(card, undefined, fetcher);
-    }
-
-    const mergedArticles = mergeIncrementalArticles(cachedSeries, parsedLastPage.articles, headerArticleCount, lastPage);
-    if (!mergedArticles) {
-      return await scrapeSeriesFull(card, cachedSeries, fetcher);
-    }
-
-    let dayCount = Math.max(cachedSeries.dayCount, parsedLastPage.dayCount);
-    const warnings: string[] = [];
-
-    // If new posts exist, fetch latest article page to compute dayCount
-    if (headerArticleCount > cachedSeries.articleCount && mergedArticles.length > 0) {
-      const latestUrl = mergedArticles[mergedArticles.length - 1]?.url;
-      const dayRes = await officialDayCount(parsedLastPage.dayCount, latestUrl, fetcher);
-      dayCount = Math.max(dayCount, dayRes.dayCount);
-      if (dayRes.warning) warnings.push(dayRes.warning);
-    }
-
-    const latestPub = mergedArticles[mergedArticles.length - 1]?.publishedAt ?? null;
-    const lastUpdated = rss.lastBuildDate ?? latestPub;
-
-    const series: Series = {
-      id: card.seriesId,
-      user: { id: card.userId, name: card.name, profileUrl: `https://ithelp.ithome.com.tw/users/${card.userId}/profile` },
-      group: card.group,
-      title: card.title,
-      description: card.description,
-      team: card.team,
-      signupDate: `${card.signupDate.replace(" ", "T")}+08:00`,
-      lastUpdated,
-      dayCount,
-      articleCount: headerArticleCount,
-      subscriptions: parsedLastPage.subscriptions,
-      articles: mergedArticles,
-    };
-
-    return { status: "fresh", series, warnings: warnings.length > 0 ? warnings : undefined };
-  } catch (e) {
-    const errorMsg = e instanceof Error ? e.message : String(e);
-    if (errorMsg.includes("403") && rss) {
-      return buildSeriesFromRss(card, rss, cachedSeries, errorMsg);
-    }
-    if (cachedSeries) {
-      return { status: "stale", series: cachedSeries, error: errorMsg };
-    }
-    return { status: "failed", seriesId: card.seriesId, error: errorMsg };
-  }
+  return await scrapeSeriesFull(card, cachedSeries, fetcher);
 }
 
 // Emit the real Taipei wall clock (UTC+8, no DST) as ISO +08:00.
@@ -563,15 +350,8 @@ export async function runScrape(
   const fetcher = opts.fetcher ?? fetchHtml;
   const cachedMap = new Map<number, Series>();
   if (opts.cachedYearData?.series) {
-    // Older snapshots only recorded RSS provenance in the log.
-    const rssFallbackIds = new Set(
-      opts.cachedYearData.scrapeLog.flatMap(line => {
-        const match = line.match(/^\[(?:warning|stale)\] (\d+): .*RSS fallback/);
-        return match ? [Number(match[1])] : [];
-      }),
-    );
     for (const s of opts.cachedYearData.series) {
-      cachedMap.set(s.id, rssFallbackIds.has(s.id) ? { ...s, rssFallback: true } : s);
+      cachedMap.set(s.id, s);
     }
   }
 
@@ -582,6 +362,9 @@ export async function runScrape(
     const url = `${manifest.signupListUrl}${page === 1 ? "" : `?page=${page}`}`;
     const html = await fetcher(url);
     const parsed = parseSignupList(html);
+    if (page === 1 && parsed.length === 0) {
+      throw new Error(`Failed to parse any cards from signup list at ${url}`);
+    }
     if (parsed.length === 0) break;
     cards.push(...parsed);
     if (!/rel="next"/.test(html)) break;
@@ -605,15 +388,9 @@ export async function runScrape(
         ? await scrapeSeriesFull(card, cached, fetcher)
         : await scrapeSeriesIncremental(card, cached, fetcher);
 
-      // A successful RSS fallback has merged latest articles with cache.
-      // Only treat 403 as a blocking error if data could NOT be retrieved (failed, or RSS unavailable).
-      const isRssFallbackMerged =
-        res.status === "stale" && res.error?.includes("RSS fallback merged with cache");
-
       const is403 =
-        !isRssFallbackMerged &&
-        ((res.status === "stale" && res.error?.includes("403")) ||
-          (res.status === "failed" && res.error?.includes("403")));
+        (res.status === "stale" && res.error?.includes("403")) ||
+        (res.status === "failed" && res.error?.includes("403"));
 
       if (is403) {
         consecutive403++;
@@ -646,11 +423,7 @@ export async function runScrape(
       scrapeLog.push(`[failed] ${res.seriesId}: ${res.error}`);
     }
   }
-  // Only count series that could not be updated at all (unmodified cache) toward the breaker,
-  // not series that successfully merged latest articles via RSS.
-  const staleCount = scrapeLog.filter(
-    (l) => l.startsWith("[stale]") && !l.includes("RSS fallback merged"),
-  ).length;
+  const staleCount = scrapeLog.filter((l) => l.startsWith("[stale]")).length;
   const failedCount = scrapeLog.filter((l) => l.startsWith("[failed]")).length;
   const cb = checkCircuitBreaker(
     { seriesCount: series.length, failedCount, staleCount },

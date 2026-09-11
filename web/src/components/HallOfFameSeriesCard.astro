@@ -22,9 +22,7 @@ const latestHref = v.latest ? safeHref(v.latest.url) : null;
       <span class={v.badgeClass}>{v.badgeText}</span>
       {v.chipText ? <span class={v.chipClass} title={v.chipTitle ?? undefined}>{v.chipText}</span> : null}
     </span>
-    <div class="card-head-right">
-      <span class="card-stat tabular-nums">{v.totalViews.toLocaleString()} 瀏覽</span>
-    </div>
+    <div class="card-head-right"></div>
   </header>
   <div class="progress">
     <div class="progress-track"><div class={v.progressFillClass} style={`width:${v.progressPct}%`}></div></div>
@@ -44,10 +42,6 @@ const latestHref = v.latest ? safeHref(v.latest.url) : null;
           <span class="latest-tag">最新</span>{v.latest.title}
         </a>
       ) : <span class="latest-link muted">{v.latest.title}</span>}
-      <span class="latest-views tabular-nums">
-        <svg class="ico-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>
-        {v.latest.views.toLocaleString()} 當篇觀看
-      </span>
     </div>
   ) : <p class="latest"><span class="latest-link muted">{v.emptySlotText}</span></p>}
   {v.updatedIso ? (

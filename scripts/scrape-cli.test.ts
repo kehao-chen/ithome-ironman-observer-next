@@ -306,7 +306,7 @@ describe("circuit breaker", () => {
     const fetcher = async (url: string) => {
       if (url.includes("/signup/list")) return tenCardsHtml;
       requestCount++;
-      throw new Error("HTTP 403 for " + url);
+      throw new Error(`HTTP 403 for ${url}`);
     };
 
     await expect(runScrape(m2026, { cachedYearData: prev, fetcher })).rejects.toThrow(

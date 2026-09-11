@@ -19,12 +19,6 @@ function svgEl(tag: string, attrs: Record<string, string>, children: SVGElement[
   return el;
 }
 
-function eyeIcon(): SVGElement {
-  return svgEl("svg", { class: "ico-eye", viewBox: "0 0 24 24", "aria-hidden": "true" }, [
-    svgEl("path", { d: "M1 12s4-7.5 11-7.5S23 12 23 12s-4 7.5-11 7.5S1 12 1 12z" }),
-    svgEl("circle", { cx: "12", cy: "12", r: "3", fill: "currentColor", stroke: "none" }),
-  ]);
-}
 function rssIcon(): SVGElement {
   return svgEl("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" }, [
     svgEl("path", { d: "M4 11a9 9 0 0 1 9 9" }),
@@ -72,22 +66,18 @@ export function buildCard(s: ViewSeries, today: string, isFav: boolean): HTMLEle
   if (chip) headLeft.append(chip);
   const right = document.createElement("div");
   right.className = "card-head-right";
-  const stat = document.createElement("span");
-  stat.className = "card-stat tabular-nums";
-  stat.textContent = `${v.totalViews.toLocaleString()} 瀏覽`;
-  const rss = document.createElement("button");
-  rss.className = "card-action"; rss.type = "button";
-  rss.dataset.rss = v.rssUrl; rss.dataset.title = s.title;
-  rss.setAttribute("aria-label", "RSS 訂閱"); rss.title = "RSS 訂閱";
-  rss.appendChild(rssIcon());
   const fav = document.createElement("button");
   fav.className = "card-action card-fav"; fav.type = "button";
   fav.dataset.favId = String(s.id);
   fav.setAttribute("aria-pressed", String(isFav));
   fav.setAttribute("aria-label", isFav ? "取消收藏" : "收藏系列"); fav.title = isFav ? "取消收藏" : "收藏系列";
   fav.appendChild(favIcon());
-  // 順序必須與 SeriesCard.astro SSR 相同（stat → fav → rss），否則 SSR→client 重渲染時星號會跳位。
-  right.append(stat, fav, rss); head.append(headLeft, right);
+  const rss = document.createElement("button");
+  rss.className = "card-action"; rss.type = "button";
+  rss.dataset.rss = v.rssUrl; rss.dataset.title = s.title;
+  rss.setAttribute("aria-label", "RSS 訂閱"); rss.title = "RSS 訂閱";
+  rss.appendChild(rssIcon());
+  right.append(fav, rss); head.append(headLeft, right);
 
   const prog = document.createElement("div"); prog.className = "progress";
   const track = document.createElement("div"); track.className = "progress-track";
@@ -112,10 +102,7 @@ export function buildCard(s: ViewSeries, today: string, isFav: boolean): HTMLEle
     const la = document.createElement("a"); la.className = "latest-link"; la.href = v.latest.url; la.target = "_blank"; la.rel = "noopener";
     const tag = document.createElement("span"); tag.className = "latest-tag"; tag.textContent = "最新";
     la.append(tag, v.latest.title);
-    const lv = document.createElement("span"); lv.className = "latest-views tabular-nums";
-    lv.appendChild(eyeIcon());
-    lv.appendChild(document.createTextNode(`${v.latest.views.toLocaleString()} 當篇觀看`));
-    lat.append(la, lv);
+    lat.append(la);
   } else {
     const span = document.createElement("span"); span.className = "latest-link muted"; span.textContent = v.emptySlotText;
     lat.appendChild(span);
@@ -150,10 +137,6 @@ export function buildRow(s: ViewSeries, today: string, isFav: boolean): HTMLElem
   m.append(au, " · ", s.group, s.team ? ` · 團隊 ${s.team}` : "");
   main.append(t, m);
 
-  const views = document.createElement("span"); views.className = "row-views tabular-nums";
-  views.appendChild(eyeIcon());
-  views.appendChild(document.createTextNode(v.totalViews.toLocaleString()));
-
   const actions = document.createElement("div"); actions.className = "row-actions";
   const rss = document.createElement("button"); rss.className = "card-action"; rss.type = "button";
   rss.dataset.rss = v.rssUrl; rss.dataset.title = s.title; rss.setAttribute("aria-label", "RSS 訂閱"); rss.title = "RSS 訂閱";
@@ -168,6 +151,6 @@ export function buildRow(s: ViewSeries, today: string, isFav: boolean): HTMLElem
   fav.appendChild(favIcon());
   actions.append(fav, rss, open);
 
-  row.append(left, main, views, actions);
+  row.append(left, main, actions);
   return row;
 }
