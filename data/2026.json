@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-09-13 06:05:07+08:00",
+  "updatedAt": "2026-09-13 06:17:04+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -43783,6 +43783,232 @@
       ]
     },
     {
+      "id": 9273,
+      "user": {
+        "id": 20129853,
+        "name": "菲力",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20129853/profile"
+      },
+      "group": "Software Development",
+      "title": "Web3 支付工程筆記：企業級穩定幣結算系統與多鏈架構實戰",
+      "description": "一筆穩定幣付款請求從 API 進來，要通過重試、queue、relayer、鏈上確認才算數，每一層都可能重複、卡住或失敗。\r\n\r\n我想從零蓋一套企業級穩定幣結算系統，把所有設計想法和取捨寫下來：Payment Intent 狀態機與雙鍵冪等、複式記帳 ledger 與稽核日誌、Go relayer 的交易序列化與失敗任務處理、鏈上鏈下對帳、結算合約與 Permit2、批次付款，最後延伸到 EVM 之外，Solana、TON、SUI 各自需要處理什麼問題等等。\r\n\r\n寫給在 Web3 打滾的後端工程師，重心在為什麼這樣設計，不程式碼逐行導讀。完整程式碼會放在公開 repo。",
+      "team": null,
+      "signupDate": "2026/08/19T04:54:15+08:00",
+      "lastUpdated": "2026-09-13T05:53:59+08:00",
+      "dayCount": 22,
+      "articleCount": 21,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10403744,
+          "day": 1,
+          "title": "Day 1 | 導讀：在不可靠又非同步的世界裡，保證錢只動一次",
+          "url": "https://ithelp.ithome.com.tw/articles/10403744",
+          "publishedAt": "2026-08-23T04:52:35+08:00",
+          "views": 131,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404554,
+          "day": 2,
+          "title": "Day 2 | 穩定幣實作 (上)：ERC-20 代幣在現實世界中的各種陷阱",
+          "url": "https://ithelp.ithome.com.tw/articles/10404554",
+          "publishedAt": "2026-08-24T03:48:22+08:00",
+          "views": 139,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404555,
+          "day": 3,
+          "title": "Day 3 | 穩定幣實作 (下)：Local Devnet 部署與無痛的自動化狀態注入",
+          "url": "https://ithelp.ithome.com.tw/articles/10404555",
+          "publishedAt": "2026-08-25T08:38:19+08:00",
+          "views": 123,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404558,
+          "day": 4,
+          "title": "Day 4 | 核心狀態機：支付意圖 (Payment Intent) 的生命週期流轉",
+          "url": "https://ithelp.ithome.com.tw/articles/10404558",
+          "publishedAt": "2026-08-26T01:50:09+08:00",
+          "views": 116,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404564,
+          "day": 5,
+          "title": "Day 5 | 雙鍵設計 (上)：idpk 如何守住 API 層的重試攻擊",
+          "url": "https://ithelp.ithome.com.tw/articles/10404564",
+          "publishedAt": "2026-08-27T00:26:05+08:00",
+          "views": 108,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404565,
+          "day": 6,
+          "title": "Day 6 | 雙鍵設計 (下)：以 PaymentRef 作為 Audit Tracking 的識別碼",
+          "url": "https://ithelp.ithome.com.tw/articles/10404565",
+          "publishedAt": "2026-08-28T05:12:47+08:00",
+          "views": 93,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404567,
+          "day": 7,
+          "title": "Day 7 | 財務底線：Double-entry Ledger 與 Append-only 稽核日誌",
+          "url": "https://ithelp.ithome.com.tw/articles/10404567",
+          "publishedAt": "2026-08-29T10:09:38+08:00",
+          "views": 93,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404569,
+          "day": 8,
+          "title": "Day 8 | Relayer 架構概觀：Job Queue 驅動的設計",
+          "url": "https://ithelp.ithome.com.tw/articles/10404569",
+          "publishedAt": "2026-08-30T21:11:01+08:00",
+          "views": 90,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404570,
+          "day": 9,
+          "title": "Day 9 | Go Worker Pool 實戰：優雅處理高併發的 Tx 任務",
+          "url": "https://ithelp.ithome.com.tw/articles/10404570",
+          "publishedAt": "2026-08-31T00:08:45+08:00",
+          "views": 71,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404571,
+          "day": 10,
+          "title": "Day 10 | 交易序列化的四鏈對照：NonceSeqnoBlockhashObject Version",
+          "url": "https://ithelp.ithome.com.tw/articles/10404571",
+          "publishedAt": "2026-09-01T00:24:23+08:00",
+          "views": 71,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404742,
+          "day": 11,
+          "title": "Day 11 | Transaction Replacement：卡鏈救援與手續費加速機制",
+          "url": "https://ithelp.ithome.com.tw/articles/10404742",
+          "publishedAt": "2026-09-02T14:37:28+08:00",
+          "views": 71,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404749,
+          "day": 12,
+          "title": "Day 12 | 失敗任務的分類：Retryable vs Poison",
+          "url": "https://ithelp.ithome.com.tw/articles/10404749",
+          "publishedAt": "2026-09-03T00:45:15+08:00",
+          "views": 65,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404753,
+          "day": 13,
+          "title": "Day 13 | DLQ Redrive 設計：不重複打款的保證，與人工介入的邊界",
+          "url": "https://ithelp.ithome.com.tw/articles/10404753",
+          "publishedAt": "2026-09-04T09:38:17+08:00",
+          "views": 41,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407349,
+          "day": 14,
+          "title": "Day 14 | Chain Listener 與 Finality Policy：四條鏈的不可逆分別是什麼意思",
+          "url": "https://ithelp.ithome.com.tw/articles/10407349",
+          "publishedAt": "2026-09-05T00:00:31+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407354,
+          "day": 15,
+          "title": "Day 15 | 鏈上鏈下對齊：Reconciliation Engine 實作",
+          "url": "https://ithelp.ithome.com.tw/articles/10407354",
+          "publishedAt": "2026-09-06T01:49:25+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407358,
+          "day": 16,
+          "title": "Day 16 | 結算合約概觀：Pull vs Push 支付流",
+          "url": "https://ithelp.ithome.com.tw/articles/10407358",
+          "publishedAt": "2026-09-07T07:59:12+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407360,
+          "day": 17,
+          "title": "Day 17 | 封裝 SafeTransfer：為何你永遠需要 SafeERC20？",
+          "url": "https://ithelp.ithome.com.tw/articles/10407360",
+          "publishedAt": "2026-09-08T21:49:31+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407385,
+          "day": 18,
+          "title": "Day 18 | Permit2 深度解析：Signature-based Approval 如何改變支付體驗",
+          "url": "https://ithelp.ithome.com.tw/articles/10407385",
+          "publishedAt": "2026-09-09T02:24:07+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407361,
+          "day": 19,
+          "title": "Day 19 | 託管 (Escrow) 與手續費 (Fee/Refund) 流程實作",
+          "url": "https://ithelp.ithome.com.tw/articles/10407361",
+          "publishedAt": "2026-09-10T11:13:42+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407363,
+          "day": 20,
+          "title": "Day 20 | Bulk Transfer 設計：逐筆 Batch vs Merkle Airdrop",
+          "url": "https://ithelp.ithome.com.tw/articles/10407363",
+          "publishedAt": "2026-09-11T00:16:16+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407555,
+          "day": 21,
+          "title": "Day 21 | Solana 批量分發的三條路線：PDA VaultMerkle Distributor 與圈存簽 root",
+          "url": "https://ithelp.ithome.com.tw/articles/10407555",
+          "publishedAt": "2026-09-12T22:51:25+08:00"
+        }
+      ]
+    },
+    {
       "id": 9287,
       "user": {
         "id": 20121948,
@@ -44495,232 +44721,6 @@
           "views": 137,
           "likes": 0,
           "comments": 1
-        }
-      ]
-    },
-    {
-      "id": 9273,
-      "user": {
-        "id": 20129853,
-        "name": "菲力",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20129853/profile"
-      },
-      "group": "Software Development",
-      "title": "Web3 支付工程筆記：企業級穩定幣結算系統與多鏈架構實戰",
-      "description": "一筆穩定幣付款請求從 API 進來，要通過重試、queue、relayer、鏈上確認才算數，每一層都可能重複、卡住或失敗。\r\n\r\n我想從零蓋一套企業級穩定幣結算系統，把所有設計想法和取捨寫下來：Payment Intent 狀態機與雙鍵冪等、複式記帳 ledger 與稽核日誌、Go relayer 的交易序列化與失敗任務處理、鏈上鏈下對帳、結算合約與 Permit2、批次付款，最後延伸到 EVM 之外，Solana、TON、SUI 各自需要處理什麼問題等等。\r\n\r\n寫給在 Web3 打滾的後端工程師，重心在為什麼這樣設計，不程式碼逐行導讀。完整程式碼會放在公開 repo。",
-      "team": null,
-      "signupDate": "2026/08/19T04:54:15+08:00",
-      "lastUpdated": "2026-09-13T05:53:59+08:00",
-      "dayCount": 21,
-      "articleCount": 21,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10403744,
-          "day": 1,
-          "title": "Day 1 | 導讀：在不可靠又非同步的世界裡，保證錢只動一次",
-          "url": "https://ithelp.ithome.com.tw/articles/10403744",
-          "publishedAt": "2026-08-23T04:52:35+08:00",
-          "views": 131,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404554,
-          "day": 2,
-          "title": "Day 2 | 穩定幣實作 (上)：ERC-20 代幣在現實世界中的各種陷阱",
-          "url": "https://ithelp.ithome.com.tw/articles/10404554",
-          "publishedAt": "2026-08-24T03:48:22+08:00",
-          "views": 139,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404555,
-          "day": 3,
-          "title": "Day 3 | 穩定幣實作 (下)：Local Devnet 部署與無痛的自動化狀態注入",
-          "url": "https://ithelp.ithome.com.tw/articles/10404555",
-          "publishedAt": "2026-08-25T08:38:19+08:00",
-          "views": 123,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404558,
-          "day": 4,
-          "title": "Day 4 | 核心狀態機：支付意圖 (Payment Intent) 的生命週期流轉",
-          "url": "https://ithelp.ithome.com.tw/articles/10404558",
-          "publishedAt": "2026-08-26T01:50:09+08:00",
-          "views": 116,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404564,
-          "day": 5,
-          "title": "Day 5 | 雙鍵設計 (上)：idpk 如何守住 API 層的重試攻擊",
-          "url": "https://ithelp.ithome.com.tw/articles/10404564",
-          "publishedAt": "2026-08-27T00:26:05+08:00",
-          "views": 108,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404565,
-          "day": 6,
-          "title": "Day 6 | 雙鍵設計 (下)：以 PaymentRef 作為 Audit Tracking 的識別碼",
-          "url": "https://ithelp.ithome.com.tw/articles/10404565",
-          "publishedAt": "2026-08-28T05:12:47+08:00",
-          "views": 93,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404567,
-          "day": 7,
-          "title": "Day 7 | 財務底線：Double-entry Ledger 與 Append-only 稽核日誌",
-          "url": "https://ithelp.ithome.com.tw/articles/10404567",
-          "publishedAt": "2026-08-29T10:09:38+08:00",
-          "views": 93,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404569,
-          "day": 8,
-          "title": "Day 8 | Relayer 架構概觀：Job Queue 驅動的設計",
-          "url": "https://ithelp.ithome.com.tw/articles/10404569",
-          "publishedAt": "2026-08-30T21:11:01+08:00",
-          "views": 90,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404570,
-          "day": 9,
-          "title": "Day 9 | Go Worker Pool 實戰：優雅處理高併發的 Tx 任務",
-          "url": "https://ithelp.ithome.com.tw/articles/10404570",
-          "publishedAt": "2026-08-31T00:08:45+08:00",
-          "views": 71,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404571,
-          "day": 10,
-          "title": "Day 10 | 交易序列化的四鏈對照：NonceSeqnoBlockhashObject Version",
-          "url": "https://ithelp.ithome.com.tw/articles/10404571",
-          "publishedAt": "2026-09-01T00:24:23+08:00",
-          "views": 71,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404742,
-          "day": 11,
-          "title": "Day 11 | Transaction Replacement：卡鏈救援與手續費加速機制",
-          "url": "https://ithelp.ithome.com.tw/articles/10404742",
-          "publishedAt": "2026-09-02T14:37:28+08:00",
-          "views": 71,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404749,
-          "day": 12,
-          "title": "Day 12 | 失敗任務的分類：Retryable vs Poison",
-          "url": "https://ithelp.ithome.com.tw/articles/10404749",
-          "publishedAt": "2026-09-03T00:45:15+08:00",
-          "views": 65,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404753,
-          "day": 13,
-          "title": "Day 13 | DLQ Redrive 設計：不重複打款的保證，與人工介入的邊界",
-          "url": "https://ithelp.ithome.com.tw/articles/10404753",
-          "publishedAt": "2026-09-04T09:38:17+08:00",
-          "views": 41,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407349,
-          "day": 14,
-          "title": "Day 14 | Chain Listener 與 Finality Policy：四條鏈的不可逆分別是什麼意思",
-          "url": "https://ithelp.ithome.com.tw/articles/10407349",
-          "publishedAt": "2026-09-05T00:00:31+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407354,
-          "day": 15,
-          "title": "Day 15 | 鏈上鏈下對齊：Reconciliation Engine 實作",
-          "url": "https://ithelp.ithome.com.tw/articles/10407354",
-          "publishedAt": "2026-09-06T01:49:25+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407358,
-          "day": 16,
-          "title": "Day 16 | 結算合約概觀：Pull vs Push 支付流",
-          "url": "https://ithelp.ithome.com.tw/articles/10407358",
-          "publishedAt": "2026-09-07T07:59:12+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407360,
-          "day": 17,
-          "title": "Day 17 | 封裝 SafeTransfer：為何你永遠需要 SafeERC20？",
-          "url": "https://ithelp.ithome.com.tw/articles/10407360",
-          "publishedAt": "2026-09-08T21:49:31+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407385,
-          "day": 18,
-          "title": "Day 18 | Permit2 深度解析：Signature-based Approval 如何改變支付體驗",
-          "url": "https://ithelp.ithome.com.tw/articles/10407385",
-          "publishedAt": "2026-09-09T02:24:07+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407361,
-          "day": 19,
-          "title": "Day 19 | 託管 (Escrow) 與手續費 (Fee/Refund) 流程實作",
-          "url": "https://ithelp.ithome.com.tw/articles/10407361",
-          "publishedAt": "2026-09-10T11:13:42+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407363,
-          "day": 20,
-          "title": "Day 20 | Bulk Transfer 設計：逐筆 Batch vs Merkle Airdrop",
-          "url": "https://ithelp.ithome.com.tw/articles/10407363",
-          "publishedAt": "2026-09-11T00:16:16+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407555,
-          "day": 21,
-          "title": "Day 21 | Solana 批量分發的三條路線：PDA VaultMerkle Distributor 與圈存簽 root",
-          "url": "https://ithelp.ithome.com.tw/articles/10407555",
-          "publishedAt": "2026-09-12T22:51:25+08:00"
         }
       ]
     },
@@ -52227,7 +52227,7 @@
       "description": "工作真的很忙碌 ...\r\n\r\n這三十天，我要徵召一位新同事來變成我的代理人。\r\n透過 Claude Code x Playwright 照著這位同事慢慢熟悉環境、產品知識和權限，\r\n接著讓它可以探索問題並且列出結論，\r\n能夠自主探索，並且交叉驗證並且開立票。\r\n最後能夠獨立值班。",
       "team": null,
       "signupDate": "2026/08/15T14:22:55+08:00",
-      "lastUpdated": "2026-09-13T05:06:14+08:00",
+      "lastUpdated": "2026-09-13T06:06:23+08:00",
       "dayCount": 16,
       "articleCount": 16,
       "subscriptions": 2,
@@ -64740,7 +64740,7 @@
       "description": "本系列將以「做中學」取代死背 YAML，從零開始在本機建立 Kubernetes 環境，並逐步打造一套由 FastAPI、Redis、PostgreSQL 組成的微服務系統。30 天內容將涵蓋 Deployment、Service、ConfigMap、Secret、Storage、Scheduling、HPA、RBAC、NetworkPolicy、Gateway API、Helm、Kustomize、etcd 與故障排查等核心主題。每個觀念都會搭配實際操作與刻意製造的錯誤情境，帶讀者從「會部署」一路進階到「會管理、會除錯」，同時建立 CKA 所需的實戰能力與 Kubernetes 系統思維。",
       "team": null,
       "signupDate": "2026/09/03T21:52:03+08:00",
-      "lastUpdated": "2026-09-13T04:02:29+08:00",
+      "lastUpdated": "2026-09-13T06:06:51+08:00",
       "dayCount": 11,
       "articleCount": 11,
       "subscriptions": 1,
@@ -67956,7 +67956,7 @@
       "description": "這是一個不想浪費時間寫文件的工程師的 side project。\r\n透過 Playwright 與 AI Agent，打造可以自動化生成產品使用手冊的產線。",
       "team": null,
       "signupDate": "2026/09/03T22:28:38+08:00",
-      "lastUpdated": "2026-09-13T04:02:29+08:00",
+      "lastUpdated": "2026-09-13T06:06:51+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 0,
@@ -68042,7 +68042,7 @@
       "description": "當 AI Agent 從回答問題走向呼叫 Tool、MCP 與 API 執行任務，企業該如何確認它是誰、代表誰，又憑什麼採取行動？本系列將用 30 天拆解 Agent Identity、Delegation 與 Authorization，從工作負載身分、使用者委派、逐次授權與 Human Approval，一路談到撤銷、稽核及可驗證證據。內容採 vendor-neutral、architecture-first 的方式，搭配本機可重現的 PoC，建立一套企業可落地的 Agent 權力治理架構。",
       "team": "昱見全高點",
       "signupDate": "2026/09/04T00:14:38+08:00",
-      "lastUpdated": "2026-09-13T04:02:30+08:00",
+      "lastUpdated": "2026-09-13T06:06:51+08:00",
       "dayCount": 7,
       "articleCount": 7,
       "subscriptions": 0,
@@ -72398,7 +72398,7 @@
       "description": "DeepStream是NVIDIA的一個AI串流應用SDK，官方釋出了不少看起來很厲害的範例，結果實際使用發現範例的侷限性很大，甚至有些範例還執行不起來，需求一複雜起來就超出範圍了。希望透過這個系列的文章深入認識SDK內的細節，去了解那些範例沒告訴你的事情，最終目標是寫出自己的GStreamer元件搭配SDK做出更彈性的應用。",
       "team": null,
       "signupDate": "2026/09/03T23:18:24+08:00",
-      "lastUpdated": "2026-09-13T03:20:44+08:00",
+      "lastUpdated": "2026-09-13T05:57:13+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -74739,7 +74739,7 @@
       "description": "這系列文章整理了想要上手 Playwright 必備的基礎知識與核心能力！\r\n內容主要以觀念建立和實作教學為主，把 30 天整理成一套順暢的學習路線——從最基本的環境建置、常用語法與定位器，再到各種常見測試情境的實務操作。希望這份筆記能幫想接觸 Playwright 的你少走一點彎路，輕鬆把 E2E 測試的基本功練起來！",
       "team": null,
       "signupDate": "2026/09/12T17:52:32+08:00",
-      "lastUpdated": "2026-09-13T05:11:04+08:00",
+      "lastUpdated": "2026-09-13T06:17:03+08:00",
       "dayCount": 1,
       "articleCount": 1,
       "subscriptions": 0,
@@ -74817,7 +74817,7 @@
       "description": "我目前從事資料工程相關工作，工作中開始接觸 Python，自動化報表、資料處理及資料庫作業也逐漸需要使用 Python。\r\n因此想挑戰連續 30 天學習 Python，培養持續學習與實際動手寫程式的習慣，也讓 Python 真正成為我工作上能獨立運用的工具。",
       "team": null,
       "signupDate": "2026/09/12T21:57:26+08:00",
-      "lastUpdated": "2026-09-13T05:15:33+08:00",
+      "lastUpdated": "2026-09-13T06:17:04+08:00",
       "dayCount": 1,
       "articleCount": 1,
       "subscriptions": 0,
@@ -77777,12 +77777,6 @@
   "scrapeLog": [
     "[stale] 9188: RSS unavailable: empty feed with existing articles",
     "[stale] 9399: RSS unavailable: empty feed with existing articles",
-    "[stale] 9492: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9492",
-    "[stale] 9493: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9493",
-    "[stale] 9494: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9494",
-    "[stale] 9495: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9495",
-    "[stale] 9496: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9496",
-    "[stale] 9497: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9497",
     "[stale] 9498: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9498",
     "[stale] 9499: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9499",
     "[stale] 9500: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9500",
@@ -77791,8 +77785,13 @@
     "[stale] 9503: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9503",
     "[stale] 9504: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9504",
     "[stale] 9505: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9505",
-    "[stale] 9506: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9506",
-    "[stale] 9507: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9507",
-    "[stale] 9508: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9508"
+    "[stale] 9508: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9508",
+    "[stale] 9510: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9510",
+    "[stale] 9512: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9512",
+    "[stale] 9513: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9513",
+    "[stale] 9514: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9514",
+    "[stale] 9515: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9515",
+    "[stale] 9516: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9516",
+    "[stale] 9517: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9517"
   ]
 }
