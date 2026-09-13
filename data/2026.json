@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-09-14 06:12:14+08:00",
+  "updatedAt": "2026-09-14 06:24:08+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -43543,6 +43543,249 @@
       ]
     },
     {
+      "id": 9287,
+      "user": {
+        "id": 20121948,
+        "name": "Cash",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20121948/profile"
+      },
+      "group": "Software Development",
+      "title": "Kotlin 手刻 Ktor 從零開始",
+      "description": "會使用 Kotlin 從零手刻一個 Ktor 風格的輕量 Web 框架 Relix，從 JDK 內建的 HttpServer 起步，一路做到 Routing DSL、Pipeline 洋蔥模型、Plugin 系統、Content Negotiation 和 DI 容器，手刻一次不是為了取代 Ktor，而是把藏在背後的機制拆開來看",
+      "team": null,
+      "signupDate": "2026/08/20T21:41:22+08:00",
+      "lastUpdated": "2026-09-14T06:00:58+08:00",
+      "dayCount": 24,
+      "articleCount": 23,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10404300,
+          "day": 1,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 01 系列導讀，為什麼要手刻 Ktor 框架 ?",
+          "url": "https://ithelp.ithome.com.tw/articles/10404300",
+          "publishedAt": "2026-08-22T06:18:24+08:00",
+          "views": 211,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404301,
+          "day": 2,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 02 專案建置與開發環境，用 Kotlin Toolchain CLI 建立專案",
+          "url": "https://ithelp.ithome.com.tw/articles/10404301",
+          "publishedAt": "2026-08-23T07:42:48+08:00",
+          "views": 112,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404302,
+          "day": 3,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 03 Hello, Relix，用 JDK HttpServer 跑起第一個伺服器",
+          "url": "https://ithelp.ithome.com.tw/articles/10404302",
+          "publishedAt": "2026-08-24T06:15:04+08:00",
+          "views": 106,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404303,
+          "day": 4,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 04 Request 的封裝，把 HttpExchange 變成好用的 RelixRequest",
+          "url": "https://ithelp.ithome.com.tw/articles/10404303",
+          "publishedAt": "2026-08-25T06:13:40+08:00",
+          "views": 115,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404304,
+          "day": 5,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 05 Response 的封裝，設計直覺的 RelixResponse",
+          "url": "https://ithelp.ithome.com.tw/articles/10404304",
+          "publishedAt": "2026-08-26T04:02:56+08:00",
+          "views": 88,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404305,
+          "day": 6,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 06 RelixCall 與可測核心，Application / Engine / Handler",
+          "url": "https://ithelp.ithome.com.tw/articles/10404305",
+          "publishedAt": "2026-08-27T06:09:20+08:00",
+          "views": 104,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404306,
+          "day": 7,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 07 最簡單的路由，用 Map 做 URL 對應",
+          "url": "https://ithelp.ithome.com.tw/articles/10404306",
+          "publishedAt": "2026-08-28T06:09:30+08:00",
+          "views": 90,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404307,
+          "day": 8,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 08 Route 與匹配規則，讓路由行為可預期",
+          "url": "https://ithelp.ithome.com.tw/articles/10404307",
+          "publishedAt": "2026-08-29T06:09:57+08:00",
+          "views": 66,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404308,
+          "day": 9,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 09 路徑參數，讓 /users/{id} 活起來",
+          "url": "https://ithelp.ithome.com.tw/articles/10404308",
+          "publishedAt": "2026-08-30T06:12:47+08:00",
+          "views": 60,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404309,
+          "day": 10,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 10 路由 DSL (上)，用 Kotlin DSL 寫出漂亮的路由定義",
+          "url": "https://ithelp.ithome.com.tw/articles/10404309",
+          "publishedAt": "2026-08-31T06:11:52+08:00",
+          "views": 86,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404310,
+          "day": 11,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 11 路由 DSL (下)，路由群組與巢狀路由",
+          "url": "https://ithelp.ithome.com.tw/articles/10404310",
+          "publishedAt": "2026-09-01T06:12:36+08:00",
+          "views": 61,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404311,
+          "day": 12,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 12 Pipeline 的概念，請求處理的洋蔥模型",
+          "url": "https://ithelp.ithome.com.tw/articles/10404311",
+          "publishedAt": "2026-09-02T06:12:42+08:00",
+          "views": 52,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404312,
+          "day": 13,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 13 實作同步版 Pipeline，把 Middleware 串成鏈",
+          "url": "https://ithelp.ithome.com.tw/articles/10404312",
+          "publishedAt": "2026-09-03T06:10:09+08:00",
+          "views": 58,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404313,
+          "day": 14,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 14 升級 suspend，讓 Pipeline 支援協程",
+          "url": "https://ithelp.ithome.com.tw/articles/10404313",
+          "publishedAt": "2026-09-04T06:07:54+08:00",
+          "views": 52,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404314,
+          "day": 15,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 15 內建 Middleware，Logging",
+          "url": "https://ithelp.ithome.com.tw/articles/10404314",
+          "publishedAt": "2026-09-05T06:08:33+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404315,
+          "day": 16,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 16 內建 Middleware，Error Handling",
+          "url": "https://ithelp.ithome.com.tw/articles/10404315",
+          "publishedAt": "2026-09-06T06:06:59+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404316,
+          "day": 17,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 17 內建 Middleware，CORS",
+          "url": "https://ithelp.ithome.com.tw/articles/10404316",
+          "publishedAt": "2026-09-07T06:04:59+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404317,
+          "day": 18,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 18 Plugin 系統，讓框架可擴展",
+          "url": "https://ithelp.ithome.com.tw/articles/10404317",
+          "publishedAt": "2026-09-08T06:05:58+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404318,
+          "day": 19,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 19 Request Body 的讀取與解析",
+          "url": "https://ithelp.ithome.com.tw/articles/10404318",
+          "publishedAt": "2026-09-09T06:06:05+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404319,
+          "day": 20,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 20 Content Negotiation，統一的內容協商與 Response 序列化",
+          "url": "https://ithelp.ithome.com.tw/articles/10404319",
+          "publishedAt": "2026-09-10T06:10:53+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404320,
+          "day": 21,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 21 型別安全的 Request 讀取，receive&lt;T&gt;() 與 queryParam&lt;T&gt;()",
+          "url": "https://ithelp.ithome.com.tw/articles/10404320",
+          "publishedAt": "2026-09-11T06:06:45+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10404321,
+          "day": 22,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 22 Request Validation，輸入驗證機制",
+          "url": "https://ithelp.ithome.com.tw/articles/10404321",
+          "publishedAt": "2026-09-12T06:06:26+08:00"
+        },
+        {
+          "id": 10404322,
+          "day": 23,
+          "title": "Kotlin 手刻 Ktor 從零開始 Day 23 Authentication / Authorization，認證與授權",
+          "url": "https://ithelp.ithome.com.tw/articles/10404322",
+          "publishedAt": "2026-09-13T06:10:56+08:00"
+        }
+      ]
+    },
+    {
       "id": 9294,
       "user": {
         "id": 20183597,
@@ -43792,249 +44035,6 @@
           "title": "Day 24：Crossing Evaluator 會打分數，但第一張圖從哪裡來？}}重賽版{{",
           "url": "https://ithelp.ithome.com.tw/articles/10409708",
           "publishedAt": "2026-09-13T00:58:32+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9287,
-      "user": {
-        "id": 20121948,
-        "name": "Cash",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20121948/profile"
-      },
-      "group": "Software Development",
-      "title": "Kotlin 手刻 Ktor 從零開始",
-      "description": "會使用 Kotlin 從零手刻一個 Ktor 風格的輕量 Web 框架 Relix，從 JDK 內建的 HttpServer 起步，一路做到 Routing DSL、Pipeline 洋蔥模型、Plugin 系統、Content Negotiation 和 DI 容器，手刻一次不是為了取代 Ktor，而是把藏在背後的機制拆開來看",
-      "team": null,
-      "signupDate": "2026/08/20T21:41:22+08:00",
-      "lastUpdated": "2026-09-14T06:00:58+08:00",
-      "dayCount": 23,
-      "articleCount": 23,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10404300,
-          "day": 1,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 01 系列導讀，為什麼要手刻 Ktor 框架 ?",
-          "url": "https://ithelp.ithome.com.tw/articles/10404300",
-          "publishedAt": "2026-08-22T06:18:24+08:00",
-          "views": 211,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404301,
-          "day": 2,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 02 專案建置與開發環境，用 Kotlin Toolchain CLI 建立專案",
-          "url": "https://ithelp.ithome.com.tw/articles/10404301",
-          "publishedAt": "2026-08-23T07:42:48+08:00",
-          "views": 112,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404302,
-          "day": 3,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 03 Hello, Relix，用 JDK HttpServer 跑起第一個伺服器",
-          "url": "https://ithelp.ithome.com.tw/articles/10404302",
-          "publishedAt": "2026-08-24T06:15:04+08:00",
-          "views": 106,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404303,
-          "day": 4,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 04 Request 的封裝，把 HttpExchange 變成好用的 RelixRequest",
-          "url": "https://ithelp.ithome.com.tw/articles/10404303",
-          "publishedAt": "2026-08-25T06:13:40+08:00",
-          "views": 115,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404304,
-          "day": 5,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 05 Response 的封裝，設計直覺的 RelixResponse",
-          "url": "https://ithelp.ithome.com.tw/articles/10404304",
-          "publishedAt": "2026-08-26T04:02:56+08:00",
-          "views": 88,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404305,
-          "day": 6,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 06 RelixCall 與可測核心，Application / Engine / Handler",
-          "url": "https://ithelp.ithome.com.tw/articles/10404305",
-          "publishedAt": "2026-08-27T06:09:20+08:00",
-          "views": 104,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404306,
-          "day": 7,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 07 最簡單的路由，用 Map 做 URL 對應",
-          "url": "https://ithelp.ithome.com.tw/articles/10404306",
-          "publishedAt": "2026-08-28T06:09:30+08:00",
-          "views": 90,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404307,
-          "day": 8,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 08 Route 與匹配規則，讓路由行為可預期",
-          "url": "https://ithelp.ithome.com.tw/articles/10404307",
-          "publishedAt": "2026-08-29T06:09:57+08:00",
-          "views": 66,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404308,
-          "day": 9,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 09 路徑參數，讓 /users/{id} 活起來",
-          "url": "https://ithelp.ithome.com.tw/articles/10404308",
-          "publishedAt": "2026-08-30T06:12:47+08:00",
-          "views": 60,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404309,
-          "day": 10,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 10 路由 DSL (上)，用 Kotlin DSL 寫出漂亮的路由定義",
-          "url": "https://ithelp.ithome.com.tw/articles/10404309",
-          "publishedAt": "2026-08-31T06:11:52+08:00",
-          "views": 86,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404310,
-          "day": 11,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 11 路由 DSL (下)，路由群組與巢狀路由",
-          "url": "https://ithelp.ithome.com.tw/articles/10404310",
-          "publishedAt": "2026-09-01T06:12:36+08:00",
-          "views": 61,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404311,
-          "day": 12,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 12 Pipeline 的概念，請求處理的洋蔥模型",
-          "url": "https://ithelp.ithome.com.tw/articles/10404311",
-          "publishedAt": "2026-09-02T06:12:42+08:00",
-          "views": 52,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404312,
-          "day": 13,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 13 實作同步版 Pipeline，把 Middleware 串成鏈",
-          "url": "https://ithelp.ithome.com.tw/articles/10404312",
-          "publishedAt": "2026-09-03T06:10:09+08:00",
-          "views": 58,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404313,
-          "day": 14,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 14 升級 suspend，讓 Pipeline 支援協程",
-          "url": "https://ithelp.ithome.com.tw/articles/10404313",
-          "publishedAt": "2026-09-04T06:07:54+08:00",
-          "views": 52,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404314,
-          "day": 15,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 15 內建 Middleware，Logging",
-          "url": "https://ithelp.ithome.com.tw/articles/10404314",
-          "publishedAt": "2026-09-05T06:08:33+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404315,
-          "day": 16,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 16 內建 Middleware，Error Handling",
-          "url": "https://ithelp.ithome.com.tw/articles/10404315",
-          "publishedAt": "2026-09-06T06:06:59+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404316,
-          "day": 17,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 17 內建 Middleware，CORS",
-          "url": "https://ithelp.ithome.com.tw/articles/10404316",
-          "publishedAt": "2026-09-07T06:04:59+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404317,
-          "day": 18,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 18 Plugin 系統，讓框架可擴展",
-          "url": "https://ithelp.ithome.com.tw/articles/10404317",
-          "publishedAt": "2026-09-08T06:05:58+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404318,
-          "day": 19,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 19 Request Body 的讀取與解析",
-          "url": "https://ithelp.ithome.com.tw/articles/10404318",
-          "publishedAt": "2026-09-09T06:06:05+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404319,
-          "day": 20,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 20 Content Negotiation，統一的內容協商與 Response 序列化",
-          "url": "https://ithelp.ithome.com.tw/articles/10404319",
-          "publishedAt": "2026-09-10T06:10:53+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404320,
-          "day": 21,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 21 型別安全的 Request 讀取，receive&lt;T&gt;() 與 queryParam&lt;T&gt;()",
-          "url": "https://ithelp.ithome.com.tw/articles/10404320",
-          "publishedAt": "2026-09-11T06:06:45+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10404321,
-          "day": 22,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 22 Request Validation，輸入驗證機制",
-          "url": "https://ithelp.ithome.com.tw/articles/10404321",
-          "publishedAt": "2026-09-12T06:06:26+08:00"
-        },
-        {
-          "id": 10404322,
-          "day": 23,
-          "title": "Kotlin 手刻 Ktor 從零開始 Day 23 Authentication / Authorization，認證與授權",
-          "url": "https://ithelp.ithome.com.tw/articles/10404322",
-          "publishedAt": "2026-09-13T06:10:56+08:00"
         }
       ]
     },
@@ -72399,6 +72399,59 @@
       ]
     },
     {
+      "id": 9481,
+      "user": {
+        "id": 20121948,
+        "name": "Cash",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20121948/profile"
+      },
+      "group": "Software Development",
+      "title": "Kotlin Ktor 實戰 101",
+      "description": "用 Ktor 把一個 Todo API 從 0 一路做到可以部署，從 Routing、Plugin、Content Negotiation 起步，一路接上 DI、Exposed 資料庫、認證授權和 Docker 部署，把平常工作每天要面對的那些事一件一件做完",
+      "team": null,
+      "signupDate": "2026/09/03T10:07:39+08:00",
+      "lastUpdated": "2026-09-14T06:01:39+08:00",
+      "dayCount": 5,
+      "articleCount": 4,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10407195,
+          "day": 1,
+          "title": "Kotlin Ktor 實戰 101 Day 01 系列導讀",
+          "url": "https://ithelp.ithome.com.tw/articles/10407195",
+          "publishedAt": "2026-09-10T06:10:59+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407846,
+          "day": 2,
+          "title": "Kotlin Ktor 實戰 101 Day 02 用 Gradle 建立 Ktor 專案",
+          "url": "https://ithelp.ithome.com.tw/articles/10407846",
+          "publishedAt": "2026-09-11T06:06:53+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407847,
+          "day": 3,
+          "title": "Kotlin Ktor 實戰 101 Day 03 用 testApplication 寫下第一個測試",
+          "url": "https://ithelp.ithome.com.tw/articles/10407847",
+          "publishedAt": "2026-09-12T06:06:35+08:00"
+        },
+        {
+          "id": 10407848,
+          "day": 4,
+          "title": "Kotlin Ktor 實戰 101 Day 04 ApplicationModule 與 Engine",
+          "url": "https://ithelp.ithome.com.tw/articles/10407848",
+          "publishedAt": "2026-09-13T06:11:06+08:00"
+        }
+      ]
+    },
+    {
       "id": 9483,
       "user": {
         "id": 20178841,
@@ -72962,7 +73015,7 @@
       "description": "《群島計畫》每一章故事背後，都藏著一段真正的組織發展與敏捷理論——從系統思考、推論階梯、公正文化，到雙連結、認可決、學習型組織的規模化，一共三十個主題，依照原著章節順序逐一展開。\r\n\r\n《群島手記》不是另一本理論教科書：每一篇都從小說裡發生的具體場景出發，先讓你看懂故事裡的顧問看見了什麼，再把這份看見拆解成理論溯源、理論精解、應用解析，以及你自己也能立刻上手的練習。\r\n\r\n讀過小說的人，可以對照回味每一次介入背後的道理；沒讀過的人，也能把它當成一本獨立的組織發展實用工具箱。你要的是答案，還是找答案的方法？",
       "team": null,
       "signupDate": "2026/09/10T23:36:09+08:00",
-      "lastUpdated": "2026-09-14T04:02:49+08:00",
+      "lastUpdated": "2026-09-14T06:24:01+08:00",
       "dayCount": 5,
       "articleCount": 5,
       "subscriptions": 0,
@@ -73215,59 +73268,6 @@
       ]
     },
     {
-      "id": 9481,
-      "user": {
-        "id": 20121948,
-        "name": "Cash",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20121948/profile"
-      },
-      "group": "Software Development",
-      "title": "Kotlin Ktor 實戰 101",
-      "description": "用 Ktor 把一個 Todo API 從 0 一路做到可以部署，從 Routing、Plugin、Content Negotiation 起步，一路接上 DI、Exposed 資料庫、認證授權和 Docker 部署，把平常工作每天要面對的那些事一件一件做完",
-      "team": null,
-      "signupDate": "2026/09/03T10:07:39+08:00",
-      "lastUpdated": "2026-09-14T06:01:39+08:00",
-      "dayCount": 4,
-      "articleCount": 4,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10407195,
-          "day": 1,
-          "title": "Kotlin Ktor 實戰 101 Day 01 系列導讀",
-          "url": "https://ithelp.ithome.com.tw/articles/10407195",
-          "publishedAt": "2026-09-10T06:10:59+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407846,
-          "day": 2,
-          "title": "Kotlin Ktor 實戰 101 Day 02 用 Gradle 建立 Ktor 專案",
-          "url": "https://ithelp.ithome.com.tw/articles/10407846",
-          "publishedAt": "2026-09-11T06:06:53+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407847,
-          "day": 3,
-          "title": "Kotlin Ktor 實戰 101 Day 03 用 testApplication 寫下第一個測試",
-          "url": "https://ithelp.ithome.com.tw/articles/10407847",
-          "publishedAt": "2026-09-12T06:06:35+08:00"
-        },
-        {
-          "id": 10407848,
-          "day": 4,
-          "title": "Kotlin Ktor 實戰 101 Day 04 ApplicationModule 與 Engine",
-          "url": "https://ithelp.ithome.com.tw/articles/10407848",
-          "publishedAt": "2026-09-13T06:11:06+08:00"
-        }
-      ]
-    },
-    {
       "id": 9495,
       "user": {
         "id": 20183527,
@@ -73279,7 +73279,7 @@
       "description": "DeepStream是NVIDIA的一個AI串流應用SDK，官方釋出了不少看起來很厲害的範例，結果實際使用發現範例的侷限性很大，甚至有些範例還執行不起來，需求一複雜起來就超出範圍了。希望透過這個系列的文章深入認識SDK內的細節，去了解那些範例沒告訴你的事情，最終目標是寫出自己的GStreamer元件搭配SDK做出更彈性的應用。",
       "team": null,
       "signupDate": "2026/09/03T23:18:24+08:00",
-      "lastUpdated": "2026-09-14T05:07:24+08:00",
+      "lastUpdated": "2026-09-14T06:13:51+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -73788,7 +73788,7 @@
       "description": "這是從零開始探索 Low-Code AI 應用平台 Dify 的歷程。透過每天搞懂一個操作，從寫精準提示詞、餵資料建專屬知識庫，到串接上網查資料的工具與自動化流程。一步步調校參數、排除錯誤，記錄自己如何建構出一個具備自主查詢與回答能力的個人專屬 AI Agent 應用。",
       "team": null,
       "signupDate": "2026/09/10T23:29:29+08:00",
-      "lastUpdated": "2026-09-14T04:02:49+08:00",
+      "lastUpdated": "2026-09-14T06:24:01+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -73841,7 +73841,7 @@
       "description": "金融法務部門是機構內個資密度最高的單位——契約、判決書、客訴信裡不只有身分證字號，還有大量第 6 條特種個資。當這些文件要交給 LLM 處理，「不能外洩」就從原則變成架構問題。\r\n\r\n這 30 天會完整走一遍 LLM 個資防護閘的設計：PII 偵測的規則層與語意層、去識別化三種手法的取捨（只有一種可逆）、Token Vault 的隔離與可控還原、OCR 與非結構化文件的處理，最後用紅隊驗證整套架構。",
       "team": null,
       "signupDate": "2026/09/10T23:45:01+08:00",
-      "lastUpdated": "2026-09-14T04:02:49+08:00",
+      "lastUpdated": "2026-09-14T06:24:01+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -73891,7 +73891,7 @@
       "description": "從零微調一個資安語言模型，並把它接進 MSSP 的四個真實工作流程：事件報告、報告問答、監控月報、新人訓練。\r\n\r\n三十天完整記錄從資料分流、Primus 三階段訓練、Agent 架構到治理設計的全過程，包含一次令人失望的評測結果，以及它如何逼我重新理解「微調到底該解什麼問題」。\r\n\r\n這不是一個成功案例的整理，是一份含失敗與修正的實作地圖。結論是：模型可換，治理不變。",
       "team": null,
       "signupDate": "2026/09/10T23:46:57+08:00",
-      "lastUpdated": "2026-09-14T04:02:50+08:00",
+      "lastUpdated": "2026-09-14T05:40:34+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -73941,7 +73941,7 @@
       "description": "LLM 應用最痛的問題是指令與資料走同一條通道，prompt injection 至今沒有根治解法，護欄成了必要的一層。本系列以 Google Cloud Model Armor（雲端託管）與 地端自建的 ShieldGemma 微調護欄（地端）兩條線並行，從 OWASP LLM／Agentic Top 10 出發，實作 L1 規則、L2 分類器、L3 LLM-as-judge 三層防禦，涵蓋 Agent 工具呼叫與 MCP 場景，最後用同一套 zh-TW 攻擊語料與統一誤判率條件做誠實對照，給出金融級混合架構建議。每個數字附測試集與樣本數。",
       "team": null,
       "signupDate": "2026/09/10T23:48:12+08:00",
-      "lastUpdated": "2026-09-14T04:02:50+08:00",
+      "lastUpdated": "2026-09-14T06:24:02+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -74883,7 +74883,7 @@
       "description": "這個系列用 30 天實作一套可稽核的 MCP 工具權限閘道，從 AI Agent 的工具白名單、參數驗證、文件與工單權限，做到人工核准、交易式 outbox、稽核雜湊鏈與容器隔離。每篇都以可重現的程式、測試與合成實驗說明：模型的回答不能取代後端授權與實際副作用。系列也會保留失敗判分與已知限制，清楚區分提示詞提醒、程式化權限控制及作業系統隔離各自能防什麼、不能證明什麼。",
       "team": null,
       "signupDate": "2026/09/11T01:57:03+08:00",
-      "lastUpdated": "2026-09-14T04:02:50+08:00",
+      "lastUpdated": "2026-09-14T06:24:02+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -74926,7 +74926,7 @@
       "description": "將自己在中年轉職時，為了證明自己的能力，並給自己一個年過半百的生日禮物，去考了一張人生第一張證照的過程，用一個奇幻故事來描述。\r\n希望能帶給想轉職、想考實機認證(Offsec、Hack the box 等)，一個方向。\r\n第一次挑戰鐵人賽，也是留下一個小小的紀錄，還請多多指教，接下來就開始一場闖關旅程吧~",
       "team": null,
       "signupDate": "2026/09/11T08:00:15+08:00",
-      "lastUpdated": "2026-09-14T04:02:50+08:00",
+      "lastUpdated": "2026-09-14T06:24:02+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -74969,7 +74969,7 @@
       "description": "我們公司沒有工程師。\r\n\r\n會計每個月初要登入七個銀行後台、點四十幾次滑鼠；業務每天被上百封詢問信追著跑；估價檔有二十六個分頁，沒有一頁是新人看得懂的。\r\n\r\n這一年，我把這些事一件一件交給電腦。不是買一套系統，是自己用 AI 一個一個做出來——四十個自動化，橫跨信件、進單、銀行、對帳、估價、飯店報價與派工，實際省下大約三個人力。\r\n\r\n這三十天，我把整間公司的後台拆開給你看。每一篇一個真實流程、一組真實數字、一個我踩過的雷；包含我做到全自動的，也包含我試了兩週最後決定投降的。\r\n\r\n寫給每一個說「我們公司沒有 IT，所以做不到」的人。",
       "team": null,
       "signupDate": "2026/09/11T08:35:45+08:00",
-      "lastUpdated": "2026-09-14T04:02:50+08:00",
+      "lastUpdated": "2026-09-14T05:50:18+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -75009,7 +75009,7 @@
       "description": "大學教師常需要在短時間內進入一門陌生方法。這個系列以心理計量為案例，記錄我如何用 Claude 自學，而不是請它代寫教科書。三十天分五段：先定義「學會」的完成條件與來源紀律；再把心理計量拆成概念地圖與共同案例；接著逐章建立從信度、效度、因素分析、測量恆等性到 IRT 與 CAT 的教師版教科書；然後用逐步驗算、R 重現、反例集與來源—主張帳本查核每一句話；最後把教師版轉譯成學生教材、學習單，以及會教但不代寫的 AI 助教。Claude 負責草稿、比較、程式骨架與反例候選；來源、驗算與最後判斷留給教師。",
       "team": null,
       "signupDate": "2026/09/11T10:02:39+08:00",
-      "lastUpdated": "2026-09-14T04:02:51+08:00",
+      "lastUpdated": "2026-09-14T06:24:03+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -76389,7 +76389,7 @@
       "description": "Kubernetes 到底在忙什麼？\r\n\r\nPod、Deployment、Service、Ingress、ConfigMap、Volume……名詞一多，K8s 就開始像一座神秘的魔法城堡。\r\n\r\n這次我們來一點不囉唆的圖解 Kubernetes 吧！\r\n\r\n放過你的大腦，用圖解加上動手 5 分鐘，讓每一天都能 Get Kubernetes 重要概念！",
       "team": "Ad Astra",
       "signupDate": "2026/08/27T02:39:28+08:00",
-      "lastUpdated": "2026-09-14T05:06:43+08:00",
+      "lastUpdated": "2026-09-14T06:13:37+08:00",
       "dayCount": 1,
       "articleCount": 1,
       "subscriptions": 0,
@@ -76563,7 +76563,7 @@
       "description": "這 30 天要寫的是低延遲網路的維運，不是設備設定教學。\r\n\r\n低延遲環境有個很煩的地方：東西慢下來的時候通常沒人會通知你，而且你手上不一定有數字可以證明它真的慢了。ping 在這裡幫不上忙，它量的是來回時間，誤差比你想量的東西還大。\r\n\r\n所以我想先把量測弄清楚。用 ExaNIC 的硬體時戳量 Arista 7150 的單向延遲，再拉一台十年前的 3750 當對照組，看 cut-through 跟 store-and-forward 差多少。有了這個基準，後面才有辦法談交換器要盯什麼、RHEL 網卡要調什麼。\r\n\r\n每篇最後我都會寫這件事在維運上要幹嘛。",
       "team": null,
       "signupDate": "2026/09/08T17:30:46+08:00",
-      "lastUpdated": "2026-09-14T05:12:18+08:00",
+      "lastUpdated": "2026-09-14T06:23:55+08:00",
       "dayCount": 1,
       "articleCount": 1,
       "subscriptions": 0,
@@ -76722,7 +76722,7 @@
       "description": "寫給下一個進團隊的 iOS 工程師的 30 天 onboarding：從 CLAUDE.md、情境工程、Skill 開始，用一個公開 iOS 專案走完一張 ticket——Claude 寫、Codex 審——再進到監督迴路、假測試、共識工作流與四週 112 次 review run 的真實數據。每篇一個動作、一個新人常犯的錯、一個可帶走的檔案；Day 30 打包成 onboarding repo，讓下一個人和下一個 AI 進場就能上手。",
       "team": null,
       "signupDate": "2026/09/11T00:35:37+08:00",
-      "lastUpdated": "2026-09-14T04:02:50+08:00",
+      "lastUpdated": "2026-09-14T06:05:44+08:00",
       "dayCount": 1,
       "articleCount": 2,
       "subscriptions": 0,
@@ -76755,7 +76755,7 @@
       "description": "今天可能開發一個教育領域的Chrome擴充插件，明天可能幫一間工程公司設計一個線上網站，後天關於AI虛擬角色的議題可能設計一個自動化日報系統，儘管我自己本身大學是個中文系學生，但卻因為Vibe Coding，延展我本身跨領域的好奇心與創新能力。因此每天將會以學生身份及Side Project的角度分享Vibe Coding如何為學生賦能並且累積產出及作品集的技巧、思想、行動。",
       "team": null,
       "signupDate": "2026/09/11T10:52:41+08:00",
-      "lastUpdated": "2026-09-14T04:02:51+08:00",
+      "lastUpdated": "2026-09-14T06:24:03+08:00",
       "dayCount": 1,
       "articleCount": 1,
       "subscriptions": 0,
@@ -80462,21 +80462,21 @@
   "scrapeLog": [
     "[stale] 9188: RSS unavailable: empty feed with existing articles",
     "[stale] 9399: RSS unavailable: empty feed with existing articles",
-    "[stale] 9592: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9592",
-    "[stale] 9593: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9593",
-    "[stale] 9594: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9594",
-    "[stale] 9595: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9595",
-    "[stale] 9596: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9596",
-    "[stale] 9597: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9597",
-    "[stale] 9598: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9598",
-    "[stale] 9599: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9599",
-    "[stale] 9600: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9600",
-    "[stale] 9601: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9601",
-    "[stale] 9602: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9602",
-    "[stale] 9603: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9603",
-    "[stale] 9604: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9604",
-    "[stale] 9605: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9605",
-    "[stale] 9606: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9606",
-    "[stale] 9607: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9607"
+    "[stale] 9497: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9497",
+    "[stale] 9498: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9498",
+    "[stale] 9499: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9499",
+    "[stale] 9500: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9500",
+    "[stale] 9501: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9501",
+    "[stale] 9502: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9502",
+    "[stale] 9503: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9503",
+    "[stale] 9504: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9504",
+    "[stale] 9505: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9505",
+    "[stale] 9508: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9508",
+    "[stale] 9510: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9510",
+    "[stale] 9512: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9512",
+    "[stale] 9513: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9513",
+    "[stale] 9514: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9514",
+    "[stale] 9515: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9515",
+    "[stale] 9516: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9516"
   ]
 }
