@@ -13,7 +13,7 @@
 
 - **GitHub：** <https://github.com/kehao-chen/ithome-ironman-observer-next>
 - **線上網站：** <https://ithome-ironman-observer.happyhacking.ninja/>
-- **後備網址：** <https://ironman-observer-next.pages.dev/>
+- **後備網址：** <https://ironman-observer-next.happyhacking.workers.dev/>
 
 ## 三、開發動機
 
@@ -27,7 +27,7 @@
 
 ## 四、技術架構
 
-網站沒有後端與資料庫。由 GitHub Actions 定時執行爬蟲，抓取資料並 commit 成 JSON 檔，再由 Astro 建置為靜態網站部署至 Cloudflare Pages。
+網站沒有後端與資料庫。由 GitHub Actions 定時執行爬蟲，抓取資料並 commit 成 JSON 檔，再由 Astro 建置為靜態網站部署至 Cloudflare Workers（static assets，2026-09 從 Pages 遷移）。
 
 ```text
 iThome 鐵人賽
@@ -46,7 +46,7 @@ data/{year}.json + data/meta.json
     ▼
 Astro 靜態建置
     ▼
-Cloudflare Pages
+Cloudflare Workers
 ```
 
 使用的技術：
@@ -57,7 +57,7 @@ Cloudflare Pages
 - **資料：** JSON；每個年度一個資料檔，這裡的 JSON 就是資料庫
 - **自動化：** GitHub Actions
 - **排程：** Cloudflare Worker Cron
-- **部署：** Cloudflare Pages
+- **部署：** Cloudflare Workers（static assets）
 - **測試：** Bun Test、TypeScript 型別檢查、Astro build
 
 `config/series-manifest.json` 是年度清單的唯一來源。爬蟲照著這份清單逐年處理，輸出 `data/{year}.json` 和 `data/meta.json`。前端年度選單使用 `meta.json` 裡的 `years`；目前清單只有 2026 年，所以網站目前只有這一個年度可以選。
@@ -172,7 +172,7 @@ Cloudflare Worker 的 Cron 每 10 分鐘觸發 `.github/workflows/scheduled-upda
 2. 安裝指定版本的 Bun。
 3. 執行 `bun run scripts/scrape.ts`。
 4. 比對 `data/` 和網站公開資料是否有變化。
-5. 有變化就 commit、push、建置 Astro，最後部署到 Cloudflare Pages。
+5. 有變化就 commit、push、建置 Astro，最後部署到 Cloudflare Workers。
 6. 沒有變化就跳過後面的步驟。
 
 一次完整抓取大約會送出 250 個請求。iThome 要求請求帶 Browser User-Agent，否則可能收到 403，所以爬蟲會帶上必要標頭，也會對失敗請求重試。

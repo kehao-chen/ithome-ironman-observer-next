@@ -1,6 +1,8 @@
 node_modules/
 web/node_modules/
 web/dist/
+# Wrangler local dev state (miniflare sqlite/volumes), created by `wrangler dev`
+.wrangler/
 web/.astro/
 # Build artifact: `web/scripts/copy-data.mjs` regenerates it from data/*.json on
 # every build. Committing it stored a second 1.9MB copy of the dataset in every

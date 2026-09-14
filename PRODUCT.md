@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Astro 5 static site (`web/`), TypeScript shared with scraper (`scripts/types.ts`), native CSS with custom properties, no framework. Data pipeline: GH Actions cron → `bun run scripts/scrape.ts` → per-year `data/{year}.json` + `data/meta.json` (`years` = year-switcher authority) → Astro build → Cloudflare Pages. Zero-cost constraint (no paid backend/db; JSON is the DB).
+Astro 5 static site (`web/`), TypeScript shared with scraper (`scripts/types.ts`), native CSS with custom properties, no framework. Data pipeline: GH Actions cron → `bun run scripts/scrape.ts` → per-year `data/{year}.json` + `data/meta.json` (`years` = year-switcher authority) → Astro build → Cloudflare Workers static assets (migrated off Pages 2026-09). Zero-cost constraint (no paid backend/db; JSON is the DB).
 
 ## Users
 
@@ -32,7 +32,7 @@ Recreation of qrtt1's original "ITHome 鐵人觀察家" (original went silent in
 
 ## Capabilities and Constraints
 
-ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispatch → GH Actions → data/{year}.json + data/meta.json commit → Astro build → Cloudflare Pages
+ithelp 鐵人賽 → Cloudflare Worker cron（每 10 分鐘）→ workflow_dispatch → GH Actions → data/{year}.json + data/meta.json commit → Astro build → Cloudflare Workers static assets
 
 - **Scraper**（`scripts/`，Bun + TypeScript）：依 `config/series-manifest.json` 陣列**逐年度**抓取（signup 列表全部分頁 → 每系列 RSS + series 頁），成功年度各寫一支 `data/{year}.json`（瀏覽/Like/留言/訂閱數、`lastUpdated`、文章清單），並寫出 `data/meta.json`（`latestYear` / `years` / `updatedAt` / `seriesCount`）。容錯：單系列失敗不中斷、指數退避重試；年度層級 per-year try/catch：**全部年度失敗時零寫入（保留舊資料）且 exit 1，至少一年成功則寫出成功年度並 exit 0**。
 - **儀表板**（`web/`，Astro）：SSG 預渲染 + client 端 60 秒刷新（於 Dashboard 元件），header 年度切換器、組別篩選 + 進度/最多觀看/最新發文/當篇觀看（今日）排序、**「我的收藏」分頁（localStorage 書籤，系列 ID 跨年度共用）**，抓取失敗系列數以 scrapeLog notice 顯示。年度切換器（header select）以 `data/meta.json` 的 `years` 為唯一權威；空資料年度保留舊檔、但選項縮小。

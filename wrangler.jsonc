@@ -1,0 +1,18 @@
+{
+	"name": "ironman-observer-next",
+	"compatibility_date": "2026-08-01",
+	// Assets-only Worker（無 `main`）：Astro SSG 全靜態輸出，無 server code。
+	// 2026-09 從 Cloudflare Pages 遷移（`pages_build_output_dir` → `assets.directory`）。
+	"assets": {
+		"directory": "./web/dist",
+		// 未命中路徑以 404 status 回 `dist/404.html`。這同時取代了舊 Pages
+		// `_redirects` 的 `/_astro/* /404.html 404` rewrite — Workers 沒有隱含
+		// SPA fallback，且 `_redirects` 不支援非 redirect 狀態碼，該規則已刪。
+		"not_found_handling": "404-page"
+	},
+	// 後備網址：https://ironman-observer-next.happyhacking.workers.dev
+	"workers_dev": true,
+	// 自有網域在 Cloudflare dashboard 設定（Workers & Pages → 本 Worker →
+	// Settings → Domains & Routes → Add → Custom domain；dashboard 會偵測到
+	// hostname 目前掛在 Pages 專案上並引導接管，DNS 記錄自動切換）。
+}

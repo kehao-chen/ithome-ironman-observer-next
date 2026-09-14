@@ -19,12 +19,25 @@
 > - 時間顯示格式已統一（原已知問題 #5 修復）：`web/src/lib/format.ts` 提供 `tzTime`/`isoInitial`，SSR（SeriesCard.astro / Dashboard.astro frontmatter）與 client（Dashboard humanizeAll / card-dom）共用；絕對時間固定 `Asia/Taipei`（不再依賴瀏覽器時區），相對時間維持「剛剛/N 分鐘前/N 小時前/昨天」。
 > - Roadmap 全數完成（含 badge enhancements / real-time 近即時已定案為架構終點）；PRODUCT.md 已同步。
 
+> **2026-09-15 更新（本段為最新，優先於上段）**
+> - **部署平台已從 Cloudflare Pages 遷移至 Workers static assets**（Pages 進入維護模式；官方遷移指南：developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/）。
+> - 根目錄 `wrangler.toml` → `wrangler.jsonc`：`assets.directory = ./web/dist`、`not_found_handling = "404-page"`、`workers_dev = true`；無 `main`（assets-only，全站無 server code）。Worker 與原 Pages 專案同名 `ironman-observer-next`（命名空間獨立，cutover 前可並存）。
+> - 兩個 workflow 的部署步驟由 `wrangler pages deploy` 改為 `npx wrangler deploy`（讀根目錄 `wrangler.jsonc`）。
+> - **刪除 `web/public/_redirects`**：唯一規則 `/_astro/* /404.html 404` 屬 rewrite，Workers `_redirects` 不支援（該行會被忽略）；其目的（對抗 Pages 隱含 SPA fallback）改由 `not_found_handling: "404-page"` 明確取代 — 未命中路徑一律回 404 status + `dist/404.html`。
+> - `web/public/_headers` **原樣保留**：`! Header` detach 與規則合併語意在 Workers 與 Pages 相同（已本地 `wrangler dev` 驗證 `/_astro/*` immutable、`/data/*` max-age=60 無殘留 must-revalidate）。
+> - 後備網址：`ironman-observer-next.pages.dev` → **`ironman-observer-next.happyhacking.workers.dev`**。
+> - **Cutover runbook（手動步驟，完成後刪 Pages 專案）**：
+>   1. 建新 API token（permissions：Workers Scripts Edit + Account Settings Read；舊 token 僅 Pages Edit + Cache Purge，deploy Worker 會 403），`gh secret set CLOUDFLARE_API_TOKEN --repo kehao-chen/ithome-ironman-observer-next`。
+>   2. 推送本 commit 後首次 `wrangler deploy`（CI 或本地）自動建立 Worker。
+>   3. Dashboard → Workers & Pages → `ironman-observer-next`（Worker）→ Settings → Domains & Routes → Add → Custom domain `ithome-ironman-observer.happyhacking.ninja`：dashboard 會偵測 hostname 目前掛在 Pages 專案，確認接管即完成切換（zone 內部路由轉移，由 Cloudflare 處理）。
+>   4. 線上站驗證後刪除 Pages 專案：`npx wrangler pages project delete ironman-observer-next`。
+
 ## 現況速覽
 
 | 項目 | 值 |
 |---|---|
 | 線上站 | https://ithome-ironman-observer.happyhacking.ninja/ |
-| 後備網址 | https://ironman-observer-next.pages.dev/ |
+| 後備網址 | https://ironman-observer-next.happyhacking.workers.dev/ |
 | GitHub | https://github.com/kehao-chen/ithome-ironman-observer-next |
 | 資料 | 241 支系列 / 17 組別（2026-08-18，報名持續增加中） |
 | 排程 | Cloudflare Worker cron 每 10 分鐘 → `workflow_dispatch`（144 次/天；public repo 的 GitHub-hosted runner 免費且不計分鐘） |
@@ -43,10 +56,10 @@ GH Actions (.github/workflows/scheduled-update.yml)
    ├─ bun run scripts/scrape.ts      → data/{year}.json（每年度一支）+ data/meta.json
    ├─ 資料有變才 commit + push       → 無變更 exit 0 跳過
    ├─ cd web && bun install && build → dist/
-   └─ npx wrangler pages deploy      → Cloudflare Pages
+   └─ npx wrangler deploy             → Cloudflare Workers (static assets)
 ```
 
-- **零成本**：Cloudflare Workers/Pages free tier + GH Actions public-repo 免費 runner + 自有網域。無後端、無 DB（JSON 即 DB；每年度一支 `data/{year}.json`，`data/meta.json` 的 `years` 是年度選項唯一權威）。
+- **零成本**：Cloudflare Workers free tier（static assets 請求免費）+ GH Actions public-repo 免費 runner + 自有網域。無後端、無 DB（JSON 即 DB；每年度一支 `data/{year}.json`，`data/meta.json` 的 `years` 是年度選項唯一權威）。
 - **每 10 分鐘全量抓取** ~340 requests（170 系列 × 2 + 分頁），約 2.5 min/run。
 
 ## 關鍵檔案地圖
@@ -111,10 +124,9 @@ cd worker && npx wrangler secret list
 # → GITHUB_TOKEN（fine-grained PAT，Actions: Read and write）、GITHUB_REPO
 
 # secrets（已設，勿刪）
-gh secret list --repo kehao-chen/ithome-ironman-observer-next
-# → CLOUDFLARE_API_TOKEN（Pages Edit）、CLOUDFLARE_ACCOUNT_ID
+# → CLOUDFLARE_API_TOKEN（Workers Scripts Edit + Account Settings Read；cutover 時更換，見頂部 runbook）、CLOUDFLARE_ACCOUNT_ID
 
-# 自有網域在 Cloudflare dashboard 設（wrangler.toml 的 routes 對 Pages 無效，已移除）
+# 自有網域在 Cloudflare dashboard 設（Worker → Settings → Domains & Routes；cutover 步驟見頂部 runbook）
 ```
 
 ## 排程與成本決策紀錄（2026-08-05 更新）
