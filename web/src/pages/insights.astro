@@ -65,7 +65,7 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
       staleDayDistribution,
     } from "../lib/insights";
     import { DEFAULT_KEYWORDS } from "../lib/keywords";
-    import { taipeiToday } from "../lib/daily-status";
+    import { taipeiToday, taipeiDay } from "../lib/daily-status";
     import type { YearData } from "../../../scripts/types";
 
     echarts.use([BarChart, LineChart, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, CanvasRenderer]);
@@ -343,8 +343,9 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
 
       // 10. 斷更觀察：單日斷更落點分佈 ────────────────────────────────────────
       {
-        const stale = staleObservation(d.series, taipeiToday());
-        const staleDist = staleDayDistribution(d.series, taipeiToday());
+        const today = d.updatedAt ? taipeiDay(d.updatedAt) : taipeiToday();
+        const stale = staleObservation(d.series, today);
+        const staleDist = staleDayDistribution(d.series, today);
         const totalStale = stale.length;
         getChart("chart-risk")?.setOption({
           backgroundColor: "transparent",
@@ -418,8 +419,9 @@ const data: YearData = latestYear !== 0 && dataByYear.has(latestYear) ? dataByYe
         const kws = titleKeywordStats(d.series, DEFAULT_KEYWORDS);
         setText("insight-kw-line", kws.length === 0 ? "尚無標題關鍵字" : `${kws[0].count} 個系列標題包含「${kws[0].keyword}」`);
       }
-      const stale = staleObservation(d.series, taipeiToday());
-      const staleDist = staleDayDistribution(d.series, taipeiToday());
+      const today = d.updatedAt ? taipeiDay(d.updatedAt) : taipeiToday();
+      const stale = staleObservation(d.series, today);
+      const staleDist = staleDayDistribution(d.series, today);
       const peakStale = staleDist.length > 0 ? staleDist.reduce((a, b) => (b.count > a.count ? b : a), staleDist[0]) : null;
       setText(
         "insight-risk-line",

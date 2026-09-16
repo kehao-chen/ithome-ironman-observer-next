@@ -173,15 +173,15 @@ export function titleLengthDistribution(
 }
 
 
-// 棄賽進度分佈：series.dayCount 分六桶（每 5 天），看出棄賽斷崖。
+// 賽程進度分佈：series.dayCount 分六桶（每 5 天），排除未開賽（dayCount 0），涵蓋 30+ 完賽。
 export function dayCountDistribution(series: Series[]): { label: string; count: number }[] {
   const buckets = [
-    { label: "1–5",   min: 0,  max: 5  },
+    { label: "1–5",   min: 1,  max: 5  },
     { label: "6–10",  min: 6,  max: 10 },
     { label: "11–15", min: 11, max: 15 },
     { label: "16–20", min: 16, max: 20 },
     { label: "21–25", min: 21, max: 25 },
-    { label: "26–30", min: 26, max: 30 },
+    { label: "26–30+", min: 26, max: Infinity },
   ];
   return buckets.map((b) => ({
     label: b.label,

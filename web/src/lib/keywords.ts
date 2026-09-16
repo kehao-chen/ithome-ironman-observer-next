@@ -4,9 +4,10 @@
 // 中文關鍵詞以子字串比對（不執行期切詞）。
 // 關鍵詞本身為純數字或英文停用詞 → titleKeywordStats 排除（review #3 補強 1）。
 export const DEFAULT_KEYWORDS: string[] = [
-  "AI", "機器學習", "K8s", "Kubernetes", "安全", "雲端", "前端", "後端",
-  "資料", "開發", "部署", "測試", "開源", "效能", "設計", "自動化",
-  "Vibe", "SideProject", "Claude", "ChatGPT", "Compiler",
+  "AI", "Agent", "實戰", "系統", "開發", "Claude", "Coding", "Vibe",
+  "自動化", "資安", "資料", "架構", "設計", "Codex", "工作流", "LLM",
+  "前端", "測試", "ChatGPT", "安全", "Gemini", "Kubernetes", "後端",
+  "部署", "MCP", "RAG", "K8s", "效能", "開源", "雲端",
 ];
 
 // 英文停用詞：作為關鍵詞傳入時被排除（不列入統計）。

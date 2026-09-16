@@ -11,6 +11,7 @@ import {
   engagementLeaderboard,
   staleObservation,
   staleDayDistribution,
+  dayCountDistribution,
 } from "./insights";
 import type { Article, Series } from "../../../scripts/types";
 
@@ -400,5 +401,35 @@ describe("staleDayDistribution", () => {
   });
   test("無斷更系列時回傳空陣列", () => {
     expect(staleDayDistribution([], today)).toEqual([]);
+  });
+});
+
+describe("dayCountDistribution", () => {
+  test("分六桶，排除未開賽（dayCount 0），涵蓋 30+ 完賽系列", () => {
+    const series = [
+      makeSeries({ id: 1, dayCount: 0 }), // 未開賽，不計入 1–5
+      makeSeries({ id: 2, dayCount: 1 }), // 1–5
+      makeSeries({ id: 3, dayCount: 5 }), // 1–5
+      makeSeries({ id: 4, dayCount: 6 }), // 6–10
+      makeSeries({ id: 5, dayCount: 12 }), // 11–15
+      makeSeries({ id: 6, dayCount: 18 }), // 16–20
+      makeSeries({ id: 7, dayCount: 22 }), // 21–25
+      makeSeries({ id: 8, dayCount: 30 }), // 26–30+
+      makeSeries({ id: 9, dayCount: 35 }), // 26–30+（超越 30 篇的完賽系列）
+    ];
+    const dist = dayCountDistribution(series);
+    expect(dist).toEqual([
+      { label: "1–5", count: 2 },
+      { label: "6–10", count: 1 },
+      { label: "11–15", count: 1 },
+      { label: "16–20", count: 1 },
+      { label: "21–25", count: 1 },
+      { label: "26–30+", count: 2 },
+    ]);
+  });
+  test("空 series 回傳各桶為 0", () => {
+    const dist = dayCountDistribution([]);
+    expect(dist.map((b) => b.count)).toEqual([0, 0, 0, 0, 0, 0]);
+    expect(dist.map((b) => b.label)).toEqual(["1–5", "6–10", "11–15", "16–20", "21–25", "26–30+"]);
   });
 });
