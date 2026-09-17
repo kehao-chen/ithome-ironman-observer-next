@@ -26,10 +26,10 @@
 > - **刪除 `web/public/_redirects`**：唯一規則 `/_astro/* /404.html 404` 屬 rewrite，Workers `_redirects` 不支援（該行會被忽略）；其目的（對抗 Pages 隱含 SPA fallback）改由 `not_found_handling: "404-page"` 明確取代 — 未命中路徑一律回 404 status + `dist/404.html`。
 > - `web/public/_headers` **原樣保留**：`! Header` detach 與規則合併語意在 Workers 與 Pages 相同（已本地 `wrangler dev` 驗證 `/_astro/*` immutable、`/data/*` max-age=60 無殘留 must-revalidate）。
 > - 後備網址：`ironman-observer-next.pages.dev` → **`ironman-observer-next.happyhacking.workers.dev`**。
-> - **Cutover runbook（手動步驟，完成後刪 Pages 專案）**：
->   1. 建新 API token（permissions：Workers Scripts Edit + Account Settings Read；舊 token 僅 Pages Edit + Cache Purge，deploy Worker 會 403），`gh secret set CLOUDFLARE_API_TOKEN --repo kehao-chen/ithome-ironman-observer-next`。
->   2. 推送本 commit 後首次 `wrangler deploy`（CI 或本地）自動建立 Worker。
->   3. Dashboard → Workers & Pages → `ironman-observer-next`（Worker）→ Settings → Domains & Routes → Add → Custom domain `ithome-ironman-observer.happyhacking.ninja`：dashboard 會偵測 hostname 目前掛在 Pages 專案，確認接管即完成切換（zone 內部路由轉移，由 Cloudflare 處理）。
+> - **Cutover runbook（2026-09-17 步驟 1–2 已完成並驗證：Worker 已上線 `ironman-observer-next.happyhacking.workers.dev`，部署鏈全綠；剩 3–4）**：
+>   1. ~~建新 API token + `gh secret set CLOUDFLARE_API_TOKEN`~~ ✅ 已完成。**權限踩坑紀錄（2026-09-15 Cloudflare 改版權限模型，見 [Workers roles and permissions](https://developers.cloudflare.com/workers/authorization/workers/)）**：CI token 需 **Account → Workers → Admin（product scope）** 才能建立新 Worker；`Workers Scripts Edit`（= 新模型 `Editor`）查 services 可過、但 `assets-upload-session` 會 10000（Editor 不能 create Worker）。Admin 只在首次建 Worker 時必要 — **建完可降回 Editor**（加固選項）。
+>   2. ~~首次 `wrangler deploy` 自動建立 Worker~~ ✅ run 35218845827 全綠（19m59s），uploaded 19 files，自訂 404/_headers 於線上驗證通過。
+>   3. Dashboard → Workers & Pages → `ironman-observer-next`（Worker）→ Settings → Domains & Routes → Add → Custom domain `ithome-ironman-observer.happyhacking.ninja`：dashboard 會偵測 hostname 目前掛在 Pages 專案，確認接管即完成切換（zone 內部路由轉移，由 Cloudflare 處理）。**完成前線上站停在 09-16 02:14Z 的舊 Pages 部署。**
 >   4. 線上站驗證後刪除 Pages 專案：`npx wrangler pages project delete ironman-observer-next`。
 
 ## 現況速覽
