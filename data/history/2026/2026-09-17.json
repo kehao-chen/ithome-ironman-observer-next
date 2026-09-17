@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-09-17 17:35:39+08:00",
+  "updatedAt": "2026-09-17 18:13:06+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -8675,7 +8675,7 @@
       "description": "這是一套以 30 天為節奏、循序漸進的 Chart.js (v4.5.1) 系列學習，從環境建置與核心觀念開始，從掌握 `type`、`data`、`options` 三大設定，以及折線圖、長條圖、圓餅圖、雷達圖與混合圖表等常用類型。此系列將進一步介紹 Tooltip、Legend、事件處理、RWD 與動態資料更新，並實作 JSON、CSV、RESTful API 串接、非同步載入、資料轉換及錯誤處理。後段延伸至自訂 Plugin、主題樣式、效能優化，以及 React、Vue、Angular 整合，最後完成互動式資料儀表板專案，適合前端初學者與希望強化資料視覺化實戰能力的開發者。",
       "team": null,
       "signupDate": "2026/08/01T17:50:43+08:00",
-      "lastUpdated": "2026-09-17T16:46:37+08:00",
+      "lastUpdated": "2026-09-17T18:01:19+08:00",
       "dayCount": 30,
       "articleCount": 30,
       "subscriptions": 1,
@@ -45484,7 +45484,7 @@
       "description": "工作上經常在處理短網址，在 AI 可以協助快速產 code 的年代，我選擇短網址服務作為 side project。\r\n\r\n一開始想得很簡單，就是轉址服務，加上個會員註冊、再去拉個金流，應該就結束了吧？我把它命名為 toui (https://toui.io)，取自台語的「佗位（tó-uī）」，也就是「哪裡」的意思——畢竟點下網址轉址時等於在問：你欲去佗位？上線之後才注意到，其他短網址服務早就不只是轉址而已，從一條短網址出發，可以做的事非常多。\r\n\r\n於是我開始思考一條短網址還能做到哪些事，一路探問，AI 工作流是我目前的答案，我會將過程的思索與挑戰藉鐵人賽分享出來。",
       "team": null,
       "signupDate": "2026/08/01T12:17:33+08:00",
-      "lastUpdated": "2026-09-17T16:46:35+08:00",
+      "lastUpdated": "2026-09-17T18:01:17+08:00",
       "dayCount": 25,
       "articleCount": 25,
       "subscriptions": 0,
@@ -47730,6 +47730,247 @@
       ]
     },
     {
+      "id": 9322,
+      "user": {
+        "id": 20178714,
+        "name": "Jamie",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20178714/profile"
+      },
+      "group": "Claude AI",
+      "title": "跟 Claude Code CLI 變成好朋友",
+      "description": "這次，就透過這30天，一步一步來認識 Claude Code CLI 吧！",
+      "team": null,
+      "signupDate": "2026/08/24T14:32:45+08:00",
+      "lastUpdated": "2026-09-17T17:23:48+08:00",
+      "dayCount": 25,
+      "articleCount": 24,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10404838,
+          "day": 1,
+          "title": "Day1前言",
+          "url": "https://ithelp.ithome.com.tw/articles/10404838",
+          "publishedAt": "2026-08-24T14:40:39+08:00",
+          "views": 177,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405191,
+          "day": 2,
+          "title": "Day2什麼是 Claude Code CLI？功能介紹與特色",
+          "url": "https://ithelp.ithome.com.tw/articles/10405191",
+          "publishedAt": "2026-08-25T23:34:01+08:00",
+          "views": 168,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405365,
+          "day": 3,
+          "title": "Day3什麼是 Claude Code CLI？核心運作原理",
+          "url": "https://ithelp.ithome.com.tw/articles/10405365",
+          "publishedAt": "2026-08-26T22:50:54+08:00",
+          "views": 116,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405500,
+          "day": 4,
+          "title": "Day4Claude Code CLI 與 ChatGPTGitHub Copilot 有什麼不同？",
+          "url": "https://ithelp.ithome.com.tw/articles/10405500",
+          "publishedAt": "2026-08-27T17:34:33+08:00",
+          "views": 120,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405544,
+          "day": 5,
+          "title": "Day5什麼是 Claude Code CLI？它可以解決哪些開發痛點？",
+          "url": "https://ithelp.ithome.com.tw/articles/10405544",
+          "publishedAt": "2026-08-28T23:12:09+08:00",
+          "views": 78,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405978,
+          "day": 6,
+          "title": "Day6什麼是 Claude Code CLI？使用情境與最佳實踐",
+          "url": "https://ithelp.ithome.com.tw/articles/10405978",
+          "publishedAt": "2026-08-29T20:57:16+08:00",
+          "views": 93,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406232,
+          "day": 7,
+          "title": "Day7什麼是 Claude Code CLI？工作模式",
+          "url": "https://ithelp.ithome.com.tw/articles/10406232",
+          "publishedAt": "2026-08-30T20:11:37+08:00",
+          "views": 99,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406432,
+          "day": 8,
+          "title": "Day8什麼是 Claude Code CLI？權限安全性與 Sandbox 機制",
+          "url": "https://ithelp.ithome.com.tw/articles/10406432",
+          "publishedAt": "2026-08-31T15:13:01+08:00",
+          "views": 99,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406484,
+          "day": 9,
+          "title": "Day9什麼是 Claude Code CLI？常用指令與基本操作",
+          "url": "https://ithelp.ithome.com.tw/articles/10406484",
+          "publishedAt": "2026-09-01T15:30:46+08:00",
+          "views": 135,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407039,
+          "day": 10,
+          "title": "Day10什麼是 Claude Code CLI？ 專案 Context 與記憶方式",
+          "url": "https://ithelp.ithome.com.tw/articles/10407039",
+          "publishedAt": "2026-09-02T18:11:40+08:00",
+          "views": 69,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407274,
+          "day": 11,
+          "title": "Day11什麼是 Claude Code CLI？ Prompt 撰寫技巧",
+          "url": "https://ithelp.ithome.com.tw/articles/10407274",
+          "publishedAt": "2026-09-03T15:54:20+08:00",
+          "views": 76,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407359,
+          "day": 12,
+          "title": "Day12什麼是 Claude Code CLI？ MCP（Model Context Protocol）細談",
+          "url": "https://ithelp.ithome.com.tw/articles/10407359",
+          "publishedAt": "2026-09-04T14:47:01+08:00",
+          "views": 1,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407916,
+          "day": 13,
+          "title": "Day13什麼是 Claude Code CLI？ HooksSlash Commands 與自訂功能",
+          "url": "https://ithelp.ithome.com.tw/articles/10407916",
+          "publishedAt": "2026-09-05T21:55:15+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408107,
+          "day": 14,
+          "title": "Day14什麼是 Claude Code CLI？ SKILL.md 的重要性",
+          "url": "https://ithelp.ithome.com.tw/articles/10408107",
+          "publishedAt": "2026-09-06T16:10:29+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408310,
+          "day": 15,
+          "title": "Day15什麼是 Claude Code CLI？ 開發流程整理",
+          "url": "https://ithelp.ithome.com.tw/articles/10408310",
+          "publishedAt": "2026-09-07T14:17:11+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408545,
+          "day": 16,
+          "title": "Day16建立第一個 Claude Code 專案：my-refrigerator",
+          "url": "https://ithelp.ithome.com.tw/articles/10408545",
+          "publishedAt": "2026-09-08T11:06:18+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408833,
+          "day": 17,
+          "title": "Day17安裝 Claude Code CLI 與環境設定",
+          "url": "https://ithelp.ithome.com.tw/articles/10408833",
+          "publishedAt": "2026-09-09T10:56:13+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10409083,
+          "day": 18,
+          "title": "Day18專案初始化Git 整合與 GitHub Pages",
+          "url": "https://ithelp.ithome.com.tw/articles/10409083",
+          "publishedAt": "2026-09-10T12:09:42+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10409551,
+          "day": 19,
+          "title": "Day19使用 Claude 建立 Vue 專案架構",
+          "url": "https://ithelp.ithome.com.tw/articles/10409551",
+          "publishedAt": "2026-09-11T23:35:39+08:00"
+        },
+        {
+          "id": 10409765,
+          "day": 20,
+          "title": "Day20使用 Claude 設計資料庫 Schema",
+          "url": "https://ithelp.ithome.com.tw/articles/10409765",
+          "publishedAt": "2026-09-12T22:36:21+08:00"
+        },
+        {
+          "id": 10410020,
+          "day": 21,
+          "title": "Day21使用 Claude 建立 Repository / Service 資料存取層",
+          "url": "https://ithelp.ithome.com.tw/articles/10410020",
+          "publishedAt": "2026-09-13T18:07:20+08:00"
+        },
+        {
+          "id": 10410326,
+          "day": 22,
+          "title": "Day22使用 Claude 建立我的冰箱食材管理功能",
+          "url": "https://ithelp.ithome.com.tw/articles/10410326",
+          "publishedAt": "2026-09-14T14:43:11+08:00"
+        },
+        {
+          "id": 10410780,
+          "day": 23,
+          "title": "Day23使用 Claude 建立採買清單功能",
+          "url": "https://ithelp.ithome.com.tw/articles/10410780",
+          "publishedAt": "2026-09-15T10:20:16+08:00"
+        },
+        {
+          "id": 10411207,
+          "day": 24,
+          "title": "Day24使用 Claude 建立食譜與最愛食譜功能",
+          "url": "https://ithelp.ithome.com.tw/articles/10411207",
+          "publishedAt": "2026-09-16T10:31:42+08:00"
+        }
+      ]
+    },
+    {
       "id": 9326,
       "user": {
         "id": 20166002,
@@ -48003,6 +48244,237 @@
           "views": 387,
           "likes": 0,
           "comments": 1
+        }
+      ]
+    },
+    {
+      "id": 9211,
+      "user": {
+        "id": 20183363,
+        "name": "dommgifer",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20183363/profile"
+      },
+      "group": "AI 自動化",
+      "title": "讓 AI 接手工程師的 SOP：30 天 AI 自動化實戰",
+      "description": "工程師每天都在查資料、看監控、執行固定流程，最後再整理成報告。這些工作通常有明確的 SOP，卻很吃時間。這 30 天，我會從實際工作場景出發，拆解每項任務的輸入、判斷流程與輸出，實作能使用工具、蒐集證據並產生結果的 AI Agent。過程也會記錄 AI 猜錯、資料不足與重新驗證，看看哪些工作適合自動化，以及人類需要保留哪些權限與安全邊界。",
+      "team": null,
+      "signupDate": "2026/08/13T15:26:16+08:00",
+      "lastUpdated": "2026-09-17T17:23:29+08:00",
+      "dayCount": 24,
+      "articleCount": 23,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10405082,
+          "day": 1,
+          "title": "Day 1：AI 自動化的起點，藏在每天重複的工作裡",
+          "url": "https://ithelp.ithome.com.tw/articles/10405082",
+          "publishedAt": "2026-08-25T13:15:51+08:00",
+          "views": 143,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405083,
+          "day": 2,
+          "title": "Day 2：混沌工程中 AI 的角色",
+          "url": "https://ithelp.ithome.com.tw/articles/10405083",
+          "publishedAt": "2026-08-26T10:13:09+08:00",
+          "views": 106,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405476,
+          "day": 3,
+          "title": "Day 3：自然語言注入混沌工程：回到 GPT-4o 時代的自訂流程自動化",
+          "url": "https://ithelp.ithome.com.tw/articles/10405476",
+          "publishedAt": "2026-08-27T15:17:50+08:00",
+          "views": 87,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405709,
+          "day": 4,
+          "title": "Day 4：自然語言注入混沌工程 - 使用 MCP 與 n8n 實現流程自動化",
+          "url": "https://ithelp.ithome.com.tw/articles/10405709",
+          "publishedAt": "2026-08-28T15:28:20+08:00",
+          "views": 92,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10405968,
+          "day": 5,
+          "title": "Day 5：打造後續 AI 實作的主角",
+          "url": "https://ithelp.ithome.com.tw/articles/10405968",
+          "publishedAt": "2026-08-29T21:53:20+08:00",
+          "views": 83,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406153,
+          "day": 6,
+          "title": "Day 6：讓 AI 記住系統知識：認識 llm-wiki",
+          "url": "https://ithelp.ithome.com.tw/articles/10406153",
+          "publishedAt": "2026-08-30T15:17:24+08:00",
+          "views": 117,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406417,
+          "day": 7,
+          "title": "Day 7：設定 llm-wiki 的 Schema",
+          "url": "https://ithelp.ithome.com.tw/articles/10406417",
+          "publishedAt": "2026-08-31T17:40:30+08:00",
+          "views": 68,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406795,
+          "day": 8,
+          "title": "Day 8：準備 llm-wiki 的 Raw Sources",
+          "url": "https://ithelp.ithome.com.tw/articles/10406795",
+          "publishedAt": "2026-09-01T17:42:33+08:00",
+          "views": 84,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10406988,
+          "day": 9,
+          "title": "Day 9：llm-wiki 與 chaos-agent 的分工",
+          "url": "https://ithelp.ithome.com.tw/articles/10406988",
+          "publishedAt": "2026-09-02T11:35:56+08:00",
+          "views": 70,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407189,
+          "day": 10,
+          "title": "Day 10：Ingest 與弱點掃描",
+          "url": "https://ithelp.ithome.com.tw/articles/10407189",
+          "publishedAt": "2026-09-03T15:35:59+08:00",
+          "views": 66,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407635,
+          "day": 11,
+          "title": "Day 11：讓 AI 主導混沌實驗",
+          "url": "https://ithelp.ithome.com.tw/articles/10407635",
+          "publishedAt": "2026-09-04T22:35:27+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10407808,
+          "day": 12,
+          "title": "Day 12：驗收 AI 提出的修復",
+          "url": "https://ithelp.ithome.com.tw/articles/10407808",
+          "publishedAt": "2026-09-05T15:34:20+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408113,
+          "day": 13,
+          "title": "Day 13：AI 混沌工程實作回顧",
+          "url": "https://ithelp.ithome.com.tw/articles/10408113",
+          "publishedAt": "2026-09-06T17:22:20+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408304,
+          "day": 14,
+          "title": "Day 14：讓 AI 成為 SRE 的助手",
+          "url": "https://ithelp.ithome.com.tw/articles/10408304",
+          "publishedAt": "2026-09-07T13:44:01+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408428,
+          "day": 15,
+          "title": "Day 15：設計 AI SRE 架構",
+          "url": "https://ithelp.ithome.com.tw/articles/10408428",
+          "publishedAt": "2026-09-08T12:16:01+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408837,
+          "day": 16,
+          "title": "Day 16：實作 AI SRE",
+          "url": "https://ithelp.ithome.com.tw/articles/10408837",
+          "publishedAt": "2026-09-09T15:15:30+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10409066,
+          "day": 17,
+          "title": "Day 17：讓 AI SRE 接手一場告警演練",
+          "url": "https://ithelp.ithome.com.tw/articles/10409066",
+          "publishedAt": "2026-09-10T11:59:51+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10409406,
+          "day": 18,
+          "title": "Day 18：AI 在壓力測試可以扮演什麼角色",
+          "url": "https://ithelp.ithome.com.tw/articles/10409406",
+          "publishedAt": "2026-09-11T11:55:34+08:00"
+        },
+        {
+          "id": 10409717,
+          "day": 19,
+          "title": "Day 19：設計 AI 壓測報告分析架構",
+          "url": "https://ithelp.ithome.com.tw/articles/10409717",
+          "publishedAt": "2026-09-12T23:25:17+08:00"
+        },
+        {
+          "id": 10410012,
+          "day": 20,
+          "title": "Day 20：實作 AI 分析壓測報告的資料準備流程",
+          "url": "https://ithelp.ithome.com.tw/articles/10410012",
+          "publishedAt": "2026-09-13T17:54:33+08:00"
+        },
+        {
+          "id": 10410521,
+          "day": 21,
+          "title": "Day 21：實作壓測報告產生流程",
+          "url": "https://ithelp.ithome.com.tw/articles/10410521",
+          "publishedAt": "2026-09-14T22:02:55+08:00"
+        },
+        {
+          "id": 10411142,
+          "day": 22,
+          "title": "Day 22：檢視壓測報告中的 AI 分析",
+          "url": "https://ithelp.ithome.com.tw/articles/10411142",
+          "publishedAt": "2026-09-15T21:58:06+08:00"
+        },
+        {
+          "id": 10411899,
+          "day": 23,
+          "title": "Day 23：Kubernetes 每日巡檢",
+          "url": "https://ithelp.ithome.com.tw/articles/10411899",
+          "publishedAt": "2026-09-16T18:18:36+08:00"
         }
       ]
     },
@@ -48757,247 +49229,6 @@
       ]
     },
     {
-      "id": 9322,
-      "user": {
-        "id": 20178714,
-        "name": "Jamie",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20178714/profile"
-      },
-      "group": "Claude AI",
-      "title": "跟 Claude Code CLI 變成好朋友",
-      "description": "這次，就透過這30天，一步一步來認識 Claude Code CLI 吧！",
-      "team": null,
-      "signupDate": "2026/08/24T14:32:45+08:00",
-      "lastUpdated": "2026-09-17T17:23:48+08:00",
-      "dayCount": 24,
-      "articleCount": 24,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10404838,
-          "day": 1,
-          "title": "Day1前言",
-          "url": "https://ithelp.ithome.com.tw/articles/10404838",
-          "publishedAt": "2026-08-24T14:40:39+08:00",
-          "views": 177,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405191,
-          "day": 2,
-          "title": "Day2什麼是 Claude Code CLI？功能介紹與特色",
-          "url": "https://ithelp.ithome.com.tw/articles/10405191",
-          "publishedAt": "2026-08-25T23:34:01+08:00",
-          "views": 168,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405365,
-          "day": 3,
-          "title": "Day3什麼是 Claude Code CLI？核心運作原理",
-          "url": "https://ithelp.ithome.com.tw/articles/10405365",
-          "publishedAt": "2026-08-26T22:50:54+08:00",
-          "views": 116,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405500,
-          "day": 4,
-          "title": "Day4Claude Code CLI 與 ChatGPTGitHub Copilot 有什麼不同？",
-          "url": "https://ithelp.ithome.com.tw/articles/10405500",
-          "publishedAt": "2026-08-27T17:34:33+08:00",
-          "views": 120,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405544,
-          "day": 5,
-          "title": "Day5什麼是 Claude Code CLI？它可以解決哪些開發痛點？",
-          "url": "https://ithelp.ithome.com.tw/articles/10405544",
-          "publishedAt": "2026-08-28T23:12:09+08:00",
-          "views": 78,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405978,
-          "day": 6,
-          "title": "Day6什麼是 Claude Code CLI？使用情境與最佳實踐",
-          "url": "https://ithelp.ithome.com.tw/articles/10405978",
-          "publishedAt": "2026-08-29T20:57:16+08:00",
-          "views": 93,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406232,
-          "day": 7,
-          "title": "Day7什麼是 Claude Code CLI？工作模式",
-          "url": "https://ithelp.ithome.com.tw/articles/10406232",
-          "publishedAt": "2026-08-30T20:11:37+08:00",
-          "views": 99,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406432,
-          "day": 8,
-          "title": "Day8什麼是 Claude Code CLI？權限安全性與 Sandbox 機制",
-          "url": "https://ithelp.ithome.com.tw/articles/10406432",
-          "publishedAt": "2026-08-31T15:13:01+08:00",
-          "views": 99,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406484,
-          "day": 9,
-          "title": "Day9什麼是 Claude Code CLI？常用指令與基本操作",
-          "url": "https://ithelp.ithome.com.tw/articles/10406484",
-          "publishedAt": "2026-09-01T15:30:46+08:00",
-          "views": 135,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407039,
-          "day": 10,
-          "title": "Day10什麼是 Claude Code CLI？ 專案 Context 與記憶方式",
-          "url": "https://ithelp.ithome.com.tw/articles/10407039",
-          "publishedAt": "2026-09-02T18:11:40+08:00",
-          "views": 69,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407274,
-          "day": 11,
-          "title": "Day11什麼是 Claude Code CLI？ Prompt 撰寫技巧",
-          "url": "https://ithelp.ithome.com.tw/articles/10407274",
-          "publishedAt": "2026-09-03T15:54:20+08:00",
-          "views": 76,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407359,
-          "day": 12,
-          "title": "Day12什麼是 Claude Code CLI？ MCP（Model Context Protocol）細談",
-          "url": "https://ithelp.ithome.com.tw/articles/10407359",
-          "publishedAt": "2026-09-04T14:47:01+08:00",
-          "views": 1,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407916,
-          "day": 13,
-          "title": "Day13什麼是 Claude Code CLI？ HooksSlash Commands 與自訂功能",
-          "url": "https://ithelp.ithome.com.tw/articles/10407916",
-          "publishedAt": "2026-09-05T21:55:15+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408107,
-          "day": 14,
-          "title": "Day14什麼是 Claude Code CLI？ SKILL.md 的重要性",
-          "url": "https://ithelp.ithome.com.tw/articles/10408107",
-          "publishedAt": "2026-09-06T16:10:29+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408310,
-          "day": 15,
-          "title": "Day15什麼是 Claude Code CLI？ 開發流程整理",
-          "url": "https://ithelp.ithome.com.tw/articles/10408310",
-          "publishedAt": "2026-09-07T14:17:11+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408545,
-          "day": 16,
-          "title": "Day16建立第一個 Claude Code 專案：my-refrigerator",
-          "url": "https://ithelp.ithome.com.tw/articles/10408545",
-          "publishedAt": "2026-09-08T11:06:18+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408833,
-          "day": 17,
-          "title": "Day17安裝 Claude Code CLI 與環境設定",
-          "url": "https://ithelp.ithome.com.tw/articles/10408833",
-          "publishedAt": "2026-09-09T10:56:13+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10409083,
-          "day": 18,
-          "title": "Day18專案初始化Git 整合與 GitHub Pages",
-          "url": "https://ithelp.ithome.com.tw/articles/10409083",
-          "publishedAt": "2026-09-10T12:09:42+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10409551,
-          "day": 19,
-          "title": "Day19使用 Claude 建立 Vue 專案架構",
-          "url": "https://ithelp.ithome.com.tw/articles/10409551",
-          "publishedAt": "2026-09-11T23:35:39+08:00"
-        },
-        {
-          "id": 10409765,
-          "day": 20,
-          "title": "Day20使用 Claude 設計資料庫 Schema",
-          "url": "https://ithelp.ithome.com.tw/articles/10409765",
-          "publishedAt": "2026-09-12T22:36:21+08:00"
-        },
-        {
-          "id": 10410020,
-          "day": 21,
-          "title": "Day21使用 Claude 建立 Repository / Service 資料存取層",
-          "url": "https://ithelp.ithome.com.tw/articles/10410020",
-          "publishedAt": "2026-09-13T18:07:20+08:00"
-        },
-        {
-          "id": 10410326,
-          "day": 22,
-          "title": "Day22使用 Claude 建立我的冰箱食材管理功能",
-          "url": "https://ithelp.ithome.com.tw/articles/10410326",
-          "publishedAt": "2026-09-14T14:43:11+08:00"
-        },
-        {
-          "id": 10410780,
-          "day": 23,
-          "title": "Day23使用 Claude 建立採買清單功能",
-          "url": "https://ithelp.ithome.com.tw/articles/10410780",
-          "publishedAt": "2026-09-15T10:20:16+08:00"
-        },
-        {
-          "id": 10411207,
-          "day": 24,
-          "title": "Day24使用 Claude 建立食譜與最愛食譜功能",
-          "url": "https://ithelp.ithome.com.tw/articles/10411207",
-          "publishedAt": "2026-09-16T10:31:42+08:00"
-        }
-      ]
-    },
-    {
       "id": 9328,
       "user": {
         "id": 20183794,
@@ -49473,237 +49704,6 @@
           "title": "Day 24跨區塊矛盾偵測：每句話都對，湊起來卻互相牴觸",
           "url": "https://ithelp.ithome.com.tw/articles/10412348",
           "publishedAt": "2026-09-17T08:56:16+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9211,
-      "user": {
-        "id": 20183363,
-        "name": "dommgifer",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20183363/profile"
-      },
-      "group": "AI 自動化",
-      "title": "讓 AI 接手工程師的 SOP：30 天 AI 自動化實戰",
-      "description": "工程師每天都在查資料、看監控、執行固定流程，最後再整理成報告。這些工作通常有明確的 SOP，卻很吃時間。這 30 天，我會從實際工作場景出發，拆解每項任務的輸入、判斷流程與輸出，實作能使用工具、蒐集證據並產生結果的 AI Agent。過程也會記錄 AI 猜錯、資料不足與重新驗證，看看哪些工作適合自動化，以及人類需要保留哪些權限與安全邊界。",
-      "team": null,
-      "signupDate": "2026/08/13T15:26:16+08:00",
-      "lastUpdated": "2026-09-17T17:23:29+08:00",
-      "dayCount": 23,
-      "articleCount": 23,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10405082,
-          "day": 1,
-          "title": "Day 1：AI 自動化的起點，藏在每天重複的工作裡",
-          "url": "https://ithelp.ithome.com.tw/articles/10405082",
-          "publishedAt": "2026-08-25T13:15:51+08:00",
-          "views": 143,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405083,
-          "day": 2,
-          "title": "Day 2：混沌工程中 AI 的角色",
-          "url": "https://ithelp.ithome.com.tw/articles/10405083",
-          "publishedAt": "2026-08-26T10:13:09+08:00",
-          "views": 106,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405476,
-          "day": 3,
-          "title": "Day 3：自然語言注入混沌工程：回到 GPT-4o 時代的自訂流程自動化",
-          "url": "https://ithelp.ithome.com.tw/articles/10405476",
-          "publishedAt": "2026-08-27T15:17:50+08:00",
-          "views": 87,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405709,
-          "day": 4,
-          "title": "Day 4：自然語言注入混沌工程 - 使用 MCP 與 n8n 實現流程自動化",
-          "url": "https://ithelp.ithome.com.tw/articles/10405709",
-          "publishedAt": "2026-08-28T15:28:20+08:00",
-          "views": 92,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10405968,
-          "day": 5,
-          "title": "Day 5：打造後續 AI 實作的主角",
-          "url": "https://ithelp.ithome.com.tw/articles/10405968",
-          "publishedAt": "2026-08-29T21:53:20+08:00",
-          "views": 83,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406153,
-          "day": 6,
-          "title": "Day 6：讓 AI 記住系統知識：認識 llm-wiki",
-          "url": "https://ithelp.ithome.com.tw/articles/10406153",
-          "publishedAt": "2026-08-30T15:17:24+08:00",
-          "views": 117,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406417,
-          "day": 7,
-          "title": "Day 7：設定 llm-wiki 的 Schema",
-          "url": "https://ithelp.ithome.com.tw/articles/10406417",
-          "publishedAt": "2026-08-31T17:40:30+08:00",
-          "views": 68,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406795,
-          "day": 8,
-          "title": "Day 8：準備 llm-wiki 的 Raw Sources",
-          "url": "https://ithelp.ithome.com.tw/articles/10406795",
-          "publishedAt": "2026-09-01T17:42:33+08:00",
-          "views": 84,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10406988,
-          "day": 9,
-          "title": "Day 9：llm-wiki 與 chaos-agent 的分工",
-          "url": "https://ithelp.ithome.com.tw/articles/10406988",
-          "publishedAt": "2026-09-02T11:35:56+08:00",
-          "views": 70,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407189,
-          "day": 10,
-          "title": "Day 10：Ingest 與弱點掃描",
-          "url": "https://ithelp.ithome.com.tw/articles/10407189",
-          "publishedAt": "2026-09-03T15:35:59+08:00",
-          "views": 66,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407635,
-          "day": 11,
-          "title": "Day 11：讓 AI 主導混沌實驗",
-          "url": "https://ithelp.ithome.com.tw/articles/10407635",
-          "publishedAt": "2026-09-04T22:35:27+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10407808,
-          "day": 12,
-          "title": "Day 12：驗收 AI 提出的修復",
-          "url": "https://ithelp.ithome.com.tw/articles/10407808",
-          "publishedAt": "2026-09-05T15:34:20+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408113,
-          "day": 13,
-          "title": "Day 13：AI 混沌工程實作回顧",
-          "url": "https://ithelp.ithome.com.tw/articles/10408113",
-          "publishedAt": "2026-09-06T17:22:20+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408304,
-          "day": 14,
-          "title": "Day 14：讓 AI 成為 SRE 的助手",
-          "url": "https://ithelp.ithome.com.tw/articles/10408304",
-          "publishedAt": "2026-09-07T13:44:01+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408428,
-          "day": 15,
-          "title": "Day 15：設計 AI SRE 架構",
-          "url": "https://ithelp.ithome.com.tw/articles/10408428",
-          "publishedAt": "2026-09-08T12:16:01+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408837,
-          "day": 16,
-          "title": "Day 16：實作 AI SRE",
-          "url": "https://ithelp.ithome.com.tw/articles/10408837",
-          "publishedAt": "2026-09-09T15:15:30+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10409066,
-          "day": 17,
-          "title": "Day 17：讓 AI SRE 接手一場告警演練",
-          "url": "https://ithelp.ithome.com.tw/articles/10409066",
-          "publishedAt": "2026-09-10T11:59:51+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10409406,
-          "day": 18,
-          "title": "Day 18：AI 在壓力測試可以扮演什麼角色",
-          "url": "https://ithelp.ithome.com.tw/articles/10409406",
-          "publishedAt": "2026-09-11T11:55:34+08:00"
-        },
-        {
-          "id": 10409717,
-          "day": 19,
-          "title": "Day 19：設計 AI 壓測報告分析架構",
-          "url": "https://ithelp.ithome.com.tw/articles/10409717",
-          "publishedAt": "2026-09-12T23:25:17+08:00"
-        },
-        {
-          "id": 10410012,
-          "day": 20,
-          "title": "Day 20：實作 AI 分析壓測報告的資料準備流程",
-          "url": "https://ithelp.ithome.com.tw/articles/10410012",
-          "publishedAt": "2026-09-13T17:54:33+08:00"
-        },
-        {
-          "id": 10410521,
-          "day": 21,
-          "title": "Day 21：實作壓測報告產生流程",
-          "url": "https://ithelp.ithome.com.tw/articles/10410521",
-          "publishedAt": "2026-09-14T22:02:55+08:00"
-        },
-        {
-          "id": 10411142,
-          "day": 22,
-          "title": "Day 22：檢視壓測報告中的 AI 分析",
-          "url": "https://ithelp.ithome.com.tw/articles/10411142",
-          "publishedAt": "2026-09-15T21:58:06+08:00"
-        },
-        {
-          "id": 10411899,
-          "day": 23,
-          "title": "Day 23：Kubernetes 每日巡檢",
-          "url": "https://ithelp.ithome.com.tw/articles/10411899",
-          "publishedAt": "2026-09-16T18:18:36+08:00"
         }
       ]
     },
@@ -65211,7 +65211,7 @@
       "description": "每天打開 Claude Code，丟一句「幫我修這個 bug」，它就開始讀檔、搜尋、改 code、跑測試，這根本是現代版的魔法。但如果把外殼拆掉，它最核心的那一塊，可能沒有想像中複雜。在《為你自己手刻 Claude Code》系列裡，我會用 Python 帶大家從零手刻一個迷你版的 Claude Code，藉由實作過程看懂 coding agent 的運作原理。之後再把工作交給 AI 時，就會更清楚哪裡能放手、哪裡該攔住它，以及最後該怎麼驗收。",
       "team": null,
       "signupDate": "2026/08/01T12:02:51+08:00",
-      "lastUpdated": "2026-09-17T16:46:34+08:00",
+      "lastUpdated": "2026-09-17T18:01:16+08:00",
       "dayCount": 15,
       "articleCount": 15,
       "subscriptions": 49,
@@ -66836,7 +66836,7 @@
       "description": "本系列將記錄開發 SyncETA Lite 的完整歷程——一套基於機率式思維、為初學者設計的出發時間推薦 PWA。\r\n\r\n內容涵蓋 PWA 基礎架構、台灣 TDX 運輸資料與 Google Maps API 串接、簡化版機率推薦邏輯（分位數運算）、離線與推播體驗優化，以及部署上線。\r\n\r\n全程程式碼皆會標注寫在專案 syncetalite-pwa/ 資料夾中的哪個檔案，適合對智慧交通、PWA 開發有興趣的初學者跟著實作。",
       "team": null,
       "signupDate": "2026/08/24T09:52:06+08:00",
-      "lastUpdated": "2026-09-17T16:46:55+08:00",
+      "lastUpdated": "2026-09-17T18:01:38+08:00",
       "dayCount": 14,
       "articleCount": 14,
       "subscriptions": 0,
@@ -73539,7 +73539,7 @@
       "description": "定位為「完全不熟 AI 的文科生，如何用 Claude Code 接手一個真實台股研究系統」，不是教人做投資決策。\r\n\r\n最終成果：\r\n\r\n- 以既有 `stock-analysis-lab` 作為資料與分析引擎。\r\n- 新增研究工作台，負責研究筆記、SQLite 索引、報告與 Claude Code 工作流。\r\n- 使用 TWSE／TPEx／MOPS 官方資料，加上 FinMind MCP 補充資料。\r\n- 支援全市場完整歷史批次，但沿用既有 checkpoint、快取、資料不足與失敗狀態。\r\n- 不串券商、不下單、不保證獲利、不輸出個人化買賣指令。",
       "team": null,
       "signupDate": "2026/09/07T22:44:06+08:00",
-      "lastUpdated": "2026-09-17T16:57:24+08:00",
+      "lastUpdated": "2026-09-17T18:02:24+08:00",
       "dayCount": 10,
       "articleCount": 10,
       "subscriptions": 0,
@@ -73738,7 +73738,7 @@
       "description": "本系列將記錄開發 SyncETA Lite 的完整歷程——一套基於機率式思維、為初學者設計的出發時間推薦 PWA。\r\n\r\n內容涵蓋 PWA 基礎架構、台灣 TDX 運輸資料與 Google Maps API 串接、簡化版機率推薦邏輯（分位數運算）、離線與推播體驗優化，以及部署上線。\r\n\r\n全程程式碼皆會標注寫在專案 syncetalite-pwa/ 資料夾中的哪個檔案，適合對智慧交通、PWA 開發有興趣的初學者跟著實作。",
       "team": null,
       "signupDate": "2026/09/08T01:24:38+08:00",
-      "lastUpdated": "2026-09-17T16:57:24+08:00",
+      "lastUpdated": "2026-09-17T18:02:24+08:00",
       "dayCount": 10,
       "articleCount": 10,
       "subscriptions": 0,
@@ -74759,7 +74759,7 @@
       "description": "這個系列記錄我用 30 天從零打造 baodao-skill 的過程：一個以台灣日常生活為主題的開源 AI 技能包（MIT 授權）。台灣的政府開放資料非常豐富——統一發票開獎號碼、垃圾車即時位置、YouBike 站點、中央氣象署天氣——但這些資訊散落在各處。我的目標是每天新增一個實用的查詢技能，30 天後讓它長成台灣生活的一站式工具。系列文章會涵蓋：資料源的評估與選擇、API 串接的踩坑記錄、技能文件的設計，以及一個開源專案從第一個 commit 到第一個 release 的完整歷程。全部過程公開在 GitHub，歡迎一起圍觀一個專案怎麼每天長大一點。",
       "team": null,
       "signupDate": "2026/09/09T02:33:10+08:00",
-      "lastUpdated": "2026-09-17T16:57:26+08:00",
+      "lastUpdated": "2026-09-17T18:02:26+08:00",
       "dayCount": 9,
       "articleCount": 9,
       "subscriptions": 0,
@@ -75828,7 +75828,7 @@
       "description": "AI coding agent 能快速產生大量測試，但「這個測試值不值得留、覆蓋夠不夠、重構要不要做」這些品質判斷不能交給 AI 自己決定。這系列用「留不留、夠不夠、做不做」三個判斷貫穿全程，拆解 AI 寫測試最容易犯的錯（硬編碼、過度 Mock、只測 happy path、Test Double 選錯種類），以及怎麼讓 AI 真正遵守 Red-Green-Refactor 循環，而不是把整個循環壓縮成一次產出。",
       "team": null,
       "signupDate": "2026/08/31T17:25:36+08:00",
-      "lastUpdated": "2026-09-17T16:30:22+08:00",
+      "lastUpdated": "2026-09-17T18:01:55+08:00",
       "dayCount": 8,
       "articleCount": 8,
       "subscriptions": 1,
@@ -76155,6 +76155,80 @@
           "title": "Day 8: How Does Vector Search Work?-",
           "url": "https://ithelp.ithome.com.tw/articles/10411901",
           "publishedAt": "2026-09-16T23:24:00+08:00"
+        }
+      ]
+    },
+    {
+      "id": 9549,
+      "user": {
+        "id": 20121296,
+        "name": "supergud",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20121296/profile"
+      },
+      "group": "Modern Web",
+      "title": "WebMCP：30 天打造 AI Agent 看得懂、也操作得動的網站",
+      "description": "當 AI Agent 開始能夠瀏覽網站、填寫表單、搜尋商品甚至執行任務，網站也需要從「只給人操作」進化成「AI 能理解並可靠操作」。\r\n\r\n這 30 天將從 WebMCP 基礎概念出發，實際研究 Tool、Schema、Declarative API、安全機制與 Agent 整合，並逐步把搜尋、表單、購物車與網站操作轉換成 AI 可直接呼叫的能力。最後將 WebMCP 導入 WordPress／WooCommerce，打造一個真正 Agent-ready 的網站，完整記錄從規格理解、開發實作、除錯到實際 AI Agent 操作的過程。",
+      "team": "Devfest 愁備餓處",
+      "signupDate": "2026/09/08T23:29:30+08:00",
+      "lastUpdated": "2026-09-17T17:24:35+08:00",
+      "dayCount": 8,
+      "articleCount": 7,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10409012,
+          "day": 1,
+          "title": "Day 01｜AI 都會點網頁了，為什麼還需要 WebMCP？我用同一個搜尋任務測給你看",
+          "url": "https://ithelp.ithome.com.tw/articles/10409012",
+          "publishedAt": "2026-09-10T03:59:15+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10409294,
+          "day": 2,
+          "title": "Day 02｜MCP 已經能接工具，WebMCP 到底多了什麼？一張圖拆開兩者責任",
+          "url": "https://ithelp.ithome.com.tw/articles/10409294",
+          "publishedAt": "2026-09-11T01:42:04+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10409573,
+          "day": 3,
+          "title": "Day 03｜你搜尋到的 WebMCP 可能不是同一套：ChromeW3Cwebmcp.dev 一次分清楚",
+          "url": "https://ithelp.ithome.com.tw/articles/10409573",
+          "publishedAt": "2026-09-12T00:41:32+08:00"
+        },
+        {
+          "id": 10409748,
+          "day": 4,
+          "title": "Day 04｜WebMCP 跑不起來先別怪程式：Chrome 開發環境與 5 個常見坑",
+          "url": "https://ithelp.ithome.com.tw/articles/10409748",
+          "publishedAt": "2026-09-13T04:02:53+08:00"
+        },
+        {
+          "id": 10410449,
+          "day": 5,
+          "title": "Day 05｜第一個 WebMCP Tool：10 分鐘讓 AI 直接呼叫你的網站功能",
+          "url": "https://ithelp.ithome.com.tw/articles/10410449",
+          "publishedAt": "2026-09-14T22:16:03+08:00"
+        },
+        {
+          "id": 10410659,
+          "day": 6,
+          "title": "Day 06｜Tool 能跑不代表 AI 會用：namedescriptionschema 到底怎麼寫",
+          "url": "https://ithelp.ithome.com.tw/articles/10410659",
+          "publishedAt": "2026-09-15T03:16:39+08:00"
+        },
+        {
+          "id": 10411530,
+          "day": 7,
+          "title": "Day 07｜AI 為什麼老是填錯參數？用 inputSchema 把 Tool Calling 管起來",
+          "url": "https://ithelp.ithome.com.tw/articles/10411530",
+          "publishedAt": "2026-09-16T03:12:54+08:00"
         }
       ]
     },
@@ -76764,80 +76838,6 @@
           "title": "[Day 07] 多路串流的功臣nvstreammux",
           "url": "https://ithelp.ithome.com.tw/articles/10412209",
           "publishedAt": "2026-09-17T00:03:34+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9549,
-      "user": {
-        "id": 20121296,
-        "name": "supergud",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20121296/profile"
-      },
-      "group": "Modern Web",
-      "title": "WebMCP：30 天打造 AI Agent 看得懂、也操作得動的網站",
-      "description": "當 AI Agent 開始能夠瀏覽網站、填寫表單、搜尋商品甚至執行任務，網站也需要從「只給人操作」進化成「AI 能理解並可靠操作」。\r\n\r\n這 30 天將從 WebMCP 基礎概念出發，實際研究 Tool、Schema、Declarative API、安全機制與 Agent 整合，並逐步把搜尋、表單、購物車與網站操作轉換成 AI 可直接呼叫的能力。最後將 WebMCP 導入 WordPress／WooCommerce，打造一個真正 Agent-ready 的網站，完整記錄從規格理解、開發實作、除錯到實際 AI Agent 操作的過程。",
-      "team": "Devfest 愁備餓處",
-      "signupDate": "2026/09/08T23:29:30+08:00",
-      "lastUpdated": "2026-09-17T17:24:35+08:00",
-      "dayCount": 7,
-      "articleCount": 7,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10409012,
-          "day": 1,
-          "title": "Day 01｜AI 都會點網頁了，為什麼還需要 WebMCP？我用同一個搜尋任務測給你看",
-          "url": "https://ithelp.ithome.com.tw/articles/10409012",
-          "publishedAt": "2026-09-10T03:59:15+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10409294,
-          "day": 2,
-          "title": "Day 02｜MCP 已經能接工具，WebMCP 到底多了什麼？一張圖拆開兩者責任",
-          "url": "https://ithelp.ithome.com.tw/articles/10409294",
-          "publishedAt": "2026-09-11T01:42:04+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10409573,
-          "day": 3,
-          "title": "Day 03｜你搜尋到的 WebMCP 可能不是同一套：ChromeW3Cwebmcp.dev 一次分清楚",
-          "url": "https://ithelp.ithome.com.tw/articles/10409573",
-          "publishedAt": "2026-09-12T00:41:32+08:00"
-        },
-        {
-          "id": 10409748,
-          "day": 4,
-          "title": "Day 04｜WebMCP 跑不起來先別怪程式：Chrome 開發環境與 5 個常見坑",
-          "url": "https://ithelp.ithome.com.tw/articles/10409748",
-          "publishedAt": "2026-09-13T04:02:53+08:00"
-        },
-        {
-          "id": 10410449,
-          "day": 5,
-          "title": "Day 05｜第一個 WebMCP Tool：10 分鐘讓 AI 直接呼叫你的網站功能",
-          "url": "https://ithelp.ithome.com.tw/articles/10410449",
-          "publishedAt": "2026-09-14T22:16:03+08:00"
-        },
-        {
-          "id": 10410659,
-          "day": 6,
-          "title": "Day 06｜Tool 能跑不代表 AI 會用：namedescriptionschema 到底怎麼寫",
-          "url": "https://ithelp.ithome.com.tw/articles/10410659",
-          "publishedAt": "2026-09-15T03:16:39+08:00"
-        },
-        {
-          "id": 10411530,
-          "day": 7,
-          "title": "Day 07｜AI 為什麼老是填錯參數？用 inputSchema 把 Tool Calling 管起來",
-          "url": "https://ithelp.ithome.com.tw/articles/10411530",
-          "publishedAt": "2026-09-16T03:12:54+08:00"
         }
       ]
     },
@@ -79067,6 +79067,60 @@
       ]
     },
     {
+      "id": 9586,
+      "user": {
+        "id": 20162447,
+        "name": "hipposcott",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20162447/profile"
+      },
+      "group": "Claude AI",
+      "title": "AI 負責答，我負責讓答案可信——公部門工程師的 30 天 Claude 協作紀律",
+      "description": "市面上談 Claude，多在講它能幫你做什麼。這系列想談的是：在一個有歷史包袱、有合規壓力、不容出錯的公部門專案裡，人跟 Claude 怎麼分工，才能讓 1+1 > 2。30 天全是第一手實戰——不是事後心得，是 AI 當場犯錯、被真實工具打臉、再一步步校正的現場：連錯四次的浮水印、長出兩千多層資料夾的設定意外、看似正確卻會壓垮資料庫的並行寫法，還有弱掃、GCB、稽核軌跡這些少有人從開發者視角寫的合規實戰。貫穿全系列只有一句：AI 負責生出答案，人負責讓它可信。AI 只會越來越強，但正因如此，人怎麼駕馭它只會越來越重要。若這 30 天能讓你多問一句「你這是查過的，還是猜的？」，就值得了。",
+      "team": null,
+      "signupDate": "2026/09/10T18:25:29+08:00",
+      "lastUpdated": "2026-09-17T17:24:41+08:00",
+      "dayCount": 6,
+      "articleCount": 5,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10409787,
+          "day": 1,
+          "title": "Day 1：AI 負責答，我負責讓答案可信一個公部門工程師的協作紀律",
+          "url": "https://ithelp.ithome.com.tw/articles/10409787",
+          "publishedAt": "2026-09-12T23:16:30+08:00"
+        },
+        {
+          "id": 10410079,
+          "day": 2,
+          "title": "Day 2：逼 AI 驗證，而不是接受它的記憶",
+          "url": "https://ithelp.ithome.com.tw/articles/10410079",
+          "publishedAt": "2026-09-13T21:53:18+08:00"
+        },
+        {
+          "id": 10410080,
+          "day": 3,
+          "title": "Day 03：一個正確的建議，如何變成壓垮資料庫的一擊",
+          "url": "https://ithelp.ithome.com.tw/articles/10410080",
+          "publishedAt": "2026-09-14T18:58:34+08:00"
+        },
+        {
+          "id": 10410931,
+          "day": 4,
+          "title": "Day 04：我只想存個中文備註，最後差點蓋出一套帳號管理系統",
+          "url": "https://ithelp.ithome.com.tw/articles/10410931",
+          "publishedAt": "2026-09-15T14:13:16+08:00"
+        },
+        {
+          "id": 10411440,
+          "day": 5,
+          "title": "Day 05：先把工具搞清楚Claude 生態的名詞地圖，與我的實際分工",
+          "url": "https://ithelp.ithome.com.tw/articles/10411440",
+          "publishedAt": "2026-09-16T15:16:29+08:00"
+        }
+      ]
+    },
+    {
       "id": 9608,
       "user": {
         "id": 20184145,
@@ -80168,60 +80222,6 @@
       ]
     },
     {
-      "id": 9586,
-      "user": {
-        "id": 20162447,
-        "name": "hipposcott",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20162447/profile"
-      },
-      "group": "Claude AI",
-      "title": "AI 負責答，我負責讓答案可信——公部門工程師的 30 天 Claude 協作紀律",
-      "description": "市面上談 Claude，多在講它能幫你做什麼。這系列想談的是：在一個有歷史包袱、有合規壓力、不容出錯的公部門專案裡，人跟 Claude 怎麼分工，才能讓 1+1 > 2。30 天全是第一手實戰——不是事後心得，是 AI 當場犯錯、被真實工具打臉、再一步步校正的現場：連錯四次的浮水印、長出兩千多層資料夾的設定意外、看似正確卻會壓垮資料庫的並行寫法，還有弱掃、GCB、稽核軌跡這些少有人從開發者視角寫的合規實戰。貫穿全系列只有一句：AI 負責生出答案，人負責讓它可信。AI 只會越來越強，但正因如此，人怎麼駕馭它只會越來越重要。若這 30 天能讓你多問一句「你這是查過的，還是猜的？」，就值得了。",
-      "team": null,
-      "signupDate": "2026/09/10T18:25:29+08:00",
-      "lastUpdated": "2026-09-17T17:24:41+08:00",
-      "dayCount": 5,
-      "articleCount": 5,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10409787,
-          "day": 1,
-          "title": "Day 1：AI 負責答，我負責讓答案可信一個公部門工程師的協作紀律",
-          "url": "https://ithelp.ithome.com.tw/articles/10409787",
-          "publishedAt": "2026-09-12T23:16:30+08:00"
-        },
-        {
-          "id": 10410079,
-          "day": 2,
-          "title": "Day 2：逼 AI 驗證，而不是接受它的記憶",
-          "url": "https://ithelp.ithome.com.tw/articles/10410079",
-          "publishedAt": "2026-09-13T21:53:18+08:00"
-        },
-        {
-          "id": 10410080,
-          "day": 3,
-          "title": "Day 03：一個正確的建議，如何變成壓垮資料庫的一擊",
-          "url": "https://ithelp.ithome.com.tw/articles/10410080",
-          "publishedAt": "2026-09-14T18:58:34+08:00"
-        },
-        {
-          "id": 10410931,
-          "day": 4,
-          "title": "Day 04：我只想存個中文備註，最後差點蓋出一套帳號管理系統",
-          "url": "https://ithelp.ithome.com.tw/articles/10410931",
-          "publishedAt": "2026-09-15T14:13:16+08:00"
-        },
-        {
-          "id": 10411440,
-          "day": 5,
-          "title": "Day 05：先把工具搞清楚Claude 生態的名詞地圖，與我的實際分工",
-          "url": "https://ithelp.ithome.com.tw/articles/10411440",
-          "publishedAt": "2026-09-16T15:16:29+08:00"
-        }
-      ]
-    },
-    {
       "id": 9600,
       "user": {
         "id": 20184105,
@@ -80506,7 +80506,7 @@
       "description": "《白稜》——用一部小說連載，走完一趟數位轉型的完整旅程：從第一座山，到第二座山。\r\n\r\n2025 年的鐵人賽講的是怎麼把系統做起來，這是第一座山；今年的系列講的是轉型成功之後，領導者要面對的組織試煉，是第二座山。接下來這 30 天，我們把兩段路連成一條完整的稜線：一位 IT 主管加入一個公益組織，從零帶十人爬上第一座山——做出系統、拿下 IDC 大獎；卻在登頂之後，撞上組織的意識天花板，被推下山，走進退潮、清場，然後重新出發爬的第二座山。書名「白稜」，指的正是站在那條稜線上、視線被雲霧染白的時刻——看得見兩座山，卻看不清腳下。",
       "team": null,
       "signupDate": "2026/09/13T10:09:50+08:00",
-      "lastUpdated": "2026-09-17T16:57:38+08:00",
+      "lastUpdated": "2026-09-17T18:02:38+08:00",
       "dayCount": 5,
       "articleCount": 5,
       "subscriptions": 0,
@@ -80653,6 +80653,60 @@
           "title": "searchsploit 與 CVE 資料庫查詢技巧解析",
           "url": "https://ithelp.ithome.com.tw/articles/10411816",
           "publishedAt": "2026-09-17T12:35:35+08:00"
+        }
+      ]
+    },
+    {
+      "id": 9647,
+      "user": {
+        "id": 20183608,
+        "name": "leematthewcat",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20183608/profile"
+      },
+      "group": "Software Development",
+      "title": "手刻 AI Agent！大一新生的 Python 實戰筆記",
+      "description": "身為剛升大一的新鮮人，我想趁著暑假扎實磨練 Python 能力，因此決定挑戰從零打造屬於自己的 AI Agent！不依賴現成框架與 vibe-coding，每一行程式碼都親手實作推敲。\r\n\r\n以本地 ollama 為核心，一步步做出 Agent 的框架，到核心的「工具調用」（讀寫檔案、執行終端、瀏覽網頁），再逐步邁向 System Prompt 注入、上下文記憶管理等等的應用。\r\n\r\n無論你是 Python 新手，還是好奇 Agent 內部運作原理的開發者，都歡迎和我一起動手打造專屬的智慧助手！",
+      "team": null,
+      "signupDate": "2026/09/13T14:50:11+08:00",
+      "lastUpdated": "2026-09-17T17:24:51+08:00",
+      "dayCount": 5,
+      "articleCount": 5,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10409951,
+          "day": 1,
+          "title": "Day 1 - 打造屬於自己的 Agent！",
+          "url": "https://ithelp.ithome.com.tw/articles/10409951",
+          "publishedAt": "2026-09-13T15:07:12+08:00"
+        },
+        {
+          "id": 10410514,
+          "day": 2,
+          "title": "Day 2 - 加入工具吧 - 上",
+          "url": "https://ithelp.ithome.com.tw/articles/10410514",
+          "publishedAt": "2026-09-14T22:43:34+08:00"
+        },
+        {
+          "id": 10411046,
+          "day": 3,
+          "title": "Day 3 - 加入工具吧 - 中",
+          "url": "https://ithelp.ithome.com.tw/articles/10411046",
+          "publishedAt": "2026-09-15T17:55:11+08:00"
+        },
+        {
+          "id": 10411134,
+          "day": 4,
+          "title": "Day 4 加入工具吧 - 下",
+          "url": "https://ithelp.ithome.com.tw/articles/10411134",
+          "publishedAt": "2026-09-16T18:21:36+08:00"
+        },
+        {
+          "id": 10412613,
+          "day": 5,
+          "title": "Day 5 - 獨立調用管道 - 上",
+          "url": "https://ithelp.ithome.com.tw/articles/10412613",
+          "publishedAt": "2026-09-17T17:23:48+08:00"
         }
       ]
     },
@@ -81461,7 +81515,7 @@
       "description": "軟體開發只是 Claude 應用的其中一塊拼圖。這次我想用 30 天的時間，實際做一件事來驗證這句話：從零打造一款有分支劇情的策略塔防遊戲，並且把整個開發過程中用到的 Claude 工作流，一步一步攤開來記錄。\r\n\r\n這款遊戲的前端用 Vue 3 搭 Canvas 打造戰場渲染；後端用 Go 撐起劇情狀態機與存檔驗證，跑在 Lambda 上，經 API Gateway REST API 對外；資料放 DynamoDB 單表。部署走完整的 Terraform IaC 流程，搭配 CI/CD 與 CloudWatch 監控",
       "team": "Ad Astra",
       "signupDate": "2026/09/07T14:46:40+08:00",
-      "lastUpdated": "2026-09-17T16:57:23+08:00",
+      "lastUpdated": "2026-09-17T18:02:23+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -81508,7 +81562,7 @@
       "description": "身為開發 AI agent 與負責地端/雲端服務的維運者, 記錄實際踩雷過的 K8s 學習之路, 從「Agent 為什麼與 K8s 有關」視角出發的個人學習筆記. \r\n內容: \r\n1) 為什麼 AI agent 需要知道 K8s, \r\n2) AI infra（的資源規劃, \r\n3) 沒碰過 K8s 的 AI 工程師該怎麼起步, \r\n4) 部署一個 AI app 到底該選哪種雲端 K8s (GCP, Azure, 以及其他雲端該怎麼取捨）.\r\n\r\n其中幾篇會以採用 OpenAB 自架的 agent 團隊為實例, 試著記錄 AI 工程師從「初探」到「能架設/觀察」的過程.",
       "team": "Ad Astra",
       "signupDate": "2026/09/07T17:03:37+08:00",
-      "lastUpdated": "2026-09-17T16:57:23+08:00",
+      "lastUpdated": "2026-09-17T18:02:24+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -82061,60 +82115,6 @@
       ]
     },
     {
-      "id": 9647,
-      "user": {
-        "id": 20183608,
-        "name": "leematthewcat",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20183608/profile"
-      },
-      "group": "Software Development",
-      "title": "手刻 AI Agent！大一新生的 Python 實戰筆記",
-      "description": "身為剛升大一的新鮮人，我想趁著暑假扎實磨練 Python 能力，因此決定挑戰從零打造屬於自己的 AI Agent！不依賴現成框架與 vibe-coding，每一行程式碼都親手實作推敲。\r\n\r\n以本地 ollama 為核心，一步步做出 Agent 的框架，到核心的「工具調用」（讀寫檔案、執行終端、瀏覽網頁），再逐步邁向 System Prompt 注入、上下文記憶管理等等的應用。\r\n\r\n無論你是 Python 新手，還是好奇 Agent 內部運作原理的開發者，都歡迎和我一起動手打造專屬的智慧助手！",
-      "team": null,
-      "signupDate": "2026/09/13T14:50:11+08:00",
-      "lastUpdated": "2026-09-17T17:24:51+08:00",
-      "dayCount": 4,
-      "articleCount": 5,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10409951,
-          "day": 1,
-          "title": "Day 1 - 打造屬於自己的 Agent！",
-          "url": "https://ithelp.ithome.com.tw/articles/10409951",
-          "publishedAt": "2026-09-13T15:07:12+08:00"
-        },
-        {
-          "id": 10410514,
-          "day": 2,
-          "title": "Day 2 - 加入工具吧 - 上",
-          "url": "https://ithelp.ithome.com.tw/articles/10410514",
-          "publishedAt": "2026-09-14T22:43:34+08:00"
-        },
-        {
-          "id": 10411046,
-          "day": 3,
-          "title": "Day 3 - 加入工具吧 - 中",
-          "url": "https://ithelp.ithome.com.tw/articles/10411046",
-          "publishedAt": "2026-09-15T17:55:11+08:00"
-        },
-        {
-          "id": 10411134,
-          "day": 4,
-          "title": "Day 4 加入工具吧 - 下",
-          "url": "https://ithelp.ithome.com.tw/articles/10411134",
-          "publishedAt": "2026-09-16T18:21:36+08:00"
-        },
-        {
-          "id": 10412613,
-          "day": 5,
-          "title": "Day 5 - 獨立調用管道 - 上",
-          "url": "https://ithelp.ithome.com.tw/articles/10412613",
-          "publishedAt": "2026-09-17T17:23:48+08:00"
-        }
-      ]
-    },
-    {
       "id": 9648,
       "user": {
         "id": 20184199,
@@ -82487,6 +82487,46 @@
           "title": "Day 04：環境搭建打造我的 Vibe Coding 工作台",
           "url": "https://ithelp.ithome.com.tw/articles/10411348",
           "publishedAt": "2026-09-17T03:35:10+08:00"
+        }
+      ]
+    },
+    {
+      "id": 9673,
+      "user": {
+        "id": 20178925,
+        "name": "413570622",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20178925/profile"
+      },
+      "group": "自我挑戰組",
+      "title": "學習C#續",
+      "description": "在2025年雖然沒有參加到鐵人賽，但後續有自主完成30天的挑戰。所以這次想繼續學習C#，也參加2026年鐵人賽並且完賽。",
+      "team": null,
+      "signupDate": "2026/09/14T02:41:36+08:00",
+      "lastUpdated": "2026-09-17T17:24:55+08:00",
+      "dayCount": 4,
+      "articleCount": 3,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410433,
+          "day": 1,
+          "title": "Day 1: C# 複習-1(開發環境程式結構資料型別運算子流程控制迴圈跳轉以及兩個綜合實作範例)",
+          "url": "https://ithelp.ithome.com.tw/articles/10410433",
+          "publishedAt": "2026-09-14T18:46:57+08:00"
+        },
+        {
+          "id": 10410566,
+          "day": 2,
+          "title": "Day 2:C# 複習-2(陣列清單方法（函數）方法多載與遞迴)",
+          "url": "https://ithelp.ithome.com.tw/articles/10410566",
+          "publishedAt": "2026-09-15T19:07:13+08:00"
+        },
+        {
+          "id": 10412003,
+          "day": 3,
+          "title": "Day 3: C# 複習-3(錯誤處理命名空間類別與物件建構子)",
+          "url": "https://ithelp.ithome.com.tw/articles/10412003",
+          "publishedAt": "2026-09-16T21:57:53+08:00"
         }
       ]
     },
@@ -83036,6 +83076,53 @@
       ]
     },
     {
+      "id": 9733,
+      "user": {
+        "id": 20059208,
+        "name": "資安修行者",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20059208/profile"
+      },
+      "group": "佛心分享-IT 人自學之術",
+      "title": "分享CRISC(風險與資訊系統控制認證)自學及對工作上的心得",
+      "description": "邊工作、邊學習，自學準備ISACA CRISC(風險與資訊系統控制認證)，常會想該證照對自身的幫助為何？及旁人可能會詢該知識的價值。故起動念分享CRISC(風險與資訊系統控制認證)自學及對工作上的心得。",
+      "team": null,
+      "signupDate": "2026/09/14T22:17:29+08:00",
+      "lastUpdated": "2026-09-17T17:42:31+08:00",
+      "dayCount": 4,
+      "articleCount": 4,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410553,
+          "day": 1,
+          "title": "風險管理該證照怎麼開始的？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410553",
+          "publishedAt": "2026-09-14T22:33:03+08:00"
+        },
+        {
+          "id": 10411028,
+          "day": 2,
+          "title": "ISACA CRISC證照的起手式",
+          "url": "https://ithelp.ithome.com.tw/articles/10411028",
+          "publishedAt": "2026-09-15T17:21:22+08:00"
+        },
+        {
+          "id": 10412086,
+          "day": 3,
+          "title": "談治理二字-(包含組織與風險治理)",
+          "url": "https://ithelp.ithome.com.tw/articles/10412086",
+          "publishedAt": "2026-09-16T22:45:56+08:00"
+        },
+        {
+          "id": 10412623,
+          "day": 4,
+          "title": "談Risk assessment(風險評鑑)內容",
+          "url": "https://ithelp.ithome.com.tw/articles/10412623",
+          "publishedAt": "2026-09-17T17:40:17+08:00"
+        }
+      ]
+    },
+    {
       "id": 9739,
       "user": {
         "id": 20184274,
@@ -83047,7 +83134,7 @@
       "description": "我是一名程式初學者，因為喜歡泰國文化，也希望旅遊時能用泰語和當地人簡單對話，因此想挑戰製作一款以「旅遊情境泰語」為主題的學習 App。這個系列會記錄我如何從零開始，透過 ChatGPT 協助釐清需求、學習程式概念與解決問題，再搭配 Codex 實際撰寫、修改與除錯程式。除了完成 App，也會分享初學者在 AI 輔助開發過程中的理解、踩坑與成長。",
       "team": null,
       "signupDate": "2026/09/14T23:10:56+08:00",
-      "lastUpdated": "2026-09-17T16:03:27+08:00",
+      "lastUpdated": "2026-09-17T18:02:53+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -83094,7 +83181,7 @@
       "description": "連續 30 天的技術寫作，寫到後期最容易失控的不是靈感枯竭，而是忍不住把整篇文章丟給 AI 一鍵生成，結果讀起來總帶著模仿的破綻，多天累積下來系列風格逐漸崩壞。\r\n\r\n這系列文章從這個困境出發，點出問題不在模型不夠聰明或 Prompt 不夠精準，而在於把規劃、查證、撰寫、審查全部塞進單一次推理，這種工作方式本身在架構上就站不住腳。\r\n\r\n解法是像軟體架構師規劃系統一樣，把長篇技術系列寫作拆解成各司其職的代理人們，一步步打造出來，再串接成一條真正能協同運作的生產線。",
       "team": null,
       "signupDate": "2026/09/14T23:22:25+08:00",
-      "lastUpdated": "2026-09-17T15:13:26+08:00",
+      "lastUpdated": "2026-09-17T17:15:27+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -83141,7 +83228,7 @@
       "description": "已具備 Laravel 開發經驗的工程師，多半都遇過同一個關卡：功能做完了，卻還要自己刻一套後台管理介面，表單、驗證、權限散落在各個 Controller 裡，每加一個模組就重複一次。這個系列帶你從安裝 Filament 的第一天開始，做出一套具備多角色權限、多租戶資料隔離、自訂儀表板，並通過測試、準備上線的正式後台系統。\r\n\r\n30 天走完，你會拿到的不是一堆零散的 API 用法，而是一套能實際落地上線的 Filament 建置流程。",
       "team": null,
       "signupDate": "2026/09/14T23:24:27+08:00",
-      "lastUpdated": "2026-09-17T15:11:24+08:00",
+      "lastUpdated": "2026-09-17T17:13:13+08:00",
       "dayCount": 4,
       "articleCount": 4,
       "subscriptions": 0,
@@ -83972,7 +84059,7 @@
       "description": "我學 K8s，只為三件事：上線、穩定，還是他*的穩定！\r\n什麼他*的叫驚喜？昨天還好好的 Pod，今天全 Pending 了！",
       "team": "nutc imac",
       "signupDate": "2026/08/27T14:58:26+08:00",
-      "lastUpdated": "2026-09-17T17:00:31+08:00",
+      "lastUpdated": "2026-09-17T18:01:43+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -84012,7 +84099,7 @@
       "description": "本系列將以從零開始的方式介紹 Claude Code，從安裝、基本操作到實際應用，帶著讀者一步步熟悉如何利用 AI 協助開發程式。過程中會實作一個 AI 任務管理 Web App，包含任務新增、修改、刪除、狀態管理等功能，並結合 Claude AI 輔助任務規劃。希望透過 30 天的實作，讓初學者了解 Claude Code 如何應用在真實的程式開發流程中。",
       "team": "nutc imac",
       "signupDate": "2026/08/27T15:12:43+08:00",
-      "lastUpdated": "2026-09-17T16:47:00+08:00",
+      "lastUpdated": "2026-09-17T18:00:29+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -84612,7 +84699,7 @@
       "description": "本系列將以「追星人的真實需求」為出發點，在 30 天內使用 Flutter 與 Whisper API 逐步打造一套追星 AI 實用工具箱，核心功能聚焦於「直播即時語音翻譯」，解決看偶像直播聽不懂韓語/日語的痛點，還有偶像行程追蹤、活動提醒，到專輯與周邊收藏管理、應援活動整理、追星花費紀錄，我會把平常分散在社群貼文、行事曆、備忘錄與試算表中的資訊，整合成更方便使用的系統。",
       "team": "nutc imac",
       "signupDate": "2026/08/27T16:43:58+08:00",
-      "lastUpdated": "2026-09-17T16:47:03+08:00",
+      "lastUpdated": "2026-09-17T18:00:17+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -84732,7 +84819,7 @@
       "description": "這次鐵人賽要來挑戰從零刻出一個「有情緒、有記憶，還聽得懂人話」的情感感知 AI Agent！結合 Gemini API、有限狀態機 (FSM) 與 RAG (檢索增強生成) 技術，解決傳統聊天機器人「缺乏情緒起伏」與「容易遺忘對話細節」的痛點，建立極具互動感的動態 Agentic System。\r\n\r\n參賽核心實作方向：動態情緒 FSM，Time-Aware RAG 記憶，自動分流與 Tool Use，通用架構重構\r\n<以上是我的簡介>",
       "team": "nutc imac",
       "signupDate": "2026/08/27T17:04:20+08:00",
-      "lastUpdated": "2026-09-17T16:47:03+08:00",
+      "lastUpdated": "2026-09-17T18:00:11+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -85099,6 +85186,39 @@
       "articles": []
     },
     {
+      "id": 9408,
+      "user": {
+        "id": 20178747,
+        "name": "youtu",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20178747/profile"
+      },
+      "group": "Vibe Coding",
+      "title": "從 Prompt 到成品：30 天 Vibe Coding 入門與實作",
+      "description": "將以初學者的角度，用 30 天認識近年快速發展的 Vibe Coding 開發方式。內容將從 Vibe Coding 的基本概念開始，介紹 Prompt、Context、AI Coding Agent、MCP 等相關技術，以及 Cursor、Claude Code、Gemini CLI 等常見 AI 開發工具的使用方式。\r\n\r\n除了概念介紹，也會搭配簡單的實際操作，示範如何利用 AI 協助產生程式碼、除錯、重構。\r\n\r\n希望透過 30 天的學習與實作，整理出一套適合初學者的 AI 協作開發入門指南，同時了解 Vibe Coding 能做到什麼、有哪些限制，以及如何更有效地與 AI 一起寫程式。",
+      "team": "nutc imac",
+      "signupDate": "2026/08/29T15:58:51+08:00",
+      "lastUpdated": "2026-09-17T17:24:07+08:00",
+      "dayCount": 3,
+      "articleCount": 2,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10411000,
+          "day": 1,
+          "title": "Day 1｜開賽宣言：從 Prompt 到成品，30 天 Vibe Coding 挑戰開始！",
+          "url": "https://ithelp.ithome.com.tw/articles/10411000",
+          "publishedAt": "2026-09-15T16:25:47+08:00"
+        },
+        {
+          "id": 10411847,
+          "day": 2,
+          "title": "Day 2｜Vibe Coding 是什麼？從寫程式到描述需求",
+          "url": "https://ithelp.ithome.com.tw/articles/10411847",
+          "publishedAt": "2026-09-16T16:39:17+08:00"
+        }
+      ]
+    },
+    {
       "id": 9409,
       "user": {
         "id": 20178625,
@@ -85110,7 +85230,7 @@
       "description": "本專題探討在 AI 協作開發（Vibe Coding）浪潮下，如何透過直覺的提示詞與前端協作，搭配 n8n 視覺化工作流與雲端 AI 引擎，打破傳統後端開發的高門檻。內容將完整記錄從前端介面快速迭代到後端 API、LLM 邏輯編排與資料流串接的實戰過程，展示如何利用雙效加速器在短時間內從零打造具備完整商業邏輯的全端 AI 應用。",
       "team": "nutc imac",
       "signupDate": "2026/08/29T16:04:37+08:00",
-      "lastUpdated": "2026-09-17T17:01:05+08:00",
+      "lastUpdated": "2026-09-17T18:01:05+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -85555,7 +85675,7 @@
       "description": "如果未來的歷史將由贏家書寫，我可能無法肯定書寫歷史的，會是人類？還是 AI？身為一位 AI 學術背景的軟體工程師，從求學時期研究神經網路，到見證 Transformer 降臨的學術奇異點，再到看著它走出論文，跟著 Agent 一搭一唱，開始寫程式碼、呼叫工具、甚至自我進行迴圈。我也算是看著 AI 長大，不是親爸也算是半個乾爸，難免感慨這一切都過得很快，同時鋪天蓋地的取代聲浪也撲面而來，焦慮的同時我認真思考我還能做什麼？或許我能親手書寫一段歷史，一段從「我看見」走向「我預見」的 30 天旅程（我希望是這樣啦）。可能 AI 最終真的會把我們取代，但至少直到最後一刻，我們都與 AI 共舞著。",
       "team": null,
       "signupDate": "2026/09/06T22:16:53+08:00",
-      "lastUpdated": "2026-09-17T16:57:23+08:00",
+      "lastUpdated": "2026-09-17T18:02:23+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -85595,7 +85715,7 @@
       "description": "地震來時，官方警報常是一長串數字與術語；最需要資訊的人往往最難看懂。\r\n\r\n我是橫跨學術研究與工程的人。這 30 天用一系列 Google 應用程式加上 Gemini，打造出一套人人都能安裝的防災App。\r\n\r\n每天都有可跑的程式碼與真實資料，加上災後心理支持設計。這套系統不只推送各種自然災害通知，還能讓使用者在最慌張時提供求助的地方。",
       "team": null,
       "signupDate": "2026/09/07T05:53:13+08:00",
-      "lastUpdated": "2026-09-17T16:57:23+08:00",
+      "lastUpdated": "2026-09-17T18:02:23+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -86528,46 +86648,6 @@
           "title": "Day02：建立 CI/CD pipeline",
           "url": "https://ithelp.ithome.com.tw/articles/10411599",
           "publishedAt": "2026-09-16T22:15:05+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9673,
-      "user": {
-        "id": 20178925,
-        "name": "413570622",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20178925/profile"
-      },
-      "group": "自我挑戰組",
-      "title": "學習C#續",
-      "description": "在2025年雖然沒有參加到鐵人賽，但後續有自主完成30天的挑戰。所以這次想繼續學習C#，也參加2026年鐵人賽並且完賽。",
-      "team": null,
-      "signupDate": "2026/09/14T02:41:36+08:00",
-      "lastUpdated": "2026-09-17T17:24:55+08:00",
-      "dayCount": 3,
-      "articleCount": 3,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410433,
-          "day": 1,
-          "title": "Day 1: C# 複習-1(開發環境程式結構資料型別運算子流程控制迴圈跳轉以及兩個綜合實作範例)",
-          "url": "https://ithelp.ithome.com.tw/articles/10410433",
-          "publishedAt": "2026-09-14T18:46:57+08:00"
-        },
-        {
-          "id": 10410566,
-          "day": 2,
-          "title": "Day 2:C# 複習-2(陣列清單方法（函數）方法多載與遞迴)",
-          "url": "https://ithelp.ithome.com.tw/articles/10410566",
-          "publishedAt": "2026-09-15T19:07:13+08:00"
-        },
-        {
-          "id": 10412003,
-          "day": 3,
-          "title": "Day 3: C# 複習-3(錯誤處理命名空間類別與物件建構子)",
-          "url": "https://ithelp.ithome.com.tw/articles/10412003",
-          "publishedAt": "2026-09-16T21:57:53+08:00"
         }
       ]
     },
@@ -87572,6 +87652,46 @@
       ]
     },
     {
+      "id": 9721,
+      "user": {
+        "id": 20184265,
+        "name": "mengbai",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20184265/profile"
+      },
+      "group": "Software Development",
+      "title": "30天刷完leetcoode75",
+      "description": "因為平常都只會寫題目但不會表達，所以想利用這次機會來練習leetcode75並訓練自身對於演算法的表達能力",
+      "team": null,
+      "signupDate": "2026/09/14T21:13:34+08:00",
+      "lastUpdated": "2026-09-17T18:02:50+08:00",
+      "dayCount": 3,
+      "articleCount": 3,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410502,
+          "day": 1,
+          "title": "C++ 演算法練習 Day1｜1768, 1071, 1431 題解與思路分享",
+          "url": "https://ithelp.ithome.com.tw/articles/10410502",
+          "publishedAt": "2026-09-15T14:11:44+08:00"
+        },
+        {
+          "id": 10410941,
+          "day": 2,
+          "title": "C++ 演算法練習 Day2｜605,345,151 題解與思路分享",
+          "url": "https://ithelp.ithome.com.tw/articles/10410941",
+          "publishedAt": "2026-09-16T13:41:55+08:00"
+        },
+        {
+          "id": 10412534,
+          "day": 3,
+          "title": "C++ 演算法練習 Day3｜238, 334, 443 題解與思路分享",
+          "url": "https://ithelp.ithome.com.tw/articles/10412534",
+          "publishedAt": "2026-09-17T17:29:57+08:00"
+        }
+      ]
+    },
+    {
       "id": 9722,
       "user": {
         "id": 20183738,
@@ -87703,7 +87823,7 @@
       "description": "隨著 ChatGPT、生成式 AI 與大型語言模型（LLM）快速普及，LLM 已逐漸應用於客服、企業知識管理、程式開發及各種 AI Agent 應用。然而，LLM 在帶來便利的同時，也產生了不同於傳統 Web 應用程式的新型態資安風險。\r\n本系列將以 OWASP Top 10 for LLM Applications 為主要架構，循序介紹 LLM 應用程式常見的資安風險，內容將以淺顯易懂的方式說明各項風險的基本概念、可能發生的情境、潛在影響，以及與傳統資安問題的差異，並搭配簡單案例協助理解，建立對 LLM Security 的基本認識。",
       "team": null,
       "signupDate": "2026/09/14T21:57:12+08:00",
-      "lastUpdated": "2026-09-17T16:03:25+08:00",
+      "lastUpdated": "2026-09-17T18:02:51+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -87743,7 +87863,7 @@
       "description": "我是一名 QA。這 30 天，我要替公司做一個能回答「這張票要測什麼、這個改動影響哪裡、當初為什麼這樣決定」的知識庫——零 API 成本、資料不出公司、跑在一台沒有獨顯的筆電上。\r\n\r\n但這個系列真正想講的，是過程中我一直撞到的同一件事：AI 產出的東西不是「會胡說八道」那麼簡單，它是大部分正確、少部分錯得很有說服力。\r\n\r\n 那少部分附了 PR 編號、檔名和條列格式，看起來完全像真的。我把 AI 統整的 18 張卡拿去逐項對照程式碼，抓到 8 處錯誤；其中一條甚至一路走到新人手上，變成一份「假的測試失敗」。\r\n\r\n難的從來不是讓 AI 回答問題，是怎麼知道它答錯了。而這正好是 QA 每天",
       "team": null,
       "signupDate": "2026/09/14T22:03:42+08:00",
-      "lastUpdated": "2026-09-17T15:49:46+08:00",
+      "lastUpdated": "2026-09-17T18:02:51+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -87783,7 +87903,7 @@
       "description": "自從有了 ai 之後，我也開始想自己完成一個屬於自己的小作品，而這篇 30 天文章就是我用 AI 把同一個番茄鐘需求做了四次，並砍了三次的故事。\r\n\r\n這 30 天我會用找到的 prompt 原文、152 個 commit 和一份 623 行的交接文件，還原我怎麼跟 AI 溝通、它怎麼做歪、我怎麼救回來——順便面對一個寫文前才發現的問題：時間間隔太久，開發期的對話紀錄都被自動刪光了啦！",
       "team": null,
       "signupDate": "2026/09/14T22:10:10+08:00",
-      "lastUpdated": "2026-09-17T16:03:26+08:00",
+      "lastUpdated": "2026-09-17T18:02:51+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -87823,7 +87943,7 @@
       "description": "我是文科背景、正準備轉職的軟體小白。這系列用同一個「代購 App」案例貫穿 30 天，以 Top-down 學習法先建立系統設計的宏觀視角，再逐步深入細節。內容分五階段：界定範疇與約束、資料流與狀態管理、模組化與 SOLID 原則、測試與效能、系統演進與回顧。每篇都誠實記錄我卡在哪裡、怎麼想通的。如果你也是非本科、正在自學路上，這系列是寫給你們的！",
       "team": null,
       "signupDate": "2026/09/14T22:12:02+08:00",
-      "lastUpdated": "2026-09-17T16:03:26+08:00",
+      "lastUpdated": "2026-09-17T18:02:51+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -87852,46 +87972,6 @@
       ]
     },
     {
-      "id": 9733,
-      "user": {
-        "id": 20059208,
-        "name": "資安修行者",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20059208/profile"
-      },
-      "group": "佛心分享-IT 人自學之術",
-      "title": "分享CRISC(風險與資訊系統控制認證)自學及對工作上的心得",
-      "description": "邊工作、邊學習，自學準備ISACA CRISC(風險與資訊系統控制認證)，常會想該證照對自身的幫助為何？及旁人可能會詢該知識的價值。故起動念分享CRISC(風險與資訊系統控制認證)自學及對工作上的心得。",
-      "team": null,
-      "signupDate": "2026/09/14T22:17:29+08:00",
-      "lastUpdated": "2026-09-17T16:03:26+08:00",
-      "dayCount": 3,
-      "articleCount": 3,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410553,
-          "day": 1,
-          "title": "風險管理該證照怎麼開始的？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410553",
-          "publishedAt": "2026-09-14T22:33:03+08:00"
-        },
-        {
-          "id": 10411028,
-          "day": 2,
-          "title": "ISACA CRISC證照的起手式",
-          "url": "https://ithelp.ithome.com.tw/articles/10411028",
-          "publishedAt": "2026-09-15T17:21:22+08:00"
-        },
-        {
-          "id": 10412086,
-          "day": 3,
-          "title": "談治理二字-(包含組織與風險治理)",
-          "url": "https://ithelp.ithome.com.tw/articles/10412086",
-          "publishedAt": "2026-09-16T22:45:56+08:00"
-        }
-      ]
-    },
-    {
       "id": 9734,
       "user": {
         "id": 20128319,
@@ -87903,7 +87983,7 @@
       "description": "當 AI 詠唱一下就能做出第一版，為啥還需要軟體工程？\r\n軟體工程到底過時了沒，Software Engineer 為啥還沒失業？\r\n這 30 天，想從 Coding Agent 的角度出發，研究它「目前」的限制，搭配 reference 與實際例子，探索軟體工程在 AI 時代下扮演的角色。學會這些思考方式，能不能讓我們與 AI 合作得更順利，也更能掌握自己做出來的東西？",
       "team": null,
       "signupDate": "2026/09/14T22:21:42+08:00",
-      "lastUpdated": "2026-09-17T16:03:26+08:00",
+      "lastUpdated": "2026-09-17T18:02:52+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -87943,7 +88023,7 @@
       "description": "Vibe Coding 能做些什麼，做到之後呢？\r\n\r\n這個夏天，我用AI 做了4個App。\r\n\r\n4個都經過了需求探索，競品研究，產品定位分析。\r\n\r\n每輪做完也都歷經上版，寫家規，code review。\r\n\r\n最後也逐一上架了App store。\r\n\r\n又歷經了推廣，修改，優化。\r\n\r\n不但學會了做，修，推。\r\n\r\n還加碼設了推廣儀表板，以及短片推廣。\r\n\r\n一大半都是我發包過但萬萬沒想過自己做的工作。\r\n\r\n經歷這一切，我的心得是：\r\n\r\nAI沒有消滅專業，只是讓專業的形狀改變。",
       "team": null,
       "signupDate": "2026/09/14T22:57:25+08:00",
-      "lastUpdated": "2026-09-17T16:03:27+08:00",
+      "lastUpdated": "2026-09-17T18:02:52+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -87983,7 +88063,7 @@
       "description": "當 AI 越來越會寫程式，我開始思考：身為前端工程師，自己還需要練習哪些能力？\r\n這 30 天想記錄學習系統分析與設計（SA／SD）的過程。\r\n從「加個按鈕」這樣的小需求出發，練習拆解問題、釐清狀態與資料責任，再把想法整理成 Prompt，以及能重複使用的 AI Skill。\r\n這是一份邊學邊寫的筆記，會透過前端情境與小型電商案例，留下自己的理解、疑問和修正。\r\n希望在與 AI 協作的過程中，慢慢養成先想清楚、再動手寫的習慣。",
       "team": null,
       "signupDate": "2026/09/14T22:58:34+08:00",
-      "lastUpdated": "2026-09-17T16:03:27+08:00",
+      "lastUpdated": "2026-09-17T18:02:52+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -88023,7 +88103,7 @@
       "description": "健康和醫療是人們生活中很重要的一環，本次挑戰我希望能以「家庭照護的全場景需求」為核心，運用前端技術（HTML/CSS/JS），打造零負擔、具備本地記憶功能的網頁工具箱。從兒童緊急用藥驗算、慢性病與多重用藥的時間表整理、眼藥水與特殊藥品開瓶效期追蹤，到日常生理指標計算，一站式解決全家人的健康管理痛點，讓藥物安全與健康維護變得簡單、直覺且安心。",
       "team": null,
       "signupDate": "2026/09/14T23:12:34+08:00",
-      "lastUpdated": "2026-09-17T16:03:27+08:00",
+      "lastUpdated": "2026-09-17T18:02:53+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -88063,7 +88143,7 @@
       "description": "現在這秒鐘，各家 AI 正在悄悄偷看你網站資料，而你連個影子都沒看見。\r\n\r\nAI時代的遊戲規則早就變了。以前消費者還會慢慢滑 Google，現在直接轉頭問 ChatGPT 或 Claude「請推薦哪家」。只要 AI 吐出來的名單裡沒有你，這筆生意就直接掰了。最慘的是，以前 Google 至少還有後台數據可以盯，AI 卻是吃乾抹淨，完全不留痕跡給你。\r\n\r\n這 30 天直接實戰：前半場教你從網站現成的紀錄裡，把 AI 爬蟲的蛛絲馬跡挖出來；後半場則是把業界瘋傳的各種「優化玄學」親自測一次，來區辨什麼是行得通還是白忙一場。讓你的網站可以被 AI 看到，讓你的客戶可以透過 AI 推薦找到你！",
       "team": null,
       "signupDate": "2026/09/14T23:24:09+08:00",
-      "lastUpdated": "2026-09-17T16:03:27+08:00",
+      "lastUpdated": "2026-09-17T18:02:53+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -88208,6 +88288,39 @@
           "title": "第一次登入就迷路：四層權限隔離+角色權限細化",
           "url": "https://ithelp.ithome.com.tw/articles/10412303",
           "publishedAt": "2026-09-17T05:00:57+08:00"
+        }
+      ]
+    },
+    {
+      "id": 9757,
+      "user": {
+        "id": 20184161,
+        "name": "ling__",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20184161/profile"
+      },
+      "group": "Software Development",
+      "title": "從零開始學程式語言：Java 新手修煉記",
+      "description": "身為非資工相關科系的大學生，在兩個月前因緣際會之下開始對寫程式感興趣，再稍稍體驗之後，發現自己對程式設計有著意外的好奇心，因此，想趁著這次機會更深入了解這個對我而言既陌生又充滿挑戰的領域。\r\n於是乎，決定從 Java 開始，利用這次 IT 鐵人賽的機會，給自己一個從零開始學習的挑戰，希望透過每天的練習與紀錄，一步一步累積基礎，從看得懂程式碼，到能夠自己寫出程式，也看看自己在 30 天後究竟能走到哪裡。",
+      "team": null,
+      "signupDate": "2026/09/14T23:59:29+08:00",
+      "lastUpdated": "2026-09-17T17:35:09+08:00",
+      "dayCount": 3,
+      "articleCount": 2,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410629,
+          "day": 1,
+          "title": "Day 1熟悉 VSCode複習 Java 基礎語法",
+          "url": "https://ithelp.ithome.com.tw/articles/10410629",
+          "publishedAt": "2026-09-15T13:37:49+08:00"
+        },
+        {
+          "id": 10412138,
+          "day": 2,
+          "title": "Day 2：變數資料型別與基礎運算（1）",
+          "url": "https://ithelp.ithome.com.tw/articles/10412138",
+          "publishedAt": "2026-09-16T23:53:28+08:00"
         }
       ]
     },
@@ -88823,7 +88936,7 @@
       "description": "從零開始學習 Gumloop，30 天一步步掌握 Workflow、AI 自動化、API 串接、MCP、Skills 與 AI Agent，並透過 Gmail、Google Sheets、網頁資料擷取、文件分析、競品研究等實戰案例，理解如何把重複工作交給 AI。最後將從企業需求出發，設計一套可實際落地的 AI 數位員工，完整體驗從流程自動化到 Agentic AI 的應用方式。",
       "team": null,
       "signupDate": "2026/09/15T12:11:58+08:00",
-      "lastUpdated": "2026-09-17T17:04:18+08:00",
+      "lastUpdated": "2026-09-17T18:12:43+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -88903,7 +89016,7 @@
       "description": "市面上充滿教你如何跟 AI 聊天、寫寫小腳本的教學，但當企業真正要把 AI 導入業務、甚至讓 AI 幫忙處理客戶資料與自動化決策時，往往會面臨殘酷的考驗：資料會不會外洩？AI 會不會被惡意誘導？成本是不是會無預警暴增？\r\n\r\n過去在系統開發、AI、自動化與資安領域的實戰經驗讓我看過太多血淋淋的風險，這 30 天的鐵人賽，我們不談空泛的科技浪潮，而是要帶領大家拆解如何把 AI 從「好玩的玩具」變成「安全、高效且會賺錢的企業等級工具」。",
       "team": null,
       "signupDate": "2026/09/15T13:23:48+08:00",
-      "lastUpdated": "2026-09-17T16:58:00+08:00",
+      "lastUpdated": "2026-09-17T18:12:44+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -88928,6 +89041,39 @@
           "title": "AI 模型的選型與定位｜建立分級推論架構",
           "url": "https://ithelp.ithome.com.tw/articles/10412500",
           "publishedAt": "2026-09-17T14:17:35+08:00"
+        }
+      ]
+    },
+    {
+      "id": 9806,
+      "user": {
+        "id": 20162377,
+        "name": "鯊鯊",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20162377/profile"
+      },
+      "group": "Security",
+      "title": "從零開始の Binary CTF：30 天系統化學習 Rev & Pwn",
+      "description": "在 CTF 的旅程中，深知自己並沒有很好的學習 binary 相關的知識，因此想利用這 30 天來好好複習，同時也分享 Rev & Pwn 領域中所需的相關知識，並將其記錄下來供其他人參考。",
+      "team": null,
+      "signupDate": "2026/09/15T14:27:43+08:00",
+      "lastUpdated": "2026-09-17T17:35:16+08:00",
+      "dayCount": 3,
+      "articleCount": 2,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410946,
+          "day": 1,
+          "title": "day01. 前言",
+          "url": "https://ithelp.ithome.com.tw/articles/10410946",
+          "publishedAt": "2026-09-15T14:56:55+08:00"
+        },
+        {
+          "id": 10411857,
+          "day": 2,
+          "title": "day02. 從 C Code 到 Binary",
+          "url": "https://ithelp.ithome.com.tw/articles/10411857",
+          "publishedAt": "2026-09-16T21:07:42+08:00"
         }
       ]
     },
@@ -89052,6 +89198,46 @@
       ]
     },
     {
+      "id": 9811,
+      "user": {
+        "id": 20183863,
+        "name": "cc225600",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20183863/profile"
+      },
+      "group": "Kubernetes",
+      "title": "從零學 K8s｜30 天核心概念 × 實作，新手也能真正掌握 Kubernetes",
+      "description": "這個系列記錄我從零開始學習 Kubernetes 的歷程，除了建立核心觀念，更希望透過實作動手跑，讓每個概念都能真正吸收。\r\n30 天內容涵蓋 K8s 核心架構、Pod、Deployment、Service、Ingress 等基礎資源，逐步深入 ConfigMap、Secret、StatefulSet、RBAC、HPA 等進階配置，再到 Helm 打包、多環境部署、CI/CD 與 GitOps 實戰，最後透過 Prometheus、Grafana、Loki 建立完整的監控與日誌系統。",
+      "team": null,
+      "signupDate": "2026/09/15T14:58:28+08:00",
+      "lastUpdated": "2026-09-17T17:35:17+08:00",
+      "dayCount": 3,
+      "articleCount": 3,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410968,
+          "day": 1,
+          "title": "Day 01｜前言",
+          "url": "https://ithelp.ithome.com.tw/articles/10410968",
+          "publishedAt": "2026-09-15T17:30:19+08:00"
+        },
+        {
+          "id": 10411035,
+          "day": 2,
+          "title": "Day 02｜為什麼需要 Kubernetes ?",
+          "url": "https://ithelp.ithome.com.tw/articles/10411035",
+          "publishedAt": "2026-09-16T17:38:11+08:00"
+        },
+        {
+          "id": 10411865,
+          "day": 3,
+          "title": "Day 03｜Kubernetes 架構全貌",
+          "url": "https://ithelp.ithome.com.tw/articles/10411865",
+          "publishedAt": "2026-09-17T17:28:19+08:00"
+        }
+      ]
+    },
+    {
       "id": 9814,
       "user": {
         "id": 20178840,
@@ -89063,7 +89249,7 @@
       "description": "臨床流程結合現代軟體架構本身就是高門檻知識。多數工程師不懂醫療常規（如醫囑流程、病人識別機制、隱私規範），而醫護人員不具備系統實作能力。若能把 FHIR Resource（如 Patient、Observation、MedicationRequest）如何對接到行動裝置或 Web 介面的資料流講清楚，系列文會直接成為業界罕見的實戰手冊。\r\n 架構：\r\n 前 10 天： 醫療資料標準痛點、HL7 與 FHIR 架構、關鍵 Resources 剖析。\r\n 中 10 天： 後端 FHIR API 實作、病人資料關聯與索引機制、資料驗證。\r\n 後 10 天： 整合前端/行動端臨床工作流程（如三讀五對用",
       "team": null,
       "signupDate": "2026/09/15T15:25:55+08:00",
-      "lastUpdated": "2026-09-17T16:58:02+08:00",
+      "lastUpdated": "2026-09-17T18:12:46+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -89183,7 +89369,7 @@
       "description": "看到覺得有用的文章，常常沒空馬上讀，就先存進 LINE Keep，但之後很難找。想把學到的東西發到 IG，又卡在不會設計圖卡。\r\n\r\n後來我把這兩件事交給 AI：在 LINE 丟一個網址，AI 會分類、下標籤、寫摘要，存進 Notion；把想 PO 的內容交給 Agent Skill，它會改寫成輪播腳本、算好圖卡，我確認後就直接發到 IG。\r\n\r\n以前找一篇存過的文章要一個一個連結打開確認，現在在 LINE 打個關鍵字就出來；以前不知道怎麼開始做 IG 輪播圖卡，現在丟出主題和內容，剩下的就是看預覽、按確認。",
       "team": null,
       "signupDate": "2026/09/15T17:56:43+08:00",
-      "lastUpdated": "2026-09-17T16:58:05+08:00",
+      "lastUpdated": "2026-09-17T18:12:49+08:00",
       "dayCount": 3,
       "articleCount": 3,
       "subscriptions": 0,
@@ -89703,9 +89889,9 @@
       "description": "一個維護了九年的 Android 外勤 App：Java 與 Kotlin 各半、一個一萬兩千行的 Activity、沒有 DI、沒有測試。這個系列記錄我用 Jetpack Compose 多模組架構把它重寫的 30 天：每天一個真實的架構決定，寫下選項、代價與理由，並附上去識別化的程式碼。主題涵蓋 DI、狀態管理、導航、藍牙硬體抽象、離線上傳佇列，以及可跨產品覆用的 core 模組設計。",
       "team": null,
       "signupDate": "2026/09/15T21:22:55+08:00",
-      "lastUpdated": "2026-09-17T16:37:06+08:00",
+      "lastUpdated": "2026-09-17T17:49:42+08:00",
       "dayCount": 3,
-      "articleCount": 2,
+      "articleCount": 3,
       "subscriptions": 0,
       "articles": [
         {
@@ -89721,6 +89907,13 @@
           "title": "Day 02｜目標架構總覽：分層模組圖依賴方向",
           "url": "https://ithelp.ithome.com.tw/articles/10411205",
           "publishedAt": "2026-09-16T20:41:52+08:00"
+        },
+        {
+          "id": 10412463,
+          "day": 3,
+          "title": "Day 03｜建置骨架：多模組version catalogconvention plugin，以及 secrets 為什麼不能再進 git",
+          "url": "https://ithelp.ithome.com.tw/articles/10412463",
+          "publishedAt": "2026-09-17T17:04:42+08:00"
         }
       ]
     },
@@ -90897,39 +91090,6 @@
       ]
     },
     {
-      "id": 9408,
-      "user": {
-        "id": 20178747,
-        "name": "youtu",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20178747/profile"
-      },
-      "group": "Vibe Coding",
-      "title": "從 Prompt 到成品：30 天 Vibe Coding 入門與實作",
-      "description": "將以初學者的角度，用 30 天認識近年快速發展的 Vibe Coding 開發方式。內容將從 Vibe Coding 的基本概念開始，介紹 Prompt、Context、AI Coding Agent、MCP 等相關技術，以及 Cursor、Claude Code、Gemini CLI 等常見 AI 開發工具的使用方式。\r\n\r\n除了概念介紹，也會搭配簡單的實際操作，示範如何利用 AI 協助產生程式碼、除錯、重構。\r\n\r\n希望透過 30 天的學習與實作，整理出一套適合初學者的 AI 協作開發入門指南，同時了解 Vibe Coding 能做到什麼、有哪些限制，以及如何更有效地與 AI 一起寫程式。",
-      "team": "nutc imac",
-      "signupDate": "2026/08/29T15:58:51+08:00",
-      "lastUpdated": "2026-09-17T17:24:07+08:00",
-      "dayCount": 2,
-      "articleCount": 2,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10411000,
-          "day": 1,
-          "title": "Day 1｜開賽宣言：從 Prompt 到成品，30 天 Vibe Coding 挑戰開始！",
-          "url": "https://ithelp.ithome.com.tw/articles/10411000",
-          "publishedAt": "2026-09-15T16:25:47+08:00"
-        },
-        {
-          "id": 10411847,
-          "day": 2,
-          "title": "Day 2｜Vibe Coding 是什麼？從寫程式到描述需求",
-          "url": "https://ithelp.ithome.com.tw/articles/10411847",
-          "publishedAt": "2026-09-16T16:39:17+08:00"
-        }
-      ]
-    },
-    {
       "id": 9445,
       "user": {
         "id": 20150978,
@@ -91328,7 +91488,7 @@
       "description": "AI 模型背後的運算，最終都要落到 GPU 上執行。這 30 天將從 CUDA 零基礎出發，透過 GPU coding challenges 實作 Vector Add、Reduction、Matrix Multiplication 等 Kernel，逐步學習 Thread、Block、Warp、Memory Hierarchy、Shared Memory、Coalescing、Tiling 與 Kernel Fusion。除了讓 Kernel 正確執行，也會使用 profiling 與 benchmark 找出效能瓶頸，實際挑戰 LeetGPU、GPU Puzzles 與 GPU MODE，",
       "team": null,
       "signupDate": "2026/09/10T23:51:34+08:00",
-      "lastUpdated": "2026-09-17T16:57:33+08:00",
+      "lastUpdated": "2026-09-17T18:02:33+08:00",
       "dayCount": 2,
       "articleCount": 2,
       "subscriptions": 0,
@@ -91812,39 +91972,6 @@
       ]
     },
     {
-      "id": 9721,
-      "user": {
-        "id": 20184265,
-        "name": "mengbai",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20184265/profile"
-      },
-      "group": "Software Development",
-      "title": "30天刷完leetcoode75",
-      "description": "因為平常都只會寫題目但不會表達，所以想利用這次機會來練習leetcode75並訓練自身對於演算法的表達能力",
-      "team": null,
-      "signupDate": "2026/09/14T21:13:34+08:00",
-      "lastUpdated": "2026-09-17T16:57:49+08:00",
-      "dayCount": 2,
-      "articleCount": 2,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410502,
-          "day": 1,
-          "title": "C++ 演算法練習 Day1｜1768, 1071, 1431 題解與思路分享",
-          "url": "https://ithelp.ithome.com.tw/articles/10410502",
-          "publishedAt": "2026-09-15T14:11:44+08:00"
-        },
-        {
-          "id": 10410941,
-          "day": 2,
-          "title": "C++ 演算法練習 Day2｜605,345,151 題解與思路分享",
-          "url": "https://ithelp.ithome.com.tw/articles/10410941",
-          "publishedAt": "2026-09-16T13:41:55+08:00"
-        }
-      ]
-    },
-    {
       "id": 9726,
       "user": {
         "id": 20184268,
@@ -91889,7 +92016,7 @@
       "description": "這是一份真實的產品開發日誌，記錄我如何與 Claude 協作，從零打造一款結合 MBTI 互動測驗與 21 天成長計畫的 Web App。系列文章涵蓋產品規劃、前端架構、資料模型、付費內容分層、AI 整合、會員與資料安全，到 SEO 與部署維運，完整呈現產品從構想到上線的技術脈絡。\r\n\r\n不同於單純介紹 Claude 功能，這系列聚焦「人與 AI 如何分工」：哪些決策交給 Claude 提案、哪些由開發者把關，並誠實分享踩過的坑與取捨。\r\n\r\n希望透過這 30 天，展示 AI 協作如何真正參與產品從 0 到 1 的完整過程，為想導入 AI 協作的開發者提供具體可參考的實戰紀錄。",
       "team": null,
       "signupDate": "2026/09/14T22:06:24+08:00",
-      "lastUpdated": "2026-09-17T16:03:26+08:00",
+      "lastUpdated": "2026-09-17T18:02:51+08:00",
       "dayCount": 2,
       "articleCount": 2,
       "subscriptions": 0,
@@ -91922,7 +92049,7 @@
       "description": "繼去年亞馬遜熱帶雨林生存日記後，今年除了繼續亞馬遜熱帶雨林之外，使用Serverless 架構設計了 data 的架構，也結合不同儲存資料庫，達成不同的目的！",
       "team": null,
       "signupDate": "2026/09/14T22:51:13+08:00",
-      "lastUpdated": "2026-09-17T16:03:26+08:00",
+      "lastUpdated": "2026-09-17T18:02:52+08:00",
       "dayCount": 2,
       "articleCount": 2,
       "subscriptions": 0,
@@ -91955,7 +92082,7 @@
       "description": "檔案刪掉之後，真的就消失了嗎？電腦關機後，還有哪些資料能被找回來？\r\n當我們開始追這些問題，就已經走進數位鑑識的世界了。數位鑑識，是從裝置中留下的資料與痕跡，去保存、分析並還原發生過的事情。這個系列會從資料儲存、Hex 等基礎開始，再到鑑識映像、記憶體與 Windows 痕跡、RAID、資料復原等等，邊學邊實作，也把過程中遇到的問題記錄下來。",
       "team": null,
       "signupDate": "2026/09/14T23:03:56+08:00",
-      "lastUpdated": "2026-09-17T16:03:27+08:00",
+      "lastUpdated": "2026-09-17T18:02:52+08:00",
       "dayCount": 2,
       "articleCount": 2,
       "subscriptions": 0,
@@ -92138,39 +92265,6 @@
           "title": "Day (一) 我真的分得出釣魚訊息嗎？(前測)",
           "url": "https://ithelp.ithome.com.tw/articles/10411529",
           "publishedAt": "2026-09-16T11:15:22+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9757,
-      "user": {
-        "id": 20184161,
-        "name": "ling__",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20184161/profile"
-      },
-      "group": "Software Development",
-      "title": "從零開始學程式語言：Java 新手修煉記",
-      "description": "身為非資工相關科系的大學生，在兩個月前因緣際會之下開始對寫程式感興趣，再稍稍體驗之後，發現自己對程式設計有著意外的好奇心，因此，想趁著這次機會更深入了解這個對我而言既陌生又充滿挑戰的領域。\r\n於是乎，決定從 Java 開始，利用這次 IT 鐵人賽的機會，給自己一個從零開始學習的挑戰，希望透過每天的練習與紀錄，一步一步累積基礎，從看得懂程式碼，到能夠自己寫出程式，也看看自己在 30 天後究竟能走到哪裡。",
-      "team": null,
-      "signupDate": "2026/09/14T23:59:29+08:00",
-      "lastUpdated": "2026-09-17T17:35:09+08:00",
-      "dayCount": 2,
-      "articleCount": 2,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410629,
-          "day": 1,
-          "title": "Day 1熟悉 VSCode複習 Java 基礎語法",
-          "url": "https://ithelp.ithome.com.tw/articles/10410629",
-          "publishedAt": "2026-09-15T13:37:49+08:00"
-        },
-        {
-          "id": 10412138,
-          "day": 2,
-          "title": "Day 2：變數資料型別與基礎運算（1）",
-          "url": "https://ithelp.ithome.com.tw/articles/10412138",
-          "publishedAt": "2026-09-16T23:53:28+08:00"
         }
       ]
     },
@@ -92948,39 +93042,6 @@
       ]
     },
     {
-      "id": 9806,
-      "user": {
-        "id": 20162377,
-        "name": "鯊鯊",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20162377/profile"
-      },
-      "group": "Security",
-      "title": "從零開始の Binary CTF：30 天系統化學習 Rev & Pwn",
-      "description": "在 CTF 的旅程中，深知自己並沒有很好的學習 binary 相關的知識，因此想利用這 30 天來好好複習，同時也分享 Rev & Pwn 領域中所需的相關知識，並將其記錄下來供其他人參考。",
-      "team": null,
-      "signupDate": "2026/09/15T14:27:43+08:00",
-      "lastUpdated": "2026-09-17T17:35:16+08:00",
-      "dayCount": 2,
-      "articleCount": 2,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410946,
-          "day": 1,
-          "title": "day01. 前言",
-          "url": "https://ithelp.ithome.com.tw/articles/10410946",
-          "publishedAt": "2026-09-15T14:56:55+08:00"
-        },
-        {
-          "id": 10411857,
-          "day": 2,
-          "title": "day02. 從 C Code 到 Binary",
-          "url": "https://ithelp.ithome.com.tw/articles/10411857",
-          "publishedAt": "2026-09-16T21:07:42+08:00"
-        }
-      ]
-    },
-    {
       "id": 9809,
       "user": {
         "id": 20152656,
@@ -93010,46 +93071,6 @@
           "title": "Day 2｜看了這麼多年棒球，我真的看得懂AVGOBP和OPS嗎？",
           "url": "https://ithelp.ithome.com.tw/articles/10411794",
           "publishedAt": "2026-09-16T22:55:14+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9811,
-      "user": {
-        "id": 20183863,
-        "name": "cc225600",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20183863/profile"
-      },
-      "group": "Kubernetes",
-      "title": "從零學 K8s｜30 天核心概念 × 實作，新手也能真正掌握 Kubernetes",
-      "description": "這個系列記錄我從零開始學習 Kubernetes 的歷程，除了建立核心觀念，更希望透過實作動手跑，讓每個概念都能真正吸收。\r\n30 天內容涵蓋 K8s 核心架構、Pod、Deployment、Service、Ingress 等基礎資源，逐步深入 ConfigMap、Secret、StatefulSet、RBAC、HPA 等進階配置，再到 Helm 打包、多環境部署、CI/CD 與 GitOps 實戰，最後透過 Prometheus、Grafana、Loki 建立完整的監控與日誌系統。",
-      "team": null,
-      "signupDate": "2026/09/15T14:58:28+08:00",
-      "lastUpdated": "2026-09-17T17:35:17+08:00",
-      "dayCount": 2,
-      "articleCount": 3,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410968,
-          "day": 1,
-          "title": "Day 01｜前言",
-          "url": "https://ithelp.ithome.com.tw/articles/10410968",
-          "publishedAt": "2026-09-15T17:30:19+08:00"
-        },
-        {
-          "id": 10411035,
-          "day": 2,
-          "title": "Day 02｜為什麼需要 Kubernetes ?",
-          "url": "https://ithelp.ithome.com.tw/articles/10411035",
-          "publishedAt": "2026-09-16T17:38:11+08:00"
-        },
-        {
-          "id": 10411865,
-          "day": 3,
-          "title": "Day 03｜Kubernetes 架構全貌",
-          "url": "https://ithelp.ithome.com.tw/articles/10411865",
-          "publishedAt": "2026-09-17T17:28:19+08:00"
         }
       ]
     },
@@ -93692,7 +93713,7 @@
       "description": "身為一個正在學習資安的新手，想藉著這次鐵人賽實作記錄自己的學習過程。我會用 Docker 快速架設 DVWA 靶機，帶大家一起動手體驗 SQL Injection、XSS 等常見 Web 漏洞，並搭配 OWASP ZAP 自動化工具進行弱點掃描。後半段也會分享原始碼檢測與基礎防禦技巧。",
       "team": null,
       "signupDate": "2026/09/15T21:17:13+08:00",
-      "lastUpdated": "2026-09-17T16:58:08+08:00",
+      "lastUpdated": "2026-09-17T18:12:52+08:00",
       "dayCount": 2,
       "articleCount": 2,
       "subscriptions": 0,
@@ -95507,7 +95528,7 @@
       "description": "帶小孩的日常，永遠有做不完的雜事。平常跟 Coding 打交道的我，想試試看：能不能用 Vibe Coding，替爸媽做一個真正省時間的神隊友？\r\n\r\n我是 DevOps 與 Web 工程師，沒寫過 Swift。這 30 天，我會用 Claude Code 搭配 Xcode，從零開始開發一個育兒 iOS App，從家裡實際遇到的問題出發，一次解決一個。\r\n\r\n過程中碰到哪些技術、踩到哪些坑，就寫哪些。做出來的和還在嘗試的，我都會記錄下來。",
       "team": null,
       "signupDate": "2026/09/15T23:49:36+08:00",
-      "lastUpdated": "2026-09-17T17:11:35+08:00",
+      "lastUpdated": "2026-09-17T18:13:04+08:00",
       "dayCount": 2,
       "articleCount": 2,
       "subscriptions": 0,
@@ -96700,7 +96721,7 @@
       "description": "把我沒學好的前後端技術盡量補好",
       "team": null,
       "signupDate": "2026/09/14T23:25:56+08:00",
-      "lastUpdated": "2026-09-17T16:03:28+08:00",
+      "lastUpdated": "2026-09-17T18:02:53+08:00",
       "dayCount": 1,
       "articleCount": 1,
       "subscriptions": 0,
@@ -98737,23 +98758,21 @@
     "[stale] 9399: RSS unavailable: empty feed with existing articles",
     "[stale] 9504: RSS unavailable: empty feed with existing articles",
     "[stale] 9577: RSS unavailable: empty feed with existing articles",
-    "[stale] 9728: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9728",
-    "[stale] 9729: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9729",
-    "[stale] 9730: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9730",
-    "[stale] 9731: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9731",
-    "[stale] 9732: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9732",
-    "[stale] 9733: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9733",
-    "[stale] 9734: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9734",
-    "[stale] 9735: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9735",
-    "[stale] 9736: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9736",
-    "[stale] 9737: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9737",
-    "[stale] 9738: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9738",
-    "[stale] 9739: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9739",
-    "[stale] 9740: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9740",
-    "[stale] 9741: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9741",
-    "[stale] 9742: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9742",
-    "[stale] 9743: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9743",
-    "[stale] 9745: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9745",
+    "[stale] 9771: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9771",
+    "[stale] 9772: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9772",
+    "[stale] 9773: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9773",
+    "[stale] 9774: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9774",
+    "[stale] 9775: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9775",
+    "[stale] 9776: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9776",
+    "[stale] 9777: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9777",
+    "[stale] 9779: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9779",
+    "[stale] 9780: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9780",
+    "[stale] 9781: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9781",
+    "[stale] 9782: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9782",
+    "[stale] 9783: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9783",
+    "[stale] 9784: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9784",
+    "[stale] 9785: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9785",
+    "[stale] 9786: HTTP 429 for https://ithelp.ithome.com.tw/rss/series/9786",
     "[stale] 9907: RSS unavailable: empty feed with existing articles"
   ]
 }
