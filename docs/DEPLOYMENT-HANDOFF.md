@@ -26,11 +26,12 @@
 > - **刪除 `web/public/_redirects`**：唯一規則 `/_astro/* /404.html 404` 屬 rewrite，Workers `_redirects` 不支援（該行會被忽略）；其目的（對抗 Pages 隱含 SPA fallback）改由 `not_found_handling: "404-page"` 明確取代 — 未命中路徑一律回 404 status + `dist/404.html`。
 > - `web/public/_headers` **原樣保留**：`! Header` detach 與規則合併語意在 Workers 與 Pages 相同（已本地 `wrangler dev` 驗證 `/_astro/*` immutable、`/data/*` max-age=60 無殘留 must-revalidate）。
 > - 後備網址：`ironman-observer-next.pages.dev` → **`ironman-observer-next.happyhacking.workers.dev`**。
-> - **Cutover runbook（2026-09-17 步驟 1–2 已完成並驗證：Worker 已上線 `ironman-observer-next.happyhacking.workers.dev`，部署鏈全綠；剩 3–4）**：
+> - **Cutover runbook — ✅ 全數完成（2026-09-18），Pages → Workers 遷移結案**：
 >   1. ~~建新 API token + `gh secret set CLOUDFLARE_API_TOKEN`~~ ✅ 已完成。**權限踩坑紀錄（2026-09-15 Cloudflare 改版權限模型，見 [Workers roles and permissions](https://developers.cloudflare.com/workers/authorization/workers/)）**：CI token 需 **Account → Workers → Admin（product scope）** 才能建立新 Worker；`Workers Scripts Edit`（= 新模型 `Editor`）查 services 可過、但 `assets-upload-session` 會 10000（Editor 不能 create Worker）。Admin 只在首次建 Worker 時必要 — **建完可降回 Editor**（加固選項）。
 >   2. ~~首次 `wrangler deploy` 自動建立 Worker~~ ✅ run 35218845827 全綠（19m59s），uploaded 19 files，自訂 404/_headers 於線上驗證通過。
->   3. Dashboard → Workers & Pages → `ironman-observer-next`（Worker）→ Settings → Domains & Routes → Add → Custom domain `ithome-ironman-observer.happyhacking.ninja`：dashboard 會偵測 hostname 目前掛在 Pages 專案，確認接管即完成切換（zone 內部路由轉移，由 Cloudflare 處理）。**完成前線上站停在 09-16 02:14Z 的舊 Pages 部署。**
->   4. 線上站驗證後刪除 Pages 專案：`npx wrangler pages project delete ironman-observer-next`。
+>   3. ~~Custom domain 接管~~ ✅ 以本機 `wrangler login` OAuth（scopes 含 workers_routes:write，不需 token）+ `wrangler.jsonc` 暫放 `routes`（custom_domain）完成。**踩坑**：API 路徑遇到 [code 100117]（hostname 有「外部管理」DNS 記錄）— dashboard 接管向導會自動清，API 不會。解法順序：先刪 Pages 專案（`wrangler pages project delete -y`，本為 runbook 最後一步）→ 手動刪 zone 裡 `ithome-ironman-observer` 的舊 DNS 記錄（OAuth 無 dns_records scope，需 dashboard）→ 重跑 deploy 即接管成功（DNS/憑證自動建立）。**接管後 routes 已從 config 移除**（CI token 無 zone 權限），域名由 dashboard/既有 state 管理。
+>   4. ~~刪除 Pages 專案~~ ✅ 已於步驟 3 前完成（見上）。`pages.dev` 後備網址已消失，後備網址 = `ironman-observer-next.happyhacking.workers.dev`。
+>   - 接管後 60 秒內正式域名仍有 Pages 時代的 zone 邊緩快取餘溫（`/data/*` max-age=60 + SWR 300），~5 分鐘內自然收斂；實測 cache-buster 與過期後請求皆回新數據（2026-09-18 06:57 台北 deep-calibrate 版）。
 
 ## 現況速覽
 
