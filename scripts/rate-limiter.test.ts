@@ -270,6 +270,58 @@ describe("createPacedFetcher", () => {
     expect(attempts).toBe(3);
   });
 
+  test("gives 429 an independent retry budget via retries429", async () => {
+    let attempts = 0;
+    const mockFetch = async () => {
+      attempts++;
+      if (attempts <= 3) {
+        return new Response("rate limited", { status: 429 });
+      }
+      return new Response("recovered", { status: 200 });
+    };
+
+    const fetcher = createPacedFetcher({
+      minIntervalMs: 1,
+      retries: 0,
+      retries429: 3,
+      baseRetryDelayMs: 10,
+      fetchFn: mockFetch,
+    });
+
+    const res = await fetcher("https://example.com/429-budget");
+    expect(await res.text()).toBe("recovered");
+    // With retries: 0 a 429 would be terminal on attempt 0; the independent
+    // 429 budget carries the request through to the 4th attempt.
+    expect(attempts).toBe(4);
+  });
+
+  test("caps 429 back-off waits at max429WaitMs even with a Retry-After header", async () => {
+    let attempts = 0;
+    const startTime = Date.now();
+    const mockFetch = async () => {
+      attempts++;
+      if (attempts === 1) {
+        return new Response("rate limited", { status: 429, headers: { "Retry-After": "5" } });
+      }
+      return new Response("ok", { status: 200 });
+    };
+
+    const fetcher = createPacedFetcher({
+      minIntervalMs: 1,
+      retries: 1,
+      max429WaitMs: 80,
+      baseRetryDelayMs: 10,
+      fetchFn: mockFetch,
+    });
+
+    const res = await fetcher("https://example.com/429-cap");
+    expect(await res.text()).toBe("ok");
+    const elapsed = Date.now() - startTime;
+    expect(elapsed).toBeGreaterThanOrEqual(75);
+    // Without the cap the server-directed 5s wait would dominate the runtime.
+    expect(elapsed).toBeLessThan(2000);
+  });
+
   test("retries and recovers when network fetch throws", async () => {
     let attempts = 0;
     const mockFetch = async () => {

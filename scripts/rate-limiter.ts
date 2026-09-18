@@ -37,6 +37,13 @@ export interface PacedFetchOptions {
   // the whole scrape — the GitHub Actions job would sit there and the
   // `data-update-main` concurrency group blocks every later run behind it.
   timeoutMs?: number; // default 15000
+  // 429 gets its own budget: throttle windows routinely outlast generic
+  // retries (ithelp bursts lasted past 3x 5/10/20s during the 2026 race),
+  // and a terminal 429 costs a stale series for the cycle.
+  retries429?: number; // default: same as retries
+  // Cap per-attempt 429 back-off (header-provided or computed) so a single
+  // request cannot stall a CI-bounded run indefinitely. 0 disables the cap.
+  max429WaitMs?: number; // default 60_000
   // Structural signature, not `typeof fetch`: the implementation only ever calls
   // (input, init) => Promise<Response>, and pinning it to the platform `fetch`
   // type forces every test double to carry runtime-specific extras (Bun's
@@ -117,6 +124,8 @@ export function createPacedFetcher(options?: PacedFetchOptions): PacedFetcher {
   const concurrency = Math.max(1, options?.concurrency ?? envConcurrency ?? 1);
   const minIntervalMs = Math.max(0, options?.minIntervalMs ?? envMinInterval ?? 1000);
   const defaultRetries = Math.max(0, options?.retries ?? 3);
+  const retries429 = Math.max(0, options?.retries429 ?? defaultRetries);
+  const max429WaitMs = Math.max(0, options?.max429WaitMs ?? 60_000);
   const baseRetryDelayMs = Math.max(0, options?.baseRetryDelayMs ?? 5000);
   const timeoutMs = Math.max(0, options?.timeoutMs ?? 15_000);
   const fetchFn = options?.fetchFn ?? globalThis.fetch;
@@ -180,7 +189,7 @@ export function createPacedFetcher(options?: PacedFetchOptions): PacedFetcher {
     const retries = overrides?.retries === undefined ? defaultRetries : Math.max(0, overrides.retries);
     await acquireConcurrencySlot();
     try {
-      for (let attempt = 0; attempt <= retries; attempt++) {
+      for (let attempt = 0; attempt <= Math.max(retries, retries429); attempt++) {
         await acquireDispatchSlot();
 
         let res: Response;
@@ -199,14 +208,18 @@ export function createPacedFetcher(options?: PacedFetchOptions): PacedFetcher {
         }
 
         if (res.status === 429 || (res.status >= 500 && res.status <= 599)) {
-          if (attempt < retries) {
+          const budget = res.status === 429 ? retries429 : retries;
+          if (attempt < budget) {
             const retryAfterHeader = res.headers?.get("retry-after") ?? null;
-            const waitMs = parseRetryAfter(retryAfterHeader, attempt, baseRetryDelayMs);
+            let waitMs = parseRetryAfter(retryAfterHeader, attempt, baseRetryDelayMs);
+            if (res.status === 429 && max429WaitMs > 0 && waitMs > max429WaitMs) {
+              waitMs = max429WaitMs;
+            }
             // Visible in CI logs: without this, intermediate 429/5xx retries are
             // silent (only retry-exhaustion throws), so throttling pressure —
             // the main driver of run-time growth — stays invisible.
             console.warn(
-              `[paced-fetch] HTTP ${res.status} on attempt ${attempt + 1}/${retries + 1}; pausing all dispatch ${waitMs}ms: ${getUrlString(input)}`,
+              `[paced-fetch] HTTP ${res.status} on attempt ${attempt + 1}/${budget + 1}; pausing all dispatch ${waitMs}ms: ${getUrlString(input)}`,
             );
             pauseUntil = Math.max(pauseUntil, Date.now() + waitMs);
             continue;

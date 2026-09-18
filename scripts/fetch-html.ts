@@ -41,7 +41,12 @@ export function createPacedHtmlFetcher(opts?: PacedFetchOptions): HtmlFetcher {
   };
 }
 
+// The scrape fetcher: half the dispatch ceiling (300ms) smooths post-back-off
+// bursts, and a dedicated 429 budget (5 retries, waits capped at 60s by the
+// limiter) outlasts ithelp's multi-minute throttle windows instead of marking
+// series stale for the cycle.
 export const fetchHtml: HtmlFetcher = createPacedHtmlFetcher({
   concurrency: 2,
-  minIntervalMs: 150,
+  minIntervalMs: 300,
+  retries429: 5,
 });
