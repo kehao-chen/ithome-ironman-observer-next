@@ -202,6 +202,12 @@ export function createPacedFetcher(options?: PacedFetchOptions): PacedFetcher {
           if (attempt < retries) {
             const retryAfterHeader = res.headers?.get("retry-after") ?? null;
             const waitMs = parseRetryAfter(retryAfterHeader, attempt, baseRetryDelayMs);
+            // Visible in CI logs: without this, intermediate 429/5xx retries are
+            // silent (only retry-exhaustion throws), so throttling pressure —
+            // the main driver of run-time growth — stays invisible.
+            console.warn(
+              `[paced-fetch] HTTP ${res.status} on attempt ${attempt + 1}/${retries + 1}; pausing all dispatch ${waitMs}ms: ${getUrlString(input)}`,
+            );
             pauseUntil = Math.max(pauseUntil, Date.now() + waitMs);
             continue;
           }

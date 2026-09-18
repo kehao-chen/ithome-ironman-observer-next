@@ -15,9 +15,12 @@ permissions:
 jobs:
   calibrate:
     runs-on: ubuntu-latest
-    # A full calibration is slower than the incremental run but still ~5 min;
-    # bounded so a hung fetch cannot hold the shared concurrency group for 6h.
-    timeout-minutes: 30
+    # A full calibration is slower than the incremental run (last full run:
+    # 24m13s) and pays the same 429 back-off chains; 45min leaves headroom
+    # without letting a hung fetch hold the shared concurrency group for
+    # GitHub's 6h default.
+    timeout-minutes: 45
+
     steps:
       - uses: actions/checkout@v5
         with:

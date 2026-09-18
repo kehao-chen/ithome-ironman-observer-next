@@ -18,7 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     # Bounded so a hung scrape cannot hold the `data-update-main` concurrency
     # group for GitHub's 6h default and stall every later run behind it.
-    timeout-minutes: 20
+    # 30min (not 20): with 929 series the scrape legitimately runs 13-20min,
+    # and peak-hour 429 back-off (5/10/20s chains) pushes past 20 — that
+    # produced the "cancelled at 20m20s" runs, i.e. lost update cycles.
+    timeout-minutes: 30
     steps:
       # Full history so `git pull --rebase` can always find a merge base.
       - uses: actions/checkout@v5
