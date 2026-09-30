@@ -46,15 +46,17 @@ describe("loadFamousAuthors", () => {
     expect(kao!.name).toBe("高見龍");
   });
 
-  test("exact-set：完整 14 位名人資料格式與 ID 集合驗證", () => {
+  test("exact-set：完整 21 位名人資料格式與 ID 集合驗證", () => {
     const expectedIds = new Set([
       20065770, 20040221, 20083608, 20109516,
       20161809, 20120030, 20133765, 20104930,
       20046160, 20058745, 20119486,
       20107197, 20105602, 20129163,
+      20102562, 20108446, 20120682, 20084263,
+      20065818, 20121643, 20151510,
     ]);
     const authors = loadFamousAuthors();
-    expect(authors.length).toBe(14);
+    expect(authors.length).toBe(21);
     expect(new Set(authors.map((a) => a.id))).toEqual(expectedIds);
 
     for (const author of authors) {
