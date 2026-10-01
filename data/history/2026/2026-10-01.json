@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-10-01 07:27:54+08:00",
+  "updatedAt": "2026-10-01 08:04:31+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -89822,6 +89822,144 @@
       ]
     },
     {
+      "id": 9692,
+      "user": {
+        "id": 20184230,
+        "name": "ashleylin1007",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20184230/profile"
+      },
+      "group": "Software Development",
+      "title": "30 天把舊 ERP 整合成現代微服務平台：架構治理與工程實作雙軌實戰",
+      "description": "舊 ERP 還能跑，為什麼還要動它？本系列以一家製造業的匿名化案例，記錄把 SOAP 型 ERP 逐步整合成現代微服務平台的 30 天決策過程。\r\n\r\n每篇固定分「架構師視角」與「工程師視角」兩層：先講這個設計降低什麼風險，再講程式碼怎麼落地、怎麼驗證、踩過哪些坑。不展示完美架構，只記錄真實限制下的取捨。適合正在處理 Legacy 系統、API 整合與治理要求的架構師、資深工程師與技術主管。",
+      "team": null,
+      "signupDate": "2026/09/14T13:19:55+08:00",
+      "lastUpdated": "2026-10-01T07:26:28+08:00",
+      "dayCount": 18,
+      "articleCount": 17,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410285,
+          "day": 1,
+          "title": "Day 01｜ERP 明明還能用，為什麼還需要現代化平台？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410285",
+          "publishedAt": "2026-09-14T14:05:16+08:00"
+        },
+        {
+          "id": 10410324,
+          "day": 2,
+          "title": "Day 02｜ERP 現代化的策略矩陣：別從工具清單開始",
+          "url": "https://ithelp.ithome.com.tw/articles/10410324",
+          "publishedAt": "2026-09-15T07:17:11+08:00"
+        },
+        {
+          "id": 10410406,
+          "day": 3,
+          "title": "Day 03｜從系統很難改走向可量測的成功指標",
+          "url": "https://ithelp.ithome.com.tw/articles/10410406",
+          "publishedAt": "2026-09-16T08:11:39+08:00"
+        },
+        {
+          "id": 10410452,
+          "day": 4,
+          "title": "Day 04｜漸進式現代化，還是一次重建 ERP？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410452",
+          "publishedAt": "2026-09-17T07:49:55+08:00"
+        },
+        {
+          "id": 10410701,
+          "day": 5,
+          "title": "Day 05｜微服務不是目標：模組化單體與混合架構怎麼選？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410701",
+          "publishedAt": "2026-09-18T07:48:18+08:00"
+        },
+        {
+          "id": 10410702,
+          "day": 6,
+          "title": "Day 06｜現代化平台總體藍圖",
+          "url": "https://ithelp.ithome.com.tw/articles/10410702",
+          "publishedAt": "2026-09-19T08:58:59+08:00"
+        },
+        {
+          "id": 10410703,
+          "day": 7,
+          "title": "Day 07｜服務邊界怎麼拆：依業務能力，不依技術分層",
+          "url": "https://ithelp.ithome.com.tw/articles/10410703",
+          "publishedAt": "2026-09-20T08:22:40+08:00"
+        },
+        {
+          "id": 10410717,
+          "day": 8,
+          "title": "Day 08｜資料所有權：每個服務都能查資料庫，還算微服務嗎？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410717",
+          "publishedAt": "2026-09-21T11:10:45+08:00"
+        },
+        {
+          "id": 10410770,
+          "day": 9,
+          "title": "Day 09｜Gateway：統一入口，也是治理控制點",
+          "url": "https://ithelp.ithome.com.tw/articles/10410770",
+          "publishedAt": "2026-09-22T07:36:06+08:00"
+        },
+        {
+          "id": 10410778,
+          "day": 10,
+          "title": "Day 10｜Spring Cloud Gateway：RoutePredicateFilter 如何分工",
+          "url": "https://ithelp.ithome.com.tw/articles/10410778",
+          "publishedAt": "2026-09-23T07:34:25+08:00"
+        },
+        {
+          "id": 10411105,
+          "day": 11,
+          "title": "Day 11｜KeycloakOAuth 2.0OIDC 與 JWT：別再把登入和授權混在一起",
+          "url": "https://ithelp.ithome.com.tw/articles/10411105",
+          "publishedAt": "2026-09-24T07:33:58+08:00"
+        },
+        {
+          "id": 10411291,
+          "day": 12,
+          "title": "Day 12｜RBAC 還不夠：把角色資源與資料範圍分開",
+          "url": "https://ithelp.ithome.com.tw/articles/10411291",
+          "publishedAt": "2026-09-25T07:50:21+08:00"
+        },
+        {
+          "id": 10411311,
+          "day": 13,
+          "title": "Day 13｜ERP SOAP 前為什麼需要 Adapter？",
+          "url": "https://ithelp.ithome.com.tw/articles/10411311",
+          "publishedAt": "2026-09-26T08:09:31+08:00"
+        },
+        {
+          "id": 10414217,
+          "day": 14,
+          "title": "Day 14｜Adapter Service 設計：別讓隔離層變成第二套 ERP",
+          "url": "https://ithelp.ithome.com.tw/articles/10414217",
+          "publishedAt": "2026-09-27T07:39:48+08:00"
+        },
+        {
+          "id": 10414292,
+          "day": 15,
+          "title": "Day 15｜REST 與 SOAP 轉換：不只是 XML 改成 JSON",
+          "url": "https://ithelp.ithome.com.tw/articles/10414292",
+          "publishedAt": "2026-09-28T08:48:17+08:00"
+        },
+        {
+          "id": 10414887,
+          "day": 16,
+          "title": "Day 16｜condition 白名單：查詢保有彈性，呼叫端仍不能傳 SQL",
+          "url": "https://ithelp.ithome.com.tw/articles/10414887",
+          "publishedAt": "2026-09-29T08:17:19+08:00"
+        },
+        {
+          "id": 10415831,
+          "day": 17,
+          "title": "Day 17｜REST 還是 MQ？先問業務是否需要立即答案",
+          "url": "https://ithelp.ithome.com.tw/articles/10415831",
+          "publishedAt": "2026-09-30T07:30:23+08:00"
+        }
+      ]
+    },
+    {
       "id": 9722,
       "user": {
         "id": 20183738,
@@ -93084,6 +93222,137 @@
       ]
     },
     {
+      "id": 9566,
+      "user": {
+        "id": 20184107,
+        "name": "frog9527",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20184107/profile"
+      },
+      "group": "Security",
+      "title": "從桃子園灘頭到CySA+",
+      "description": "我曾在海上駕駛著橡皮艇搶灘，如今身在資訊業，考了CySA+，準備好要搶上資安浪潮的灘頭。\r\n在這裡我會分享我的職涯、人生經驗以及我如何備考CySA+的心得。\r\n也許技術含量不高，但還是想分享給在這迷途中徬徨的人們，我走過的路以及一路上接受的善意。",
+      "team": "飛飛的資安大圈圈",
+      "signupDate": "2026/09/09T19:32:12+08:00",
+      "lastUpdated": "2026-10-01T07:25:47+08:00",
+      "dayCount": 17,
+      "articleCount": 16,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10409097,
+          "day": 1,
+          "title": "Day01｜從軍官到SI工程師，最後走向CySA+",
+          "url": "https://ithelp.ithome.com.tw/articles/10409097",
+          "publishedAt": "2026-09-15T09:13:20+08:00"
+        },
+        {
+          "id": 10411566,
+          "day": 2,
+          "title": "Day02｜工欲善其事，必先利其器",
+          "url": "https://ithelp.ithome.com.tw/articles/10411566",
+          "publishedAt": "2026-09-16T08:03:10+08:00"
+        },
+        {
+          "id": 10412369,
+          "day": 3,
+          "title": "Day03｜封包裡面藏著什麼?",
+          "url": "https://ithelp.ithome.com.tw/articles/10412369",
+          "publishedAt": "2026-09-17T09:27:41+08:00"
+        },
+        {
+          "id": 10412899,
+          "day": 4,
+          "title": "Day04｜Passive 還是 Active",
+          "url": "https://ithelp.ithome.com.tw/articles/10412899",
+          "publishedAt": "2026-09-18T00:03:10+08:00"
+        },
+        {
+          "id": 10413692,
+          "day": 5,
+          "title": "# Day05｜Port到底怎麼看",
+          "url": "https://ithelp.ithome.com.tw/articles/10413692",
+          "publishedAt": "2026-09-19T13:17:02+08:00"
+        },
+        {
+          "id": 10414322,
+          "day": 6,
+          "title": "Day06｜Process也有Parent",
+          "url": "https://ithelp.ithome.com.tw/articles/10414322",
+          "publishedAt": "2026-09-20T16:39:56+08:00"
+        },
+        {
+          "id": 10414802,
+          "day": 7,
+          "title": "Day07｜憑證到底誰簽的",
+          "url": "https://ithelp.ithome.com.tw/articles/10414802",
+          "publishedAt": "2026-09-21T12:00:18+08:00"
+        },
+        {
+          "id": 10415366,
+          "day": 8,
+          "title": "Day08｜不要拿到什麼就想著丟沙箱",
+          "url": "https://ithelp.ithome.com.tw/articles/10415366",
+          "publishedAt": "2026-09-22T10:55:42+08:00"
+        },
+        {
+          "id": 10415832,
+          "day": 9,
+          "title": "# Day09｜PAM 管的是什麼?",
+          "url": "https://ithelp.ithome.com.tw/articles/10415832",
+          "publishedAt": "2026-09-23T10:02:20+08:00"
+        },
+        {
+          "id": 10416359,
+          "day": 10,
+          "title": "Day10｜STIX 跟 TAXII 差在哪?",
+          "url": "https://ithelp.ithome.com.tw/articles/10416359",
+          "publishedAt": "2026-09-24T09:04:54+08:00"
+        },
+        {
+          "id": 10416923,
+          "day": 11,
+          "title": "Day11｜SOAR &amp; SIEM",
+          "url": "https://ithelp.ithome.com.tw/articles/10416923",
+          "publishedAt": "2026-09-25T13:26:45+08:00"
+        },
+        {
+          "id": 10417378,
+          "day": 12,
+          "title": "# Day12｜指令與Log",
+          "url": "https://ithelp.ithome.com.tw/articles/10417378",
+          "publishedAt": "2026-09-26T12:12:17+08:00"
+        },
+        {
+          "id": 10417854,
+          "day": 13,
+          "title": "# Day13｜管理漏洞前，得先掃描有哪些漏洞",
+          "url": "https://ithelp.ithome.com.tw/articles/10417854",
+          "publishedAt": "2026-09-27T15:42:49+08:00"
+        },
+        {
+          "id": 10418533,
+          "day": 14,
+          "title": "# Day14｜CVSS怎麼看",
+          "url": "https://ithelp.ithome.com.tw/articles/10418533",
+          "publishedAt": "2026-09-28T23:47:53+08:00"
+        },
+        {
+          "id": 10418758,
+          "day": 15,
+          "title": "Day15｜CVSS分數最高的就先修嗎?",
+          "url": "https://ithelp.ithome.com.tw/articles/10418758",
+          "publishedAt": "2026-09-29T14:07:59+08:00"
+        },
+        {
+          "id": 10419122,
+          "day": 16,
+          "title": "Day16｜報告上的False Positive怎麼看",
+          "url": "https://ithelp.ithome.com.tw/articles/10419122",
+          "publishedAt": "2026-09-30T09:03:26+08:00"
+        }
+      ]
+    },
+    {
       "id": 9576,
       "user": {
         "id": 20183425,
@@ -95702,144 +95971,6 @@
           "title": "Day 17：活動報到系統現場排隊的每一秒都是實體的",
           "url": "https://ithelp.ithome.com.tw/articles/10419128",
           "publishedAt": "2026-09-30T09:22:20+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9692,
-      "user": {
-        "id": 20184230,
-        "name": "ashleylin1007",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20184230/profile"
-      },
-      "group": "Software Development",
-      "title": "30 天把舊 ERP 整合成現代微服務平台：架構治理與工程實作雙軌實戰",
-      "description": "舊 ERP 還能跑，為什麼還要動它？本系列以一家製造業的匿名化案例，記錄把 SOAP 型 ERP 逐步整合成現代微服務平台的 30 天決策過程。\r\n\r\n每篇固定分「架構師視角」與「工程師視角」兩層：先講這個設計降低什麼風險，再講程式碼怎麼落地、怎麼驗證、踩過哪些坑。不展示完美架構，只記錄真實限制下的取捨。適合正在處理 Legacy 系統、API 整合與治理要求的架構師、資深工程師與技術主管。",
-      "team": null,
-      "signupDate": "2026/09/14T13:19:55+08:00",
-      "lastUpdated": "2026-10-01T07:26:28+08:00",
-      "dayCount": 17,
-      "articleCount": 17,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410285,
-          "day": 1,
-          "title": "Day 01｜ERP 明明還能用，為什麼還需要現代化平台？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410285",
-          "publishedAt": "2026-09-14T14:05:16+08:00"
-        },
-        {
-          "id": 10410324,
-          "day": 2,
-          "title": "Day 02｜ERP 現代化的策略矩陣：別從工具清單開始",
-          "url": "https://ithelp.ithome.com.tw/articles/10410324",
-          "publishedAt": "2026-09-15T07:17:11+08:00"
-        },
-        {
-          "id": 10410406,
-          "day": 3,
-          "title": "Day 03｜從系統很難改走向可量測的成功指標",
-          "url": "https://ithelp.ithome.com.tw/articles/10410406",
-          "publishedAt": "2026-09-16T08:11:39+08:00"
-        },
-        {
-          "id": 10410452,
-          "day": 4,
-          "title": "Day 04｜漸進式現代化，還是一次重建 ERP？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410452",
-          "publishedAt": "2026-09-17T07:49:55+08:00"
-        },
-        {
-          "id": 10410701,
-          "day": 5,
-          "title": "Day 05｜微服務不是目標：模組化單體與混合架構怎麼選？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410701",
-          "publishedAt": "2026-09-18T07:48:18+08:00"
-        },
-        {
-          "id": 10410702,
-          "day": 6,
-          "title": "Day 06｜現代化平台總體藍圖",
-          "url": "https://ithelp.ithome.com.tw/articles/10410702",
-          "publishedAt": "2026-09-19T08:58:59+08:00"
-        },
-        {
-          "id": 10410703,
-          "day": 7,
-          "title": "Day 07｜服務邊界怎麼拆：依業務能力，不依技術分層",
-          "url": "https://ithelp.ithome.com.tw/articles/10410703",
-          "publishedAt": "2026-09-20T08:22:40+08:00"
-        },
-        {
-          "id": 10410717,
-          "day": 8,
-          "title": "Day 08｜資料所有權：每個服務都能查資料庫，還算微服務嗎？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410717",
-          "publishedAt": "2026-09-21T11:10:45+08:00"
-        },
-        {
-          "id": 10410770,
-          "day": 9,
-          "title": "Day 09｜Gateway：統一入口，也是治理控制點",
-          "url": "https://ithelp.ithome.com.tw/articles/10410770",
-          "publishedAt": "2026-09-22T07:36:06+08:00"
-        },
-        {
-          "id": 10410778,
-          "day": 10,
-          "title": "Day 10｜Spring Cloud Gateway：RoutePredicateFilter 如何分工",
-          "url": "https://ithelp.ithome.com.tw/articles/10410778",
-          "publishedAt": "2026-09-23T07:34:25+08:00"
-        },
-        {
-          "id": 10411105,
-          "day": 11,
-          "title": "Day 11｜KeycloakOAuth 2.0OIDC 與 JWT：別再把登入和授權混在一起",
-          "url": "https://ithelp.ithome.com.tw/articles/10411105",
-          "publishedAt": "2026-09-24T07:33:58+08:00"
-        },
-        {
-          "id": 10411291,
-          "day": 12,
-          "title": "Day 12｜RBAC 還不夠：把角色資源與資料範圍分開",
-          "url": "https://ithelp.ithome.com.tw/articles/10411291",
-          "publishedAt": "2026-09-25T07:50:21+08:00"
-        },
-        {
-          "id": 10411311,
-          "day": 13,
-          "title": "Day 13｜ERP SOAP 前為什麼需要 Adapter？",
-          "url": "https://ithelp.ithome.com.tw/articles/10411311",
-          "publishedAt": "2026-09-26T08:09:31+08:00"
-        },
-        {
-          "id": 10414217,
-          "day": 14,
-          "title": "Day 14｜Adapter Service 設計：別讓隔離層變成第二套 ERP",
-          "url": "https://ithelp.ithome.com.tw/articles/10414217",
-          "publishedAt": "2026-09-27T07:39:48+08:00"
-        },
-        {
-          "id": 10414292,
-          "day": 15,
-          "title": "Day 15｜REST 與 SOAP 轉換：不只是 XML 改成 JSON",
-          "url": "https://ithelp.ithome.com.tw/articles/10414292",
-          "publishedAt": "2026-09-28T08:48:17+08:00"
-        },
-        {
-          "id": 10414887,
-          "day": 16,
-          "title": "Day 16｜condition 白名單：查詢保有彈性，呼叫端仍不能傳 SQL",
-          "url": "https://ithelp.ithome.com.tw/articles/10414887",
-          "publishedAt": "2026-09-29T08:17:19+08:00"
-        },
-        {
-          "id": 10415831,
-          "day": 17,
-          "title": "Day 17｜REST 還是 MQ？先問業務是否需要立即答案",
-          "url": "https://ithelp.ithome.com.tw/articles/10415831",
-          "publishedAt": "2026-09-30T07:30:23+08:00"
         }
       ]
     },
@@ -98643,7 +98774,7 @@
       "description": "寫過 launch、async，程式碼能動，但一遇到協程明明取消了畫面卻還在跑、例外像穿牆一樣繞過 try-catch，就答不出問題出在哪裡。這個系列要補的不是 API 用法，而是那條被你跳過的執行時間軸：協程何時暫停、何時恢復、狀態被誰持有、又在什麼條件下被取消。\r\n\r\n系列聚焦純 Kotlin Coroutines 語言機制本身，全系列使用一個示範情境，讓讀者這 30 天走完，拿到的是一套能推理協程行為的心智地圖、而不是只能死記 API 來猜測程式動作。",
       "team": null,
       "signupDate": "2026/09/14T23:27:32+08:00",
-      "lastUpdated": "2026-10-01T06:31:57+08:00",
+      "lastUpdated": "2026-10-01T07:32:57+08:00",
       "dayCount": 17,
       "articleCount": 17,
       "subscriptions": 0,
@@ -107882,137 +108013,6 @@
           "title": "[FDE 系列] 新商業模式背後的系統開發（1）：需求如何從模糊逐漸變清楚",
           "url": "https://ithelp.ithome.com.tw/articles/10419445",
           "publishedAt": "2026-09-30T23:57:57+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9566,
-      "user": {
-        "id": 20184107,
-        "name": "frog9527",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20184107/profile"
-      },
-      "group": "Security",
-      "title": "從桃子園灘頭到CySA+",
-      "description": "我曾在海上駕駛著橡皮艇搶灘，如今身在資訊業，考了CySA+，準備好要搶上資安浪潮的灘頭。\r\n在這裡我會分享我的職涯、人生經驗以及我如何備考CySA+的心得。\r\n也許技術含量不高，但還是想分享給在這迷途中徬徨的人們，我走過的路以及一路上接受的善意。",
-      "team": "飛飛的資安大圈圈",
-      "signupDate": "2026/09/09T19:32:12+08:00",
-      "lastUpdated": "2026-10-01T07:25:47+08:00",
-      "dayCount": 16,
-      "articleCount": 16,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10409097,
-          "day": 1,
-          "title": "Day01｜從軍官到SI工程師，最後走向CySA+",
-          "url": "https://ithelp.ithome.com.tw/articles/10409097",
-          "publishedAt": "2026-09-15T09:13:20+08:00"
-        },
-        {
-          "id": 10411566,
-          "day": 2,
-          "title": "Day02｜工欲善其事，必先利其器",
-          "url": "https://ithelp.ithome.com.tw/articles/10411566",
-          "publishedAt": "2026-09-16T08:03:10+08:00"
-        },
-        {
-          "id": 10412369,
-          "day": 3,
-          "title": "Day03｜封包裡面藏著什麼?",
-          "url": "https://ithelp.ithome.com.tw/articles/10412369",
-          "publishedAt": "2026-09-17T09:27:41+08:00"
-        },
-        {
-          "id": 10412899,
-          "day": 4,
-          "title": "Day04｜Passive 還是 Active",
-          "url": "https://ithelp.ithome.com.tw/articles/10412899",
-          "publishedAt": "2026-09-18T00:03:10+08:00"
-        },
-        {
-          "id": 10413692,
-          "day": 5,
-          "title": "# Day05｜Port到底怎麼看",
-          "url": "https://ithelp.ithome.com.tw/articles/10413692",
-          "publishedAt": "2026-09-19T13:17:02+08:00"
-        },
-        {
-          "id": 10414322,
-          "day": 6,
-          "title": "Day06｜Process也有Parent",
-          "url": "https://ithelp.ithome.com.tw/articles/10414322",
-          "publishedAt": "2026-09-20T16:39:56+08:00"
-        },
-        {
-          "id": 10414802,
-          "day": 7,
-          "title": "Day07｜憑證到底誰簽的",
-          "url": "https://ithelp.ithome.com.tw/articles/10414802",
-          "publishedAt": "2026-09-21T12:00:18+08:00"
-        },
-        {
-          "id": 10415366,
-          "day": 8,
-          "title": "Day08｜不要拿到什麼就想著丟沙箱",
-          "url": "https://ithelp.ithome.com.tw/articles/10415366",
-          "publishedAt": "2026-09-22T10:55:42+08:00"
-        },
-        {
-          "id": 10415832,
-          "day": 9,
-          "title": "# Day09｜PAM 管的是什麼?",
-          "url": "https://ithelp.ithome.com.tw/articles/10415832",
-          "publishedAt": "2026-09-23T10:02:20+08:00"
-        },
-        {
-          "id": 10416359,
-          "day": 10,
-          "title": "Day10｜STIX 跟 TAXII 差在哪?",
-          "url": "https://ithelp.ithome.com.tw/articles/10416359",
-          "publishedAt": "2026-09-24T09:04:54+08:00"
-        },
-        {
-          "id": 10416923,
-          "day": 11,
-          "title": "Day11｜SOAR &amp; SIEM",
-          "url": "https://ithelp.ithome.com.tw/articles/10416923",
-          "publishedAt": "2026-09-25T13:26:45+08:00"
-        },
-        {
-          "id": 10417378,
-          "day": 12,
-          "title": "# Day12｜指令與Log",
-          "url": "https://ithelp.ithome.com.tw/articles/10417378",
-          "publishedAt": "2026-09-26T12:12:17+08:00"
-        },
-        {
-          "id": 10417854,
-          "day": 13,
-          "title": "# Day13｜管理漏洞前，得先掃描有哪些漏洞",
-          "url": "https://ithelp.ithome.com.tw/articles/10417854",
-          "publishedAt": "2026-09-27T15:42:49+08:00"
-        },
-        {
-          "id": 10418533,
-          "day": 14,
-          "title": "# Day14｜CVSS怎麼看",
-          "url": "https://ithelp.ithome.com.tw/articles/10418533",
-          "publishedAt": "2026-09-28T23:47:53+08:00"
-        },
-        {
-          "id": 10418758,
-          "day": 15,
-          "title": "Day15｜CVSS分數最高的就先修嗎?",
-          "url": "https://ithelp.ithome.com.tw/articles/10418758",
-          "publishedAt": "2026-09-29T14:07:59+08:00"
-        },
-        {
-          "id": 10419122,
-          "day": 16,
-          "title": "Day16｜報告上的False Positive怎麼看",
-          "url": "https://ithelp.ithome.com.tw/articles/10419122",
-          "publishedAt": "2026-09-30T09:03:26+08:00"
         }
       ]
     },
