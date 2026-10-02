@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-10-02 07:42:27+08:00",
+  "updatedAt": "2026-10-02 08:04:25+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -72754,6 +72754,202 @@
       ]
     },
     {
+      "id": 9269,
+      "user": {
+        "id": 20183658,
+        "name": "ozymxt",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20183658/profile"
+      },
+      "group": "AI Engineering",
+      "title": "《30天打造 Tool-Calling Agent：從 MDP 理論到 DPOTrainer 實戰訓練》",
+      "description": "大型語言模型（LLM）近年快速演進成能自主決策、呼叫工具的 AI Agent，而強化學習（RL）正是讓 Agent 學會「做對的事」的核心技術。本系列將從最基礎的 MDP、Bellman Equation 出發，一路推進到 DQN、PPO、GRPO、DPO 等主流演算法，並實際手刻一個具備工具呼叫能力的 Agent 環境，最終透過 DPOTrainer 完成偏好資料的微調訓練。\r\n\r\n30天內容涵蓋理論推導、演算法比較、實作環境建置、訓練除錯與量化評估（成功率、KL散度、reward曲線等），目標是打造一套可重現、有數據佐證的 Agent 強化學習訓練流程，適合想從理論扎實走向工程落地的讀者。",
+      "team": "黑色月亮",
+      "signupDate": "2026/08/18T14:58:35+08:00",
+      "lastUpdated": "2026-10-02T07:38:47+08:00",
+      "dayCount": 25,
+      "articleCount": 24,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10408473,
+          "day": 1,
+          "title": "Day1 為什麼 Agent 需要 RL?從 0 到 Agentic RL 實作的起點",
+          "url": "https://ithelp.ithome.com.tw/articles/10408473",
+          "publishedAt": "2026-09-08T08:38:21+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408588,
+          "day": 2,
+          "title": "Day2 掌握 RL 基礎：什麼是 MDP ? Reward ? Policy 又是什麼 ?",
+          "url": "https://ithelp.ithome.com.tw/articles/10408588",
+          "publishedAt": "2026-09-09T10:12:43+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408591,
+          "day": 3,
+          "title": "Day3 Value-based：為什麼 ChatGPT 不能直接用 Q-learning？",
+          "url": "https://ithelp.ithome.com.tw/articles/10408591",
+          "publishedAt": "2026-09-10T10:54:35+08:00",
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        },
+        {
+          "id": 10408597,
+          "day": 4,
+          "title": "Day4 Policy Gradient 演進：Actor-Critic 與 OpenAI 選擇 PPO 的關鍵",
+          "url": "https://ithelp.ithome.com.tw/articles/10408597",
+          "publishedAt": "2026-09-11T10:11:51+08:00"
+        },
+        {
+          "id": 10408822,
+          "day": 5,
+          "title": "Day5 避免模型崩潰的秘密：PPO Clip 機制與 KL Penalty 解析",
+          "url": "https://ithelp.ithome.com.tw/articles/10408822",
+          "publishedAt": "2026-09-12T11:45:58+08:00"
+        },
+        {
+          "id": 10409642,
+          "day": 6,
+          "title": "Day6 邁向 LLM 時代：Clip 大小實驗與第一階段 RL 脈絡總結",
+          "url": "https://ithelp.ithome.com.tw/articles/10409642",
+          "publishedAt": "2026-09-13T12:17:14+08:00"
+        },
+        {
+          "id": 10409644,
+          "day": 7,
+          "title": "Day7 拆解 RLHF 全流程：SFTReward Model 到 PPO 的 Pipeline",
+          "url": "https://ithelp.ithome.com.tw/articles/10409644",
+          "publishedAt": "2026-09-14T10:23:09+08:00"
+        },
+        {
+          "id": 10409645,
+          "day": 8,
+          "title": "Day8 人工標註的陷阱：Reward Model 訓練實戰與資料品質探討",
+          "url": "https://ithelp.ithome.com.tw/articles/10409645",
+          "publishedAt": "2026-09-15T13:13:12+08:00"
+        },
+        {
+          "id": 10409646,
+          "day": 9,
+          "title": "Day9 DPO vs PPO：為什麼 DPO 不需要 Reward Model 且更適合微調？",
+          "url": "https://ithelp.ithome.com.tw/articles/10409646",
+          "publishedAt": "2026-09-16T09:04:16+08:00"
+        },
+        {
+          "id": 10409647,
+          "day": 10,
+          "title": "Day10 DeepSeek 背後的演算法：GRPO 與 PPO 差異比較",
+          "url": "https://ithelp.ithome.com.tw/articles/10409647",
+          "publishedAt": "2026-09-17T09:13:33+08:00"
+        },
+        {
+          "id": 10411600,
+          "day": 11,
+          "title": "Day11 Agent RL 與傳統 RLHF 的本質差異及 Credit Assignment 難題",
+          "url": "https://ithelp.ithome.com.tw/articles/10411600",
+          "publishedAt": "2026-09-18T09:38:41+08:00"
+        },
+        {
+          "id": 10413745,
+          "day": 12,
+          "title": "Day12 獎勵機制的抉擇：Outcome vs Process Reward Model 與可驗證獎勵",
+          "url": "https://ithelp.ithome.com.tw/articles/10413745",
+          "publishedAt": "2026-09-19T15:26:04+08:00"
+        },
+        {
+          "id": 10414142,
+          "day": 13,
+          "title": "Day13 成功的一半：為什麼對 Agent 來說環境設計比演算法更重要？",
+          "url": "https://ithelp.ithome.com.tw/articles/10414142",
+          "publishedAt": "2026-09-20T09:22:09+08:00"
+        },
+        {
+          "id": 10414542,
+          "day": 14,
+          "title": "Day14 當 Agent 開始作弊：故意設計錯誤 Reward 誘發 Reward Hacking",
+          "url": "https://ithelp.ithome.com.tw/articles/10414542",
+          "publishedAt": "2026-09-21T13:57:31+08:00"
+        },
+        {
+          "id": 10414548,
+          "day": 15,
+          "title": "Day15 自我進化的開端：Self-play 迴圈與 Multi-Agent 協作入門",
+          "url": "https://ithelp.ithome.com.tw/articles/10414548",
+          "publishedAt": "2026-09-22T09:50:38+08:00"
+        },
+        {
+          "id": 10414551,
+          "day": 16,
+          "title": "Day16 打造 Agent 競技場：手刻工具呼叫環境與評估資料集建立",
+          "url": "https://ithelp.ithome.com.tw/articles/10414551",
+          "publishedAt": "2026-09-23T09:08:00+08:00"
+        },
+        {
+          "id": 10414555,
+          "day": 17,
+          "title": "Day17 建立 Baseline 基準點：純 SFT 版本 Agent 的任務表現與極限",
+          "url": "https://ithelp.ithome.com.tw/articles/10414555",
+          "publishedAt": "2026-09-24T09:03:02+08:00"
+        },
+        {
+          "id": 10414559,
+          "day": 18,
+          "title": "Day18 TRL 訓練實戰：Reward 第一版設計與被 Hack 全紀錄",
+          "url": "https://ithelp.ithome.com.tw/articles/10414559",
+          "publishedAt": "2026-09-25T00:30:54+08:00"
+        },
+        {
+          "id": 10416357,
+          "day": 19,
+          "title": "Day19 Reward 第二版修正",
+          "url": "https://ithelp.ithome.com.tw/articles/10416357",
+          "publishedAt": "2026-09-26T09:13:06+08:00"
+        },
+        {
+          "id": 10417771,
+          "day": 20,
+          "title": "Day20 使用 TRL DPOTrainer 從日誌生成資料微調 Agent",
+          "url": "https://ithelp.ithome.com.tw/articles/10417771",
+          "publishedAt": "2026-09-27T10:29:16+08:00"
+        },
+        {
+          "id": 10418207,
+          "day": 21,
+          "title": "Day21 RL 訓練踩坑日記：不穩定現象 (KL Explosion, Collapse)",
+          "url": "https://ithelp.ithome.com.tw/articles/10418207",
+          "publishedAt": "2026-09-28T11:23:12+08:00"
+        },
+        {
+          "id": 10418442,
+          "day": 22,
+          "title": "Day22 如何定義 Agent 成功？Evaluation Framework 與 Metrics 評估設計",
+          "url": "https://ithelp.ithome.com.tw/articles/10418442",
+          "publishedAt": "2026-09-29T11:44:09+08:00"
+        },
+        {
+          "id": 10418443,
+          "day": 23,
+          "title": "Day23 讓 Agent 學會偏好：從資料到模型的完整 DPO Pipeline",
+          "url": "https://ithelp.ithome.com.tw/articles/10418443",
+          "publishedAt": "2026-09-30T09:14:17+08:00"
+        },
+        {
+          "id": 10418444,
+          "day": 24,
+          "title": "Day24：Agent 會跑了，但跑得夠快嗎？API 封裝延遲探討與量化取捨",
+          "url": "https://ithelp.ithome.com.tw/articles/10418444",
+          "publishedAt": "2026-10-01T08:23:10+08:00"
+        }
+      ]
+    },
+    {
       "id": 9512,
       "user": {
         "id": 20175987,
@@ -74888,202 +75084,6 @@
       ]
     },
     {
-      "id": 9269,
-      "user": {
-        "id": 20183658,
-        "name": "ozymxt",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20183658/profile"
-      },
-      "group": "AI Engineering",
-      "title": "《30天打造 Tool-Calling Agent：從 MDP 理論到 DPOTrainer 實戰訓練》",
-      "description": "大型語言模型（LLM）近年快速演進成能自主決策、呼叫工具的 AI Agent，而強化學習（RL）正是讓 Agent 學會「做對的事」的核心技術。本系列將從最基礎的 MDP、Bellman Equation 出發，一路推進到 DQN、PPO、GRPO、DPO 等主流演算法，並實際手刻一個具備工具呼叫能力的 Agent 環境，最終透過 DPOTrainer 完成偏好資料的微調訓練。\r\n\r\n30天內容涵蓋理論推導、演算法比較、實作環境建置、訓練除錯與量化評估（成功率、KL散度、reward曲線等），目標是打造一套可重現、有數據佐證的 Agent 強化學習訓練流程，適合想從理論扎實走向工程落地的讀者。",
-      "team": "黑色月亮",
-      "signupDate": "2026/08/18T14:58:35+08:00",
-      "lastUpdated": "2026-10-02T07:38:47+08:00",
-      "dayCount": 24,
-      "articleCount": 24,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10408473,
-          "day": 1,
-          "title": "Day1 為什麼 Agent 需要 RL?從 0 到 Agentic RL 實作的起點",
-          "url": "https://ithelp.ithome.com.tw/articles/10408473",
-          "publishedAt": "2026-09-08T08:38:21+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408588,
-          "day": 2,
-          "title": "Day2 掌握 RL 基礎：什麼是 MDP ? Reward ? Policy 又是什麼 ?",
-          "url": "https://ithelp.ithome.com.tw/articles/10408588",
-          "publishedAt": "2026-09-09T10:12:43+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408591,
-          "day": 3,
-          "title": "Day3 Value-based：為什麼 ChatGPT 不能直接用 Q-learning？",
-          "url": "https://ithelp.ithome.com.tw/articles/10408591",
-          "publishedAt": "2026-09-10T10:54:35+08:00",
-          "views": 0,
-          "likes": 0,
-          "comments": 0
-        },
-        {
-          "id": 10408597,
-          "day": 4,
-          "title": "Day4 Policy Gradient 演進：Actor-Critic 與 OpenAI 選擇 PPO 的關鍵",
-          "url": "https://ithelp.ithome.com.tw/articles/10408597",
-          "publishedAt": "2026-09-11T10:11:51+08:00"
-        },
-        {
-          "id": 10408822,
-          "day": 5,
-          "title": "Day5 避免模型崩潰的秘密：PPO Clip 機制與 KL Penalty 解析",
-          "url": "https://ithelp.ithome.com.tw/articles/10408822",
-          "publishedAt": "2026-09-12T11:45:58+08:00"
-        },
-        {
-          "id": 10409642,
-          "day": 6,
-          "title": "Day6 邁向 LLM 時代：Clip 大小實驗與第一階段 RL 脈絡總結",
-          "url": "https://ithelp.ithome.com.tw/articles/10409642",
-          "publishedAt": "2026-09-13T12:17:14+08:00"
-        },
-        {
-          "id": 10409644,
-          "day": 7,
-          "title": "Day7 拆解 RLHF 全流程：SFTReward Model 到 PPO 的 Pipeline",
-          "url": "https://ithelp.ithome.com.tw/articles/10409644",
-          "publishedAt": "2026-09-14T10:23:09+08:00"
-        },
-        {
-          "id": 10409645,
-          "day": 8,
-          "title": "Day8 人工標註的陷阱：Reward Model 訓練實戰與資料品質探討",
-          "url": "https://ithelp.ithome.com.tw/articles/10409645",
-          "publishedAt": "2026-09-15T13:13:12+08:00"
-        },
-        {
-          "id": 10409646,
-          "day": 9,
-          "title": "Day9 DPO vs PPO：為什麼 DPO 不需要 Reward Model 且更適合微調？",
-          "url": "https://ithelp.ithome.com.tw/articles/10409646",
-          "publishedAt": "2026-09-16T09:04:16+08:00"
-        },
-        {
-          "id": 10409647,
-          "day": 10,
-          "title": "Day10 DeepSeek 背後的演算法：GRPO 與 PPO 差異比較",
-          "url": "https://ithelp.ithome.com.tw/articles/10409647",
-          "publishedAt": "2026-09-17T09:13:33+08:00"
-        },
-        {
-          "id": 10411600,
-          "day": 11,
-          "title": "Day11 Agent RL 與傳統 RLHF 的本質差異及 Credit Assignment 難題",
-          "url": "https://ithelp.ithome.com.tw/articles/10411600",
-          "publishedAt": "2026-09-18T09:38:41+08:00"
-        },
-        {
-          "id": 10413745,
-          "day": 12,
-          "title": "Day12 獎勵機制的抉擇：Outcome vs Process Reward Model 與可驗證獎勵",
-          "url": "https://ithelp.ithome.com.tw/articles/10413745",
-          "publishedAt": "2026-09-19T15:26:04+08:00"
-        },
-        {
-          "id": 10414142,
-          "day": 13,
-          "title": "Day13 成功的一半：為什麼對 Agent 來說環境設計比演算法更重要？",
-          "url": "https://ithelp.ithome.com.tw/articles/10414142",
-          "publishedAt": "2026-09-20T09:22:09+08:00"
-        },
-        {
-          "id": 10414542,
-          "day": 14,
-          "title": "Day14 當 Agent 開始作弊：故意設計錯誤 Reward 誘發 Reward Hacking",
-          "url": "https://ithelp.ithome.com.tw/articles/10414542",
-          "publishedAt": "2026-09-21T13:57:31+08:00"
-        },
-        {
-          "id": 10414548,
-          "day": 15,
-          "title": "Day15 自我進化的開端：Self-play 迴圈與 Multi-Agent 協作入門",
-          "url": "https://ithelp.ithome.com.tw/articles/10414548",
-          "publishedAt": "2026-09-22T09:50:38+08:00"
-        },
-        {
-          "id": 10414551,
-          "day": 16,
-          "title": "Day16 打造 Agent 競技場：手刻工具呼叫環境與評估資料集建立",
-          "url": "https://ithelp.ithome.com.tw/articles/10414551",
-          "publishedAt": "2026-09-23T09:08:00+08:00"
-        },
-        {
-          "id": 10414555,
-          "day": 17,
-          "title": "Day17 建立 Baseline 基準點：純 SFT 版本 Agent 的任務表現與極限",
-          "url": "https://ithelp.ithome.com.tw/articles/10414555",
-          "publishedAt": "2026-09-24T09:03:02+08:00"
-        },
-        {
-          "id": 10414559,
-          "day": 18,
-          "title": "Day18 TRL 訓練實戰：Reward 第一版設計與被 Hack 全紀錄",
-          "url": "https://ithelp.ithome.com.tw/articles/10414559",
-          "publishedAt": "2026-09-25T00:30:54+08:00"
-        },
-        {
-          "id": 10416357,
-          "day": 19,
-          "title": "Day19 Reward 第二版修正",
-          "url": "https://ithelp.ithome.com.tw/articles/10416357",
-          "publishedAt": "2026-09-26T09:13:06+08:00"
-        },
-        {
-          "id": 10417771,
-          "day": 20,
-          "title": "Day20 使用 TRL DPOTrainer 從日誌生成資料微調 Agent",
-          "url": "https://ithelp.ithome.com.tw/articles/10417771",
-          "publishedAt": "2026-09-27T10:29:16+08:00"
-        },
-        {
-          "id": 10418207,
-          "day": 21,
-          "title": "Day21 RL 訓練踩坑日記：不穩定現象 (KL Explosion, Collapse)",
-          "url": "https://ithelp.ithome.com.tw/articles/10418207",
-          "publishedAt": "2026-09-28T11:23:12+08:00"
-        },
-        {
-          "id": 10418442,
-          "day": 22,
-          "title": "Day22 如何定義 Agent 成功？Evaluation Framework 與 Metrics 評估設計",
-          "url": "https://ithelp.ithome.com.tw/articles/10418442",
-          "publishedAt": "2026-09-29T11:44:09+08:00"
-        },
-        {
-          "id": 10418443,
-          "day": 23,
-          "title": "Day23 讓 Agent 學會偏好：從資料到模型的完整 DPO Pipeline",
-          "url": "https://ithelp.ithome.com.tw/articles/10418443",
-          "publishedAt": "2026-09-30T09:14:17+08:00"
-        },
-        {
-          "id": 10418444,
-          "day": 24,
-          "title": "Day24：Agent 會跑了，但跑得夠快嗎？API 封裝延遲探討與量化取捨",
-          "url": "https://ithelp.ithome.com.tw/articles/10418444",
-          "publishedAt": "2026-10-01T08:23:10+08:00"
-        }
-      ]
-    },
-    {
       "id": 9273,
       "user": {
         "id": 20129853,
@@ -75752,7 +75752,7 @@
       "description": "這個系列記錄我用 30 天從零打造 baodao-skill 的過程：一個以台灣日常生活為主題的開源 AI 技能包（MIT 授權）。台灣的政府開放資料非常豐富——統一發票開獎號碼、垃圾車即時位置、YouBike 站點、中央氣象署天氣——但這些資訊散落在各處。我的目標是每天新增一個實用的查詢技能，30 天後讓它長成台灣生活的一站式工具。系列文章會涵蓋：資料源的評估與選擇、API 串接的踩坑記錄、技能文件的設計，以及一個開源專案從第一個 commit 到第一個 release 的完整歷程。全部過程公開在 GitHub，歡迎一起圍觀一個專案怎麼每天長大一點。",
       "team": null,
       "signupDate": "2026/09/09T02:33:10+08:00",
-      "lastUpdated": "2026-10-02T06:45:16+08:00",
+      "lastUpdated": "2026-10-02T08:02:33+08:00",
       "dayCount": 24,
       "articleCount": 24,
       "subscriptions": 0,
@@ -89442,7 +89442,7 @@
       "description": "已具備 Laravel 開發經驗的工程師，多半都遇過同一個關卡：功能做完了，卻還要自己刻一套後台管理介面，表單、驗證、權限散落在各個 Controller 裡，每加一個模組就重複一次。這個系列帶你從安裝 Filament 的第一天開始，做出一套具備多角色權限、多租戶資料隔離、自訂儀表板，並通過測試、準備上線的正式後台系統。\r\n\r\n30 天走完，你會拿到的不是一堆零散的 API 用法，而是一套能實際落地上線的 Filament 建置流程。",
       "team": null,
       "signupDate": "2026/09/14T23:24:27+08:00",
-      "lastUpdated": "2026-10-02T06:42:42+08:00",
+      "lastUpdated": "2026-10-02T07:43:42+08:00",
       "dayCount": 19,
       "articleCount": 19,
       "subscriptions": 0,
@@ -89594,7 +89594,7 @@
       "description": "寫過 launch、async，程式碼能動，但一遇到協程明明取消了畫面卻還在跑、例外像穿牆一樣繞過 try-catch，就答不出問題出在哪裡。這個系列要補的不是 API 用法，而是那條被你跳過的執行時間軸：協程何時暫停、何時恢復、狀態被誰持有、又在什麼條件下被取消。\r\n\r\n系列聚焦純 Kotlin Coroutines 語言機制本身，全系列使用一個示範情境，讓讀者這 30 天走完，拿到的是一套能推理協程行為的心智地圖、而不是只能死記 API 來猜測程式動作。",
       "team": null,
       "signupDate": "2026/09/14T23:27:32+08:00",
-      "lastUpdated": "2026-10-02T06:55:02+08:00",
+      "lastUpdated": "2026-10-02T07:56:02+08:00",
       "dayCount": 19,
       "articleCount": 19,
       "subscriptions": 0,
@@ -91659,6 +91659,151 @@
           "title": "Day 18：中場總覽，一張圖追完封包從大門到 Container 的旅程",
           "url": "https://ithelp.ithome.com.tw/articles/10419738",
           "publishedAt": "2026-10-01T19:31:11+08:00"
+        }
+      ]
+    },
+    {
+      "id": 9348,
+      "user": {
+        "id": 20178696,
+        "name": "xbetty",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20178696/profile"
+      },
+      "group": "JavaScript",
+      "title": "從頭開始的Javascript學習之旅",
+      "description": "一起來從頭開始學習Javascript的基礎語法及一系列相關的運用。",
+      "team": null,
+      "signupDate": "2026/08/27T14:26:22+08:00",
+      "lastUpdated": "2026-10-02T07:39:14+08:00",
+      "dayCount": 18,
+      "articleCount": 18,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410792,
+          "day": 1,
+          "title": "Day1 開賽前言",
+          "url": "https://ithelp.ithome.com.tw/articles/10410792",
+          "publishedAt": "2026-09-15T10:32:40+08:00"
+        },
+        {
+          "id": 10411577,
+          "day": 2,
+          "title": "DAY2 怎麼開始使用Javascript",
+          "url": "https://ithelp.ithome.com.tw/articles/10411577",
+          "publishedAt": "2026-09-16T10:25:08+08:00"
+        },
+        {
+          "id": 10412403,
+          "day": 3,
+          "title": "DAY3 console.log",
+          "url": "https://ithelp.ithome.com.tw/articles/10412403",
+          "publishedAt": "2026-09-17T10:23:16+08:00"
+        },
+        {
+          "id": 10412979,
+          "day": 4,
+          "title": "day4 運算子",
+          "url": "https://ithelp.ithome.com.tw/articles/10412979",
+          "publishedAt": "2026-09-18T07:29:24+08:00"
+        },
+        {
+          "id": 10413547,
+          "day": 5,
+          "title": "day5資料型別",
+          "url": "https://ithelp.ithome.com.tw/articles/10413547",
+          "publishedAt": "2026-09-19T02:03:24+08:00"
+        },
+        {
+          "id": 10414108,
+          "day": 6,
+          "title": "DAY6 變數",
+          "url": "https://ithelp.ithome.com.tw/articles/10414108",
+          "publishedAt": "2026-09-20T03:36:03+08:00"
+        },
+        {
+          "id": 10414743,
+          "day": 7,
+          "title": "day7 if else",
+          "url": "https://ithelp.ithome.com.tw/articles/10414743",
+          "publishedAt": "2026-09-21T10:15:52+08:00"
+        },
+        {
+          "id": 10415417,
+          "day": 8,
+          "title": "Day8",
+          "url": "https://ithelp.ithome.com.tw/articles/10415417",
+          "publishedAt": "2026-09-22T13:03:48+08:00"
+        },
+        {
+          "id": 10415861,
+          "day": 9,
+          "title": "Day9 函式",
+          "url": "https://ithelp.ithome.com.tw/articles/10415861",
+          "publishedAt": "2026-09-23T11:37:35+08:00"
+        },
+        {
+          "id": 10416400,
+          "day": 10,
+          "title": "DAY10 作用域",
+          "url": "https://ithelp.ithome.com.tw/articles/10416400",
+          "publishedAt": "2026-09-24T10:36:23+08:00"
+        },
+        {
+          "id": 10416882,
+          "day": 11,
+          "title": "day11 字串",
+          "url": "https://ithelp.ithome.com.tw/articles/10416882",
+          "publishedAt": "2026-09-25T10:45:44+08:00"
+        },
+        {
+          "id": 10417360,
+          "day": 12,
+          "title": "DAY12 陣列",
+          "url": "https://ithelp.ithome.com.tw/articles/10417360",
+          "publishedAt": "2026-09-26T11:38:55+08:00"
+        },
+        {
+          "id": 10417726,
+          "day": 13,
+          "title": "DAY13 物件",
+          "url": "https://ithelp.ithome.com.tw/articles/10417726",
+          "publishedAt": "2026-09-27T03:51:23+08:00"
+        },
+        {
+          "id": 10418156,
+          "day": 14,
+          "title": "Day14",
+          "url": "https://ithelp.ithome.com.tw/articles/10418156",
+          "publishedAt": "2026-09-28T03:52:01+08:00"
+        },
+        {
+          "id": 10418737,
+          "day": 15,
+          "title": "Day15 解構",
+          "url": "https://ithelp.ithome.com.tw/articles/10418737",
+          "publishedAt": "2026-09-29T12:41:42+08:00"
+        },
+        {
+          "id": 10419148,
+          "day": 16,
+          "title": "Day16 time",
+          "url": "https://ithelp.ithome.com.tw/articles/10419148",
+          "publishedAt": "2026-09-30T10:20:41+08:00"
+        },
+        {
+          "id": 10419554,
+          "day": 17,
+          "title": "Day17 DOM",
+          "url": "https://ithelp.ithome.com.tw/articles/10419554",
+          "publishedAt": "2026-10-01T10:12:47+08:00"
+        },
+        {
+          "id": 10419581,
+          "day": 18,
+          "title": "DAY18 DOM-2",
+          "url": "https://ithelp.ithome.com.tw/articles/10419581",
+          "publishedAt": "2026-10-02T07:37:36+08:00"
         }
       ]
     },
@@ -103212,151 +103357,6 @@
           "title": "從零開始的 Kubernetes 基礎觀念與實作 DAY17",
           "url": "https://ithelp.ithome.com.tw/articles/10419833",
           "publishedAt": "2026-10-01T22:45:32+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9348,
-      "user": {
-        "id": 20178696,
-        "name": "xbetty",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20178696/profile"
-      },
-      "group": "JavaScript",
-      "title": "從頭開始的Javascript學習之旅",
-      "description": "一起來從頭開始學習Javascript的基礎語法及一系列相關的運用。",
-      "team": null,
-      "signupDate": "2026/08/27T14:26:22+08:00",
-      "lastUpdated": "2026-10-02T07:39:14+08:00",
-      "dayCount": 17,
-      "articleCount": 18,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410792,
-          "day": 1,
-          "title": "Day1 開賽前言",
-          "url": "https://ithelp.ithome.com.tw/articles/10410792",
-          "publishedAt": "2026-09-15T10:32:40+08:00"
-        },
-        {
-          "id": 10411577,
-          "day": 2,
-          "title": "DAY2 怎麼開始使用Javascript",
-          "url": "https://ithelp.ithome.com.tw/articles/10411577",
-          "publishedAt": "2026-09-16T10:25:08+08:00"
-        },
-        {
-          "id": 10412403,
-          "day": 3,
-          "title": "DAY3 console.log",
-          "url": "https://ithelp.ithome.com.tw/articles/10412403",
-          "publishedAt": "2026-09-17T10:23:16+08:00"
-        },
-        {
-          "id": 10412979,
-          "day": 4,
-          "title": "day4 運算子",
-          "url": "https://ithelp.ithome.com.tw/articles/10412979",
-          "publishedAt": "2026-09-18T07:29:24+08:00"
-        },
-        {
-          "id": 10413547,
-          "day": 5,
-          "title": "day5資料型別",
-          "url": "https://ithelp.ithome.com.tw/articles/10413547",
-          "publishedAt": "2026-09-19T02:03:24+08:00"
-        },
-        {
-          "id": 10414108,
-          "day": 6,
-          "title": "DAY6 變數",
-          "url": "https://ithelp.ithome.com.tw/articles/10414108",
-          "publishedAt": "2026-09-20T03:36:03+08:00"
-        },
-        {
-          "id": 10414743,
-          "day": 7,
-          "title": "day7 if else",
-          "url": "https://ithelp.ithome.com.tw/articles/10414743",
-          "publishedAt": "2026-09-21T10:15:52+08:00"
-        },
-        {
-          "id": 10415417,
-          "day": 8,
-          "title": "Day8",
-          "url": "https://ithelp.ithome.com.tw/articles/10415417",
-          "publishedAt": "2026-09-22T13:03:48+08:00"
-        },
-        {
-          "id": 10415861,
-          "day": 9,
-          "title": "Day9 函式",
-          "url": "https://ithelp.ithome.com.tw/articles/10415861",
-          "publishedAt": "2026-09-23T11:37:35+08:00"
-        },
-        {
-          "id": 10416400,
-          "day": 10,
-          "title": "DAY10 作用域",
-          "url": "https://ithelp.ithome.com.tw/articles/10416400",
-          "publishedAt": "2026-09-24T10:36:23+08:00"
-        },
-        {
-          "id": 10416882,
-          "day": 11,
-          "title": "day11 字串",
-          "url": "https://ithelp.ithome.com.tw/articles/10416882",
-          "publishedAt": "2026-09-25T10:45:44+08:00"
-        },
-        {
-          "id": 10417360,
-          "day": 12,
-          "title": "DAY12 陣列",
-          "url": "https://ithelp.ithome.com.tw/articles/10417360",
-          "publishedAt": "2026-09-26T11:38:55+08:00"
-        },
-        {
-          "id": 10417726,
-          "day": 13,
-          "title": "DAY13 物件",
-          "url": "https://ithelp.ithome.com.tw/articles/10417726",
-          "publishedAt": "2026-09-27T03:51:23+08:00"
-        },
-        {
-          "id": 10418156,
-          "day": 14,
-          "title": "Day14",
-          "url": "https://ithelp.ithome.com.tw/articles/10418156",
-          "publishedAt": "2026-09-28T03:52:01+08:00"
-        },
-        {
-          "id": 10418737,
-          "day": 15,
-          "title": "Day15 解構",
-          "url": "https://ithelp.ithome.com.tw/articles/10418737",
-          "publishedAt": "2026-09-29T12:41:42+08:00"
-        },
-        {
-          "id": 10419148,
-          "day": 16,
-          "title": "Day16 time",
-          "url": "https://ithelp.ithome.com.tw/articles/10419148",
-          "publishedAt": "2026-09-30T10:20:41+08:00"
-        },
-        {
-          "id": 10419554,
-          "day": 17,
-          "title": "Day17 DOM",
-          "url": "https://ithelp.ithome.com.tw/articles/10419554",
-          "publishedAt": "2026-10-01T10:12:47+08:00"
-        },
-        {
-          "id": 10419581,
-          "day": 18,
-          "title": "DAY18 DOM-2",
-          "url": "https://ithelp.ithome.com.tw/articles/10419581",
-          "publishedAt": "2026-10-02T07:37:36+08:00"
         }
       ]
     },
