@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-10-08 08:03:42+08:00",
+  "updatedAt": "2026-10-08 08:08:00+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -21432,7 +21432,7 @@
       "description": "本系列將分享如何打造零成本的 Angelina AI 金融分析代理人。內容涵蓋：\r\n1) AI與記憶：整合 Gemini 2.5 Flash API、ChromaDB 向量庫(RAG)與 SQLite 對話記憶。\r\n2) 工作流：實作每日股市分析、Telegram 推播及 Google Drive/Sheets 數據同步。\r\n3) 基礎設施：以 RHEL 與 Rootless Podman 實現容器隔離，並以 Ansible 進行維運。\r\n展示從架構設計到生產級 AI 應用的完整實踐。",
       "team": null,
       "signupDate": "2026/08/03T12:22:06+08:00",
-      "lastUpdated": "2026-10-08T07:02:09+08:00",
+      "lastUpdated": "2026-10-08T08:05:12+08:00",
       "dayCount": 30,
       "articleCount": 30,
       "subscriptions": 5,
@@ -90346,6 +90346,200 @@
       ]
     },
     {
+      "id": 9692,
+      "user": {
+        "id": 20184230,
+        "name": "ashleylin1007",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20184230/profile"
+      },
+      "group": "Software Development",
+      "title": "30 天把舊 ERP 整合成現代微服務平台：架構治理與工程實作雙軌實戰",
+      "description": "舊 ERP 還能跑，為什麼還要動它？本系列以一家製造業的匿名化案例，記錄把 SOAP 型 ERP 逐步整合成現代微服務平台的 30 天決策過程。\r\n\r\n每篇固定分「架構師視角」與「工程師視角」兩層：先講這個設計降低什麼風險，再講程式碼怎麼落地、怎麼驗證、踩過哪些坑。不展示完美架構，只記錄真實限制下的取捨。適合正在處理 Legacy 系統、API 整合與治理要求的架構師、資深工程師與技術主管。",
+      "team": null,
+      "signupDate": "2026/09/14T13:19:55+08:00",
+      "lastUpdated": "2026-10-08T08:02:18+08:00",
+      "dayCount": 25,
+      "articleCount": 25,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410285,
+          "day": 1,
+          "title": "Day 01｜ERP 明明還能用，為什麼還需要現代化平台？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410285",
+          "publishedAt": "2026-09-14T14:05:16+08:00"
+        },
+        {
+          "id": 10410324,
+          "day": 2,
+          "title": "Day 02｜ERP 現代化的策略矩陣：別從工具清單開始",
+          "url": "https://ithelp.ithome.com.tw/articles/10410324",
+          "publishedAt": "2026-09-15T07:17:11+08:00"
+        },
+        {
+          "id": 10410406,
+          "day": 3,
+          "title": "Day 03｜從系統很難改走向可量測的成功指標",
+          "url": "https://ithelp.ithome.com.tw/articles/10410406",
+          "publishedAt": "2026-09-16T08:11:39+08:00"
+        },
+        {
+          "id": 10410452,
+          "day": 4,
+          "title": "Day 04｜漸進式現代化，還是一次重建 ERP？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410452",
+          "publishedAt": "2026-09-17T07:49:55+08:00"
+        },
+        {
+          "id": 10410701,
+          "day": 5,
+          "title": "Day 05｜微服務不是目標：模組化單體與混合架構怎麼選？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410701",
+          "publishedAt": "2026-09-18T07:48:18+08:00"
+        },
+        {
+          "id": 10410702,
+          "day": 6,
+          "title": "Day 06｜現代化平台總體藍圖",
+          "url": "https://ithelp.ithome.com.tw/articles/10410702",
+          "publishedAt": "2026-09-19T08:58:59+08:00"
+        },
+        {
+          "id": 10410703,
+          "day": 7,
+          "title": "Day 07｜服務邊界怎麼拆：依業務能力，不依技術分層",
+          "url": "https://ithelp.ithome.com.tw/articles/10410703",
+          "publishedAt": "2026-09-20T08:22:40+08:00"
+        },
+        {
+          "id": 10410717,
+          "day": 8,
+          "title": "Day 08｜資料所有權：每個服務都能查資料庫，還算微服務嗎？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410717",
+          "publishedAt": "2026-09-21T11:10:45+08:00"
+        },
+        {
+          "id": 10410770,
+          "day": 9,
+          "title": "Day 09｜Gateway：統一入口，也是治理控制點",
+          "url": "https://ithelp.ithome.com.tw/articles/10410770",
+          "publishedAt": "2026-09-22T07:36:06+08:00"
+        },
+        {
+          "id": 10410778,
+          "day": 10,
+          "title": "Day 10｜Spring Cloud Gateway：RoutePredicateFilter 如何分工",
+          "url": "https://ithelp.ithome.com.tw/articles/10410778",
+          "publishedAt": "2026-09-23T07:34:25+08:00"
+        },
+        {
+          "id": 10411105,
+          "day": 11,
+          "title": "Day 11｜KeycloakOAuth 2.0OIDC 與 JWT：別再把登入和授權混在一起",
+          "url": "https://ithelp.ithome.com.tw/articles/10411105",
+          "publishedAt": "2026-09-24T07:33:58+08:00"
+        },
+        {
+          "id": 10411291,
+          "day": 12,
+          "title": "Day 12｜RBAC 還不夠：把角色資源與資料範圍分開",
+          "url": "https://ithelp.ithome.com.tw/articles/10411291",
+          "publishedAt": "2026-09-25T07:50:21+08:00"
+        },
+        {
+          "id": 10411311,
+          "day": 13,
+          "title": "Day 13｜ERP SOAP 前為什麼需要 Adapter？",
+          "url": "https://ithelp.ithome.com.tw/articles/10411311",
+          "publishedAt": "2026-09-26T08:09:31+08:00"
+        },
+        {
+          "id": 10414217,
+          "day": 14,
+          "title": "Day 14｜Adapter Service 設計：別讓隔離層變成第二套 ERP",
+          "url": "https://ithelp.ithome.com.tw/articles/10414217",
+          "publishedAt": "2026-09-27T07:39:48+08:00"
+        },
+        {
+          "id": 10414292,
+          "day": 15,
+          "title": "Day 15｜REST 與 SOAP 轉換：不只是 XML 改成 JSON",
+          "url": "https://ithelp.ithome.com.tw/articles/10414292",
+          "publishedAt": "2026-09-28T08:48:17+08:00"
+        },
+        {
+          "id": 10414887,
+          "day": 16,
+          "title": "Day 16｜condition 白名單：查詢保有彈性，呼叫端仍不能傳 SQL",
+          "url": "https://ithelp.ithome.com.tw/articles/10414887",
+          "publishedAt": "2026-09-29T08:17:19+08:00"
+        },
+        {
+          "id": 10415831,
+          "day": 17,
+          "title": "Day 17｜REST 還是 MQ？先問業務是否需要立即答案",
+          "url": "https://ithelp.ithome.com.tw/articles/10415831",
+          "publishedAt": "2026-09-30T07:30:23+08:00"
+        },
+        {
+          "id": 10415834,
+          "day": 18,
+          "title": "Day 18｜Kafka 與 RabbitMQ：不是競爭，而是不同任務",
+          "url": "https://ithelp.ithome.com.tw/articles/10415834",
+          "publishedAt": "2026-10-01T07:33:00+08:00"
+        },
+        {
+          "id": 10415984,
+          "day": 19,
+          "title": "Day 19｜事件送兩次，訂單只能做一次：冪等與 Outbox 設計",
+          "url": "https://ithelp.ithome.com.tw/articles/10415984",
+          "publishedAt": "2026-10-02T07:29:20+08:00"
+        },
+        {
+          "id": 10416008,
+          "day": 20,
+          "title": "Day 20｜EDI 與 B2B：最容易被低估的企業整合",
+          "url": "https://ithelp.ithome.com.tw/articles/10416008",
+          "publishedAt": "2026-10-03T08:26:05+08:00"
+        },
+        {
+          "id": 10416337,
+          "day": 21,
+          "title": "Day 21｜企業 RAG 的應用邊界與風險分級",
+          "url": "https://ithelp.ithome.com.tw/articles/10416337",
+          "publishedAt": "2026-10-04T08:27:27+08:00"
+        },
+        {
+          "id": 10416387,
+          "day": 22,
+          "title": "Day 22｜RAG 導入前的資料權限與驗證治理",
+          "url": "https://ithelp.ithome.com.tw/articles/10416387",
+          "publishedAt": "2026-10-05T07:41:43+08:00"
+        },
+        {
+          "id": 10417128,
+          "day": 23,
+          "title": "Day 23｜先定 Timeout Budget，再談 Retry：API 韌性設計的順序",
+          "url": "https://ithelp.ithome.com.tw/articles/10417128",
+          "publishedAt": "2026-10-06T08:23:29+08:00"
+        },
+        {
+          "id": 10417452,
+          "day": 24,
+          "title": "Day 24｜LogsMetricsTraces：三種訊號各回答什麼？",
+          "url": "https://ithelp.ithome.com.tw/articles/10417452",
+          "publishedAt": "2026-10-07T07:21:51+08:00"
+        },
+        {
+          "id": 10417467,
+          "day": 25,
+          "title": "Day 25｜PrometheusGrafanaJaeger：從 Dashboard 到可行動告警",
+          "url": "https://ithelp.ithome.com.tw/articles/10417467",
+          "publishedAt": "2026-10-08T07:59:09+08:00"
+        }
+      ]
+    },
+    {
       "id": 9722,
       "user": {
         "id": 20183738,
@@ -97565,200 +97759,6 @@
           "title": "Day 24：把判準寫成規則，而不是每次提醒",
           "url": "https://ithelp.ithome.com.tw/articles/10421915",
           "publishedAt": "2026-10-07T08:36:54+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9692,
-      "user": {
-        "id": 20184230,
-        "name": "ashleylin1007",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20184230/profile"
-      },
-      "group": "Software Development",
-      "title": "30 天把舊 ERP 整合成現代微服務平台：架構治理與工程實作雙軌實戰",
-      "description": "舊 ERP 還能跑，為什麼還要動它？本系列以一家製造業的匿名化案例，記錄把 SOAP 型 ERP 逐步整合成現代微服務平台的 30 天決策過程。\r\n\r\n每篇固定分「架構師視角」與「工程師視角」兩層：先講這個設計降低什麼風險，再講程式碼怎麼落地、怎麼驗證、踩過哪些坑。不展示完美架構，只記錄真實限制下的取捨。適合正在處理 Legacy 系統、API 整合與治理要求的架構師、資深工程師與技術主管。",
-      "team": null,
-      "signupDate": "2026/09/14T13:19:55+08:00",
-      "lastUpdated": "2026-10-08T08:02:18+08:00",
-      "dayCount": 24,
-      "articleCount": 25,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410285,
-          "day": 1,
-          "title": "Day 01｜ERP 明明還能用，為什麼還需要現代化平台？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410285",
-          "publishedAt": "2026-09-14T14:05:16+08:00"
-        },
-        {
-          "id": 10410324,
-          "day": 2,
-          "title": "Day 02｜ERP 現代化的策略矩陣：別從工具清單開始",
-          "url": "https://ithelp.ithome.com.tw/articles/10410324",
-          "publishedAt": "2026-09-15T07:17:11+08:00"
-        },
-        {
-          "id": 10410406,
-          "day": 3,
-          "title": "Day 03｜從系統很難改走向可量測的成功指標",
-          "url": "https://ithelp.ithome.com.tw/articles/10410406",
-          "publishedAt": "2026-09-16T08:11:39+08:00"
-        },
-        {
-          "id": 10410452,
-          "day": 4,
-          "title": "Day 04｜漸進式現代化，還是一次重建 ERP？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410452",
-          "publishedAt": "2026-09-17T07:49:55+08:00"
-        },
-        {
-          "id": 10410701,
-          "day": 5,
-          "title": "Day 05｜微服務不是目標：模組化單體與混合架構怎麼選？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410701",
-          "publishedAt": "2026-09-18T07:48:18+08:00"
-        },
-        {
-          "id": 10410702,
-          "day": 6,
-          "title": "Day 06｜現代化平台總體藍圖",
-          "url": "https://ithelp.ithome.com.tw/articles/10410702",
-          "publishedAt": "2026-09-19T08:58:59+08:00"
-        },
-        {
-          "id": 10410703,
-          "day": 7,
-          "title": "Day 07｜服務邊界怎麼拆：依業務能力，不依技術分層",
-          "url": "https://ithelp.ithome.com.tw/articles/10410703",
-          "publishedAt": "2026-09-20T08:22:40+08:00"
-        },
-        {
-          "id": 10410717,
-          "day": 8,
-          "title": "Day 08｜資料所有權：每個服務都能查資料庫，還算微服務嗎？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410717",
-          "publishedAt": "2026-09-21T11:10:45+08:00"
-        },
-        {
-          "id": 10410770,
-          "day": 9,
-          "title": "Day 09｜Gateway：統一入口，也是治理控制點",
-          "url": "https://ithelp.ithome.com.tw/articles/10410770",
-          "publishedAt": "2026-09-22T07:36:06+08:00"
-        },
-        {
-          "id": 10410778,
-          "day": 10,
-          "title": "Day 10｜Spring Cloud Gateway：RoutePredicateFilter 如何分工",
-          "url": "https://ithelp.ithome.com.tw/articles/10410778",
-          "publishedAt": "2026-09-23T07:34:25+08:00"
-        },
-        {
-          "id": 10411105,
-          "day": 11,
-          "title": "Day 11｜KeycloakOAuth 2.0OIDC 與 JWT：別再把登入和授權混在一起",
-          "url": "https://ithelp.ithome.com.tw/articles/10411105",
-          "publishedAt": "2026-09-24T07:33:58+08:00"
-        },
-        {
-          "id": 10411291,
-          "day": 12,
-          "title": "Day 12｜RBAC 還不夠：把角色資源與資料範圍分開",
-          "url": "https://ithelp.ithome.com.tw/articles/10411291",
-          "publishedAt": "2026-09-25T07:50:21+08:00"
-        },
-        {
-          "id": 10411311,
-          "day": 13,
-          "title": "Day 13｜ERP SOAP 前為什麼需要 Adapter？",
-          "url": "https://ithelp.ithome.com.tw/articles/10411311",
-          "publishedAt": "2026-09-26T08:09:31+08:00"
-        },
-        {
-          "id": 10414217,
-          "day": 14,
-          "title": "Day 14｜Adapter Service 設計：別讓隔離層變成第二套 ERP",
-          "url": "https://ithelp.ithome.com.tw/articles/10414217",
-          "publishedAt": "2026-09-27T07:39:48+08:00"
-        },
-        {
-          "id": 10414292,
-          "day": 15,
-          "title": "Day 15｜REST 與 SOAP 轉換：不只是 XML 改成 JSON",
-          "url": "https://ithelp.ithome.com.tw/articles/10414292",
-          "publishedAt": "2026-09-28T08:48:17+08:00"
-        },
-        {
-          "id": 10414887,
-          "day": 16,
-          "title": "Day 16｜condition 白名單：查詢保有彈性，呼叫端仍不能傳 SQL",
-          "url": "https://ithelp.ithome.com.tw/articles/10414887",
-          "publishedAt": "2026-09-29T08:17:19+08:00"
-        },
-        {
-          "id": 10415831,
-          "day": 17,
-          "title": "Day 17｜REST 還是 MQ？先問業務是否需要立即答案",
-          "url": "https://ithelp.ithome.com.tw/articles/10415831",
-          "publishedAt": "2026-09-30T07:30:23+08:00"
-        },
-        {
-          "id": 10415834,
-          "day": 18,
-          "title": "Day 18｜Kafka 與 RabbitMQ：不是競爭，而是不同任務",
-          "url": "https://ithelp.ithome.com.tw/articles/10415834",
-          "publishedAt": "2026-10-01T07:33:00+08:00"
-        },
-        {
-          "id": 10415984,
-          "day": 19,
-          "title": "Day 19｜事件送兩次，訂單只能做一次：冪等與 Outbox 設計",
-          "url": "https://ithelp.ithome.com.tw/articles/10415984",
-          "publishedAt": "2026-10-02T07:29:20+08:00"
-        },
-        {
-          "id": 10416008,
-          "day": 20,
-          "title": "Day 20｜EDI 與 B2B：最容易被低估的企業整合",
-          "url": "https://ithelp.ithome.com.tw/articles/10416008",
-          "publishedAt": "2026-10-03T08:26:05+08:00"
-        },
-        {
-          "id": 10416337,
-          "day": 21,
-          "title": "Day 21｜企業 RAG 的應用邊界與風險分級",
-          "url": "https://ithelp.ithome.com.tw/articles/10416337",
-          "publishedAt": "2026-10-04T08:27:27+08:00"
-        },
-        {
-          "id": 10416387,
-          "day": 22,
-          "title": "Day 22｜RAG 導入前的資料權限與驗證治理",
-          "url": "https://ithelp.ithome.com.tw/articles/10416387",
-          "publishedAt": "2026-10-05T07:41:43+08:00"
-        },
-        {
-          "id": 10417128,
-          "day": 23,
-          "title": "Day 23｜先定 Timeout Budget，再談 Retry：API 韌性設計的順序",
-          "url": "https://ithelp.ithome.com.tw/articles/10417128",
-          "publishedAt": "2026-10-06T08:23:29+08:00"
-        },
-        {
-          "id": 10417452,
-          "day": 24,
-          "title": "Day 24｜LogsMetricsTraces：三種訊號各回答什麼？",
-          "url": "https://ithelp.ithome.com.tw/articles/10417452",
-          "publishedAt": "2026-10-07T07:21:51+08:00"
-        },
-        {
-          "id": 10417467,
-          "day": 25,
-          "title": "Day 25｜PrometheusGrafanaJaeger：從 Dashboard 到可行動告警",
-          "url": "https://ithelp.ithome.com.tw/articles/10417467",
-          "publishedAt": "2026-10-08T07:59:09+08:00"
         }
       ]
     },
