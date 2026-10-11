@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-10-11 07:12:57+08:00",
+  "updatedAt": "2026-10-11 08:04:06+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -91731,6 +91731,214 @@
       ]
     },
     {
+      "id": 9691,
+      "user": {
+        "id": 20130095,
+        "name": "Lafin",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20130095/profile"
+      },
+      "group": "Build on Google AI",
+      "title": "用 Google AI 簡化行政工作流程：一個學校行政人員的 30 天實作紀錄",
+      "description": "我在大學行政單位工作，不是工程師。這三十天記錄我怎麼用 Google 的 AI 工具處理真實的行政工作：用 Gemini 草擬法規與修正草案對照表、盤點全校四百多門課、把上級來文變成校網公告；用 NotebookLM 做會議逐字稿；用 Firebase 做活動報到與抽籤系統；用 Antigravity CLI 把大量翻找整理的工作委派出去。重點不在工具多強，在哪些工作能交出去、怎麼驗證它做對了、以及哪些事情不管工具多強都不該交。失敗、走錯路、結論被推翻的過程也會照實寫。",
+      "team": null,
+      "signupDate": "2026/09/14T13:19:40+08:00",
+      "lastUpdated": "2026-10-11T07:11:32+08:00",
+      "dayCount": 28,
+      "articleCount": 27,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410297,
+          "day": 1,
+          "title": "Day 1：我不需要它很厲害，我需要它真的把工作拿走",
+          "url": "https://ithelp.ithome.com.tw/articles/10410297",
+          "publishedAt": "2026-09-14T14:37:05+08:00"
+        },
+        {
+          "id": 10410738,
+          "day": 2,
+          "title": "Day 2：我的工作裡，哪些是電腦該做但我在做的事",
+          "url": "https://ithelp.ithome.com.tw/articles/10410738",
+          "publishedAt": "2026-09-15T09:08:47+08:00"
+        },
+        {
+          "id": 10411880,
+          "day": 3,
+          "title": "Day 3：為什麼是 Google 這一套",
+          "url": "https://ithelp.ithome.com.tw/articles/10411880",
+          "publishedAt": "2026-09-16T18:20:13+08:00"
+        },
+        {
+          "id": 10412351,
+          "day": 4,
+          "title": "Day 4：我的第一條規矩先問這件事可不可以驗證",
+          "url": "https://ithelp.ithome.com.tw/articles/10412351",
+          "publishedAt": "2026-09-17T09:22:43+08:00"
+        },
+        {
+          "id": 10413009,
+          "day": 5,
+          "title": "Day 5：用 Gemini 草擬法規辦法（上）第一份草稿是怎麼來的",
+          "url": "https://ithelp.ithome.com.tw/articles/10413009",
+          "publishedAt": "2026-09-18T09:24:20+08:00"
+        },
+        {
+          "id": 10413595,
+          "day": 6,
+          "title": "Day 6：用 Gemini 草擬法規辦法（下）修正草案對照表，與一個沒過的案子",
+          "url": "https://ithelp.ithome.com.tw/articles/10413595",
+          "publishedAt": "2026-09-19T09:42:09+08:00"
+        },
+        {
+          "id": 10414143,
+          "day": 7,
+          "title": "Day 7：四百多門課，篩出 11 門還是 30 門？",
+          "url": "https://ithelp.ithome.com.tw/articles/10414143",
+          "publishedAt": "2026-09-20T09:15:08+08:00"
+        },
+        {
+          "id": 10414713,
+          "day": 8,
+          "title": "Day 8：這個數字要報出去，它站得住腳嗎",
+          "url": "https://ithelp.ithome.com.tw/articles/10414713",
+          "publishedAt": "2026-09-21T09:11:05+08:00"
+        },
+        {
+          "id": 10415274,
+          "day": 9,
+          "title": "Day 9：一份來文 PDF，要變成什麼",
+          "url": "https://ithelp.ithome.com.tw/articles/10415274",
+          "publishedAt": "2026-09-22T08:46:52+08:00"
+        },
+        {
+          "id": 10415784,
+          "day": 10,
+          "title": "Day 10：公告的口吻是有立場的",
+          "url": "https://ithelp.ithome.com.tw/articles/10415784",
+          "publishedAt": "2026-09-23T09:32:51+08:00"
+        },
+        {
+          "id": 10416341,
+          "day": 11,
+          "title": "Day 11：用 NotebookLM 做會議逐字稿關鍵不在錄音，在議程",
+          "url": "https://ithelp.ithome.com.tw/articles/10416341",
+          "publishedAt": "2026-09-24T14:20:08+08:00"
+        },
+        {
+          "id": 10416908,
+          "day": 12,
+          "title": "Day 12：政府的統計資料，不在你以為的地方",
+          "url": "https://ithelp.ithome.com.tw/articles/10416908",
+          "publishedAt": "2026-09-25T11:40:10+08:00"
+        },
+        {
+          "id": 10417339,
+          "day": 13,
+          "title": "Day 13：網站不是我從零做的AI 幫的是模板裡我能改的那一塊",
+          "url": "https://ithelp.ithome.com.tw/articles/10417339",
+          "publishedAt": "2026-09-26T10:22:06+08:00"
+        },
+        {
+          "id": 10417762,
+          "day": 14,
+          "title": "Day 14：上線之後才是工作老後台會用各種方式擋住你",
+          "url": "https://ithelp.ithome.com.tw/articles/10417762",
+          "publishedAt": "2026-09-27T09:50:47+08:00"
+        },
+        {
+          "id": 10418178,
+          "day": 15,
+          "title": "Day 15：Gemini 寫的文案，一樣要過內容治理這一關",
+          "url": "https://ithelp.ithome.com.tw/articles/10418178",
+          "publishedAt": "2026-09-28T08:20:33+08:00"
+        },
+        {
+          "id": 10418626,
+          "day": 16,
+          "title": "Day 16：用 Gemini 改 code，通過 AA 無障礙檢測",
+          "url": "https://ithelp.ithome.com.tw/articles/10418626",
+          "publishedAt": "2026-09-29T09:10:00+08:00"
+        },
+        {
+          "id": 10419128,
+          "day": 17,
+          "title": "Day 17：活動報到系統現場排隊的每一秒都是實體的",
+          "url": "https://ithelp.ithome.com.tw/articles/10419128",
+          "publishedAt": "2026-09-30T09:22:20+08:00"
+        },
+        {
+          "id": 10419585,
+          "day": 18,
+          "title": "Day 18：停車位抽籤一個要讓所有人服氣的程式",
+          "url": "https://ithelp.ithome.com.tw/articles/10419585",
+          "publishedAt": "2026-10-01T12:00:22+08:00"
+        },
+        {
+          "id": 10419987,
+          "day": 19,
+          "title": "Day 19：測試不能用真名冊",
+          "url": "https://ithelp.ithome.com.tw/articles/10419987",
+          "publishedAt": "2026-10-02T09:16:53+08:00"
+        },
+        {
+          "id": 10420446,
+          "day": 20,
+          "title": "Day 20：把工作丟給另一個 AI 去跑",
+          "url": "https://ithelp.ithome.com.tw/articles/10420446",
+          "publishedAt": "2026-10-03T15:44:03+08:00"
+        },
+        {
+          "id": 10420745,
+          "day": 21,
+          "title": "Day 21：沒有人在螢幕前面的時候，權限要怎麼給",
+          "url": "https://ithelp.ithome.com.tw/articles/10420745",
+          "publishedAt": "2026-10-04T10:36:40+08:00"
+        },
+        {
+          "id": 10421101,
+          "day": 22,
+          "title": "Day 22：它說完美，但錯的不只是它",
+          "url": "https://ithelp.ithome.com.tw/articles/10421101",
+          "publishedAt": "2026-10-05T08:59:32+08:00"
+        },
+        {
+          "id": 10421557,
+          "day": 23,
+          "title": "Day 23：AI 說它做到了，但證據是人發現的",
+          "url": "https://ithelp.ithome.com.tw/articles/10421557",
+          "publishedAt": "2026-10-06T09:22:35+08:00"
+        },
+        {
+          "id": 10421915,
+          "day": 24,
+          "title": "Day 24：把判準寫成規則，而不是每次提醒",
+          "url": "https://ithelp.ithome.com.tw/articles/10421915",
+          "publishedAt": "2026-10-07T08:36:54+08:00"
+        },
+        {
+          "id": 10422319,
+          "day": 25,
+          "title": "Day 25：這支程式到底是誰在維護？",
+          "url": "https://ithelp.ithome.com.tw/articles/10422319",
+          "publishedAt": "2026-10-08T12:39:55+08:00"
+        },
+        {
+          "id": 10422623,
+          "day": 26,
+          "title": "Day 26：額度是會用完的怎麼知道還剩多少",
+          "url": "https://ithelp.ithome.com.tw/articles/10422623",
+          "publishedAt": "2026-10-09T10:15:55+08:00"
+        },
+        {
+          "id": 10423026,
+          "day": 27,
+          "title": "Day 27：哪些資料不能送出去",
+          "url": "https://ithelp.ithome.com.tw/articles/10423026",
+          "publishedAt": "2026-10-10T16:39:03+08:00"
+        }
+      ]
+    },
+    {
       "id": 9722,
       "user": {
         "id": 20183738,
@@ -98810,214 +99018,6 @@
       ]
     },
     {
-      "id": 9691,
-      "user": {
-        "id": 20130095,
-        "name": "Lafin",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20130095/profile"
-      },
-      "group": "Build on Google AI",
-      "title": "用 Google AI 簡化行政工作流程：一個學校行政人員的 30 天實作紀錄",
-      "description": "我在大學行政單位工作，不是工程師。這三十天記錄我怎麼用 Google 的 AI 工具處理真實的行政工作：用 Gemini 草擬法規與修正草案對照表、盤點全校四百多門課、把上級來文變成校網公告；用 NotebookLM 做會議逐字稿；用 Firebase 做活動報到與抽籤系統；用 Antigravity CLI 把大量翻找整理的工作委派出去。重點不在工具多強，在哪些工作能交出去、怎麼驗證它做對了、以及哪些事情不管工具多強都不該交。失敗、走錯路、結論被推翻的過程也會照實寫。",
-      "team": null,
-      "signupDate": "2026/09/14T13:19:40+08:00",
-      "lastUpdated": "2026-10-11T07:11:32+08:00",
-      "dayCount": 27,
-      "articleCount": 27,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410297,
-          "day": 1,
-          "title": "Day 1：我不需要它很厲害，我需要它真的把工作拿走",
-          "url": "https://ithelp.ithome.com.tw/articles/10410297",
-          "publishedAt": "2026-09-14T14:37:05+08:00"
-        },
-        {
-          "id": 10410738,
-          "day": 2,
-          "title": "Day 2：我的工作裡，哪些是電腦該做但我在做的事",
-          "url": "https://ithelp.ithome.com.tw/articles/10410738",
-          "publishedAt": "2026-09-15T09:08:47+08:00"
-        },
-        {
-          "id": 10411880,
-          "day": 3,
-          "title": "Day 3：為什麼是 Google 這一套",
-          "url": "https://ithelp.ithome.com.tw/articles/10411880",
-          "publishedAt": "2026-09-16T18:20:13+08:00"
-        },
-        {
-          "id": 10412351,
-          "day": 4,
-          "title": "Day 4：我的第一條規矩先問這件事可不可以驗證",
-          "url": "https://ithelp.ithome.com.tw/articles/10412351",
-          "publishedAt": "2026-09-17T09:22:43+08:00"
-        },
-        {
-          "id": 10413009,
-          "day": 5,
-          "title": "Day 5：用 Gemini 草擬法規辦法（上）第一份草稿是怎麼來的",
-          "url": "https://ithelp.ithome.com.tw/articles/10413009",
-          "publishedAt": "2026-09-18T09:24:20+08:00"
-        },
-        {
-          "id": 10413595,
-          "day": 6,
-          "title": "Day 6：用 Gemini 草擬法規辦法（下）修正草案對照表，與一個沒過的案子",
-          "url": "https://ithelp.ithome.com.tw/articles/10413595",
-          "publishedAt": "2026-09-19T09:42:09+08:00"
-        },
-        {
-          "id": 10414143,
-          "day": 7,
-          "title": "Day 7：四百多門課，篩出 11 門還是 30 門？",
-          "url": "https://ithelp.ithome.com.tw/articles/10414143",
-          "publishedAt": "2026-09-20T09:15:08+08:00"
-        },
-        {
-          "id": 10414713,
-          "day": 8,
-          "title": "Day 8：這個數字要報出去，它站得住腳嗎",
-          "url": "https://ithelp.ithome.com.tw/articles/10414713",
-          "publishedAt": "2026-09-21T09:11:05+08:00"
-        },
-        {
-          "id": 10415274,
-          "day": 9,
-          "title": "Day 9：一份來文 PDF，要變成什麼",
-          "url": "https://ithelp.ithome.com.tw/articles/10415274",
-          "publishedAt": "2026-09-22T08:46:52+08:00"
-        },
-        {
-          "id": 10415784,
-          "day": 10,
-          "title": "Day 10：公告的口吻是有立場的",
-          "url": "https://ithelp.ithome.com.tw/articles/10415784",
-          "publishedAt": "2026-09-23T09:32:51+08:00"
-        },
-        {
-          "id": 10416341,
-          "day": 11,
-          "title": "Day 11：用 NotebookLM 做會議逐字稿關鍵不在錄音，在議程",
-          "url": "https://ithelp.ithome.com.tw/articles/10416341",
-          "publishedAt": "2026-09-24T14:20:08+08:00"
-        },
-        {
-          "id": 10416908,
-          "day": 12,
-          "title": "Day 12：政府的統計資料，不在你以為的地方",
-          "url": "https://ithelp.ithome.com.tw/articles/10416908",
-          "publishedAt": "2026-09-25T11:40:10+08:00"
-        },
-        {
-          "id": 10417339,
-          "day": 13,
-          "title": "Day 13：網站不是我從零做的AI 幫的是模板裡我能改的那一塊",
-          "url": "https://ithelp.ithome.com.tw/articles/10417339",
-          "publishedAt": "2026-09-26T10:22:06+08:00"
-        },
-        {
-          "id": 10417762,
-          "day": 14,
-          "title": "Day 14：上線之後才是工作老後台會用各種方式擋住你",
-          "url": "https://ithelp.ithome.com.tw/articles/10417762",
-          "publishedAt": "2026-09-27T09:50:47+08:00"
-        },
-        {
-          "id": 10418178,
-          "day": 15,
-          "title": "Day 15：Gemini 寫的文案，一樣要過內容治理這一關",
-          "url": "https://ithelp.ithome.com.tw/articles/10418178",
-          "publishedAt": "2026-09-28T08:20:33+08:00"
-        },
-        {
-          "id": 10418626,
-          "day": 16,
-          "title": "Day 16：用 Gemini 改 code，通過 AA 無障礙檢測",
-          "url": "https://ithelp.ithome.com.tw/articles/10418626",
-          "publishedAt": "2026-09-29T09:10:00+08:00"
-        },
-        {
-          "id": 10419128,
-          "day": 17,
-          "title": "Day 17：活動報到系統現場排隊的每一秒都是實體的",
-          "url": "https://ithelp.ithome.com.tw/articles/10419128",
-          "publishedAt": "2026-09-30T09:22:20+08:00"
-        },
-        {
-          "id": 10419585,
-          "day": 18,
-          "title": "Day 18：停車位抽籤一個要讓所有人服氣的程式",
-          "url": "https://ithelp.ithome.com.tw/articles/10419585",
-          "publishedAt": "2026-10-01T12:00:22+08:00"
-        },
-        {
-          "id": 10419987,
-          "day": 19,
-          "title": "Day 19：測試不能用真名冊",
-          "url": "https://ithelp.ithome.com.tw/articles/10419987",
-          "publishedAt": "2026-10-02T09:16:53+08:00"
-        },
-        {
-          "id": 10420446,
-          "day": 20,
-          "title": "Day 20：把工作丟給另一個 AI 去跑",
-          "url": "https://ithelp.ithome.com.tw/articles/10420446",
-          "publishedAt": "2026-10-03T15:44:03+08:00"
-        },
-        {
-          "id": 10420745,
-          "day": 21,
-          "title": "Day 21：沒有人在螢幕前面的時候，權限要怎麼給",
-          "url": "https://ithelp.ithome.com.tw/articles/10420745",
-          "publishedAt": "2026-10-04T10:36:40+08:00"
-        },
-        {
-          "id": 10421101,
-          "day": 22,
-          "title": "Day 22：它說完美，但錯的不只是它",
-          "url": "https://ithelp.ithome.com.tw/articles/10421101",
-          "publishedAt": "2026-10-05T08:59:32+08:00"
-        },
-        {
-          "id": 10421557,
-          "day": 23,
-          "title": "Day 23：AI 說它做到了，但證據是人發現的",
-          "url": "https://ithelp.ithome.com.tw/articles/10421557",
-          "publishedAt": "2026-10-06T09:22:35+08:00"
-        },
-        {
-          "id": 10421915,
-          "day": 24,
-          "title": "Day 24：把判準寫成規則，而不是每次提醒",
-          "url": "https://ithelp.ithome.com.tw/articles/10421915",
-          "publishedAt": "2026-10-07T08:36:54+08:00"
-        },
-        {
-          "id": 10422319,
-          "day": 25,
-          "title": "Day 25：這支程式到底是誰在維護？",
-          "url": "https://ithelp.ithome.com.tw/articles/10422319",
-          "publishedAt": "2026-10-08T12:39:55+08:00"
-        },
-        {
-          "id": 10422623,
-          "day": 26,
-          "title": "Day 26：額度是會用完的怎麼知道還剩多少",
-          "url": "https://ithelp.ithome.com.tw/articles/10422623",
-          "publishedAt": "2026-10-09T10:15:55+08:00"
-        },
-        {
-          "id": 10423026,
-          "day": 27,
-          "title": "Day 27：哪些資料不能送出去",
-          "url": "https://ithelp.ithome.com.tw/articles/10423026",
-          "publishedAt": "2026-10-10T16:39:03+08:00"
-        }
-      ]
-    },
-    {
       "id": 9692,
       "user": {
         "id": 20184230,
@@ -102177,7 +102177,7 @@
       "description": "連續 30 天的技術寫作，寫到後期最容易失控的不是靈感枯竭，而是忍不住把整篇文章丟給 AI 一鍵生成，結果讀起來總帶著模仿的破綻，多天累積下來系列風格逐漸崩壞。\r\n\r\n這系列文章從這個困境出發，點出問題不在模型不夠聰明或 Prompt 不夠精準，而在於把規劃、查證、撰寫、審查全部塞進單一次推理，這種工作方式本身在架構上就站不住腳。\r\n\r\n解法是像軟體架構師規劃系統一樣，把長篇技術系列寫作拆解成各司其職的代理人們，一步步打造出來，再串接成一條真正能協同運作的生產線。",
       "team": null,
       "signupDate": "2026/09/14T23:22:25+08:00",
-      "lastUpdated": "2026-10-11T07:02:41+08:00",
+      "lastUpdated": "2026-10-11T08:03:08+08:00",
       "dayCount": 27,
       "articleCount": 27,
       "subscriptions": 0,
@@ -102593,7 +102593,7 @@
       "description": "寫過 launch、async，程式碼能動，但一遇到協程明明取消了畫面卻還在跑、例外像穿牆一樣繞過 try-catch，就答不出問題出在哪裡。這個系列要補的不是 API 用法，而是那條被你跳過的執行時間軸：協程何時暫停、何時恢復、狀態被誰持有、又在什麼條件下被取消。\r\n\r\n系列聚焦純 Kotlin Coroutines 語言機制本身，全系列使用一個示範情境，讓讀者這 30 天走完，拿到的是一套能推理協程行為的心智地圖、而不是只能死記 API 來猜測程式動作。",
       "team": null,
       "signupDate": "2026/09/14T23:27:32+08:00",
-      "lastUpdated": "2026-10-11T06:15:53+08:00",
+      "lastUpdated": "2026-10-11T07:16:53+08:00",
       "dayCount": 27,
       "articleCount": 27,
       "subscriptions": 0,
@@ -102801,7 +102801,7 @@
       "description": "這個系列帶著習慣 Thread、Executor 傳統並發思維的 Java 或後端工程師，從最基礎的 suspend function 開始建立 Kotlin 協程的觀念地基，再進入 Spring Boot 3 生態系整合、高併發控制與效能調校，最終完成一個具備可觀測性與部署經驗的實戰系列。\r\n\r\n全系列帶著讀者透過一個逐步擴充的示範情境，加上 Structured Concurrency、Dispatchers、WebFlux、R2DBC、逾時取消、背壓、連線池搭配⋯⋯等主題，30 天收斂成一個具備監控、壓測、部署經驗的完整後端服務。",
       "team": null,
       "signupDate": "2026/09/14T23:30:28+08:00",
-      "lastUpdated": "2026-10-11T06:55:41+08:00",
+      "lastUpdated": "2026-10-11T07:56:41+08:00",
       "dayCount": 27,
       "articleCount": 27,
       "subscriptions": 0,
@@ -155885,7 +155885,7 @@
       "description": "Data Machi 是一套聚焦企業實戰的 30 天學習系列。你將從理解聊天機器人與真正「會工作的 AI」之間的差距出發，逐步學會如何讓 AI 讀懂企業文件、呼叫工具、自主決策，最後打造一個能在正式環境穩定運作的企業知識工作流 Agent。",
       "team": null,
       "signupDate": "2026/08/01T21:43:05+08:00",
-      "lastUpdated": "2026-10-11T06:53:41+08:00",
+      "lastUpdated": "2026-10-11T08:01:24+08:00",
       "dayCount": 10,
       "articleCount": 11,
       "subscriptions": 4,
