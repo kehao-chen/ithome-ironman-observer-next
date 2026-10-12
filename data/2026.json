@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-10-12 07:26:19+08:00",
+  "updatedAt": "2026-10-12 08:04:03+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -78920,6 +78920,228 @@
       ]
     },
     {
+      "id": 9560,
+      "user": {
+        "id": 20184090,
+        "name": "aarenhou",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20184090/profile"
+      },
+      "group": "自我挑戰組",
+      "title": "AI 不只會回答：30 天打造一套真正能上線的智慧助理",
+      "description": "本系列將以 30 天實戰為主軸，從智慧助理的需求出發，逐步探索 LLM、Prompt Engineering、RAG、Agent。過程不只介紹技術，更會實際面對資料處理、模型選擇等問題，將零散的 AI 技術串成一套完整的應用系統。透過每天的實作與記錄，從「AI 單機運作」走向「AI 落地應用」，以工程思維打造可靠且實用價值的 AI Application。",
+      "team": null,
+      "signupDate": "2026/09/09T14:56:10+08:00",
+      "lastUpdated": "2026-10-12T07:24:12+08:00",
+      "dayCount": 30,
+      "articleCount": 29,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10408874,
+          "day": 1,
+          "title": "[DAY 1] 這 30 天不只是寫文章，而是把一個 AI 想法，隨著步驟做成真正可以使用的智慧助理",
+          "url": "https://ithelp.ithome.com.tw/articles/10408874",
+          "publishedAt": "2026-09-13T21:39:57+08:00"
+        },
+        {
+          "id": 10410534,
+          "day": 2,
+          "title": "[Day 2] 一個 AI 智慧助理，到底需要哪些要素",
+          "url": "https://ithelp.ithome.com.tw/articles/10410534",
+          "publishedAt": "2026-09-14T22:30:35+08:00"
+        },
+        {
+          "id": 10410716,
+          "day": 3,
+          "title": "[Day 3] 學習如何將一份文件內容進行切塊",
+          "url": "https://ithelp.ithome.com.tw/articles/10410716",
+          "publishedAt": "2026-09-15T09:18:39+08:00"
+        },
+        {
+          "id": 10411478,
+          "day": 4,
+          "title": "[Day 4] Embedding：文字到底是怎麼變成機器能比較的向量形式",
+          "url": "https://ithelp.ithome.com.tw/articles/10411478",
+          "publishedAt": "2026-09-16T08:07:58+08:00"
+        },
+        {
+          "id": 10412208,
+          "day": 5,
+          "title": "[Day 5] 建立第一個 Vector Database：讓 AI 助理搜尋自己的知識庫",
+          "url": "https://ithelp.ithome.com.tw/articles/10412208",
+          "publishedAt": "2026-09-17T00:00:47+08:00"
+        },
+        {
+          "id": 10413319,
+          "day": 6,
+          "title": "[Day 6] 串接 Vector Search 與 LLM 讓 AI 助理真正看著資料回答問題",
+          "url": "https://ithelp.ithome.com.tw/articles/10413319",
+          "publishedAt": "2026-09-18T21:30:02+08:00"
+        },
+        {
+          "id": 10413572,
+          "day": 7,
+          "title": "[Day 7] 讓 RAG 回答有依據：加入文件引用與 Metadata",
+          "url": "https://ithelp.ithome.com.tw/articles/10413572",
+          "publishedAt": "2026-09-19T07:31:11+08:00"
+        },
+        {
+          "id": 10414076,
+          "day": 8,
+          "title": "[Day 8] 提升 RAG 搜尋品質：Top-KChunk 調整與 Retrieval Precision",
+          "url": "https://ithelp.ithome.com.tw/articles/10414076",
+          "publishedAt": "2026-09-20T00:46:00+08:00"
+        },
+        {
+          "id": 10414620,
+          "day": 9,
+          "title": "不只靠向量搜尋：用 Hybrid Search 提升 RAG 檢索品質",
+          "url": "https://ithelp.ithome.com.tw/articles/10414620",
+          "publishedAt": "2026-09-21T00:47:31+08:00"
+        },
+        {
+          "id": 10415164,
+          "day": 10,
+          "title": "[Day 10] Reranking：讓真正相關的文件排在前面",
+          "url": "https://ithelp.ithome.com.tw/articles/10415164",
+          "publishedAt": "2026-09-22T00:04:54+08:00"
+        },
+        {
+          "id": 10415721,
+          "day": 11,
+          "title": "[Day 11] RAG Evaluation：如何知道 AI 助理回答得好不好",
+          "url": "https://ithelp.ithome.com.tw/articles/10415721",
+          "publishedAt": "2026-09-23T00:16:29+08:00"
+        },
+        {
+          "id": 10416262,
+          "day": 12,
+          "title": "[Day 12] 建立自動化 RAG Pipeline：讓每次修改都有依據",
+          "url": "https://ithelp.ithome.com.tw/articles/10416262",
+          "publishedAt": "2026-09-24T00:09:56+08:00"
+        },
+        {
+          "id": 10416873,
+          "day": 13,
+          "title": "[Day 13] 建立高品質評估資料集：讓測試案例更接近真實使用情境",
+          "url": "https://ithelp.ithome.com.tw/articles/10416873",
+          "publishedAt": "2026-09-25T10:24:01+08:00"
+        },
+        {
+          "id": 10417353,
+          "day": 14,
+          "title": "[Day 14] RAG Error Case: 從失敗案例找出真正的問題",
+          "url": "https://ithelp.ithome.com.tw/articles/10417353",
+          "publishedAt": "2026-09-26T11:00:54+08:00"
+        },
+        {
+          "id": 10417831,
+          "day": 15,
+          "title": "[Day 15] RAG Optimization 系統化改善，讓每次調參都有依據",
+          "url": "https://ithelp.ithome.com.tw/articles/10417831",
+          "publishedAt": "2026-09-27T13:47:12+08:00"
+        },
+        {
+          "id": 10418200,
+          "day": 16,
+          "title": "[Day 16] 讓每次模型參數與 Evaluation 結果都能被比較與追蹤",
+          "url": "https://ithelp.ithome.com.tw/articles/10418200",
+          "publishedAt": "2026-09-28T10:35:14+08:00"
+        },
+        {
+          "id": 10418618,
+          "day": 17,
+          "title": "[Day 17] RAG Evaluation Dashboard 讓系統品質一眼就能看懂",
+          "url": "https://ithelp.ithome.com.tw/articles/10418618",
+          "publishedAt": "2026-09-29T06:41:37+08:00"
+        },
+        {
+          "id": 10419316,
+          "day": 18,
+          "title": "[Day 18] RAG 從 Evaluation 走向 Production",
+          "url": "https://ithelp.ithome.com.tw/articles/10419316",
+          "publishedAt": "2026-09-30T20:27:18+08:00"
+        },
+        {
+          "id": 10419505,
+          "day": 19,
+          "title": "[Day 19] RAG 從看見問題到主動發現問題",
+          "url": "https://ithelp.ithome.com.tw/articles/10419505",
+          "publishedAt": "2026-10-01T06:00:45+08:00"
+        },
+        {
+          "id": 10420161,
+          "day": 20,
+          "title": "[Day 20] RAG  追蹤一次 Request 的完整生命週期",
+          "url": "https://ithelp.ithome.com.tw/articles/10420161",
+          "publishedAt": "2026-10-02T20:20:44+08:00"
+        },
+        {
+          "id": 10420319,
+          "day": 21,
+          "title": "[Day 21] RAG Cost 從 Token Usage 到 Production 成本分析",
+          "url": "https://ithelp.ithome.com.tw/articles/10420319",
+          "publishedAt": "2026-10-03T00:26:14+08:00"
+        },
+        {
+          "id": 10420674,
+          "day": 22,
+          "title": "[Day 22] RAG 從單次 Request 到大量流量壓力測試",
+          "url": "https://ithelp.ithome.com.tw/articles/10420674",
+          "publishedAt": "2026-10-04T00:08:13+08:00"
+        },
+        {
+          "id": 10421281,
+          "day": 23,
+          "title": "[Day 23] RAG Caching 降低 LatencyToken 與 API 成本",
+          "url": "https://ithelp.ithome.com.tw/articles/10421281",
+          "publishedAt": "2026-10-05T16:44:10+08:00"
+        },
+        {
+          "id": 10421685,
+          "day": 24,
+          "title": "[Day 24] RAG 從單機服務走向可水平擴展的 Production 架構",
+          "url": "https://ithelp.ithome.com.tw/articles/10421685",
+          "publishedAt": "2026-10-06T17:56:04+08:00"
+        },
+        {
+          "id": 10421924,
+          "day": 25,
+          "title": "[Day 25] RAG 從 Docker Container 到 Production 部署",
+          "url": "https://ithelp.ithome.com.tw/articles/10421924",
+          "publishedAt": "2026-10-07T09:14:56+08:00"
+        },
+        {
+          "id": 10422268,
+          "day": 26,
+          "title": "[Day 26] RAG CI/CD 從 Git Push 到自動化 Production Deployment",
+          "url": "https://ithelp.ithome.com.tw/articles/10422268",
+          "publishedAt": "2026-10-08T09:43:33+08:00"
+        },
+        {
+          "id": 10422683,
+          "day": 27,
+          "title": "[Day 27] RAG 從 Docker Compose 走向 Kubernetes",
+          "url": "https://ithelp.ithome.com.tw/articles/10422683",
+          "publishedAt": "2026-10-09T14:42:22+08:00"
+        },
+        {
+          "id": 10422973,
+          "day": 28,
+          "title": "[Day 28] RAG Reliability Engineering 從服務可用到品質可靠",
+          "url": "https://ithelp.ithome.com.tw/articles/10422973",
+          "publishedAt": "2026-10-10T11:56:04+08:00"
+        },
+        {
+          "id": 10423235,
+          "day": 29,
+          "title": "[Day 29] RAG Security 從 API 防護到 AI 應用安全",
+          "url": "https://ithelp.ithome.com.tw/articles/10423235",
+          "publishedAt": "2026-10-11T08:03:58+08:00"
+        }
+      ]
+    },
+    {
       "id": 9561,
       "user": {
         "id": 20159895,
@@ -87945,228 +88167,6 @@
       ]
     },
     {
-      "id": 9560,
-      "user": {
-        "id": 20184090,
-        "name": "aarenhou",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20184090/profile"
-      },
-      "group": "自我挑戰組",
-      "title": "AI 不只會回答：30 天打造一套真正能上線的智慧助理",
-      "description": "本系列將以 30 天實戰為主軸，從智慧助理的需求出發，逐步探索 LLM、Prompt Engineering、RAG、Agent。過程不只介紹技術，更會實際面對資料處理、模型選擇等問題，將零散的 AI 技術串成一套完整的應用系統。透過每天的實作與記錄，從「AI 單機運作」走向「AI 落地應用」，以工程思維打造可靠且實用價值的 AI Application。",
-      "team": null,
-      "signupDate": "2026/09/09T14:56:10+08:00",
-      "lastUpdated": "2026-10-12T07:24:12+08:00",
-      "dayCount": 29,
-      "articleCount": 29,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10408874,
-          "day": 1,
-          "title": "[DAY 1] 這 30 天不只是寫文章，而是把一個 AI 想法，隨著步驟做成真正可以使用的智慧助理",
-          "url": "https://ithelp.ithome.com.tw/articles/10408874",
-          "publishedAt": "2026-09-13T21:39:57+08:00"
-        },
-        {
-          "id": 10410534,
-          "day": 2,
-          "title": "[Day 2] 一個 AI 智慧助理，到底需要哪些要素",
-          "url": "https://ithelp.ithome.com.tw/articles/10410534",
-          "publishedAt": "2026-09-14T22:30:35+08:00"
-        },
-        {
-          "id": 10410716,
-          "day": 3,
-          "title": "[Day 3] 學習如何將一份文件內容進行切塊",
-          "url": "https://ithelp.ithome.com.tw/articles/10410716",
-          "publishedAt": "2026-09-15T09:18:39+08:00"
-        },
-        {
-          "id": 10411478,
-          "day": 4,
-          "title": "[Day 4] Embedding：文字到底是怎麼變成機器能比較的向量形式",
-          "url": "https://ithelp.ithome.com.tw/articles/10411478",
-          "publishedAt": "2026-09-16T08:07:58+08:00"
-        },
-        {
-          "id": 10412208,
-          "day": 5,
-          "title": "[Day 5] 建立第一個 Vector Database：讓 AI 助理搜尋自己的知識庫",
-          "url": "https://ithelp.ithome.com.tw/articles/10412208",
-          "publishedAt": "2026-09-17T00:00:47+08:00"
-        },
-        {
-          "id": 10413319,
-          "day": 6,
-          "title": "[Day 6] 串接 Vector Search 與 LLM 讓 AI 助理真正看著資料回答問題",
-          "url": "https://ithelp.ithome.com.tw/articles/10413319",
-          "publishedAt": "2026-09-18T21:30:02+08:00"
-        },
-        {
-          "id": 10413572,
-          "day": 7,
-          "title": "[Day 7] 讓 RAG 回答有依據：加入文件引用與 Metadata",
-          "url": "https://ithelp.ithome.com.tw/articles/10413572",
-          "publishedAt": "2026-09-19T07:31:11+08:00"
-        },
-        {
-          "id": 10414076,
-          "day": 8,
-          "title": "[Day 8] 提升 RAG 搜尋品質：Top-KChunk 調整與 Retrieval Precision",
-          "url": "https://ithelp.ithome.com.tw/articles/10414076",
-          "publishedAt": "2026-09-20T00:46:00+08:00"
-        },
-        {
-          "id": 10414620,
-          "day": 9,
-          "title": "不只靠向量搜尋：用 Hybrid Search 提升 RAG 檢索品質",
-          "url": "https://ithelp.ithome.com.tw/articles/10414620",
-          "publishedAt": "2026-09-21T00:47:31+08:00"
-        },
-        {
-          "id": 10415164,
-          "day": 10,
-          "title": "[Day 10] Reranking：讓真正相關的文件排在前面",
-          "url": "https://ithelp.ithome.com.tw/articles/10415164",
-          "publishedAt": "2026-09-22T00:04:54+08:00"
-        },
-        {
-          "id": 10415721,
-          "day": 11,
-          "title": "[Day 11] RAG Evaluation：如何知道 AI 助理回答得好不好",
-          "url": "https://ithelp.ithome.com.tw/articles/10415721",
-          "publishedAt": "2026-09-23T00:16:29+08:00"
-        },
-        {
-          "id": 10416262,
-          "day": 12,
-          "title": "[Day 12] 建立自動化 RAG Pipeline：讓每次修改都有依據",
-          "url": "https://ithelp.ithome.com.tw/articles/10416262",
-          "publishedAt": "2026-09-24T00:09:56+08:00"
-        },
-        {
-          "id": 10416873,
-          "day": 13,
-          "title": "[Day 13] 建立高品質評估資料集：讓測試案例更接近真實使用情境",
-          "url": "https://ithelp.ithome.com.tw/articles/10416873",
-          "publishedAt": "2026-09-25T10:24:01+08:00"
-        },
-        {
-          "id": 10417353,
-          "day": 14,
-          "title": "[Day 14] RAG Error Case: 從失敗案例找出真正的問題",
-          "url": "https://ithelp.ithome.com.tw/articles/10417353",
-          "publishedAt": "2026-09-26T11:00:54+08:00"
-        },
-        {
-          "id": 10417831,
-          "day": 15,
-          "title": "[Day 15] RAG Optimization 系統化改善，讓每次調參都有依據",
-          "url": "https://ithelp.ithome.com.tw/articles/10417831",
-          "publishedAt": "2026-09-27T13:47:12+08:00"
-        },
-        {
-          "id": 10418200,
-          "day": 16,
-          "title": "[Day 16] 讓每次模型參數與 Evaluation 結果都能被比較與追蹤",
-          "url": "https://ithelp.ithome.com.tw/articles/10418200",
-          "publishedAt": "2026-09-28T10:35:14+08:00"
-        },
-        {
-          "id": 10418618,
-          "day": 17,
-          "title": "[Day 17] RAG Evaluation Dashboard 讓系統品質一眼就能看懂",
-          "url": "https://ithelp.ithome.com.tw/articles/10418618",
-          "publishedAt": "2026-09-29T06:41:37+08:00"
-        },
-        {
-          "id": 10419316,
-          "day": 18,
-          "title": "[Day 18] RAG 從 Evaluation 走向 Production",
-          "url": "https://ithelp.ithome.com.tw/articles/10419316",
-          "publishedAt": "2026-09-30T20:27:18+08:00"
-        },
-        {
-          "id": 10419505,
-          "day": 19,
-          "title": "[Day 19] RAG 從看見問題到主動發現問題",
-          "url": "https://ithelp.ithome.com.tw/articles/10419505",
-          "publishedAt": "2026-10-01T06:00:45+08:00"
-        },
-        {
-          "id": 10420161,
-          "day": 20,
-          "title": "[Day 20] RAG  追蹤一次 Request 的完整生命週期",
-          "url": "https://ithelp.ithome.com.tw/articles/10420161",
-          "publishedAt": "2026-10-02T20:20:44+08:00"
-        },
-        {
-          "id": 10420319,
-          "day": 21,
-          "title": "[Day 21] RAG Cost 從 Token Usage 到 Production 成本分析",
-          "url": "https://ithelp.ithome.com.tw/articles/10420319",
-          "publishedAt": "2026-10-03T00:26:14+08:00"
-        },
-        {
-          "id": 10420674,
-          "day": 22,
-          "title": "[Day 22] RAG 從單次 Request 到大量流量壓力測試",
-          "url": "https://ithelp.ithome.com.tw/articles/10420674",
-          "publishedAt": "2026-10-04T00:08:13+08:00"
-        },
-        {
-          "id": 10421281,
-          "day": 23,
-          "title": "[Day 23] RAG Caching 降低 LatencyToken 與 API 成本",
-          "url": "https://ithelp.ithome.com.tw/articles/10421281",
-          "publishedAt": "2026-10-05T16:44:10+08:00"
-        },
-        {
-          "id": 10421685,
-          "day": 24,
-          "title": "[Day 24] RAG 從單機服務走向可水平擴展的 Production 架構",
-          "url": "https://ithelp.ithome.com.tw/articles/10421685",
-          "publishedAt": "2026-10-06T17:56:04+08:00"
-        },
-        {
-          "id": 10421924,
-          "day": 25,
-          "title": "[Day 25] RAG 從 Docker Container 到 Production 部署",
-          "url": "https://ithelp.ithome.com.tw/articles/10421924",
-          "publishedAt": "2026-10-07T09:14:56+08:00"
-        },
-        {
-          "id": 10422268,
-          "day": 26,
-          "title": "[Day 26] RAG CI/CD 從 Git Push 到自動化 Production Deployment",
-          "url": "https://ithelp.ithome.com.tw/articles/10422268",
-          "publishedAt": "2026-10-08T09:43:33+08:00"
-        },
-        {
-          "id": 10422683,
-          "day": 27,
-          "title": "[Day 27] RAG 從 Docker Compose 走向 Kubernetes",
-          "url": "https://ithelp.ithome.com.tw/articles/10422683",
-          "publishedAt": "2026-10-09T14:42:22+08:00"
-        },
-        {
-          "id": 10422973,
-          "day": 28,
-          "title": "[Day 28] RAG Reliability Engineering 從服務可用到品質可靠",
-          "url": "https://ithelp.ithome.com.tw/articles/10422973",
-          "publishedAt": "2026-10-10T11:56:04+08:00"
-        },
-        {
-          "id": 10423235,
-          "day": 29,
-          "title": "[Day 29] RAG Security 從 API 防護到 AI 應用安全",
-          "url": "https://ithelp.ithome.com.tw/articles/10423235",
-          "publishedAt": "2026-10-11T08:03:58+08:00"
-        }
-      ]
-    },
-    {
       "id": 9586,
       "user": {
         "id": 20162447,
@@ -90623,6 +90623,228 @@
       ]
     },
     {
+      "id": 9692,
+      "user": {
+        "id": 20184230,
+        "name": "ashleylin1007",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20184230/profile"
+      },
+      "group": "Software Development",
+      "title": "30 天把舊 ERP 整合成現代微服務平台：架構治理與工程實作雙軌實戰",
+      "description": "舊 ERP 還能跑，為什麼還要動它？本系列以一家製造業的匿名化案例，記錄把 SOAP 型 ERP 逐步整合成現代微服務平台的 30 天決策過程。\r\n\r\n每篇固定分「架構師視角」與「工程師視角」兩層：先講這個設計降低什麼風險，再講程式碼怎麼落地、怎麼驗證、踩過哪些坑。不展示完美架構，只記錄真實限制下的取捨。適合正在處理 Legacy 系統、API 整合與治理要求的架構師、資深工程師與技術主管。",
+      "team": null,
+      "signupDate": "2026/09/14T13:19:55+08:00",
+      "lastUpdated": "2026-10-12T07:24:54+08:00",
+      "dayCount": 29,
+      "articleCount": 29,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410285,
+          "day": 1,
+          "title": "Day 01｜ERP 明明還能用，為什麼還需要現代化平台？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410285",
+          "publishedAt": "2026-09-14T14:05:16+08:00"
+        },
+        {
+          "id": 10410324,
+          "day": 2,
+          "title": "Day 02｜ERP 現代化的策略矩陣：別從工具清單開始",
+          "url": "https://ithelp.ithome.com.tw/articles/10410324",
+          "publishedAt": "2026-09-15T07:17:11+08:00"
+        },
+        {
+          "id": 10410406,
+          "day": 3,
+          "title": "Day 03｜從系統很難改走向可量測的成功指標",
+          "url": "https://ithelp.ithome.com.tw/articles/10410406",
+          "publishedAt": "2026-09-16T08:11:39+08:00"
+        },
+        {
+          "id": 10410452,
+          "day": 4,
+          "title": "Day 04｜漸進式現代化，還是一次重建 ERP？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410452",
+          "publishedAt": "2026-09-17T07:49:55+08:00"
+        },
+        {
+          "id": 10410701,
+          "day": 5,
+          "title": "Day 05｜微服務不是目標：模組化單體與混合架構怎麼選？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410701",
+          "publishedAt": "2026-09-18T07:48:18+08:00"
+        },
+        {
+          "id": 10410702,
+          "day": 6,
+          "title": "Day 06｜現代化平台總體藍圖",
+          "url": "https://ithelp.ithome.com.tw/articles/10410702",
+          "publishedAt": "2026-09-19T08:58:59+08:00"
+        },
+        {
+          "id": 10410703,
+          "day": 7,
+          "title": "Day 07｜服務邊界怎麼拆：依業務能力，不依技術分層",
+          "url": "https://ithelp.ithome.com.tw/articles/10410703",
+          "publishedAt": "2026-09-20T08:22:40+08:00"
+        },
+        {
+          "id": 10410717,
+          "day": 8,
+          "title": "Day 08｜資料所有權：每個服務都能查資料庫，還算微服務嗎？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410717",
+          "publishedAt": "2026-09-21T11:10:45+08:00"
+        },
+        {
+          "id": 10410770,
+          "day": 9,
+          "title": "Day 09｜Gateway：統一入口，也是治理控制點",
+          "url": "https://ithelp.ithome.com.tw/articles/10410770",
+          "publishedAt": "2026-09-22T07:36:06+08:00"
+        },
+        {
+          "id": 10410778,
+          "day": 10,
+          "title": "Day 10｜Spring Cloud Gateway：RoutePredicateFilter 如何分工",
+          "url": "https://ithelp.ithome.com.tw/articles/10410778",
+          "publishedAt": "2026-09-23T07:34:25+08:00"
+        },
+        {
+          "id": 10411105,
+          "day": 11,
+          "title": "Day 11｜KeycloakOAuth 2.0OIDC 與 JWT：別再把登入和授權混在一起",
+          "url": "https://ithelp.ithome.com.tw/articles/10411105",
+          "publishedAt": "2026-09-24T07:33:58+08:00"
+        },
+        {
+          "id": 10411291,
+          "day": 12,
+          "title": "Day 12｜RBAC 還不夠：把角色資源與資料範圍分開",
+          "url": "https://ithelp.ithome.com.tw/articles/10411291",
+          "publishedAt": "2026-09-25T07:50:21+08:00"
+        },
+        {
+          "id": 10411311,
+          "day": 13,
+          "title": "Day 13｜ERP SOAP 前為什麼需要 Adapter？",
+          "url": "https://ithelp.ithome.com.tw/articles/10411311",
+          "publishedAt": "2026-09-26T08:09:31+08:00"
+        },
+        {
+          "id": 10414217,
+          "day": 14,
+          "title": "Day 14｜Adapter Service 設計：別讓隔離層變成第二套 ERP",
+          "url": "https://ithelp.ithome.com.tw/articles/10414217",
+          "publishedAt": "2026-09-27T07:39:48+08:00"
+        },
+        {
+          "id": 10414292,
+          "day": 15,
+          "title": "Day 15｜REST 與 SOAP 轉換：不只是 XML 改成 JSON",
+          "url": "https://ithelp.ithome.com.tw/articles/10414292",
+          "publishedAt": "2026-09-28T08:48:17+08:00"
+        },
+        {
+          "id": 10414887,
+          "day": 16,
+          "title": "Day 16｜condition 白名單：查詢保有彈性，呼叫端仍不能傳 SQL",
+          "url": "https://ithelp.ithome.com.tw/articles/10414887",
+          "publishedAt": "2026-09-29T08:17:19+08:00"
+        },
+        {
+          "id": 10415831,
+          "day": 17,
+          "title": "Day 17｜REST 還是 MQ？先問業務是否需要立即答案",
+          "url": "https://ithelp.ithome.com.tw/articles/10415831",
+          "publishedAt": "2026-09-30T07:30:23+08:00"
+        },
+        {
+          "id": 10415834,
+          "day": 18,
+          "title": "Day 18｜Kafka 與 RabbitMQ：不是競爭，而是不同任務",
+          "url": "https://ithelp.ithome.com.tw/articles/10415834",
+          "publishedAt": "2026-10-01T07:33:00+08:00"
+        },
+        {
+          "id": 10415984,
+          "day": 19,
+          "title": "Day 19｜事件送兩次，訂單只能做一次：冪等與 Outbox 設計",
+          "url": "https://ithelp.ithome.com.tw/articles/10415984",
+          "publishedAt": "2026-10-02T07:29:20+08:00"
+        },
+        {
+          "id": 10416008,
+          "day": 20,
+          "title": "Day 20｜EDI 與 B2B：最容易被低估的企業整合",
+          "url": "https://ithelp.ithome.com.tw/articles/10416008",
+          "publishedAt": "2026-10-03T08:26:05+08:00"
+        },
+        {
+          "id": 10416337,
+          "day": 21,
+          "title": "Day 21｜企業 RAG 的應用邊界與風險分級",
+          "url": "https://ithelp.ithome.com.tw/articles/10416337",
+          "publishedAt": "2026-10-04T08:27:27+08:00"
+        },
+        {
+          "id": 10416387,
+          "day": 22,
+          "title": "Day 22｜RAG 導入前的資料權限與驗證治理",
+          "url": "https://ithelp.ithome.com.tw/articles/10416387",
+          "publishedAt": "2026-10-05T07:41:43+08:00"
+        },
+        {
+          "id": 10417128,
+          "day": 23,
+          "title": "Day 23｜先定 Timeout Budget，再談 Retry：API 韌性設計的順序",
+          "url": "https://ithelp.ithome.com.tw/articles/10417128",
+          "publishedAt": "2026-10-06T08:23:29+08:00"
+        },
+        {
+          "id": 10417452,
+          "day": 24,
+          "title": "Day 24｜LogsMetricsTraces：三種訊號各回答什麼？",
+          "url": "https://ithelp.ithome.com.tw/articles/10417452",
+          "publishedAt": "2026-10-07T07:21:51+08:00"
+        },
+        {
+          "id": 10417467,
+          "day": 25,
+          "title": "Day 25｜PrometheusGrafanaJaeger：從 Dashboard 到可行動告警",
+          "url": "https://ithelp.ithome.com.tw/articles/10417467",
+          "publishedAt": "2026-10-08T07:59:09+08:00"
+        },
+        {
+          "id": 10417601,
+          "day": 26,
+          "title": "Day 26｜CI/CD：從 Commit 到可稽核部署",
+          "url": "https://ithelp.ithome.com.tw/articles/10417601",
+          "publishedAt": "2026-10-09T07:48:08+08:00"
+        },
+        {
+          "id": 10417651,
+          "day": 27,
+          "title": "Day 27｜Docker Compose 還是 Kubernetes？小團隊的務實選擇",
+          "url": "https://ithelp.ithome.com.tw/articles/10417651",
+          "publishedAt": "2026-10-10T07:25:24+08:00"
+        },
+        {
+          "id": 10417673,
+          "day": 28,
+          "title": "Day 28｜架構為什麼這樣選？用 ADR 留下決策理由與取捨",
+          "url": "https://ithelp.ithome.com.tw/articles/10417673",
+          "publishedAt": "2026-10-11T08:19:01+08:00"
+        },
+        {
+          "id": 10417747,
+          "day": 29,
+          "title": "Day 29｜架構驗證上線 SOP 與 Rollback：能跑不等於能安全上線",
+          "url": "https://ithelp.ithome.com.tw/articles/10417747",
+          "publishedAt": "2026-10-12T07:23:55+08:00"
+        }
+      ]
+    },
+    {
       "id": 9722,
       "user": {
         "id": 20183738,
@@ -91071,7 +91293,7 @@
       "description": "本系列以金融保險營運為場景，記錄一位非工程師 PM 如何運用 Claude Code，從零建立「銀保 AI 營運中台」。30 天將依序完成 AI 任務登錄、流程編排、作業依據管理、資料分級、去識別化、人工決策、稽核留痕與風險儀表板。重點不在炫技，而在示範如何把零散的 AI 助理，轉化為可管理、可驗收、可追溯，且保留人類最終決策的營運系統。",
       "team": null,
       "signupDate": "2026/08/02T12:38:23+08:00",
-      "lastUpdated": "2026-10-12T06:57:39+08:00",
+      "lastUpdated": "2026-10-12T08:01:26+08:00",
       "dayCount": 28,
       "articleCount": 28,
       "subscriptions": 0,
@@ -92791,7 +93013,7 @@
       "description": "這次鐵人賽要來挑戰從零刻出一個「有情緒、有記憶，還聽得懂人話」的情感感知 AI Agent！結合 Gemini API、有限狀態機 (FSM) 與 RAG (檢索增強生成) 技術，解決傳統聊天機器人「缺乏情緒起伏」與「容易遺忘對話細節」的痛點，建立極具互動感的動態 Agentic System。\r\n\r\n參賽核心實作方向：動態情緒 FSM，Time-Aware RAG 記憶，自動分流與 Tool Use，通用架構重構\r\n<以上是我的簡介>",
       "team": "nutc imac",
       "signupDate": "2026/08/27T17:04:20+08:00",
-      "lastUpdated": "2026-10-12T06:34:14+08:00",
+      "lastUpdated": "2026-10-12T08:02:00+08:00",
       "dayCount": 28,
       "articleCount": 28,
       "subscriptions": 0,
@@ -94933,6 +95155,214 @@
           "title": "DAY28 BYOD/MDM/MAM/UEM",
           "url": "https://ithelp.ithome.com.tw/articles/10423510",
           "publishedAt": "2026-10-12T01:14:44+08:00"
+        }
+      ]
+    },
+    {
+      "id": 9566,
+      "user": {
+        "id": 20184107,
+        "name": "frog9527",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20184107/profile"
+      },
+      "group": "Security",
+      "title": "從桃子園灘頭到CySA+",
+      "description": "我曾在海上駕駛著橡皮艇搶灘，如今身在資訊業，考了CySA+，準備好要搶上資安浪潮的灘頭。\r\n在這裡我會分享我的職涯、人生經驗以及我如何備考CySA+的心得。\r\n也許技術含量不高，但還是想分享給在這迷途中徬徨的人們，我走過的路以及一路上接受的善意。",
+      "team": "飛飛的資安大圈圈",
+      "signupDate": "2026/09/09T19:32:12+08:00",
+      "lastUpdated": "2026-10-12T07:24:14+08:00",
+      "dayCount": 28,
+      "articleCount": 27,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10409097,
+          "day": 1,
+          "title": "Day01｜從軍官到SI工程師，最後走向CySA+",
+          "url": "https://ithelp.ithome.com.tw/articles/10409097",
+          "publishedAt": "2026-09-15T09:13:20+08:00"
+        },
+        {
+          "id": 10411566,
+          "day": 2,
+          "title": "Day02｜工欲善其事，必先利其器",
+          "url": "https://ithelp.ithome.com.tw/articles/10411566",
+          "publishedAt": "2026-09-16T08:03:10+08:00"
+        },
+        {
+          "id": 10412369,
+          "day": 3,
+          "title": "Day03｜封包裡面藏著什麼?",
+          "url": "https://ithelp.ithome.com.tw/articles/10412369",
+          "publishedAt": "2026-09-17T09:27:41+08:00"
+        },
+        {
+          "id": 10412899,
+          "day": 4,
+          "title": "Day04｜Passive 還是 Active",
+          "url": "https://ithelp.ithome.com.tw/articles/10412899",
+          "publishedAt": "2026-09-18T00:03:10+08:00"
+        },
+        {
+          "id": 10413692,
+          "day": 5,
+          "title": "# Day05｜Port到底怎麼看",
+          "url": "https://ithelp.ithome.com.tw/articles/10413692",
+          "publishedAt": "2026-09-19T13:17:02+08:00"
+        },
+        {
+          "id": 10414322,
+          "day": 6,
+          "title": "Day06｜Process也有Parent",
+          "url": "https://ithelp.ithome.com.tw/articles/10414322",
+          "publishedAt": "2026-09-20T16:39:56+08:00"
+        },
+        {
+          "id": 10414802,
+          "day": 7,
+          "title": "Day07｜憑證到底誰簽的",
+          "url": "https://ithelp.ithome.com.tw/articles/10414802",
+          "publishedAt": "2026-09-21T12:00:18+08:00"
+        },
+        {
+          "id": 10415366,
+          "day": 8,
+          "title": "Day08｜不要拿到什麼就想著丟沙箱",
+          "url": "https://ithelp.ithome.com.tw/articles/10415366",
+          "publishedAt": "2026-09-22T10:55:42+08:00"
+        },
+        {
+          "id": 10415832,
+          "day": 9,
+          "title": "# Day09｜PAM 管的是什麼?",
+          "url": "https://ithelp.ithome.com.tw/articles/10415832",
+          "publishedAt": "2026-09-23T10:02:20+08:00"
+        },
+        {
+          "id": 10416359,
+          "day": 10,
+          "title": "Day10｜STIX 跟 TAXII 差在哪?",
+          "url": "https://ithelp.ithome.com.tw/articles/10416359",
+          "publishedAt": "2026-09-24T09:04:54+08:00"
+        },
+        {
+          "id": 10416923,
+          "day": 11,
+          "title": "Day11｜SOAR &amp; SIEM",
+          "url": "https://ithelp.ithome.com.tw/articles/10416923",
+          "publishedAt": "2026-09-25T13:26:45+08:00"
+        },
+        {
+          "id": 10417378,
+          "day": 12,
+          "title": "Day12｜指令與Log",
+          "url": "https://ithelp.ithome.com.tw/articles/10417378",
+          "publishedAt": "2026-09-26T12:12:17+08:00"
+        },
+        {
+          "id": 10417854,
+          "day": 13,
+          "title": "Day13｜管理漏洞前，得先掃描有哪些漏洞",
+          "url": "https://ithelp.ithome.com.tw/articles/10417854",
+          "publishedAt": "2026-09-27T15:42:49+08:00"
+        },
+        {
+          "id": 10418533,
+          "day": 14,
+          "title": "Day14｜CVSS怎麼看",
+          "url": "https://ithelp.ithome.com.tw/articles/10418533",
+          "publishedAt": "2026-09-28T23:47:53+08:00"
+        },
+        {
+          "id": 10418758,
+          "day": 15,
+          "title": "Day15｜CVSS分數最高的就先修嗎?",
+          "url": "https://ithelp.ithome.com.tw/articles/10418758",
+          "publishedAt": "2026-09-29T14:07:59+08:00"
+        },
+        {
+          "id": 10419122,
+          "day": 16,
+          "title": "Day16｜報告上的False Positive怎麼看",
+          "url": "https://ithelp.ithome.com.tw/articles/10419122",
+          "publishedAt": "2026-09-30T09:03:26+08:00"
+        },
+        {
+          "id": 10419402,
+          "day": 17,
+          "title": "Day17｜先看這段是語言什麼再做決定",
+          "url": "https://ithelp.ithome.com.tw/articles/10419402",
+          "publishedAt": "2026-10-01T07:53:02+08:00"
+        },
+        {
+          "id": 10419754,
+          "day": 18,
+          "title": "Day18｜漏洞在誰身上就補誰",
+          "url": "https://ithelp.ithome.com.tw/articles/10419754",
+          "publishedAt": "2026-10-02T10:00:50+08:00"
+        },
+        {
+          "id": 10420113,
+          "day": 19,
+          "title": "Day19｜風險處置與EOL資產",
+          "url": "https://ithelp.ithome.com.tw/articles/10420113",
+          "publishedAt": "2026-10-03T18:21:06+08:00"
+        },
+        {
+          "id": 10420669,
+          "day": 20,
+          "title": "Day20｜Kill ChainATT&amp;CKDiamond，三個框架在看什麼?",
+          "url": "https://ithelp.ithome.com.tw/articles/10420669",
+          "publishedAt": "2026-10-04T00:05:30+08:00"
+        },
+        {
+          "id": 10420913,
+          "day": 21,
+          "title": "Day21｜事件應變的幾個階段",
+          "url": "https://ithelp.ithome.com.tw/articles/10420913",
+          "publishedAt": "2026-10-05T08:20:58+08:00"
+        },
+        {
+          "id": 10421534,
+          "day": 22,
+          "title": "Day22｜圍堵要切多乾淨?",
+          "url": "https://ithelp.ithome.com.tw/articles/10421534",
+          "publishedAt": "2026-10-06T08:04:22+08:00"
+        },
+        {
+          "id": 10422063,
+          "day": 23,
+          "title": "Day23｜證據怎麼拿，Chain of Custody怎麼記?",
+          "url": "https://ithelp.ithome.com.tw/articles/10422063",
+          "publishedAt": "2026-10-07T19:12:46+08:00"
+        },
+        {
+          "id": 10422488,
+          "day": 24,
+          "title": "Day24｜檔案刪了機器關了，鑑識還找得到甚麼?",
+          "url": "https://ithelp.ithome.com.tw/articles/10422488",
+          "publishedAt": "2026-10-08T22:22:37+08:00"
+        },
+        {
+          "id": 10422651,
+          "day": 25,
+          "title": "Day25｜MTTDMTTCMTTR差在哪?",
+          "url": "https://ithelp.ithome.com.tw/articles/10422651",
+          "publishedAt": "2026-10-09T12:38:33+08:00"
+        },
+        {
+          "id": 10422965,
+          "day": 26,
+          "title": "Day26｜事後文件怎麼分，RCA還是Lessons Learned?",
+          "url": "https://ithelp.ithome.com.tw/articles/10422965",
+          "publishedAt": "2026-10-10T11:15:09+08:00"
+        },
+        {
+          "id": 10423201,
+          "day": 27,
+          "title": "Day27｜SLAMOUNDABPA各管甚麼?",
+          "url": "https://ithelp.ithome.com.tw/articles/10423201",
+          "publishedAt": "2026-10-11T00:22:02+08:00"
         }
       ]
     },
@@ -98606,6 +99036,214 @@
       ]
     },
     {
+      "id": 9683,
+      "user": {
+        "id": 20184195,
+        "name": "Steven",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20184195/profile"
+      },
+      "group": "ChatGPT & Codex",
+      "title": "把 ChatGPT & Codex 當成隊友：30 天從 Idea 到 Production",
+      "description": "用一個真實軟體專案貫穿 30 天，實測 ChatGPT 與 Codex 在需求分析、架構、Coding、Debug、Testing、Code Review、Git、部署與 CI/CD 中到底能做到什麼。每篇保留實際 Prompt、Diff、錯誤與結果，不把 AI 當魔法，而是把它當一位需要被驗證的開發隊友。\r\n30 天核心成果：完成一個可公開展示的專案，並留下可重複使用的 ChatGPT + Codex 開發流程、成功／失敗案例與比較紀錄。",
+      "team": "屎督登特",
+      "signupDate": "2026/09/14T10:05:21+08:00",
+      "lastUpdated": "2026-10-12T07:24:51+08:00",
+      "dayCount": 28,
+      "articleCount": 27,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410224,
+          "day": 1,
+          "title": "Day 1｜我為什麼要把 ChatGPT 與 Codex 當成開發隊友？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410224",
+          "publishedAt": "2026-09-15T00:08:22+08:00"
+        },
+        {
+          "id": 10410434,
+          "day": 2,
+          "title": "Day 2｜ChatGPT 與 Codex 到底差在哪裡？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410434",
+          "publishedAt": "2026-09-16T00:15:10+08:00"
+        },
+        {
+          "id": 10412192,
+          "day": 3,
+          "title": "Day 3｜建立一個 AI 也看得懂的開發環境",
+          "url": "https://ithelp.ithome.com.tw/articles/10412192",
+          "publishedAt": "2026-09-17T00:01:37+08:00"
+        },
+        {
+          "id": 10410482,
+          "day": 4,
+          "title": "Day 4｜從一句 Idea 變成可以開發的需求文件",
+          "url": "https://ithelp.ithome.com.tw/articles/10410482",
+          "publishedAt": "2026-09-18T00:07:38+08:00"
+        },
+        {
+          "id": 10410483,
+          "day": 5,
+          "title": "Day 5｜讓 ChatGPT 幫我設計系統架構",
+          "url": "https://ithelp.ithome.com.tw/articles/10410483",
+          "publishedAt": "2026-09-19T13:30:15+08:00"
+        },
+        {
+          "id": 10410484,
+          "day": 6,
+          "title": "Day 6｜READMEAGENTS.md 與規則：先教 AI 怎麼跟我合作",
+          "url": "https://ithelp.ithome.com.tw/articles/10410484",
+          "publishedAt": "2026-09-20T08:46:12+08:00"
+        },
+        {
+          "id": 10410485,
+          "day": 7,
+          "title": "Day 7｜第一個任務：把一個小 Feature 完整交給 Codex",
+          "url": "https://ithelp.ithome.com.tw/articles/10410485",
+          "publishedAt": "2026-09-21T09:02:27+08:00"
+        },
+        {
+          "id": 10410486,
+          "day": 8,
+          "title": "Day 8｜怎樣寫 Prompt，Codex 才不會把專案改成大型災難？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410486",
+          "publishedAt": "2026-09-22T00:00:08+08:00"
+        },
+        {
+          "id": 10410487,
+          "day": 9,
+          "title": "Day 9｜不告訴它答案：讓 Codex 自己探索陌生 Repository",
+          "url": "https://ithelp.ithome.com.tw/articles/10410487",
+          "publishedAt": "2026-09-23T00:05:51+08:00"
+        },
+        {
+          "id": 10410488,
+          "day": 10,
+          "title": "Day 10｜把 GitHub Issue 變成可執行的開發計畫",
+          "url": "https://ithelp.ithome.com.tw/articles/10410488",
+          "publishedAt": "2026-09-24T00:01:11+08:00"
+        },
+        {
+          "id": 10410489,
+          "day": 11,
+          "title": "Day 11｜真正做一個跨檔案 Feature",
+          "url": "https://ithelp.ithome.com.tw/articles/10410489",
+          "publishedAt": "2026-09-25T00:27:45+08:00"
+        },
+        {
+          "id": 10410490,
+          "day": 12,
+          "title": "Day 12｜AI 寫完不代表完成：用測試抓出看不到的錯誤",
+          "url": "https://ithelp.ithome.com.tw/articles/10410490",
+          "publishedAt": "2026-09-26T00:02:59+08:00"
+        },
+        {
+          "id": 10410491,
+          "day": 13,
+          "title": "Day 13｜Debug 實驗：只給錯誤訊息，AI 找得到真正原因嗎？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410491",
+          "publishedAt": "2026-09-27T00:05:55+08:00"
+        },
+        {
+          "id": 10410492,
+          "day": 14,
+          "title": "Day 14｜Context 不夠怎麼辦？大型專案的資訊管理術",
+          "url": "https://ithelp.ithome.com.tw/articles/10410492",
+          "publishedAt": "2026-09-28T08:55:50+08:00"
+        },
+        {
+          "id": 10410494,
+          "day": 15,
+          "title": "Day 15｜讓 ChatGPT 幫 Codex 做 Code Review",
+          "url": "https://ithelp.ithome.com.tw/articles/10410494",
+          "publishedAt": "2026-09-29T09:06:32+08:00"
+        },
+        {
+          "id": 10410592,
+          "day": 16,
+          "title": "Day 16｜Refactor：功能沒壞，AI 能把程式變得更好嗎？",
+          "url": "https://ithelp.ithome.com.tw/articles/10410592",
+          "publishedAt": "2026-09-30T08:24:43+08:00"
+        },
+        {
+          "id": 10412033,
+          "day": 17,
+          "title": "Day 17｜GitBranchCommit：讓 AI 的修改可以被追蹤",
+          "url": "https://ithelp.ithome.com.tw/articles/10412033",
+          "publishedAt": "2026-10-01T00:00:11+08:00"
+        },
+        {
+          "id": 10412034,
+          "day": 18,
+          "title": "Day 18｜從修改到 Pull Request：AI 能不能自己把工作講清楚？",
+          "url": "https://ithelp.ithome.com.tw/articles/10412034",
+          "publishedAt": "2026-10-02T00:29:45+08:00"
+        },
+        {
+          "id": 10412035,
+          "day": 19,
+          "title": "Day 19｜Secret權限與 Prompt Injection：AI 開發的安全底線",
+          "url": "https://ithelp.ithome.com.tw/articles/10412035",
+          "publishedAt": "2026-10-03T10:35:48+08:00"
+        },
+        {
+          "id": 10412036,
+          "day": 20,
+          "title": "Day 20｜串接真實 API：讓 AI 面對不完美的外部世界",
+          "url": "https://ithelp.ithome.com.tw/articles/10412036",
+          "publishedAt": "2026-10-04T09:06:39+08:00"
+        },
+        {
+          "id": 10412037,
+          "day": 21,
+          "title": "Day 21｜資料庫任務：SchemaMigration 與資料真的不能亂改",
+          "url": "https://ithelp.ithome.com.tw/articles/10412037",
+          "publishedAt": "2026-10-05T07:48:38+08:00"
+        },
+        {
+          "id": 10412038,
+          "day": 22,
+          "title": "Day 22｜前端任務：AI 會做出能用的介面，還是只有能看的介面？",
+          "url": "https://ithelp.ithome.com.tw/articles/10412038",
+          "publishedAt": "2026-10-06T09:02:19+08:00"
+        },
+        {
+          "id": 10412039,
+          "day": 23,
+          "title": "Day 23｜後端任務：Validation錯誤處理與真正可靠的 API",
+          "url": "https://ithelp.ithome.com.tw/articles/10412039",
+          "publishedAt": "2026-10-07T09:07:41+08:00"
+        },
+        {
+          "id": 10412040,
+          "day": 24,
+          "title": "Day 24｜Deploy 上線：本機會跑，到了 Production 還算數嗎？",
+          "url": "https://ithelp.ithome.com.tw/articles/10412040",
+          "publishedAt": "2026-10-08T00:22:12+08:00"
+        },
+        {
+          "id": 10412042,
+          "day": 25,
+          "title": "Day 25｜CI/CD：每次 Push 都讓機器先幫 AI 驗貨",
+          "url": "https://ithelp.ithome.com.tw/articles/10412042",
+          "publishedAt": "2026-10-09T00:46:10+08:00"
+        },
+        {
+          "id": 10412043,
+          "day": 26,
+          "title": "Day 26｜LogsMonitoring 與可觀測性：上線後 AI 怎麼查問題？",
+          "url": "https://ithelp.ithome.com.tw/articles/10412043",
+          "publishedAt": "2026-10-10T09:40:36+08:00"
+        },
+        {
+          "id": 10412044,
+          "day": 27,
+          "title": "Day 27｜陌生 Repo 挑戰：不給背景知識，Codex 能修完一個 Issue 嗎？",
+          "url": "https://ithelp.ithome.com.tw/articles/10412044",
+          "publishedAt": "2026-10-11T09:13:42+08:00"
+        }
+      ]
+    },
+    {
       "id": 9691,
       "user": {
         "id": 20130095,
@@ -98817,228 +99455,6 @@
           "title": "Day 28：行政檔案的真實樣貌",
           "url": "https://ithelp.ithome.com.tw/articles/10423204",
           "publishedAt": "2026-10-11T07:46:08+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9692,
-      "user": {
-        "id": 20184230,
-        "name": "ashleylin1007",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20184230/profile"
-      },
-      "group": "Software Development",
-      "title": "30 天把舊 ERP 整合成現代微服務平台：架構治理與工程實作雙軌實戰",
-      "description": "舊 ERP 還能跑，為什麼還要動它？本系列以一家製造業的匿名化案例，記錄把 SOAP 型 ERP 逐步整合成現代微服務平台的 30 天決策過程。\r\n\r\n每篇固定分「架構師視角」與「工程師視角」兩層：先講這個設計降低什麼風險，再講程式碼怎麼落地、怎麼驗證、踩過哪些坑。不展示完美架構，只記錄真實限制下的取捨。適合正在處理 Legacy 系統、API 整合與治理要求的架構師、資深工程師與技術主管。",
-      "team": null,
-      "signupDate": "2026/09/14T13:19:55+08:00",
-      "lastUpdated": "2026-10-12T07:24:54+08:00",
-      "dayCount": 28,
-      "articleCount": 29,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410285,
-          "day": 1,
-          "title": "Day 01｜ERP 明明還能用，為什麼還需要現代化平台？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410285",
-          "publishedAt": "2026-09-14T14:05:16+08:00"
-        },
-        {
-          "id": 10410324,
-          "day": 2,
-          "title": "Day 02｜ERP 現代化的策略矩陣：別從工具清單開始",
-          "url": "https://ithelp.ithome.com.tw/articles/10410324",
-          "publishedAt": "2026-09-15T07:17:11+08:00"
-        },
-        {
-          "id": 10410406,
-          "day": 3,
-          "title": "Day 03｜從系統很難改走向可量測的成功指標",
-          "url": "https://ithelp.ithome.com.tw/articles/10410406",
-          "publishedAt": "2026-09-16T08:11:39+08:00"
-        },
-        {
-          "id": 10410452,
-          "day": 4,
-          "title": "Day 04｜漸進式現代化，還是一次重建 ERP？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410452",
-          "publishedAt": "2026-09-17T07:49:55+08:00"
-        },
-        {
-          "id": 10410701,
-          "day": 5,
-          "title": "Day 05｜微服務不是目標：模組化單體與混合架構怎麼選？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410701",
-          "publishedAt": "2026-09-18T07:48:18+08:00"
-        },
-        {
-          "id": 10410702,
-          "day": 6,
-          "title": "Day 06｜現代化平台總體藍圖",
-          "url": "https://ithelp.ithome.com.tw/articles/10410702",
-          "publishedAt": "2026-09-19T08:58:59+08:00"
-        },
-        {
-          "id": 10410703,
-          "day": 7,
-          "title": "Day 07｜服務邊界怎麼拆：依業務能力，不依技術分層",
-          "url": "https://ithelp.ithome.com.tw/articles/10410703",
-          "publishedAt": "2026-09-20T08:22:40+08:00"
-        },
-        {
-          "id": 10410717,
-          "day": 8,
-          "title": "Day 08｜資料所有權：每個服務都能查資料庫，還算微服務嗎？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410717",
-          "publishedAt": "2026-09-21T11:10:45+08:00"
-        },
-        {
-          "id": 10410770,
-          "day": 9,
-          "title": "Day 09｜Gateway：統一入口，也是治理控制點",
-          "url": "https://ithelp.ithome.com.tw/articles/10410770",
-          "publishedAt": "2026-09-22T07:36:06+08:00"
-        },
-        {
-          "id": 10410778,
-          "day": 10,
-          "title": "Day 10｜Spring Cloud Gateway：RoutePredicateFilter 如何分工",
-          "url": "https://ithelp.ithome.com.tw/articles/10410778",
-          "publishedAt": "2026-09-23T07:34:25+08:00"
-        },
-        {
-          "id": 10411105,
-          "day": 11,
-          "title": "Day 11｜KeycloakOAuth 2.0OIDC 與 JWT：別再把登入和授權混在一起",
-          "url": "https://ithelp.ithome.com.tw/articles/10411105",
-          "publishedAt": "2026-09-24T07:33:58+08:00"
-        },
-        {
-          "id": 10411291,
-          "day": 12,
-          "title": "Day 12｜RBAC 還不夠：把角色資源與資料範圍分開",
-          "url": "https://ithelp.ithome.com.tw/articles/10411291",
-          "publishedAt": "2026-09-25T07:50:21+08:00"
-        },
-        {
-          "id": 10411311,
-          "day": 13,
-          "title": "Day 13｜ERP SOAP 前為什麼需要 Adapter？",
-          "url": "https://ithelp.ithome.com.tw/articles/10411311",
-          "publishedAt": "2026-09-26T08:09:31+08:00"
-        },
-        {
-          "id": 10414217,
-          "day": 14,
-          "title": "Day 14｜Adapter Service 設計：別讓隔離層變成第二套 ERP",
-          "url": "https://ithelp.ithome.com.tw/articles/10414217",
-          "publishedAt": "2026-09-27T07:39:48+08:00"
-        },
-        {
-          "id": 10414292,
-          "day": 15,
-          "title": "Day 15｜REST 與 SOAP 轉換：不只是 XML 改成 JSON",
-          "url": "https://ithelp.ithome.com.tw/articles/10414292",
-          "publishedAt": "2026-09-28T08:48:17+08:00"
-        },
-        {
-          "id": 10414887,
-          "day": 16,
-          "title": "Day 16｜condition 白名單：查詢保有彈性，呼叫端仍不能傳 SQL",
-          "url": "https://ithelp.ithome.com.tw/articles/10414887",
-          "publishedAt": "2026-09-29T08:17:19+08:00"
-        },
-        {
-          "id": 10415831,
-          "day": 17,
-          "title": "Day 17｜REST 還是 MQ？先問業務是否需要立即答案",
-          "url": "https://ithelp.ithome.com.tw/articles/10415831",
-          "publishedAt": "2026-09-30T07:30:23+08:00"
-        },
-        {
-          "id": 10415834,
-          "day": 18,
-          "title": "Day 18｜Kafka 與 RabbitMQ：不是競爭，而是不同任務",
-          "url": "https://ithelp.ithome.com.tw/articles/10415834",
-          "publishedAt": "2026-10-01T07:33:00+08:00"
-        },
-        {
-          "id": 10415984,
-          "day": 19,
-          "title": "Day 19｜事件送兩次，訂單只能做一次：冪等與 Outbox 設計",
-          "url": "https://ithelp.ithome.com.tw/articles/10415984",
-          "publishedAt": "2026-10-02T07:29:20+08:00"
-        },
-        {
-          "id": 10416008,
-          "day": 20,
-          "title": "Day 20｜EDI 與 B2B：最容易被低估的企業整合",
-          "url": "https://ithelp.ithome.com.tw/articles/10416008",
-          "publishedAt": "2026-10-03T08:26:05+08:00"
-        },
-        {
-          "id": 10416337,
-          "day": 21,
-          "title": "Day 21｜企業 RAG 的應用邊界與風險分級",
-          "url": "https://ithelp.ithome.com.tw/articles/10416337",
-          "publishedAt": "2026-10-04T08:27:27+08:00"
-        },
-        {
-          "id": 10416387,
-          "day": 22,
-          "title": "Day 22｜RAG 導入前的資料權限與驗證治理",
-          "url": "https://ithelp.ithome.com.tw/articles/10416387",
-          "publishedAt": "2026-10-05T07:41:43+08:00"
-        },
-        {
-          "id": 10417128,
-          "day": 23,
-          "title": "Day 23｜先定 Timeout Budget，再談 Retry：API 韌性設計的順序",
-          "url": "https://ithelp.ithome.com.tw/articles/10417128",
-          "publishedAt": "2026-10-06T08:23:29+08:00"
-        },
-        {
-          "id": 10417452,
-          "day": 24,
-          "title": "Day 24｜LogsMetricsTraces：三種訊號各回答什麼？",
-          "url": "https://ithelp.ithome.com.tw/articles/10417452",
-          "publishedAt": "2026-10-07T07:21:51+08:00"
-        },
-        {
-          "id": 10417467,
-          "day": 25,
-          "title": "Day 25｜PrometheusGrafanaJaeger：從 Dashboard 到可行動告警",
-          "url": "https://ithelp.ithome.com.tw/articles/10417467",
-          "publishedAt": "2026-10-08T07:59:09+08:00"
-        },
-        {
-          "id": 10417601,
-          "day": 26,
-          "title": "Day 26｜CI/CD：從 Commit 到可稽核部署",
-          "url": "https://ithelp.ithome.com.tw/articles/10417601",
-          "publishedAt": "2026-10-09T07:48:08+08:00"
-        },
-        {
-          "id": 10417651,
-          "day": 27,
-          "title": "Day 27｜Docker Compose 還是 Kubernetes？小團隊的務實選擇",
-          "url": "https://ithelp.ithome.com.tw/articles/10417651",
-          "publishedAt": "2026-10-10T07:25:24+08:00"
-        },
-        {
-          "id": 10417673,
-          "day": 28,
-          "title": "Day 28｜架構為什麼這樣選？用 ADR 留下決策理由與取捨",
-          "url": "https://ithelp.ithome.com.tw/articles/10417673",
-          "publishedAt": "2026-10-11T08:19:01+08:00"
-        },
-        {
-          "id": 10417747,
-          "day": 29,
-          "title": "Day 29｜架構驗證上線 SOP 與 Rollback：能跑不等於能安全上線",
-          "url": "https://ithelp.ithome.com.tw/articles/10417747",
-          "publishedAt": "2026-10-12T07:23:55+08:00"
         }
       ]
     },
@@ -102307,7 +102723,7 @@
       "description": "已具備 Laravel 開發經驗的工程師，多半都遇過同一個關卡：功能做完了，卻還要自己刻一套後台管理介面，表單、驗證、權限散落在各個 Controller 裡，每加一個模組就重複一次。這個系列帶你從安裝 Filament 的第一天開始，做出一套具備多角色權限、多租戶資料隔離、自訂儀表板，並通過測試、準備上線的正式後台系統。\r\n\r\n30 天走完，你會拿到的不是一堆零散的 API 用法，而是一套能實際落地上線的 Filament 建置流程。",
       "team": null,
       "signupDate": "2026/09/14T23:24:27+08:00",
-      "lastUpdated": "2026-10-12T06:28:00+08:00",
+      "lastUpdated": "2026-10-12T07:29:00+08:00",
       "dayCount": 28,
       "articleCount": 28,
       "subscriptions": 0,
@@ -102522,7 +102938,7 @@
       "description": "寫過 launch、async，程式碼能動，但一遇到協程明明取消了畫面卻還在跑、例外像穿牆一樣繞過 try-catch，就答不出問題出在哪裡。這個系列要補的不是 API 用法，而是那條被你跳過的執行時間軸：協程何時暫停、何時恢復、狀態被誰持有、又在什麼條件下被取消。\r\n\r\n系列聚焦純 Kotlin Coroutines 語言機制本身，全系列使用一個示範情境，讓讀者這 30 天走完，拿到的是一套能推理協程行為的心智地圖、而不是只能死記 API 來猜測程式動作。",
       "team": null,
       "signupDate": "2026/09/14T23:27:32+08:00",
-      "lastUpdated": "2026-10-12T06:37:04+08:00",
+      "lastUpdated": "2026-10-12T07:38:04+08:00",
       "dayCount": 28,
       "articleCount": 28,
       "subscriptions": 0,
@@ -114070,214 +114486,6 @@
       ]
     },
     {
-      "id": 9566,
-      "user": {
-        "id": 20184107,
-        "name": "frog9527",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20184107/profile"
-      },
-      "group": "Security",
-      "title": "從桃子園灘頭到CySA+",
-      "description": "我曾在海上駕駛著橡皮艇搶灘，如今身在資訊業，考了CySA+，準備好要搶上資安浪潮的灘頭。\r\n在這裡我會分享我的職涯、人生經驗以及我如何備考CySA+的心得。\r\n也許技術含量不高，但還是想分享給在這迷途中徬徨的人們，我走過的路以及一路上接受的善意。",
-      "team": "飛飛的資安大圈圈",
-      "signupDate": "2026/09/09T19:32:12+08:00",
-      "lastUpdated": "2026-10-12T07:24:14+08:00",
-      "dayCount": 27,
-      "articleCount": 27,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10409097,
-          "day": 1,
-          "title": "Day01｜從軍官到SI工程師，最後走向CySA+",
-          "url": "https://ithelp.ithome.com.tw/articles/10409097",
-          "publishedAt": "2026-09-15T09:13:20+08:00"
-        },
-        {
-          "id": 10411566,
-          "day": 2,
-          "title": "Day02｜工欲善其事，必先利其器",
-          "url": "https://ithelp.ithome.com.tw/articles/10411566",
-          "publishedAt": "2026-09-16T08:03:10+08:00"
-        },
-        {
-          "id": 10412369,
-          "day": 3,
-          "title": "Day03｜封包裡面藏著什麼?",
-          "url": "https://ithelp.ithome.com.tw/articles/10412369",
-          "publishedAt": "2026-09-17T09:27:41+08:00"
-        },
-        {
-          "id": 10412899,
-          "day": 4,
-          "title": "Day04｜Passive 還是 Active",
-          "url": "https://ithelp.ithome.com.tw/articles/10412899",
-          "publishedAt": "2026-09-18T00:03:10+08:00"
-        },
-        {
-          "id": 10413692,
-          "day": 5,
-          "title": "# Day05｜Port到底怎麼看",
-          "url": "https://ithelp.ithome.com.tw/articles/10413692",
-          "publishedAt": "2026-09-19T13:17:02+08:00"
-        },
-        {
-          "id": 10414322,
-          "day": 6,
-          "title": "Day06｜Process也有Parent",
-          "url": "https://ithelp.ithome.com.tw/articles/10414322",
-          "publishedAt": "2026-09-20T16:39:56+08:00"
-        },
-        {
-          "id": 10414802,
-          "day": 7,
-          "title": "Day07｜憑證到底誰簽的",
-          "url": "https://ithelp.ithome.com.tw/articles/10414802",
-          "publishedAt": "2026-09-21T12:00:18+08:00"
-        },
-        {
-          "id": 10415366,
-          "day": 8,
-          "title": "Day08｜不要拿到什麼就想著丟沙箱",
-          "url": "https://ithelp.ithome.com.tw/articles/10415366",
-          "publishedAt": "2026-09-22T10:55:42+08:00"
-        },
-        {
-          "id": 10415832,
-          "day": 9,
-          "title": "# Day09｜PAM 管的是什麼?",
-          "url": "https://ithelp.ithome.com.tw/articles/10415832",
-          "publishedAt": "2026-09-23T10:02:20+08:00"
-        },
-        {
-          "id": 10416359,
-          "day": 10,
-          "title": "Day10｜STIX 跟 TAXII 差在哪?",
-          "url": "https://ithelp.ithome.com.tw/articles/10416359",
-          "publishedAt": "2026-09-24T09:04:54+08:00"
-        },
-        {
-          "id": 10416923,
-          "day": 11,
-          "title": "Day11｜SOAR &amp; SIEM",
-          "url": "https://ithelp.ithome.com.tw/articles/10416923",
-          "publishedAt": "2026-09-25T13:26:45+08:00"
-        },
-        {
-          "id": 10417378,
-          "day": 12,
-          "title": "Day12｜指令與Log",
-          "url": "https://ithelp.ithome.com.tw/articles/10417378",
-          "publishedAt": "2026-09-26T12:12:17+08:00"
-        },
-        {
-          "id": 10417854,
-          "day": 13,
-          "title": "Day13｜管理漏洞前，得先掃描有哪些漏洞",
-          "url": "https://ithelp.ithome.com.tw/articles/10417854",
-          "publishedAt": "2026-09-27T15:42:49+08:00"
-        },
-        {
-          "id": 10418533,
-          "day": 14,
-          "title": "Day14｜CVSS怎麼看",
-          "url": "https://ithelp.ithome.com.tw/articles/10418533",
-          "publishedAt": "2026-09-28T23:47:53+08:00"
-        },
-        {
-          "id": 10418758,
-          "day": 15,
-          "title": "Day15｜CVSS分數最高的就先修嗎?",
-          "url": "https://ithelp.ithome.com.tw/articles/10418758",
-          "publishedAt": "2026-09-29T14:07:59+08:00"
-        },
-        {
-          "id": 10419122,
-          "day": 16,
-          "title": "Day16｜報告上的False Positive怎麼看",
-          "url": "https://ithelp.ithome.com.tw/articles/10419122",
-          "publishedAt": "2026-09-30T09:03:26+08:00"
-        },
-        {
-          "id": 10419402,
-          "day": 17,
-          "title": "Day17｜先看這段是語言什麼再做決定",
-          "url": "https://ithelp.ithome.com.tw/articles/10419402",
-          "publishedAt": "2026-10-01T07:53:02+08:00"
-        },
-        {
-          "id": 10419754,
-          "day": 18,
-          "title": "Day18｜漏洞在誰身上就補誰",
-          "url": "https://ithelp.ithome.com.tw/articles/10419754",
-          "publishedAt": "2026-10-02T10:00:50+08:00"
-        },
-        {
-          "id": 10420113,
-          "day": 19,
-          "title": "Day19｜風險處置與EOL資產",
-          "url": "https://ithelp.ithome.com.tw/articles/10420113",
-          "publishedAt": "2026-10-03T18:21:06+08:00"
-        },
-        {
-          "id": 10420669,
-          "day": 20,
-          "title": "Day20｜Kill ChainATT&amp;CKDiamond，三個框架在看什麼?",
-          "url": "https://ithelp.ithome.com.tw/articles/10420669",
-          "publishedAt": "2026-10-04T00:05:30+08:00"
-        },
-        {
-          "id": 10420913,
-          "day": 21,
-          "title": "Day21｜事件應變的幾個階段",
-          "url": "https://ithelp.ithome.com.tw/articles/10420913",
-          "publishedAt": "2026-10-05T08:20:58+08:00"
-        },
-        {
-          "id": 10421534,
-          "day": 22,
-          "title": "Day22｜圍堵要切多乾淨?",
-          "url": "https://ithelp.ithome.com.tw/articles/10421534",
-          "publishedAt": "2026-10-06T08:04:22+08:00"
-        },
-        {
-          "id": 10422063,
-          "day": 23,
-          "title": "Day23｜證據怎麼拿，Chain of Custody怎麼記?",
-          "url": "https://ithelp.ithome.com.tw/articles/10422063",
-          "publishedAt": "2026-10-07T19:12:46+08:00"
-        },
-        {
-          "id": 10422488,
-          "day": 24,
-          "title": "Day24｜檔案刪了機器關了，鑑識還找得到甚麼?",
-          "url": "https://ithelp.ithome.com.tw/articles/10422488",
-          "publishedAt": "2026-10-08T22:22:37+08:00"
-        },
-        {
-          "id": 10422651,
-          "day": 25,
-          "title": "Day25｜MTTDMTTCMTTR差在哪?",
-          "url": "https://ithelp.ithome.com.tw/articles/10422651",
-          "publishedAt": "2026-10-09T12:38:33+08:00"
-        },
-        {
-          "id": 10422965,
-          "day": 26,
-          "title": "Day26｜事後文件怎麼分，RCA還是Lessons Learned?",
-          "url": "https://ithelp.ithome.com.tw/articles/10422965",
-          "publishedAt": "2026-10-10T11:15:09+08:00"
-        },
-        {
-          "id": 10423201,
-          "day": 27,
-          "title": "Day27｜SLAMOUNDABPA各管甚麼?",
-          "url": "https://ithelp.ithome.com.tw/articles/10423201",
-          "publishedAt": "2026-10-11T00:22:02+08:00"
-        }
-      ]
-    },
-    {
       "id": 9568,
       "user": {
         "id": 20114733,
@@ -118018,214 +118226,6 @@
           "title": "Day27 AI非最大風險：而是輸入了什麼資料",
           "url": "https://ithelp.ithome.com.tw/articles/10422953",
           "publishedAt": "2026-10-11T09:56:23+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9683,
-      "user": {
-        "id": 20184195,
-        "name": "Steven",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20184195/profile"
-      },
-      "group": "ChatGPT & Codex",
-      "title": "把 ChatGPT & Codex 當成隊友：30 天從 Idea 到 Production",
-      "description": "用一個真實軟體專案貫穿 30 天，實測 ChatGPT 與 Codex 在需求分析、架構、Coding、Debug、Testing、Code Review、Git、部署與 CI/CD 中到底能做到什麼。每篇保留實際 Prompt、Diff、錯誤與結果，不把 AI 當魔法，而是把它當一位需要被驗證的開發隊友。\r\n30 天核心成果：完成一個可公開展示的專案，並留下可重複使用的 ChatGPT + Codex 開發流程、成功／失敗案例與比較紀錄。",
-      "team": "屎督登特",
-      "signupDate": "2026/09/14T10:05:21+08:00",
-      "lastUpdated": "2026-10-12T07:24:51+08:00",
-      "dayCount": 27,
-      "articleCount": 27,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410224,
-          "day": 1,
-          "title": "Day 1｜我為什麼要把 ChatGPT 與 Codex 當成開發隊友？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410224",
-          "publishedAt": "2026-09-15T00:08:22+08:00"
-        },
-        {
-          "id": 10410434,
-          "day": 2,
-          "title": "Day 2｜ChatGPT 與 Codex 到底差在哪裡？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410434",
-          "publishedAt": "2026-09-16T00:15:10+08:00"
-        },
-        {
-          "id": 10412192,
-          "day": 3,
-          "title": "Day 3｜建立一個 AI 也看得懂的開發環境",
-          "url": "https://ithelp.ithome.com.tw/articles/10412192",
-          "publishedAt": "2026-09-17T00:01:37+08:00"
-        },
-        {
-          "id": 10410482,
-          "day": 4,
-          "title": "Day 4｜從一句 Idea 變成可以開發的需求文件",
-          "url": "https://ithelp.ithome.com.tw/articles/10410482",
-          "publishedAt": "2026-09-18T00:07:38+08:00"
-        },
-        {
-          "id": 10410483,
-          "day": 5,
-          "title": "Day 5｜讓 ChatGPT 幫我設計系統架構",
-          "url": "https://ithelp.ithome.com.tw/articles/10410483",
-          "publishedAt": "2026-09-19T13:30:15+08:00"
-        },
-        {
-          "id": 10410484,
-          "day": 6,
-          "title": "Day 6｜READMEAGENTS.md 與規則：先教 AI 怎麼跟我合作",
-          "url": "https://ithelp.ithome.com.tw/articles/10410484",
-          "publishedAt": "2026-09-20T08:46:12+08:00"
-        },
-        {
-          "id": 10410485,
-          "day": 7,
-          "title": "Day 7｜第一個任務：把一個小 Feature 完整交給 Codex",
-          "url": "https://ithelp.ithome.com.tw/articles/10410485",
-          "publishedAt": "2026-09-21T09:02:27+08:00"
-        },
-        {
-          "id": 10410486,
-          "day": 8,
-          "title": "Day 8｜怎樣寫 Prompt，Codex 才不會把專案改成大型災難？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410486",
-          "publishedAt": "2026-09-22T00:00:08+08:00"
-        },
-        {
-          "id": 10410487,
-          "day": 9,
-          "title": "Day 9｜不告訴它答案：讓 Codex 自己探索陌生 Repository",
-          "url": "https://ithelp.ithome.com.tw/articles/10410487",
-          "publishedAt": "2026-09-23T00:05:51+08:00"
-        },
-        {
-          "id": 10410488,
-          "day": 10,
-          "title": "Day 10｜把 GitHub Issue 變成可執行的開發計畫",
-          "url": "https://ithelp.ithome.com.tw/articles/10410488",
-          "publishedAt": "2026-09-24T00:01:11+08:00"
-        },
-        {
-          "id": 10410489,
-          "day": 11,
-          "title": "Day 11｜真正做一個跨檔案 Feature",
-          "url": "https://ithelp.ithome.com.tw/articles/10410489",
-          "publishedAt": "2026-09-25T00:27:45+08:00"
-        },
-        {
-          "id": 10410490,
-          "day": 12,
-          "title": "Day 12｜AI 寫完不代表完成：用測試抓出看不到的錯誤",
-          "url": "https://ithelp.ithome.com.tw/articles/10410490",
-          "publishedAt": "2026-09-26T00:02:59+08:00"
-        },
-        {
-          "id": 10410491,
-          "day": 13,
-          "title": "Day 13｜Debug 實驗：只給錯誤訊息，AI 找得到真正原因嗎？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410491",
-          "publishedAt": "2026-09-27T00:05:55+08:00"
-        },
-        {
-          "id": 10410492,
-          "day": 14,
-          "title": "Day 14｜Context 不夠怎麼辦？大型專案的資訊管理術",
-          "url": "https://ithelp.ithome.com.tw/articles/10410492",
-          "publishedAt": "2026-09-28T08:55:50+08:00"
-        },
-        {
-          "id": 10410494,
-          "day": 15,
-          "title": "Day 15｜讓 ChatGPT 幫 Codex 做 Code Review",
-          "url": "https://ithelp.ithome.com.tw/articles/10410494",
-          "publishedAt": "2026-09-29T09:06:32+08:00"
-        },
-        {
-          "id": 10410592,
-          "day": 16,
-          "title": "Day 16｜Refactor：功能沒壞，AI 能把程式變得更好嗎？",
-          "url": "https://ithelp.ithome.com.tw/articles/10410592",
-          "publishedAt": "2026-09-30T08:24:43+08:00"
-        },
-        {
-          "id": 10412033,
-          "day": 17,
-          "title": "Day 17｜GitBranchCommit：讓 AI 的修改可以被追蹤",
-          "url": "https://ithelp.ithome.com.tw/articles/10412033",
-          "publishedAt": "2026-10-01T00:00:11+08:00"
-        },
-        {
-          "id": 10412034,
-          "day": 18,
-          "title": "Day 18｜從修改到 Pull Request：AI 能不能自己把工作講清楚？",
-          "url": "https://ithelp.ithome.com.tw/articles/10412034",
-          "publishedAt": "2026-10-02T00:29:45+08:00"
-        },
-        {
-          "id": 10412035,
-          "day": 19,
-          "title": "Day 19｜Secret權限與 Prompt Injection：AI 開發的安全底線",
-          "url": "https://ithelp.ithome.com.tw/articles/10412035",
-          "publishedAt": "2026-10-03T10:35:48+08:00"
-        },
-        {
-          "id": 10412036,
-          "day": 20,
-          "title": "Day 20｜串接真實 API：讓 AI 面對不完美的外部世界",
-          "url": "https://ithelp.ithome.com.tw/articles/10412036",
-          "publishedAt": "2026-10-04T09:06:39+08:00"
-        },
-        {
-          "id": 10412037,
-          "day": 21,
-          "title": "Day 21｜資料庫任務：SchemaMigration 與資料真的不能亂改",
-          "url": "https://ithelp.ithome.com.tw/articles/10412037",
-          "publishedAt": "2026-10-05T07:48:38+08:00"
-        },
-        {
-          "id": 10412038,
-          "day": 22,
-          "title": "Day 22｜前端任務：AI 會做出能用的介面，還是只有能看的介面？",
-          "url": "https://ithelp.ithome.com.tw/articles/10412038",
-          "publishedAt": "2026-10-06T09:02:19+08:00"
-        },
-        {
-          "id": 10412039,
-          "day": 23,
-          "title": "Day 23｜後端任務：Validation錯誤處理與真正可靠的 API",
-          "url": "https://ithelp.ithome.com.tw/articles/10412039",
-          "publishedAt": "2026-10-07T09:07:41+08:00"
-        },
-        {
-          "id": 10412040,
-          "day": 24,
-          "title": "Day 24｜Deploy 上線：本機會跑，到了 Production 還算數嗎？",
-          "url": "https://ithelp.ithome.com.tw/articles/10412040",
-          "publishedAt": "2026-10-08T00:22:12+08:00"
-        },
-        {
-          "id": 10412042,
-          "day": 25,
-          "title": "Day 25｜CI/CD：每次 Push 都讓機器先幫 AI 驗貨",
-          "url": "https://ithelp.ithome.com.tw/articles/10412042",
-          "publishedAt": "2026-10-09T00:46:10+08:00"
-        },
-        {
-          "id": 10412043,
-          "day": 26,
-          "title": "Day 26｜LogsMonitoring 與可觀測性：上線後 AI 怎麼查問題？",
-          "url": "https://ithelp.ithome.com.tw/articles/10412043",
-          "publishedAt": "2026-10-10T09:40:36+08:00"
-        },
-        {
-          "id": 10412044,
-          "day": 27,
-          "title": "Day 27｜陌生 Repo 挑戰：不給背景知識，Codex 能修完一個 Issue 嗎？",
-          "url": "https://ithelp.ithome.com.tw/articles/10412044",
-          "publishedAt": "2026-10-11T09:13:42+08:00"
         }
       ]
     },
@@ -136234,7 +136234,7 @@
       "description": "以 CEH 駭客思維解構威脅，以 CISSP 架構建構縱深，以 ISO 27001 落地合規——這是一個 IT 工程師在系統、網路與資安十字路口的 30 天沉澱實錄。",
       "team": null,
       "signupDate": "2026/09/15T23:27:52+08:00",
-      "lastUpdated": "2026-10-12T07:01:20+08:00",
+      "lastUpdated": "2026-10-12T08:03:54+08:00",
       "dayCount": 27,
       "articleCount": 27,
       "subscriptions": 0,
