@@ -1,6 +1,6 @@
 {
   "year": 2026,
-  "updatedAt": "2026-10-14 07:38:45+08:00",
+  "updatedAt": "2026-10-14 08:03:31+08:00",
   "groups": [
     "AI Engineering",
     "AI Security",
@@ -101016,6 +101016,228 @@
       ]
     },
     {
+      "id": 9685,
+      "user": {
+        "id": 20103790,
+        "name": "mikewang",
+        "profileUrl": "https://ithelp.ithome.com.tw/users/20103790/profile"
+      },
+      "group": "Claude AI",
+      "title": "盡信 Claude，不如無 Code — 心法與全端實戰",
+      "description": "盡信書，則不如無書。AI 寫的 code 也一樣: 不是不能讓它寫，是不能不驗就收。它出錯時，看起來跟做對時一模一樣——我遇過它回報 163 個測試全過，專案卻連編譯都過不了。\r\n\r\n不教安裝、不比模型、不談 prompt 技巧。前 20 天講我日常在用的 Claude Code 工具與心法: 知識圖、CLAUDE.md、規格先行、Plan Mode、Skills、MCP、hook、地端模型、突變檢查，每一篇除了怎麼用，還講怎麼驗它真的有效。後 10 天交給 AI 實作一個活動報名系統。\r\n\r\n你需要的不是更聰明的 AI，是一個不會說謊的裁判。",
+      "team": "AI的I，是I人的I",
+      "signupDate": "2026/09/14T10:47:57+08:00",
+      "lastUpdated": "2026-10-14T07:37:14+08:00",
+      "dayCount": 30,
+      "articleCount": 29,
+      "subscriptions": 0,
+      "articles": [
+        {
+          "id": 10410747,
+          "day": 1,
+          "title": "Day 1 Claude 寫的 code，人機 審的 code",
+          "url": "https://ithelp.ithome.com.tw/articles/10410747",
+          "publishedAt": "2026-09-15T09:23:25+08:00"
+        },
+        {
+          "id": 10411535,
+          "day": 2,
+          "title": "Day 2 從沒看過的 repo，該從哪裡開始讀？",
+          "url": "https://ithelp.ithome.com.tw/articles/10411535",
+          "publishedAt": "2026-09-16T13:15:51+08:00"
+        },
+        {
+          "id": 10412335,
+          "day": 3,
+          "title": "Day 3 讓 AI 讀同一個 repo",
+          "url": "https://ithelp.ithome.com.tw/articles/10412335",
+          "publishedAt": "2026-09-17T08:18:07+08:00"
+        },
+        {
+          "id": 10413104,
+          "day": 4,
+          "title": "Day 4 隔離環境有三級：刪掉換目錄開 VM  每一級擋住什麼，又漏掉什麼",
+          "url": "https://ithelp.ithome.com.tw/articles/10413104",
+          "publishedAt": "2026-09-18T12:42:15+08:00"
+        },
+        {
+          "id": 10413548,
+          "day": 5,
+          "title": "Day 5 一份 Markdown，三種產出，加上那些圖是怎麼來的",
+          "url": "https://ithelp.ithome.com.tw/articles/10413548",
+          "publishedAt": "2026-09-19T02:03:48+08:00"
+        },
+        {
+          "id": 10414121,
+          "day": 6,
+          "title": "Day 6 CLAUDE.md 日常維護：/doctor 幫你砍，/insights 幫你加",
+          "url": "https://ithelp.ithome.com.tw/articles/10414121",
+          "publishedAt": "2026-09-20T05:23:05+08:00"
+        },
+        {
+          "id": 10414715,
+          "day": 7,
+          "title": "Day 7 先寫規格，再讓 Plan Mode 把它補完整",
+          "url": "https://ithelp.ithome.com.tw/articles/10414715",
+          "publishedAt": "2026-09-21T10:05:21+08:00"
+        },
+        {
+          "id": 10415358,
+          "day": 8,
+          "title": "Day 8 讓它來拷問我的規格：/grill-me 四輪24 題，問到 frontier 清空",
+          "url": "https://ithelp.ithome.com.tw/articles/10415358",
+          "publishedAt": "2026-09-22T10:40:55+08:00"
+        },
+        {
+          "id": 10415811,
+          "day": 9,
+          "title": "Day 9 測試是給 AI 的護欄，也是驗收標準",
+          "url": "https://ithelp.ithome.com.tw/articles/10415811",
+          "publishedAt": "2026-09-23T08:54:22+08:00"
+        },
+        {
+          "id": 10416316,
+          "day": 10,
+          "title": "Day 10 Git 工作流：哪些讓 AI 做，哪些留給人",
+          "url": "https://ithelp.ithome.com.tw/articles/10416316",
+          "publishedAt": "2026-09-24T06:31:24+08:00"
+        },
+        {
+          "id": 10416892,
+          "day": 11,
+          "title": "Day 11 Slash Commands 與 Skills：把每天講三次的話變成一條指令",
+          "url": "https://ithelp.ithome.com.tw/articles/10416892",
+          "publishedAt": "2026-09-25T11:11:31+08:00"
+        },
+        {
+          "id": 10417316,
+          "day": 12,
+          "title": "Day 12 寫完的 skill 要回來數，裝來的 skill 要先隔離",
+          "url": "https://ithelp.ithome.com.tw/articles/10417316",
+          "publishedAt": "2026-09-26T08:13:48+08:00"
+        },
+        {
+          "id": 10417843,
+          "day": 13,
+          "title": "Day 13 去識別化做成一支檢查工具：一張對照表，和一條不能交給 AI 的檢查",
+          "url": "https://ithelp.ithome.com.tw/articles/10417843",
+          "publishedAt": "2026-09-27T14:53:35+08:00"
+        },
+        {
+          "id": 10418165,
+          "day": 14,
+          "title": "Day 14 MCP 支援 X？規格SDK你手上這支，三個答案要打一次才知道",
+          "url": "https://ithelp.ithome.com.tw/articles/10418165",
+          "publishedAt": "2026-09-28T06:53:58+08:00"
+        },
+        {
+          "id": 10418675,
+          "day": 15,
+          "title": "Day 15 接一個 MCP server 的完整流程：從 .mcp.json 到它第一次撞牆",
+          "url": "https://ithelp.ithome.com.tw/articles/10418675",
+          "publishedAt": "2026-09-29T10:08:48+08:00"
+        },
+        {
+          "id": 10419157,
+          "day": 16,
+          "title": "Day 16 裝一個 AI 工具之前，怎麼知道它動了什麼",
+          "url": "https://ithelp.ithome.com.tw/articles/10419157",
+          "publishedAt": "2026-09-30T10:37:32+08:00"
+        },
+        {
+          "id": 10419629,
+          "day": 17,
+          "title": "Day 17 Hook：規則寫下來不夠，要擋在寫入之前",
+          "url": "https://ithelp.ithome.com.tw/articles/10419629",
+          "publishedAt": "2026-10-01T14:19:39+08:00"
+        },
+        {
+          "id": 10419929,
+          "day": 18,
+          "title": "Day 18 排程：要 Claude 每天早上自己跑，先把做什麼寫成腳本",
+          "url": "https://ithelp.ithome.com.tw/articles/10419929",
+          "publishedAt": "2026-10-02T08:11:57+08:00"
+        },
+        {
+          "id": 10420435,
+          "day": 19,
+          "title": "Day 19 把寫測試外包給地端：同一個模型，給清單和給一句話差多少",
+          "url": "https://ithelp.ithome.com.tw/articles/10420435",
+          "publishedAt": "2026-10-03T14:22:21+08:00"
+        },
+        {
+          "id": 10420724,
+          "day": 20,
+          "title": "Day 20 同一份需求，當年我直接寫了，今天讓 OpenSpec 先問",
+          "url": "https://ithelp.ithome.com.tw/articles/10420724",
+          "publishedAt": "2026-10-04T07:54:27+08:00"
+        },
+        {
+          "id": 10421030,
+          "day": 21,
+          "title": "Day 21 開工：規格早就寫好了，它還是標出 21 個空白",
+          "url": "https://ithelp.ithome.com.tw/articles/10421030",
+          "publishedAt": "2026-10-05T07:00:28+08:00"
+        },
+        {
+          "id": 10421582,
+          "day": 22,
+          "title": "Day 22 讓 AI 盲做 schema：哪些差異真的該寫進規格？",
+          "url": "https://ithelp.ithome.com.tw/articles/10421582",
+          "publishedAt": "2026-10-06T10:47:59+08:00"
+        },
+        {
+          "id": 10421937,
+          "day": 23,
+          "title": "Day 23 報名 API：先定好標準答案，再讓 AI 寫實作",
+          "url": "https://ithelp.ithome.com.tw/articles/10421937",
+          "publishedAt": "2026-10-07T10:04:07+08:00"
+        },
+        {
+          "id": 10422263,
+          "day": 24,
+          "title": "Day 24 AI 寫的 JWT 六關過四關：紅燈不在 JWT，問題在時間從哪來",
+          "url": "https://ithelp.ithome.com.tw/articles/10422263",
+          "publishedAt": "2026-10-08T09:13:37+08:00"
+        },
+        {
+          "id": 10422588,
+          "day": 25,
+          "title": "Day 25 早鳥加團體加優惠碼：規則改了，AI 不到一分鐘跟上，還問出一個我沒想到的問題",
+          "url": "https://ithelp.ithome.com.tw/articles/10422588",
+          "publishedAt": "2026-10-09T00:34:53+08:00"
+        },
+        {
+          "id": 10422993,
+          "day": 26,
+          "title": "Day 26 時間的那一刻：AI 寫對了判斷，卻留下測不到的時鐘，和一條我沒寫成測試的規則",
+          "url": "https://ithelp.ithome.com.tw/articles/10422993",
+          "publishedAt": "2026-10-10T13:19:38+08:00"
+        },
+        {
+          "id": 10423263,
+          "day": 27,
+          "title": "Day 27 AI 寫 iOS：使用者的手機不是你的手機，而那支 UI 測試對著空畫面也會過",
+          "url": "https://ithelp.ithome.com.tw/articles/10423263",
+          "publishedAt": "2026-10-11T11:39:58+08:00"
+        },
+        {
+          "id": 10423578,
+          "day": 28,
+          "title": "Day 28 AI 從契約寫出 Android：編不起來的是產生器，走不完的是小螢幕，照樣綠的是空清單",
+          "url": "https://ithelp.ithome.com.tw/articles/10423578",
+          "publishedAt": "2026-10-12T12:29:13+08:00"
+        },
+        {
+          "id": 10423794,
+          "day": 29,
+          "title": "Day 29 讓 AI 走查網頁：五個檢查點全勾，金額錯了十倍",
+          "url": "https://ithelp.ithome.com.tw/articles/10423794",
+          "publishedAt": "2026-10-13T06:00:33+08:00"
+        }
+      ]
+    },
+    {
       "id": 9691,
       "user": {
         "id": 20130095,
@@ -120798,228 +121020,6 @@
           "title": "Day 29｜AI 開發失敗圖鑑：這 30 天它最常在哪裡翻車？",
           "url": "https://ithelp.ithome.com.tw/articles/10412046",
           "publishedAt": "2026-10-13T09:00:44+08:00"
-        }
-      ]
-    },
-    {
-      "id": 9685,
-      "user": {
-        "id": 20103790,
-        "name": "mikewang",
-        "profileUrl": "https://ithelp.ithome.com.tw/users/20103790/profile"
-      },
-      "group": "Claude AI",
-      "title": "盡信 Claude，不如無 Code — 心法與全端實戰",
-      "description": "盡信書，則不如無書。AI 寫的 code 也一樣: 不是不能讓它寫，是不能不驗就收。它出錯時，看起來跟做對時一模一樣——我遇過它回報 163 個測試全過，專案卻連編譯都過不了。\r\n\r\n不教安裝、不比模型、不談 prompt 技巧。前 20 天講我日常在用的 Claude Code 工具與心法: 知識圖、CLAUDE.md、規格先行、Plan Mode、Skills、MCP、hook、地端模型、突變檢查，每一篇除了怎麼用，還講怎麼驗它真的有效。後 10 天交給 AI 實作一個活動報名系統。\r\n\r\n你需要的不是更聰明的 AI，是一個不會說謊的裁判。",
-      "team": "AI的I，是I人的I",
-      "signupDate": "2026/09/14T10:47:57+08:00",
-      "lastUpdated": "2026-10-14T07:37:14+08:00",
-      "dayCount": 29,
-      "articleCount": 29,
-      "subscriptions": 0,
-      "articles": [
-        {
-          "id": 10410747,
-          "day": 1,
-          "title": "Day 1 Claude 寫的 code，人機 審的 code",
-          "url": "https://ithelp.ithome.com.tw/articles/10410747",
-          "publishedAt": "2026-09-15T09:23:25+08:00"
-        },
-        {
-          "id": 10411535,
-          "day": 2,
-          "title": "Day 2 從沒看過的 repo，該從哪裡開始讀？",
-          "url": "https://ithelp.ithome.com.tw/articles/10411535",
-          "publishedAt": "2026-09-16T13:15:51+08:00"
-        },
-        {
-          "id": 10412335,
-          "day": 3,
-          "title": "Day 3 讓 AI 讀同一個 repo",
-          "url": "https://ithelp.ithome.com.tw/articles/10412335",
-          "publishedAt": "2026-09-17T08:18:07+08:00"
-        },
-        {
-          "id": 10413104,
-          "day": 4,
-          "title": "Day 4 隔離環境有三級：刪掉換目錄開 VM  每一級擋住什麼，又漏掉什麼",
-          "url": "https://ithelp.ithome.com.tw/articles/10413104",
-          "publishedAt": "2026-09-18T12:42:15+08:00"
-        },
-        {
-          "id": 10413548,
-          "day": 5,
-          "title": "Day 5 一份 Markdown，三種產出，加上那些圖是怎麼來的",
-          "url": "https://ithelp.ithome.com.tw/articles/10413548",
-          "publishedAt": "2026-09-19T02:03:48+08:00"
-        },
-        {
-          "id": 10414121,
-          "day": 6,
-          "title": "Day 6 CLAUDE.md 日常維護：/doctor 幫你砍，/insights 幫你加",
-          "url": "https://ithelp.ithome.com.tw/articles/10414121",
-          "publishedAt": "2026-09-20T05:23:05+08:00"
-        },
-        {
-          "id": 10414715,
-          "day": 7,
-          "title": "Day 7 先寫規格，再讓 Plan Mode 把它補完整",
-          "url": "https://ithelp.ithome.com.tw/articles/10414715",
-          "publishedAt": "2026-09-21T10:05:21+08:00"
-        },
-        {
-          "id": 10415358,
-          "day": 8,
-          "title": "Day 8 讓它來拷問我的規格：/grill-me 四輪24 題，問到 frontier 清空",
-          "url": "https://ithelp.ithome.com.tw/articles/10415358",
-          "publishedAt": "2026-09-22T10:40:55+08:00"
-        },
-        {
-          "id": 10415811,
-          "day": 9,
-          "title": "Day 9 測試是給 AI 的護欄，也是驗收標準",
-          "url": "https://ithelp.ithome.com.tw/articles/10415811",
-          "publishedAt": "2026-09-23T08:54:22+08:00"
-        },
-        {
-          "id": 10416316,
-          "day": 10,
-          "title": "Day 10 Git 工作流：哪些讓 AI 做，哪些留給人",
-          "url": "https://ithelp.ithome.com.tw/articles/10416316",
-          "publishedAt": "2026-09-24T06:31:24+08:00"
-        },
-        {
-          "id": 10416892,
-          "day": 11,
-          "title": "Day 11 Slash Commands 與 Skills：把每天講三次的話變成一條指令",
-          "url": "https://ithelp.ithome.com.tw/articles/10416892",
-          "publishedAt": "2026-09-25T11:11:31+08:00"
-        },
-        {
-          "id": 10417316,
-          "day": 12,
-          "title": "Day 12 寫完的 skill 要回來數，裝來的 skill 要先隔離",
-          "url": "https://ithelp.ithome.com.tw/articles/10417316",
-          "publishedAt": "2026-09-26T08:13:48+08:00"
-        },
-        {
-          "id": 10417843,
-          "day": 13,
-          "title": "Day 13 去識別化做成一支檢查工具：一張對照表，和一條不能交給 AI 的檢查",
-          "url": "https://ithelp.ithome.com.tw/articles/10417843",
-          "publishedAt": "2026-09-27T14:53:35+08:00"
-        },
-        {
-          "id": 10418165,
-          "day": 14,
-          "title": "Day 14 MCP 支援 X？規格SDK你手上這支，三個答案要打一次才知道",
-          "url": "https://ithelp.ithome.com.tw/articles/10418165",
-          "publishedAt": "2026-09-28T06:53:58+08:00"
-        },
-        {
-          "id": 10418675,
-          "day": 15,
-          "title": "Day 15 接一個 MCP server 的完整流程：從 .mcp.json 到它第一次撞牆",
-          "url": "https://ithelp.ithome.com.tw/articles/10418675",
-          "publishedAt": "2026-09-29T10:08:48+08:00"
-        },
-        {
-          "id": 10419157,
-          "day": 16,
-          "title": "Day 16 裝一個 AI 工具之前，怎麼知道它動了什麼",
-          "url": "https://ithelp.ithome.com.tw/articles/10419157",
-          "publishedAt": "2026-09-30T10:37:32+08:00"
-        },
-        {
-          "id": 10419629,
-          "day": 17,
-          "title": "Day 17 Hook：規則寫下來不夠，要擋在寫入之前",
-          "url": "https://ithelp.ithome.com.tw/articles/10419629",
-          "publishedAt": "2026-10-01T14:19:39+08:00"
-        },
-        {
-          "id": 10419929,
-          "day": 18,
-          "title": "Day 18 排程：要 Claude 每天早上自己跑，先把做什麼寫成腳本",
-          "url": "https://ithelp.ithome.com.tw/articles/10419929",
-          "publishedAt": "2026-10-02T08:11:57+08:00"
-        },
-        {
-          "id": 10420435,
-          "day": 19,
-          "title": "Day 19 把寫測試外包給地端：同一個模型，給清單和給一句話差多少",
-          "url": "https://ithelp.ithome.com.tw/articles/10420435",
-          "publishedAt": "2026-10-03T14:22:21+08:00"
-        },
-        {
-          "id": 10420724,
-          "day": 20,
-          "title": "Day 20 同一份需求，當年我直接寫了，今天讓 OpenSpec 先問",
-          "url": "https://ithelp.ithome.com.tw/articles/10420724",
-          "publishedAt": "2026-10-04T07:54:27+08:00"
-        },
-        {
-          "id": 10421030,
-          "day": 21,
-          "title": "Day 21 開工：規格早就寫好了，它還是標出 21 個空白",
-          "url": "https://ithelp.ithome.com.tw/articles/10421030",
-          "publishedAt": "2026-10-05T07:00:28+08:00"
-        },
-        {
-          "id": 10421582,
-          "day": 22,
-          "title": "Day 22 讓 AI 盲做 schema：哪些差異真的該寫進規格？",
-          "url": "https://ithelp.ithome.com.tw/articles/10421582",
-          "publishedAt": "2026-10-06T10:47:59+08:00"
-        },
-        {
-          "id": 10421937,
-          "day": 23,
-          "title": "Day 23 報名 API：先定好標準答案，再讓 AI 寫實作",
-          "url": "https://ithelp.ithome.com.tw/articles/10421937",
-          "publishedAt": "2026-10-07T10:04:07+08:00"
-        },
-        {
-          "id": 10422263,
-          "day": 24,
-          "title": "Day 24 AI 寫的 JWT 六關過四關：紅燈不在 JWT，問題在時間從哪來",
-          "url": "https://ithelp.ithome.com.tw/articles/10422263",
-          "publishedAt": "2026-10-08T09:13:37+08:00"
-        },
-        {
-          "id": 10422588,
-          "day": 25,
-          "title": "Day 25 早鳥加團體加優惠碼：規則改了，AI 不到一分鐘跟上，還問出一個我沒想到的問題",
-          "url": "https://ithelp.ithome.com.tw/articles/10422588",
-          "publishedAt": "2026-10-09T00:34:53+08:00"
-        },
-        {
-          "id": 10422993,
-          "day": 26,
-          "title": "Day 26 時間的那一刻：AI 寫對了判斷，卻留下測不到的時鐘，和一條我沒寫成測試的規則",
-          "url": "https://ithelp.ithome.com.tw/articles/10422993",
-          "publishedAt": "2026-10-10T13:19:38+08:00"
-        },
-        {
-          "id": 10423263,
-          "day": 27,
-          "title": "Day 27 AI 寫 iOS：使用者的手機不是你的手機，而那支 UI 測試對著空畫面也會過",
-          "url": "https://ithelp.ithome.com.tw/articles/10423263",
-          "publishedAt": "2026-10-11T11:39:58+08:00"
-        },
-        {
-          "id": 10423578,
-          "day": 28,
-          "title": "Day 28 AI 從契約寫出 Android：編不起來的是產生器，走不完的是小螢幕，照樣綠的是空清單",
-          "url": "https://ithelp.ithome.com.tw/articles/10423578",
-          "publishedAt": "2026-10-12T12:29:13+08:00"
-        },
-        {
-          "id": 10423794,
-          "day": 29,
-          "title": "Day 29 讓 AI 走查網頁：五個檢查點全勾，金額錯了十倍",
-          "url": "https://ithelp.ithome.com.tw/articles/10423794",
-          "publishedAt": "2026-10-13T06:00:33+08:00"
         }
       ]
     },
