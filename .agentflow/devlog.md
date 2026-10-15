@@ -10,13 +10,10 @@ Tests/scenarios: Live fetch via scripts/fetch-html.ts; parseSignupList over all 
 
 Configuration: ag.json — schema v8; validated for default this round.
 
-Proven: Upstream page pagination, raw HTML card counts, parser counts, stale 929 display, local stored data, and current CI state inspected..
-
-Open: Upstream signup list exposes 534 cards while displaying 929 registrations; CI remains blocked by the circuit breaker and stored data is intentionally retained..
-
-Next: Wait for upstream restoration or identify and verify an official complete-list endpoint/query before changing the scraper..
-
-Artifacts: Upstream signup list; GitHub Actions run 38657479036; local data/2026.json and data/meta.json.
+Proven: Upstream flipped the signup list to a finisher list (all 534 listed series dayCount>=30) at posting-window close; finishers semantics retains the full 929 roster with inUpstreamList flags; CI green and deployed..
+Open: inUpstreamList is recorded but not yet surfaced in the web UI (e.g., a finisher badge or filter could use it)..
+Next: Optional UI surfacing of inUpstreamList; otherwise routine monitoring — if upstream ever restores the full roster, flip manifest semantics back to roster..
+Artifacts: GitHub Actions run 38674094887; deployed https://ironman-observer-next.happyhacking.workers.dev/data/2026.json.
 
 Archived eras: none.
 
@@ -130,3 +127,42 @@ Streams: none.
 # → Ask / A-003 (Kehao Chen)
 
 +
+ 請協助處理
+
+---
+
+## [RUN-001] Event — 2026-10-15 11:05:00 +0800 (A-003)
+
+- Root cause confirmed with the fresh 10-14 cache (local clone had been stale at 9/30): all 534 currently listed series have dayCount>=30 — the upstream signup list became a FINISHER list (完賽名單) when the posting window closed; 7 dayCount=30 finishers are additionally absent with their series pages returning 403 (self-deleted or DQ).
+
+## [RUN-002] Event — 2026-10-15 11:05:00 +0800 (A-003)
+
+- Implemented Manifest.signupListSemantics ("roster" default | "finishers") + Series.inUpstreamList flag; finishers mode retains absent roster series with inUpstreamList=false so the 929-series roster never shrinks with upstream curation, while page-1-empty and stale/failed guards still catch outages. 2026 manifest switched to finishers.
+
+## [RUN-003] Event — 2026-10-15 11:05:00 +0800 (A-003)
+
+- Verified: 21 scrape-cli tests (2 new) + full `bun run check` green; live scrape on top of the 10-14 cache → 929/534/395 flags, article totals preserved; pushed and dispatched CI run 38674094887 → all steps success incl. deploy; deployed /data/2026.json serves 929 series with 534 flagged.
+
+# ← Reply / A-003
+
+* _2026-10-15 11:05:00 +0800 (default/unknown)_
+
+## [SUMMARY]
+
+- 證實使用者假設：上游報名列表已切成完賽名單（534 筆全部 dayCount≥30）。新增 finishers 語意保留完整 929 名冊並以 inUpstreamList 標記上游完賽名單；CI 已全綠並部署。
+
+## [FINAL REPORT]
+
+1. "請協助處理"
+
+   - 根因（修正先前以過期本地資料的誤判）：抓遠端 10-14 最新快取交叉比對後，上游列表 534 筆**全部 dayCount≥30** —— 貼文期於 10-14 深夜結束後，上游在 10-15 00:00 將報名列表換成完賽名單。另有 7 筆 dayCount=30 完賽者不在名單且系列頁 403（自刪或 DQ）。使用者「僅顯示完賽名單」的假設完全正確。
+
+   - 修正（commit `3e7fd706`）：`Manifest.signupListSemantics`（`roster` 預設／`finishers`）+ `Series.inUpstreamList`。finishers 模式下名冊中缺席者保留既有資料並標 `false`，名單內標 `true`；斷路器比較保留後總數不再誤觸，名單整頁掛掉仍由 page-1 零卡與 stale/failed 防護把關。`config/series-manifest.json` 2026 切為 `finishers`。
+
+   - 驗證：21 tests（含 2 新測試）與 `bun run check` 全綠；本地真實抓取輸出 929（534 true / 395 false / 0 null），文章總數僅反映賽後新增；CI run [38674094887](https://github.com/kehao-chen/ithome-ironman-observer-next/actions/runs/38674094887) 全步驟成功並部署，線上 `/data/2026.json` 已供新資料。
+
+   - 資料語意：`inUpstreamList=true` = 上游完賽名單成員（官方認定），`=false` = 名冊保留但不在上游名單（395 筆，含 7 筆已 403 的完賽者）。文件已更新（DEPLOYMENT-HANDOFF.md、my-project.md）。
+
+## Questions (batched — each with a suggested default)
+
+- None.
