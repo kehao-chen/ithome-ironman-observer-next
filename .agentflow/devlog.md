@@ -4,19 +4,19 @@ Project: ithome-ironman-observer-next
 
 Notebook: .agentflow/devlog.md — root.
 
-Current commit: f7e3471f58684c4c233ac34cf5e5f829a9acffde.
+Current commit: fa71cd724e41fe01da3dea89fd769d49b658e2a2.
 
-Tests/scenarios: gh run list; gh run view 38657479036; gh run view 38657479036 --log-failed; gh run view 38650757900 --log-failed; gh run list --status in_progress; git ls-remote origin refs/heads/main.
+Tests/scenarios: Live fetch via scripts/fetch-html.ts; parseSignupList over all signup pages; raw list-card counts on pages 1, 54, and 55; local data/2026.json summary; gh run list and in_progress check; agf review.
 
 Configuration: ag.json — schema v8; validated for default this round.
 
-Proven: Latest GitHub Actions status, failed steps, failure logs, remote main commit, and active-run state inspected..
+Proven: Upstream page pagination, raw HTML card counts, parser counts, stale 929 display, local stored data, and current CI state inspected..
 
-Open: scheduled-update and deep-calibrate are failing at the scraper circuit breaker; previous data was retained and deployment was skipped..
+Open: Upstream signup list exposes 534 cards while displaying 929 registrations; CI remains blocked by the circuit breaker and stored data is intentionally retained..
 
-Next: Inspect the upstream series-count drop before rerunning scheduled-update..
+Next: Wait for upstream restoration or identify and verify an official complete-list endpoint/query before changing the scraper..
 
-Artifacts: GitHub Actions runs 38657479036 and 38650757900.
+Artifacts: Upstream signup list; GitHub Actions run 38657479036; local data/2026.json and data/meta.json.
 
 Archived eras: none.
 
@@ -75,5 +75,58 @@ Streams: none.
 ---
 
 # → Ask / A-002 (Kehao Chen)
+
++ 繼續？
+
+---
+
+## [RUN-001] Event — 2026-10-15 09:03:26 +0800 (A-002)
+
+- Live fetch of the upstream signup list followed 54 pages: pages 1–53 had 10 cards each and page 54 had 4, for 534 parsed cards; page 55 was empty.
+
+## [RUN-002] Event — 2026-10-15 09:03:26 +0800 (A-002)
+
+- The raw HTML card count matched parseSignupList on the sampled pages, so the 534 result is not parser loss. The same upstream HTML still displays 報名數 929.
+
+## [RUN-003] Event — 2026-10-15 09:03:26 +0800 (A-002)
+
+- Existing data/2026.json contains 929 series and data/meta.json was last updated 2026-09-30; the source list and stored data are therefore inconsistent.
+
+## [RUN-004] Event — 2026-10-15 09:03:26 +0800 (A-002)
+
+- The latest GitHub Actions run is still 38657479036 failure and no run is in progress; no rerun or code change was made.
+
+# ← Reply / A-002
+
+* _2026-10-15 09:03:26 +0800 (default/unknown)_
+
+## [SUMMARY]
+
+- 查到根因方向：上游報名列表目前實際只提供 `534` 個 `list-card`，但頁面仍顯示「報名數 929」；scraper 解析結果與原始 HTML 一致，不是本地 parser 漏資料。circuit breaker 阻止寫入是正確的保護行為，本輪沒有重跑 CI 或修改程式。
+
+## [FINAL REPORT]
+
+1. "繼續？"
+
+   - 我直接重現了上游 [報名列表](https://ithelp.ithome.com.tw/2026ironman/signup/list)：共 54 頁，page 1–53 各 10 筆、page 54 有 4 筆，合計 **534 筆**；page 55 沒有資料。
+
+   - 同一份 HTML 的頁面標示仍是「報名數 **929**」。抽樣頁面的原始 `<div class="list-card">` 數量與 `parseSignupList` 結果相同，因此目前證據指向 **上游列表內容與上游總數欄位不一致**，不是 scraper 把 929 筆漏解析成 534 筆。
+
+   - 本地 `data/2026.json` 仍有 929 個 series，`data/meta.json` 的最後更新時間是 2026-09-30；CI 的 `929 → 534` circuit breaker 正是偵測到這個上游落差，並保留舊資料、阻止 commit/build/deploy。
+
+   - 最新 CI 沒有變化：`scheduled-update` run [38657479036](https://github.com/kehao-chen/ithome-ironman-observer-next/actions/runs/38657479036) 仍為 failure，沒有 `in_progress` 執行。
+
+   - 結論：目前不應直接放寬 2.0% 閾值或強制重跑；那會把上游列表縮減當成正常資料寫入。安全選項是等待上游列表恢復，或另行確認 iThome 是否有包含完整 929 筆的替代 endpoint/查詢條件後，再改 scraper。
+
+   - 本輪未修改產品程式、資料檔或 CI 設定。
+
+## Questions (batched — each with a suggested default)
+
+- None.
+
+
+---
+
+# → Ask / A-003 (Kehao Chen)
 
 +
