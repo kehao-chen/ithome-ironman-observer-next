@@ -433,8 +433,9 @@ export async function runScrape(
       scrapeLog.push(`[failed] ${res.seriesId}: ${res.error}`);
     }
   }
-  // 賽後上游把報名列表換成完賽/達標名單（2026-10-15 起 929→534，僅列
-  // articleCount≥15 之系列），名單不再是完整名冊。finishers 語意下保留名冊：
+  // 賽後上游把報名列表換成完賽名單（2026-10-15 起 929→534：534 筆全部
+  // dayCount≥30；另有 7 筆完賽者不在名單，其系列頁已 403 —— 自刪或 DQ），
+  // 名單不再是完整名冊。finishers 語意下保留名冊：
   // 名單內系列標 inUpstreamList=true；名冊中缺席者保留既有資料並標 false。
   // series 此時涵蓋名冊全集，斷路器的 drop 檢查比較保留後總數，不會誤觸；
   // 名單整頁掛掉仍由 page-1 零卡防護與 stale/failed 檢查把關。
