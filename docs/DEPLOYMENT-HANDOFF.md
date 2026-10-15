@@ -77,7 +77,7 @@ GH Actions (.github/workflows/scheduled-update.yml)
 | `web/src/pages/index.astro` | 頁面：glob `data/*.json`（4 碼年份 key）+ dynamic import meta；`years = meta.years ∩ 實際存在檔案`；`<title>` 隨年度動態 |
 | `web/src/components/Dashboard.astro` | **UI/UX 主戰場**：header、**年度切換器**（`#year-select`，以 meta `years` 為權威）、**60s client refresh**（`loadYear` + fetchToken 防 stale race）、group filter（container delegation、僅年度變更時重建 chips）、sort、scrapeLog notice（`<details id="scrape-log">`，空時 hidden）、renderCard（大量 inline style） |
 | `web/src/components/SeriesCard.astro` | 靜態卡片（SSG 版）；與 client renderCard 需保持欄位一致 |
-| `config/series-manifest.json` | **年度清單（單一來源；陣列）**：`[{ year, signupListUrl }]`，多年度架構從這裡擴 |
+| `config/series-manifest.json` | **年度清單（單一來源；陣列）**：`[{ year, signupListUrl, signupListSemantics? }]`，多年度架構從這裡擴。`signupListSemantics`：`roster`（預設，列表=完整名冊，縮水即 trip circuit breaker）／`finishers`（賽後上游列表改為完賽/達標名單，2026-10-15 起 929→534；缺席系列保留既有資料並標 `inUpstreamList=false`，名冊不縮水） |
 | `.github/workflows/scheduled-update.yml` | workflow（僅 `workflow_dispatch`；原 `schedule` 已移除，由 Worker 觸發）；secrets: `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` |
 | `worker/` | Cloudflare Worker `ironman-observer-trigger`（cron `*/10 * * * *`）：`scheduled()` 打 `workflow_dispatch`，依 `run_number` 去重避免重疊；`GET /` 健康檢查、`POST /dispatch` 手動觸發；secrets: `GITHUB_TOKEN`（Actions:write PAT）、`GITHUB_REPO` |
 

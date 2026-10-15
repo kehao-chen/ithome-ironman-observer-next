@@ -26,9 +26,16 @@ export type Series = {
   dayCount: number; articleCount: number; subscriptions?: number;
   articles: Article[];
   rssFallback?: boolean;
+  inUpstreamList?: boolean; // 上游報名列表是否仍列出（finishers 語意：賽後列表僅列完賽/達標者，見 Manifest.signupListSemantics）
 };
 export type YearData = { year: number; updatedAt: string; groups: string[]; series: Series[]; scrapeLog: string[] };
-export type Manifest = { year: number; signupListUrl: string };
+export type Manifest = {
+  year: number; signupListUrl: string;
+  // roster（預設）：報名列表 = 完整名冊，系列消失視為資料異常（circuit breaker 防護）。
+  // finishers：賽後上游把報名列表換成完賽/達標名單（2026-10-15 起 929→534），
+  // 名單僅代表「上游仍列出」；缺席者保留既有資料並標 inUpstreamList=false。
+  signupListSemantics?: "roster" | "finishers";
+};
 export type MetaJson = {
   latestYear: number;   // years[0]（成功年度 desc 的第一個 = 最新）
   years: number[];      // 成功寫檔年度 desc 排序 —— UI 年度選項的唯一權威來源

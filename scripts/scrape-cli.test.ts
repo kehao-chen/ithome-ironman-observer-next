@@ -354,6 +354,56 @@ describe("circuit breaker", () => {
   });
 });
 
+describe("signupListSemantics: finishers (賽後上游列表 = 完賽/達標名單)", () => {
+  const mFinishers: Manifest = {
+    year: 2026,
+    signupListUrl: "https://ithelp/2026ironman/signup/list",
+    signupListSemantics: "finishers",
+  };
+  // 名單僅列出 id 0/1/7；prev 名冊 ids 0..49。
+  const threeCardsHtml = [0, 1, 7].map((id) => `
+      <div class="list-card">
+        <a href="https://ithelp.ithome.com.tw/users/${id + 1}/ironman/${id}"></a>
+        <div class="contestants-list__name">User ${id}</div>
+        <div class="tag"><span>Group</span></div>
+        <a class="contestants-list__title title">Title ${id}</a>
+        <p class="contestants-list__desc content">Desc</p>
+        <div class="contestants-list__date date">報名日期：2026/08/01 12:00:00</div>
+      </div>`).join("\n");
+
+  test("retains absent roster series, marks inUpstreamList, breaker not tripped", async () => {
+    const prev = data(2026, 50); // ids 0..49，dayCount/articleCount 0 → fast path 2，不發系列請求
+    prev.series[7].inUpstreamList = false; // 前一輪標記缺席；本輪上游重新列出 → 應翻回 true
+    const fetcher = async (url: string) => {
+      if (url.includes("/signup/list")) return threeCardsHtml;
+      throw new Error(`unexpected fetch: ${url}`); // 証明保留/快取路徑零系列頁請求
+    };
+
+    const yearData = await runScrape(mFinishers, { cachedYearData: prev, fetcher });
+    // 名冊不縮水：50 筆全保留（roster 語意下同場景會 trip，見下）
+    expect(yearData.series.length).toBe(50);
+    const byId = new Map(yearData.series.map((s) => [s.id, s]));
+    expect(byId.get(0)?.inUpstreamList).toBe(true);
+    expect(byId.get(1)?.inUpstreamList).toBe(true);
+    expect(byId.get(7)?.inUpstreamList).toBe(true);
+    expect(byId.get(2)?.inUpstreamList).toBe(false);
+    expect(byId.get(49)?.inUpstreamList).toBe(false);
+    // 缺席者保留既有資料
+    expect(byId.get(49)?.title).toBe("t");
+    expect(yearData.scrapeLog).toContain("[roster] retained 47 series absent from upstream finisher list");
+  });
+
+  test("same scenario under default roster semantics still trips the breaker", async () => {
+    const prev = data(2026, 50);
+    const mRoster: Manifest = { year: 2026, signupListUrl: "https://ithelp/2026ironman/signup/list" };
+    const fetcher = async (url: string) => {
+      if (url.includes("/signup/list")) return threeCardsHtml;
+      throw new Error(`unexpected fetch: ${url}`);
+    };
+    await expect(runScrape(mRoster, { cachedYearData: prev, fetcher })).rejects.toThrow("circuit breaker tripped");
+  });
+});
+
 describe("history snapshot / year file byte-equality", () => {
   // The daily snapshot is written on every run — ~96 times a day for the same
   // Taipei date — and that is only affordable because it is byte-identical to
