@@ -44,7 +44,7 @@ export function aggregateTeams(data: YearData, today: string): TeamRow[] {
     members.push({
       series: s,
       views: totalViewsOf(s),
-      status: statusChip(latest?.publishedAt, s.dayCount, today, s.articleCount),
+      status: statusChip(latest?.publishedAt, s.dayCount, today, s.articleCount, s.inUpstreamList),
       staleDays: stalenessDays(latest?.publishedAt, today),
       isPending: s.dayCount === 0, // 已刪文（dayCount>0 且 0 篇）天然排除
       isDone: s.dayCount >= 30,

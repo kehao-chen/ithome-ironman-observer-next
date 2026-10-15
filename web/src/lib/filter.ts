@@ -92,6 +92,9 @@ export function applySeriesFilters(data: YearData, opts: SeriesFilterOptions): V
   let series: ViewSeries[] = data.series;
   if (opts.group === "fav") {
     series = favSeries(data, opts.favSet); // 收藏分頁：目前年度已收藏子集
+  } else if (opts.group === "finishers") {
+    // 完賽名單分頁：上游賽後完賽名單（inUpstreamList，見 scripts/scrape.ts finishers 語意）
+    series = series.filter((s) => s.inUpstreamList === true);
   } else if (opts.group.startsWith("team:")) {
     // 團隊系列流：該隊成員子集（必須在 group 相等比對之前，否則 team: 前綴永不命中）
     const t = opts.group.slice(5);

@@ -112,6 +112,13 @@ describe("buildCard — 結構契約（mirror SeriesCard.astro）", () => {
     expect(card.querySelector(".progress-label")!.textContent).toBe("30/30");
     expect(card.querySelector(".status-chip")!.textContent).toBe("鐵人煉成");
   });
+
+  test("已下架：完賽 badge + 已下架 chip（上游名單未列）", () => {
+    const card = buildCard(makeSeries({ dayCount: 30, articleCount: 30, inUpstreamList: false }), TODAY, false);
+    expect(card.querySelector(".day-badge")!.textContent).toBe("完賽");
+    expect(card.querySelector(".status-chip")!.textContent).toBe("已下架");
+    expect(card.querySelector(".status-chip")!.className).toBe("status-chip status-chip--removed");
+  });
 });
 
 describe("buildRow — 結構契約", () => {

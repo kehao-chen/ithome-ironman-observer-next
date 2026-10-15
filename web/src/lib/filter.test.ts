@@ -58,6 +58,13 @@ describe("applySeriesFilters — 組別 filter", () => {
     const r = applySeriesFilters(makeData([a, b]), { group: "fav", sort: "dayCount", query: "", favSet: new Set([1]) });
     expect(r.map((s) => s.id)).toEqual([1]);
   });
+  test("完賽名單分頁：只留 inUpstreamList=true", () => {
+    const a = makeSeries({ id: 1, group: "現代", inUpstreamList: true });
+    const b = makeSeries({ id: 2, group: "現代", inUpstreamList: false });
+    const c = makeSeries({ id: 3, group: "自我挑戰組" }); // 無旗標（roster 年度資料）→ 不列入
+    const r = applySeriesFilters(makeData([a, b, c]), { group: "finishers", sort: "dayCount", query: "", favSet: NO_FAV });
+    expect(r.map((s) => s.id)).toEqual([1]);
+  });
 });
 
 describe("applySeriesFilters — team: 前綴組別過濾", () => {

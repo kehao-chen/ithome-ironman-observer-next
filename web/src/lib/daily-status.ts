@@ -39,11 +39,16 @@ export type StatusChip =
   | { kind: "long-stale"; days: number }
   | { kind: "done" }
   | { kind: "deleted" }
+  | { kind: "removed" }
   | null;
 
-export function statusChip(iso: string | null | undefined, dayCount: number, today: string, articleCount: number): StatusChip {
+// inUpstreamList（可選）：上游完賽名單標記（見 scripts/scrape.ts finishers 語意）。
+// dayCount≥30 但不在上游名單 = 賽後系列頁已被移除（自刪或 DQ）→「已下架」。
+export function statusChip(iso: string | null | undefined, dayCount: number, today: string, articleCount: number, inUpstreamList?: boolean): StatusChip {
   // 已刪文：作者把文章全刪了（參賽天數 N / 0 篇文章）→ 最高優先，不受發文狀態影響。
   if (isDeletedSeries(dayCount, articleCount)) return { kind: "deleted" };
+  // 已下架：完賽（dayCount≥30）但上游完賽名單未列（系列頁 403）→ 優先於「鐵人煉成」。
+  if (dayCount >= 30 && inUpstreamList === false) return { kind: "removed" };
   // 完賽系列：優先顯示「鐵人煉成」，不受發文狀態影響。
   if (dayCount >= 30) return { kind: "done" };
   const days = stalenessDays(iso, today);
@@ -64,6 +69,7 @@ export function statusChipText(chip: StatusChip): string {
     case "long-stale": return "長時間停更";
     case "done": return "鐵人煉成";
     case "deleted": return "已刪文";
+    case "removed": return "已下架";
   }
 }
 
@@ -71,5 +77,7 @@ export function statusChipText(chip: StatusChip): string {
 export function statusChipTitle(chip: StatusChip): string | null {
   if (!chip) return null;
   if (chip.kind === "stale" || chip.kind === "long-stale") return `停更 ${chip.days} 天`;
+  if (chip.kind === "removed") return "已完賽，但系列頁已移除（上游完賽名單未列）";
   return null;
 }
+

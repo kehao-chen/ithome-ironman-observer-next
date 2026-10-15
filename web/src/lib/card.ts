@@ -48,6 +48,7 @@ export function chipClassOf(chip: StatusChip): string {
     case "yesterday": return "status-chip status-chip--yesterday";
     case "done": return "status-chip status-chip--done";
     case "deleted": return "status-chip status-chip--deleted";
+    case "removed": return "status-chip status-chip--removed";
     case "long-stale": return "status-chip status-chip--long";
     case "stale": return "status-chip status-chip--stale";
   }
@@ -77,7 +78,7 @@ export function cardViewModel(s: ViewSeries, today: string = taipeiToday()): Car
   const progressLabel = `${Math.min(s.dayCount, 30)}/30`;
 
   const latest = s.articles.length ? s.articles[s.articles.length - 1] : null;
-  const chip = statusChip(latest?.publishedAt, s.dayCount, today, s.articleCount);
+  const chip = statusChip(latest?.publishedAt, s.dayCount, today, s.articleCount, s.inUpstreamList);
   const totalViews = totalViewsOf(s);
 
   // 無文章時「最新」欄位的文字（C2）：尚未開賽系列顯示報名後天數；已刪文顯示明確狀態。

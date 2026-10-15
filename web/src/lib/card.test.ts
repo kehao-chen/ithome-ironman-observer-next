@@ -45,6 +45,18 @@ describe("cardViewModel — badge / 進度", () => {
     expect(v.progressFillClass).toBe("progress-fill progress-fill--done");
     expect(v.chipText).toBe("鐵人煉成");
   });
+  test("已下架：DAY≥30 但不在上游完賽名單 → 完賽 badge + 已下架 chip", () => {
+    const v = cardViewModel(makeSeries({ dayCount: 30, articleCount: 30, inUpstreamList: false }), TODAY);
+    expect(v.badgeText).toBe("完賽");
+    expect(v.chipText).toBe("已下架");
+    expect(v.chipClass).toBe("status-chip status-chip--removed");
+    expect(v.chipTitle).toBe("已完賽，但系列頁已移除（上游完賽名單未列）");
+  });
+  test("在上游完賽名單：DAY≥30 → 鐵人煉成（不受旗標影響）", () => {
+    const v = cardViewModel(makeSeries({ dayCount: 30, articleCount: 30, inUpstreamList: true }), TODAY);
+    expect(v.chipText).toBe("鐵人煉成");
+    expect(v.chipClass).toBe("status-chip status-chip--done");
+  });
   test("進度 clamp：dayCount 40 → 100% / 30/30", () => {
     const v = cardViewModel(makeSeries({ dayCount: 40, articleCount: 40 }), TODAY);
     expect(v.progressPct).toBe(100);

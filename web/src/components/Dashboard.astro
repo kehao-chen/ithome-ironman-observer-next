@@ -81,6 +81,12 @@ const updatedAtFallback = isoInitial(data.updatedAt);
           <span class="filter-label">我的收藏</span>
           <span class="filter-count tabular-nums" id="fav-count">0</span>
         </button>
+        {data.series.some((s) => s.inUpstreamList) ? (
+          <button data-group="finishers" class="filter-btn" data-active="false">
+            <span class="filter-label">完賽名單</span>
+            <span class="filter-count tabular-nums" id="finishers-count">{data.series.filter((s) => s.inUpstreamList).length}</span>
+          </button>
+        ) : null}
         {groups.map((g) => (
           <button data-group={g} class="filter-btn" data-active={g === "全部" ? "true" : "false"}>
             <span class="filter-label">{g}</span>
@@ -231,6 +237,13 @@ const updatedAtFallback = isoInitial(data.updatedAt);
     const favBtn = buildFilterChip("fav", "我的收藏", 0, activeGroup === "fav");
     favBtn.querySelector<HTMLElement>(".filter-count")!.id = "fav-count";
     wrap.appendChild(favBtn);
+    // 完賽名單 chip：僅在該年度資料帶 inUpstreamList 旗標（finishers 語意）時出現
+    const finisherCount = data.series.filter((s) => s.inUpstreamList === true).length;
+    if (finisherCount > 0) {
+      const finishersBtn = buildFilterChip("finishers", "完賽名單", finisherCount, activeGroup === "finishers");
+      finishersBtn.querySelector<HTMLElement>(".filter-count")!.id = "finishers-count";
+      wrap.appendChild(finishersBtn);
+    }
     for (const g of groups) {
       wrap.appendChild(buildFilterChip(g, g, counts.get(g) ?? 0, g === activeGroup));
     }
@@ -256,6 +269,8 @@ const updatedAtFallback = isoInitial(data.updatedAt);
     }
     const favCount = document.getElementById("fav-count");
     if (favCount) favCount.textContent = String(currentYearFavCount(data, favSet));
+    const finishersCount = document.getElementById("finishers-count");
+    if (finishersCount) finishersCount.textContent = String(data.series.filter((s) => s.inUpstreamList === true).length);
     // scrapeLog notice: fixed container, toggled by data.
     if (scrapeLog && scrapeLogCount && scrapeLogList) {
       scrapeLogCount.textContent = String(data.scrapeLog.length);

@@ -467,6 +467,8 @@ input, select, textarea { caret-color: var(--accent); }
 .status-chip--yesterday { color: var(--muted); background: var(--surface-muted); }
 /* 已刪文：作者把文章全刪了 — 用 danger 表現，與「停更」的 warning 區分 */
 .status-chip--deleted { color: var(--badge-danger-text); background: var(--danger-weak); }
+/* 已下架：完賽後系列頁被移除（上游完賽名單未列）— muted 中性，與 danger 的「已刪文」區分 */
+.status-chip--removed { color: var(--muted); background: var(--surface-muted); }
 /* 鐵人煉成：完賽榮譽 chip — 綠 + 呼吸發光 */
 .status-chip--done {
   color: var(--badge-success-text);
