@@ -1,0 +1,41 @@
+{
+  "schema-version": 8,
+  "switches": {
+    "allow-ag": "on",
+    "allowed-worker": [
+      "external",
+      "internal",
+      "host"
+    ],
+    "ask-names": "on",
+    "auto-reply": "off",
+    "away-gates": "off",
+    "cli-provider": "on",
+    "completion-cleanup": "off",
+    "completion-cleanup-interval-days": 7,
+    "git-timeout-ms": 30000,
+    "inline-reply": "off",
+    "lang": "en-tw",
+    "large-work-minutes": 120,
+    "log-verbosity": "all",
+    "notebook-ownership": "off",
+    "review-policy": "prefer-independent",
+    "streams": "ask",
+    "target-doc": ".agentflow/devlog.md",
+    "workspace-dir": ".agentflow"
+  },
+  "pipeline-roles": {
+    "requirements": "better",
+    "codewalk": "better",
+    "explore": "better",
+    "spike": "better",
+    "spec": "better",
+    "implementation": "basic",
+    "security-scan": "best",
+    "acceptance": "better",
+    "cross-check": "better",
+    "learn": "basic",
+    "threeways": "better"
+  },
+  "external-workers": []
+}
